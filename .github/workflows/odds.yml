@@ -1,0 +1,35 @@
+name: 每日赔率更新
+
+on:
+  schedule:
+    # 北京时间每天 08:00 更新
+    - cron: '0 0 * * *'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 抓取网易赔率
+        run: python fetch_odds.py
+        env:
+          PYTHONIOENCODING: utf-8
+
+      - name: 提交更新
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config --local user.name "github-actions[bot]"
+            git config --local user.email "github-actions[bot]@users.noreply.github.com"
+            git add odds_data.json
+            git commit -m "📊 自动更新赔率 $(date '+%Y-%m-%d %H:%M')"
+            git push
+          else
+            echo "数据无变化，跳过提交"
+          fi
