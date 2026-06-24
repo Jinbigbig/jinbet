@@ -2178,7 +2178,7 @@ function removeTempImage(idx) {
 // ================================================================
 function createBetOptionControl(playType, options, container, matchHome, matchAway) {
     container.innerHTML = '';
-    const multiSelect = (playType === '比分' || playType === '总进球');
+    const multiSelect = (playType === '胜平负' || playType === '让球胜平负' || playType === '比分' || playType === '总进球');
     if (multiSelect) {
         const list = document.createElement('div');
         list.className = 'option-list';
@@ -2186,7 +2186,7 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
         opts.forEach((opt, idx) => {
             const item = document.createElement('div');
             item.className = 'option-item';
-            const placeholder = playType === '比分' ? '比分' : '总进球数';
+            const placeholder = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球数' : (playType === '让球胜平负' ? '让球结果' : '胜平负'));
             item.innerHTML = `
                 <input type="text" class="option-bet" placeholder="${placeholder}" value="${opt.betOption || ''}" data-idx="${idx}" />
                 <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
@@ -2197,7 +2197,8 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-        addBtn.textContent = '＋ 添加' + (playType === '比分' ? '比分' : '总进球') + '选项';
+        const btnText = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球' : (playType === '让球胜平负' ? '让球' : '胜平负'));
+        addBtn.textContent = '＋ 添加' + btnText + '选项';
         addBtn.onclick = function() { addOptionToList(this); };
         container.appendChild(list);
         container.appendChild(addBtn);
@@ -2231,6 +2232,30 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
                     } else if (playType === '总进球') {
                         if (odds['总进球'] && odds['总进球'][val]) {
                             oddsInput.value = odds['总进球'][val];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '胜平负') {
+                        if (odds['胜'] && val === '胜') {
+                            oddsInput.value = odds['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['平'] && val === '平') {
+                            oddsInput.value = odds['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['负'] && val === '负') {
+                            oddsInput.value = odds['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '让球胜平负') {
+                        const rqList = odds['让球'] || [];
+                        const rq = rqList[0] || {};
+                        if (rq['胜'] && val === '胜') {
+                            oddsInput.value = rq['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['平'] && val === '平') {
+                            oddsInput.value = rq['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['负'] && val === '负') {
+                            oddsInput.value = rq['负'];
                             oddsInput.dispatchEvent(new Event('input'));
                         }
                     }
@@ -2463,10 +2488,18 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                 <option value="半全场" ${playType==='半全场'?'selected':''}>半全场</option>
             </select>
     `;
-    const multiSelect = (playType === '比分' || playType === '总进球');
+    const multiSelect = (playType === '胜平负' || playType === '让球胜平负' || playType === '比分' || playType === '总进球');
     if (multiSelect) {
         html += `
             <div class="bet-option-wrapper">
+                <div class="handicap-container ${playType==='让球胜平负'?'':'hidden'}">
+                    <select class="game-handicapSign">
+                        <option value="0" ${handicapSign==='0'?'selected':''}>无</option>
+                        <option value="-" ${handicapSign==='-'?'selected':''}>主让</option>
+                        <option value="+" ${handicapSign==='+'?'selected':''}>客让</option>
+                    </select>
+                    <input type="number" class="game-handicapValue" placeholder="数" step="1" min="0" value="${handicapValue}" />
+                </div>
                 <div class="bet-option-container"></div>
             </div>
         `;
@@ -2514,7 +2547,8 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-        addBtn.textContent = '＋ 添加' + (playType === '比分' ? '比分' : '总进球') + '选项';
+        const btnText2 = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球' : (playType === '让球胜平负' ? '让球' : '胜平负'));
+        addBtn.textContent = '＋ 添加' + btnText2 + '选项';
         addBtn.onclick = function() { addOptionToList(this); };
         betContainer.appendChild(list);
         betContainer.appendChild(addBtn);
@@ -2550,6 +2584,30 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                             oddsInput.value = odds['总进球'][val];
                             oddsInput.dispatchEvent(new Event('input'));
                         }
+                    } else if (playType === '胜平负') {
+                        if (odds['胜'] && val === '胜') {
+                            oddsInput.value = odds['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['平'] && val === '平') {
+                            oddsInput.value = odds['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['负'] && val === '负') {
+                            oddsInput.value = odds['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '让球胜平负') {
+                        const rqList = odds['让球'] || [];
+                        const rq = rqList[0] || {};
+                        if (rq['胜'] && val === '胜') {
+                            oddsInput.value = rq['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['平'] && val === '平') {
+                            oddsInput.value = rq['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['负'] && val === '负') {
+                            oddsInput.value = rq['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
                     }
                 }
             };
@@ -2571,14 +2629,14 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
         playSelect.addEventListener('change', function() {
             const newPlayType = this.value;
             const betContainer = div.querySelector('.bet-option-container');
-            const isMulti = (newPlayType === '比分' || newPlayType === '总进球');
+            const isMulti = (newPlayType === '胜平负' || newPlayType === '让球胜平负' || newPlayType === '比分' || newPlayType === '总进球');
             if (isMulti) {
                 betContainer.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'option-list';
                 const item = document.createElement('div');
                 item.className = 'option-item';
-                const placeholder = newPlayType === '比分' ? '比分' : '总进球数';
+                const placeholder = newPlayType === '比分' ? '比分' : (newPlayType === '总进球' ? '总进球数' : (newPlayType === '让球胜平负' ? '让球结果' : '胜平负'));
                 item.innerHTML = `
                     <input type="text" class="option-bet" placeholder="${placeholder}" value="" />
                     <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" />
@@ -2588,7 +2646,8 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
                 addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-                addBtn.textContent = '＋ 添加' + (newPlayType === '比分' ? '比分' : '总进球') + '选项';
+                const btnText3 = newPlayType === '比分' ? '比分' : (newPlayType === '总进球' ? '总进球' : (newPlayType === '让球胜平负' ? '让球' : '胜平负'));
+                addBtn.textContent = '＋ 添加' + btnText3 + '选项';
                 addBtn.onclick = function() { addOptionToList(this); };
                 betContainer.appendChild(list);
                 betContainer.appendChild(addBtn);
