@@ -209,8 +209,7 @@ def convert_to_odds_data(matches_163):
           '让球': [{concede:'-1', '胜':'4.7', '平':'3.86', '负':'1.52'}],
           '比分': {'1:0':'8.25', '2:0':'10.5', ...},
           '总进球': {'0':'8', '1':'4.8', ...},
-          '其他': {'胜其他':'100', '平其他':'300', '负其他':'200'},
-          '半全场': {'胜胜':'3.85', ...}
+'半全场': {'胜胜':'3.85', ...}
         },
         ...
       }
@@ -232,7 +231,6 @@ def convert_to_odds_data(matches_163):
             '让球': [],
             '比分': {},
             '总进球': {},
-            '其他': {},
             '半全场': {},
         }
 
@@ -261,10 +259,6 @@ def convert_to_odds_data(matches_163):
         score_items = fbf.get('items', {})
         for name, odds in score_items.items():
             entry['比分'][name] = odds
-            # 同时提取"其他"
-            if '胜其他' in name: entry['其他']['胜其他'] = odds
-            elif '平其他' in name: entry['其他']['平其他'] = odds
-            elif '负其他' in name: entry['其他']['负其他'] = odds
 
         # 总进球（FJQ）
         fjq = plays.get('FJQ', {})

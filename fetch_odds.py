@@ -90,7 +90,7 @@ def to_odds_data(matches):
         if not h or not g: continue
         key = f"{h} vs {g}"
         plays = m['plays']
-        entry = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '其他': {}, '半全场': {}}
+        entry = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}}
 
         hda = plays.get('HDA', {})
         if hda.get('concede') == '0':
@@ -107,9 +107,6 @@ def to_odds_data(matches):
 
         for n, o in plays.get('FBF', {}).get('items', {}).items():
             entry['比分'][n] = o
-            if '胜其他' in n: entry['其他']['胜其他'] = o
-            elif '平其他' in n: entry['其他']['平其他'] = o
-            elif '负其他' in n: entry['其他']['负其他'] = o
 
         for n, o in plays.get('FJQ', {}).get('items', {}).items():
             entry['总进球'][n] = o
