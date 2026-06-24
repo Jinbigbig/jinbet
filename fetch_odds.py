@@ -103,7 +103,7 @@ def to_odds_data(matches):
         if hhda:
             c = hhda.get('concede', '0')
             im = {k: v for k, v in hhda.get('items', {}).items()}
-            if im: entry['让球'] = [{'concede': c, '胜': im.get('主胜',''), '平': im.get('平',''), '负': im.get('客胜','')}]
+            if im: entry['让球'] = [{'handicap': c, '胜': im.get('主胜',''), '平': im.get('平',''), '负': im.get('客胜','')}]
 
         for n, o in plays.get('FBF', {}).get('items', {}).items():
             entry['比分'][n] = o
