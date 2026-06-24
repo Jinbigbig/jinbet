@@ -2461,7 +2461,6 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                 <option value="比分" ${playType==='比分'?'selected':''}>比分</option>
                 <option value="总进球" ${playType==='总进球'?'selected':''}>总进球</option>
                 <option value="半全场" ${playType==='半全场'?'selected':''}>半全场</option>
-                <option value="其他" ${playType==='其他'?'selected':''}>其他</option>
             </select>
     `;
     const multiSelect = (playType === '比分' || playType === '总进球');
