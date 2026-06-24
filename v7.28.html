@@ -1249,6 +1249,7 @@
             <button class="btn btn-cyan btn-sm" onclick="loadOddsSchedule()">📅 加载当日赛程</button>
             <button class="btn btn-success btn-sm" onclick="saveOdds()">💾 保存赔率（并同步更新已有记录）</button>
             <button class="btn btn-cyan btn-sm" id="btnRefreshOdds" onclick="openOddsUpdater()">🔄 更新赔率</button>
+              <span id="onlineBadge" style="display:none;font-size:12px;color:#4caf50;margin-left:6px;"></span>
             <button class="btn btn-outline btn-sm" onclick="clearOdds()">🗑 清空当日赔率</button>
             <span style="font-size:12px;color:#6b7280;margin-left:8px;">录入后，添加记录时自动填入，修改后同步更新历史记录</span>
         </div>
@@ -1371,7 +1372,7 @@ function getTeamDatalistHTML(id) {
 //  核心存储
 // ================================================================
 const STORAGE_KEY_BETS = 'worldcup_bets_v737';
-const STORAGE_KEY_ODDS = 'worldcup_odds_v737';
+const STORAGE_KEY_ODDS = 'worldcup_odds_v738';
 let bets = [];
 let oddsData = {};
 let editingId = null;
@@ -1460,7 +1461,7 @@ function loadOddsSchedule() {
     const scoreOpts = getScoreOptions();
     games.forEach(g => {
         const key = date + '_' + g.home + '_' + g.away;
-        const odds = oddsData[key] || { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '其他': {}, '半全场': {} };
+        const odds = oddsData[key] || { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
         const div = document.createElement('div');
         div.className = 'odds-row';
         div.dataset.key = key;
@@ -1490,7 +1491,7 @@ function loadOddsSchedule() {
         });
         html += `</div><button type="button" class="btn btn-outline btn-xs add-rq-btn" onclick="addRQRow(this)">＋ 添加让球</button></div>`;
 
-        // 3. 比分
+        // 3. 比分（含胜/平/负其他）
         html += `<div class="odds-section"><label>比分：</label><div class="bf-inputs" id="bf-${key}">`;
         const bfOdds = odds['比分'] || {};
         PRESET_SCORES.forEach(score => {
@@ -1501,15 +1502,12 @@ function loadOddsSchedule() {
             });
             html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         });
-        html += `</div><button type="button" class="btn btn-outline btn-xs add-bf-btn" onclick="addBFRow(this)">＋ 添加比分</button></div>`;
-
-        // 4. 其他
-        const other = odds['其他'] || { '胜其他': '', '平其他': '', '负其他': '' };
-        html += `<div class="odds-section"><label>其他：</label><div class="qt-inputs">`;
+        // 比分中的胜/平/负其他
         ['胜其他','平其他','负其他'].forEach(type => {
-            html += `<div class="qt-item"><label>${type}</label><input type="number" step="0.01" class="odds-qt" data-type="${type}" value="${other[type] || ''}" placeholder="赔率" /></div>`;
+            const val = bfOdds[type] || '';
+            html += `<div class="bf-item"><span class="bf-other-label">${type}</span><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" data-other="${type}" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         });
-        html += `</div></div>`;
+        html += `</div><button type="button" class="btn btn-outline btn-xs add-bf-btn" onclick="addBFRow(this)">＋ 添加比分</button></div>`;
 
         // 5. 总进球数
         html += `<div class="odds-section"><label>总进球数：</label><div class="zjq-inputs">`;
@@ -1562,7 +1560,7 @@ function saveOdds() {
     const rows = document.querySelectorAll('#oddsListContainer .odds-row');
     rows.forEach(row => {
         const key = row.dataset.key;
-        const odds = { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '其他': {}, '半全场': {} };
+        const odds = { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
 
         // 胜平负
         const sfInputs = row.querySelectorAll('.odds-sf');
@@ -1586,16 +1584,21 @@ function saveOdds() {
             }
         });
 
-        // 比分
+        // 比分（含胜/平/负其他）
         const bfItems = row.querySelectorAll('.bf-item');
         bfItems.forEach(item => {
             const select = item.querySelector('.bf-score-select');
             const input = item.querySelector('.bf-odds');
+            const otherType = input ? input.dataset.other : null;
             if (select && input) {
-                const score = select.value;
-                const val = parseFloat(input.value.trim());
-                if (score && !isNaN(val) && val > 0) {
-                    odds['比分'][score] = val;
+                if (otherType) {
+                    // 胜其他/平其他/负其他
+                    const val = parseFloat(input.value.trim());
+                    if (!isNaN(val) && val > 0) odds['比分'][otherType] = val;
+                } else {
+                    const score = select.value;
+                    const val = parseFloat(input.value.trim());
+                    if (score && !isNaN(val) && val > 0) odds['比分'][score] = val;
                 }
             }
         });
@@ -1609,13 +1612,6 @@ function saveOdds() {
             }
         });
 
-        // 其他
-        const qtInputs = row.querySelectorAll('.odds-qt');
-        qtInputs.forEach(inp => {
-            const val = parseFloat(inp.value.trim());
-            if (!isNaN(val) && val > 0) odds['其他'][inp.dataset.type] = val;
-        });
-
         // 半全场
         const hqInputs = row.querySelectorAll('.odds-hq');
         hqInputs.forEach(inp => {
@@ -1623,7 +1619,7 @@ function saveOdds() {
             if (!isNaN(val) && val > 0) odds['半全场'][inp.dataset.type] = val;
         });
 
-        const hasData = odds['胜'] || odds['平'] || odds['负'] || odds['让球'].length > 0 || Object.keys(odds['比分']).length > 0 || Object.keys(odds['总进球']).length > 0 || Object.keys(odds['其他']).length > 0 || Object.keys(odds['半全场']).length > 0;
+        const hasData = odds['胜'] || odds['平'] || odds['负'] || odds['让球'].length > 0 || Object.keys(odds['比分']).length > 0 || Object.keys(odds['总进球']).length > 0 || Object.keys(odds['半全场']).length > 0;
         if (hasData) {
             oddsData[key] = odds;
         } else {
@@ -2182,7 +2178,7 @@ function removeTempImage(idx) {
 // ================================================================
 function createBetOptionControl(playType, options, container, matchHome, matchAway) {
     container.innerHTML = '';
-    const multiSelect = (playType === '比分' || playType === '总进球');
+    const multiSelect = (playType === '胜平负' || playType === '让球胜平负' || playType === '比分' || playType === '总进球');
     if (multiSelect) {
         const list = document.createElement('div');
         list.className = 'option-list';
@@ -2190,7 +2186,7 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
         opts.forEach((opt, idx) => {
             const item = document.createElement('div');
             item.className = 'option-item';
-            const placeholder = playType === '比分' ? '比分' : '总进球数';
+            const placeholder = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球数' : (playType === '让球胜平负' ? '让球结果' : '胜平负'));
             item.innerHTML = `
                 <input type="text" class="option-bet" placeholder="${placeholder}" value="${opt.betOption || ''}" data-idx="${idx}" />
                 <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
@@ -2201,7 +2197,8 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-        addBtn.textContent = '＋ 添加' + (playType === '比分' ? '比分' : '总进球') + '选项';
+        const btnText = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球' : (playType === '让球胜平负' ? '让球' : '胜平负'));
+        addBtn.textContent = '＋ 添加' + btnText + '选项';
         addBtn.onclick = function() { addOptionToList(this); };
         container.appendChild(list);
         container.appendChild(addBtn);
@@ -2235,6 +2232,30 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
                     } else if (playType === '总进球') {
                         if (odds['总进球'] && odds['总进球'][val]) {
                             oddsInput.value = odds['总进球'][val];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '胜平负') {
+                        if (odds['胜'] && val === '胜') {
+                            oddsInput.value = odds['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['平'] && val === '平') {
+                            oddsInput.value = odds['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['负'] && val === '负') {
+                            oddsInput.value = odds['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '让球胜平负') {
+                        const rqList = odds['让球'] || [];
+                        const rq = rqList[0] || {};
+                        if (rq['胜'] && val === '胜') {
+                            oddsInput.value = rq['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['平'] && val === '平') {
+                            oddsInput.value = rq['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['负'] && val === '负') {
+                            oddsInput.value = rq['负'];
                             oddsInput.dispatchEvent(new Event('input'));
                         }
                     }
@@ -2465,13 +2486,20 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                 <option value="比分" ${playType==='比分'?'selected':''}>比分</option>
                 <option value="总进球" ${playType==='总进球'?'selected':''}>总进球</option>
                 <option value="半全场" ${playType==='半全场'?'selected':''}>半全场</option>
-                <option value="其他" ${playType==='其他'?'selected':''}>其他</option>
             </select>
     `;
-    const multiSelect = (playType === '比分' || playType === '总进球');
+    const multiSelect = (playType === '胜平负' || playType === '让球胜平负' || playType === '比分' || playType === '总进球');
     if (multiSelect) {
         html += `
             <div class="bet-option-wrapper">
+                <div class="handicap-container ${playType==='让球胜平负'?'':'hidden'}">
+                    <select class="game-handicapSign">
+                        <option value="0" ${handicapSign==='0'?'selected':''}>无</option>
+                        <option value="-" ${handicapSign==='-'?'selected':''}>主让</option>
+                        <option value="+" ${handicapSign==='+'?'selected':''}>客让</option>
+                    </select>
+                    <input type="number" class="game-handicapValue" placeholder="数" step="1" min="0" value="${handicapValue}" />
+                </div>
                 <div class="bet-option-container"></div>
             </div>
         `;
@@ -2519,7 +2547,8 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-        addBtn.textContent = '＋ 添加' + (playType === '比分' ? '比分' : '总进球') + '选项';
+        const btnText2 = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球' : (playType === '让球胜平负' ? '让球' : '胜平负'));
+        addBtn.textContent = '＋ 添加' + btnText2 + '选项';
         addBtn.onclick = function() { addOptionToList(this); };
         betContainer.appendChild(list);
         betContainer.appendChild(addBtn);
@@ -2555,6 +2584,30 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                             oddsInput.value = odds['总进球'][val];
                             oddsInput.dispatchEvent(new Event('input'));
                         }
+                    } else if (playType === '胜平负') {
+                        if (odds['胜'] && val === '胜') {
+                            oddsInput.value = odds['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['平'] && val === '平') {
+                            oddsInput.value = odds['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (odds['负'] && val === '负') {
+                            oddsInput.value = odds['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
+                    } else if (playType === '让球胜平负') {
+                        const rqList = odds['让球'] || [];
+                        const rq = rqList[0] || {};
+                        if (rq['胜'] && val === '胜') {
+                            oddsInput.value = rq['胜'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['平'] && val === '平') {
+                            oddsInput.value = rq['平'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        } else if (rq['负'] && val === '负') {
+                            oddsInput.value = rq['负'];
+                            oddsInput.dispatchEvent(new Event('input'));
+                        }
                     }
                 }
             };
@@ -2576,14 +2629,14 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
         playSelect.addEventListener('change', function() {
             const newPlayType = this.value;
             const betContainer = div.querySelector('.bet-option-container');
-            const isMulti = (newPlayType === '比分' || newPlayType === '总进球');
+            const isMulti = (newPlayType === '胜平负' || newPlayType === '让球胜平负' || newPlayType === '比分' || newPlayType === '总进球');
             if (isMulti) {
                 betContainer.innerHTML = '';
                 const list = document.createElement('div');
                 list.className = 'option-list';
                 const item = document.createElement('div');
                 item.className = 'option-item';
-                const placeholder = newPlayType === '比分' ? '比分' : '总进球数';
+                const placeholder = newPlayType === '比分' ? '比分' : (newPlayType === '总进球' ? '总进球数' : (newPlayType === '让球胜平负' ? '让球结果' : '胜平负'));
                 item.innerHTML = `
                     <input type="text" class="option-bet" placeholder="${placeholder}" value="" />
                     <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" />
@@ -2593,7 +2646,8 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
                 addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-                addBtn.textContent = '＋ 添加' + (newPlayType === '比分' ? '比分' : '总进球') + '选项';
+                const btnText3 = newPlayType === '比分' ? '比分' : (newPlayType === '总进球' ? '总进球' : (newPlayType === '让球胜平负' ? '让球' : '胜平负'));
+                addBtn.textContent = '＋ 添加' + btnText3 + '选项';
                 addBtn.onclick = function() { addOptionToList(this); };
                 betContainer.appendChild(list);
                 betContainer.appendChild(addBtn);
@@ -2860,6 +2914,7 @@ function updatePassCheckboxes() {
     if (n >= 3) btnGroups.push({ label: '单关+2关+3关', combos: [1,2,3] });
     if (n >= 4) btnGroups.push({ label: '2关+3关+4关', combos: [2,3,4] });
     if (n >= 4) btnGroups.push({ label: '2-4关', combos: [2,3,4] });
+    if (n >= 6) btnGroups.push({ label: '2-6关', combos: [2,3,4,5,6] });
     btnGroups.push({ label: '全选', combos: Array.from({length:n}, (_,i)=>i+1) });
     const seen = new Set();
     btnGroups.forEach(group => {
@@ -3772,11 +3827,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -3843,11 +3893,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -3916,11 +3961,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -3987,11 +4027,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -4060,11 +4095,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -4131,11 +4161,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -4204,11 +4229,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -4275,11 +4295,6 @@ function init() {
       "5": "6.8",
       "6": "11",
       "7+": "14"
-    },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
     },
     "半全场": {
       "胜胜": "29",
@@ -4348,11 +4363,6 @@ function init() {
       "6": "11",
       "7+": "13"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
-    },
     "半全场": {
       "胜胜": "30",
       "胜平": "29",
@@ -4419,11 +4429,6 @@ function init() {
       "5": "8.5",
       "6": "14.5",
       "7+": "22"
-    },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
     },
     "半全场": {
       "胜胜": "3.05",
@@ -4492,11 +4497,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -4563,11 +4563,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -4636,11 +4631,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -4707,11 +4697,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -4780,11 +4765,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -4851,11 +4831,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -4924,11 +4899,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -4995,11 +4965,6 @@ function init() {
       "5": "6.5",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
     },
     "半全场": {
       "胜胜": "25",
@@ -5082,11 +5047,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -5153,11 +5113,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -5226,11 +5181,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -5297,11 +5247,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -5370,11 +5315,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -5441,11 +5381,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -5514,11 +5449,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -5585,11 +5515,6 @@ function init() {
       "5": "6.8",
       "6": "11",
       "7+": "14"
-    },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
     },
     "半全场": {
       "胜胜": "29",
@@ -5658,11 +5583,6 @@ function init() {
       "6": "11",
       "7+": "13"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
-    },
     "半全场": {
       "胜胜": "30",
       "胜平": "29",
@@ -5729,11 +5649,6 @@ function init() {
       "5": "8.5",
       "6": "14.5",
       "7+": "22"
-    },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
     },
     "半全场": {
       "胜胜": "3.05",
@@ -5802,11 +5717,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -5873,11 +5783,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -5946,11 +5851,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -6017,11 +5917,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -6090,11 +5985,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -6161,11 +6051,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -6234,11 +6119,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -6305,11 +6185,6 @@ function init() {
       "5": "6.5",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
     },
     "半全场": {
       "胜胜": "25",
@@ -6393,11 +6268,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -6464,11 +6334,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -6537,11 +6402,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -6608,11 +6468,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -6681,11 +6536,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -6752,11 +6602,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -6825,11 +6670,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -6896,11 +6736,6 @@ function init() {
       "5": "6.8",
       "6": "11",
       "7+": "14"
-    },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
     },
     "半全场": {
       "胜胜": "29",
@@ -6969,11 +6804,6 @@ function init() {
       "6": "11",
       "7+": "13"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
-    },
     "半全场": {
       "胜胜": "30",
       "胜平": "29",
@@ -7040,11 +6870,6 @@ function init() {
       "5": "8.5",
       "6": "14.5",
       "7+": "22"
-    },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
     },
     "半全场": {
       "胜胜": "3.05",
@@ -7113,11 +6938,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -7184,11 +7004,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -7257,11 +7072,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -7328,11 +7138,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -7401,11 +7206,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -7472,11 +7272,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -7545,11 +7340,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -7616,11 +7406,6 @@ function init() {
       "5": "6.5",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
     },
     "半全场": {
       "胜胜": "25",
@@ -7704,11 +7489,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -7775,11 +7555,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -7848,11 +7623,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -7919,11 +7689,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -7992,11 +7757,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -8063,11 +7823,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -8136,11 +7891,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -8207,11 +7957,6 @@ function init() {
       "5": "6.8",
       "6": "11",
       "7+": "14"
-    },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
     },
     "半全场": {
       "胜胜": "29",
@@ -8280,11 +8025,6 @@ function init() {
       "6": "11",
       "7+": "13"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
-    },
     "半全场": {
       "胜胜": "30",
       "胜平": "29",
@@ -8351,11 +8091,6 @@ function init() {
       "5": "8.5",
       "6": "14.5",
       "7+": "22"
-    },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
     },
     "半全场": {
       "胜胜": "3.05",
@@ -8424,11 +8159,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -8495,11 +8225,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -8568,11 +8293,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -8639,11 +8359,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -8712,11 +8427,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -8783,11 +8493,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -8856,11 +8561,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -8927,11 +8627,6 @@ function init() {
       "5": "6.5",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
     },
     "半全场": {
       "胜胜": "25",
@@ -9015,11 +8710,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -9086,11 +8776,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -9159,11 +8844,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -9230,11 +8910,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -9303,11 +8978,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -9374,11 +9044,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -9447,11 +9112,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -9518,11 +9178,6 @@ function init() {
       "5": "6.8",
       "6": "11",
       "7+": "14"
-    },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
     },
     "半全场": {
       "胜胜": "29",
@@ -9591,11 +9246,6 @@ function init() {
       "6": "11",
       "7+": "13"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
-    },
     "半全场": {
       "胜胜": "30",
       "胜平": "29",
@@ -9662,11 +9312,6 @@ function init() {
       "5": "8.5",
       "6": "14.5",
       "7+": "22"
-    },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
     },
     "半全场": {
       "胜胜": "3.05",
@@ -9735,11 +9380,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -9806,11 +9446,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -9879,11 +9514,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -9950,11 +9580,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -10023,11 +9648,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -10094,11 +9714,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -10167,11 +9782,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -10238,11 +9848,6 @@ function init() {
       "5": "6.5",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
     },
     "半全场": {
       "胜胜": "25",
@@ -10326,11 +9931,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "250",
-      "负其他": "150"
-    },
     "半全场": {
       "胜胜": "3.85",
       "胜平": "13.5",
@@ -10397,11 +9997,6 @@ function init() {
       "5": "7.5",
       "6": "12.5",
       "7+": "17"
-    },
-    "其他": {
-      "胜其他": "27",
-      "平其他": "300",
-      "负其他": "200"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -10470,11 +10065,6 @@ function init() {
       "6": "15",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "400",
-      "平其他": "500",
-      "负其他": "25"
-    },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
@@ -10541,11 +10131,6 @@ function init() {
       "5": "6.8",
       "6": "10.5",
       "7+": "13.5"
-    },
-    "其他": {
-      "胜其他": "12",
-      "平其他": "500",
-      "负其他": "500"
     },
     "半全场": {
       "胜胜": "1.36",
@@ -10614,11 +10199,6 @@ function init() {
       "6": "22",
       "7+": "37"
     },
-    "其他": {
-      "胜其他": "300",
-      "平其他": "500",
-      "负其他": "60"
-    },
     "半全场": {
       "胜胜": "9.05",
       "胜平": "16",
@@ -10685,11 +10265,6 @@ function init() {
       "5": "12",
       "6": "22",
       "7+": "36"
-    },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "300",
-      "负其他": "90"
     },
     "半全场": {
       "胜胜": "6",
@@ -10758,11 +10333,6 @@ function init() {
       "6": "16",
       "7+": "24"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "400",
-      "负其他": "55"
-    },
     "半全场": {
       "胜胜": "6.5",
       "胜平": "13",
@@ -10830,11 +10400,6 @@ function init() {
       "6": "11",
       "7+": "14"
     },
-    "其他": {
-      "胜其他": "600",
-      "平其他": "800",
-      "负其他": "12"
-    },
     "半全场": {
       "胜胜": "29",
       "胜平": "28",
@@ -10901,11 +10466,6 @@ function init() {
       "5": "6.25",
       "6": "11",
       "7+": "13"
-    },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "10"
     },
     "半全场": {
       "胜胜": "30",
@@ -10974,11 +10534,6 @@ function init() {
       "6": "14.5",
       "7+": "22"
     },
-    "其他": {
-      "胜其他": "55",
-      "平其他": "350",
-      "负其他": "100"
-    },
     "半全场": {
       "胜胜": "3.05",
       "胜平": "13",
@@ -11046,11 +10601,6 @@ function init() {
       "6": "30",
       "7+": "60"
     },
-    "其他": {
-      "胜其他": "200",
-      "平其他": "500",
-      "负其他": "500"
-    },
     "半全场": {
       "胜胜": "4.65",
       "胜平": "14",
@@ -11117,11 +10667,6 @@ function init() {
       "5": "8.5",
       "6": "14",
       "7+": "23"
-    },
-    "其他": {
-      "胜其他": "90",
-      "平其他": "300",
-      "负其他": "55"
     },
     "半全场": {
       "胜胜": "5.55",
@@ -11190,11 +10735,6 @@ function init() {
       "6": "13.5",
       "7+": "18.5"
     },
-    "其他": {
-      "胜其他": "100",
-      "平其他": "300",
-      "负其他": "29"
-    },
     "半全场": {
       "胜胜": "8",
       "胜平": "15",
@@ -11261,11 +10801,6 @@ function init() {
       "5": "6.7",
       "6": "12",
       "7+": "14.5"
-    },
-    "其他": {
-      "胜其他": "13",
-      "平其他": "450",
-      "负其他": "350"
     },
     "半全场": {
       "胜胜": "1.52",
@@ -11334,11 +10869,6 @@ function init() {
       "6": "22",
       "7+": "35"
     },
-    "其他": {
-      "胜其他": "125",
-      "平其他": "400",
-      "负其他": "130"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "16",
@@ -11405,11 +10935,6 @@ function init() {
       "5": "9",
       "6": "16",
       "7+": "24"
-    },
-    "其他": {
-      "胜其他": "350",
-      "平其他": "500",
-      "负其他": "30"
     },
     "半全场": {
       "胜胜": "13",
@@ -11478,11 +11003,6 @@ function init() {
       "6": "34",
       "7+": "50"
     },
-    "其他": {
-      "胜其他": "175",
-      "平其他": "700",
-      "负其他": "350"
-    },
     "半全场": {
       "胜胜": "4",
       "胜平": "13.5",
@@ -11550,11 +11070,6 @@ function init() {
       "6": "10.5",
       "7+": "13.5"
     },
-    "其他": {
-      "胜其他": "550",
-      "平其他": "700",
-      "负其他": "12.5"
-    },
     "半全场": {
       "胜胜": "25",
       "胜平": "26",
@@ -11578,7 +11093,7 @@ function init() {
 })();
 // === 结束注入 ===
 
-// === 网易赔率自动注入（2026-06-24 17:29）===
+// === 网易赔率自动注入（2026-06-24 20:05）===
 (function(){
   try {
     var data = {
@@ -11598,7 +11113,7 @@ function init() {
       "1:0": "8.25",
       "2:0": "11",
       "2:1": "7",
-      "3:0": "24",
+      "3:0": "25",
       "3:1": "16",
       "3:2": "25",
       "4:0": "70",
@@ -11609,12 +11124,12 @@ function init() {
       "5:2": "175",
       "胜其他": "100",
       "0:0": "8",
-      "1:1": "4.6",
+      "1:1": "4.5",
       "2:2": "11",
       "3:3": "35",
       "平其他": "250",
       "0:1": "10",
-      "0:2": "16",
+      "0:2": "17",
       "1:2": "10.5",
       "0:3": "55",
       "1:3": "30",
@@ -11629,1232 +11144,11 @@ function init() {
     },
     "总进球": {
       "0": "8",
-      "1": "4.8",
-      "2": "3.05",
-      "3": "3.9",
-      "4": "5.75",
-      "5": "11",
-      "6": "22",
-      "7+": "37"
-    },
-    "半全场": {
-      "胜胜": "3.85",
-      "胜平": "13.5",
-      "胜负": "30",
-      "平胜": "5",
-      "平平": "4",
-      "平负": "6.85",
-      "负胜": "25",
-      "负平": "13.5",
-      "负负": "5.65"
-    }
-  },
-  "2026-06-25_波黑_卡塔尔": {
-    "胜": "1.26",
-    "平": "5.1",
-    "负": "7.15",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "1.89",
-        "平": "3.6",
-        "负": "3.1"
-      }
-    ],
-    "比分": {
-      "1:0": "8",
-      "2:0": "5.5",
-      "2:1": "6",
-      "3:0": "9.25",
-      "3:1": "8.5",
-      "3:2": "22",
-      "4:0": "18",
-      "4:1": "18",
-      "4:2": "36",
-      "5:0": "45",
-      "5:1": "40",
-      "5:2": "70",
-      "胜其他": "27",
-      "0:0": "18",
-      "1:1": "9",
-      "2:2": "16",
-      "3:3": "55",
-      "平其他": "300",
-      "0:1": "22",
-      "0:2": "45",
-      "1:2": "22",
-      "0:3": "120",
-      "1:3": "70",
-      "2:3": "60",
-      "0:4": "300",
-      "1:4": "200",
-      "2:4": "200",
-      "0:5": "600",
-      "1:5": "500",
-      "2:5": "500",
-      "负其他": "200"
-    },
-    "总进球": {
-      "0": "18",
-      "1": "6.25",
-      "2": "4.1",
-      "3": "3.3",
-      "4": "4.55",
-      "5": "7.5",
-      "6": "12.5",
-      "7+": "17"
-    },
-    "半全场": {
-      "胜胜": "1.77",
-      "胜平": "18",
-      "胜负": "40",
-      "平胜": "4.1",
-      "平平": "8.05",
-      "平负": "16.5",
-      "负胜": "21",
-      "负平": "18",
-      "负负": "13"
-    }
-  },
-  "2026-06-25_苏格兰_巴西": {
-    "胜": "9.6",
-    "平": "5.4",
-    "负": "1.19",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "3.6",
-        "平": "3.75",
-        "负": "1.71"
-      }
-    ],
-    "比分": {
-      "1:0": "21",
-      "2:0": "60",
-      "2:1": "26",
-      "3:0": "150",
-      "3:1": "95",
-      "3:2": "85",
-      "4:0": "500",
-      "4:1": "400",
-      "4:2": "400",
-      "5:0": "800",
-      "5:1": "800",
-      "5:2": "800",
-      "胜其他": "400",
-      "0:0": "14",
-      "1:1": "9.5",
-      "2:2": "25",
-      "3:3": "90",
-      "平其他": "500",
-      "0:1": "6.85",
-      "0:2": "5.35",
-      "1:2": "7",
-      "0:3": "6.75",
-      "1:3": "8.5",
-      "2:3": "29",
-      "0:4": "13",
-      "1:4": "19",
-      "2:4": "45",
-      "0:5": "30",
-      "1:5": "45",
-      "2:5": "90",
-      "负其他": "25"
-    },
-    "总进球": {
-      "0": "14",
-      "1": "5.3",
-      "2": "3.7",
-      "3": "3.4",
-      "4": "5",
-      "5": "8.5",
-      "6": "15",
-      "7+": "22"
-    },
-    "半全场": {
-      "胜胜": "19",
-      "胜平": "21",
-      "胜负": "27",
-      "平胜": "21",
-      "平平": "7.5",
-      "平负": "3.65",
-      "负胜": "65",
-      "负平": "21",
-      "负负": "1.67"
-    }
-  },
-  "2026-06-25_摩洛哥_海地": {
-    "胜": "",
-    "平": "",
-    "负": "",
-    "让球": [
-      {
-        "concede": "-2",
-        "胜": "2.19",
-        "平": "3.85",
-        "负": "2.42"
-      }
-    ],
-    "比分": {
-      "1:0": "7.5",
-      "2:0": "5",
-      "2:1": "8.5",
-      "3:0": "5.2",
-      "3:1": "10.5",
-      "3:2": "30",
-      "4:0": "8.5",
-      "4:1": "16",
-      "4:2": "60",
-      "5:0": "14",
-      "5:1": "28",
-      "5:2": "80",
-      "胜其他": "12",
-      "0:0": "21",
-      "1:1": "14",
-      "2:2": "40",
-      "3:3": "120",
-      "平其他": "500",
-      "0:1": "35",
-      "0:2": "100",
-      "1:2": "50",
-      "0:3": "500",
-      "1:3": "200",
-      "2:3": "160",
-      "0:4": "800",
-      "1:4": "500",
-      "2:4": "500",
-      "0:5": "800",
-      "1:5": "800",
-      "2:5": "800",
-      "负其他": "500"
-    },
-    "总进球": {
-      "0": "21",
-      "1": "6.7",
-      "2": "4.4",
-      "3": "3.55",
-      "4": "4.3",
-      "5": "6.8",
-      "6": "10.5",
-      "7+": "13.5"
-    },
-    "半全场": {
-      "胜胜": "1.36",
-      "胜平": "33",
-      "胜负": "100",
-      "平胜": "3.85",
-      "平平": "10.5",
-      "平负": "37",
-      "负胜": "30",
-      "负平": "33",
-      "负负": "30"
-    }
-  },
-  "2026-06-25_南非_韩国": {
-    "胜": "5.55",
-    "平": "3.78",
-    "负": "1.46",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "2.28",
-        "平": "3.2",
-        "负": "2.64"
-      }
-    ],
-    "比分": {
-      "1:0": "13",
-      "2:0": "32",
-      "2:1": "18.5",
-      "3:0": "85",
-      "3:1": "55",
-      "3:2": "65",
-      "4:0": "300",
-      "4:1": "200",
-      "4:2": "250",
-      "5:0": "800",
-      "5:1": "600",
-      "5:2": "700",
-      "胜其他": "300",
-      "0:0": "9",
-      "1:1": "6.6",
-      "2:2": "15",
-      "3:3": "60",
-      "平其他": "500",
-      "0:1": "6",
-      "0:2": "6.25",
-      "1:2": "6",
-      "0:3": "12",
-      "1:3": "11",
-      "2:3": "30",
-      "0:4": "30",
-      "1:4": "30",
-      "2:4": "60",
-      "0:5": "75",
-      "1:5": "80",
-      "2:5": "150",
-      "负其他": "60"
-    },
-    "总进球": {
-      "0": "9",
-      "1": "4.2",
-      "2": "3.2",
+      "1": "4.85",
+      "2": "3",
       "3": "3.8",
-      "4": "6",
-      "5": "11",
-      "6": "22",
-      "7+": "37"
-    },
-    "半全场": {
-      "胜胜": "9.05",
-      "胜平": "16",
-      "胜负": "25",
-      "平胜": "12",
-      "平平": "5.15",
-      "平负": "4",
-      "负胜": "39",
-      "负平": "16",
-      "负负": "2.35"
-    }
-  },
-  "2026-06-25_捷克_墨西哥": {
-    "胜": "3.63",
-    "平": "3.5",
-    "负": "1.76",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "1.81",
-        "平": "3.43",
-        "负": "3.5"
-      }
-    ],
-    "比分": {
-      "1:0": "9",
-      "2:0": "17.5",
-      "2:1": "10",
-      "3:0": "50",
-      "3:1": "30",
-      "3:2": "40",
-      "4:0": "150",
-      "4:1": "100",
-      "4:2": "150",
-      "5:0": "500",
-      "5:1": "500",
-      "5:2": "500",
-      "胜其他": "200",
-      "0:0": "9.5",
-      "1:1": "6",
-      "2:2": "13",
-      "3:3": "50",
-      "平其他": "300",
-      "0:1": "6.5",
-      "0:2": "8.75",
-      "1:2": "6.75",
-      "0:3": "18",
-      "1:3": "15",
-      "2:3": "30",
-      "0:4": "55",
-      "1:4": "45",
-      "2:4": "75",
-      "0:5": "150",
-      "1:5": "120",
-      "2:5": "200",
-      "负其他": "90"
-    },
-    "总进球": {
-      "0": "9.5",
-      "1": "4.05",
-      "2": "3.25",
-      "3": "3.6",
-      "4": "6.25",
-      "5": "12",
-      "6": "22",
-      "7+": "36"
-    },
-    "半全场": {
-      "胜胜": "6",
-      "胜平": "14",
-      "胜负": "24",
-      "平胜": "8",
-      "平平": "5",
-      "平负": "4.6",
-      "负胜": "38",
-      "负平": "14",
-      "负负": "3"
-    }
-  },
-  "2026-06-26_厄瓜多尔_德国": {
-    "胜": "3.7",
-    "平": "3.65",
-    "负": "1.71",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "1.86",
-        "平": "3.5",
-        "负": "3.27"
-      }
-    ],
-    "比分": {
-      "1:0": "12",
-      "2:0": "23",
-      "2:1": "11.5",
-      "3:0": "65",
-      "3:1": "32",
-      "3:2": "40",
-      "4:0": "200",
-      "4:1": "100",
-      "4:2": "150",
-      "5:0": "500",
-      "5:1": "500",
-      "5:2": "500",
-      "胜其他": "175",
-      "0:0": "13",
-      "1:1": "6.5",
-      "2:2": "13.5",
-      "3:3": "70",
-      "平其他": "400",
-      "0:1": "7",
-      "0:2": "8.5",
-      "1:2": "6",
-      "0:3": "15",
-      "1:3": "11",
-      "2:3": "20",
-      "0:4": "35",
-      "1:4": "28",
-      "2:4": "45",
-      "0:5": "100",
-      "1:5": "85",
-      "2:5": "125",
-      "负其他": "55"
-    },
-    "总进球": {
-      "0": "13",
-      "1": "4.9",
-      "2": "3.75",
-      "3": "3.35",
-      "4": "5.2",
-      "5": "9",
-      "6": "16",
-      "7+": "24"
-    },
-    "半全场": {
-      "胜胜": "6.5",
-      "胜平": "13",
-      "胜负": "20",
-      "平胜": "9.3",
-      "平平": "6.25",
-      "平负": "4.75",
-      "负胜": "29",
-      "负平": "13",
-      "负负": "2.6"
-    }
-  },
-  "2026-06-26_库拉索_科特迪瓦": {
-    "胜": "",
-    "平": "",
-    "负": "",
-    "让球": [
-      {
-        "concede": "+2",
-        "胜": "2.4",
-        "平": "3.85",
-        "负": "2.21"
-      }
-    ],
-    "比分": {
-      "1:0": "35",
-      "2:0": "120",
-      "2:1": "40",
-      "3:0": "500",
-      "3:1": "200",
-      "3:2": "150",
-      "4:0": "1000",
-      "4:1": "700",
-      "4:2": "600",
-      "5:0": "1000",
-      "5:1": "1000",
-      "5:2": "1000",
-      "胜其他": "600",
-      "0:0": "21",
-      "1:1": "12",
-      "2:2": "30",
-      "3:3": "175",
-      "平其他": "800",
-      "0:1": "7",
-      "0:2": "5.8",
-      "1:2": "7.5",
-      "0:3": "6.5",
-      "1:3": "8.5",
-      "2:3": "30",
-      "0:4": "8.5",
-      "1:4": "15",
-      "2:4": "50",
-      "0:5": "15",
-      "1:5": "28",
-      "2:5": "100",
-      "负其他": "12"
-    },
-    "总进球": {
-      "0": "21",
-      "1": "6.6",
-      "2": "4.3",
-      "3": "3.5",
-      "4": "4.4",
-      "5": "6.8",
-      "6": "11",
-      "7+": "14"
-    },
-    "半全场": {
-      "胜胜": "29",
-      "胜平": "28",
-      "胜负": "30",
-      "平胜": "32",
-      "平平": "11",
-      "平负": "3.95",
-      "负胜": "100",
-      "负平": "28",
-      "负负": "1.37"
-    }
-  },
-  "2026-06-26_突尼斯_荷兰": {
-    "胜": "",
-    "平": "",
-    "负": "",
-    "让球": [
-      {
-        "concede": "+2",
-        "胜": "2.52",
-        "平": "3.9",
-        "负": "2.1"
-      }
-    ],
-    "比分": {
-      "1:0": "40",
-      "2:0": "120",
-      "2:1": "50",
-      "3:0": "550",
-      "3:1": "175",
-      "3:2": "120",
-      "4:0": "1000",
-      "4:1": "650",
-      "4:2": "550",
-      "5:0": "1000",
-      "5:1": "1000",
-      "5:2": "1000",
-      "胜其他": "550",
-      "0:0": "23",
-      "1:1": "13",
-      "2:2": "30",
-      "3:3": "150",
-      "平其他": "700",
-      "0:1": "7.5",
-      "0:2": "5.8",
-      "1:2": "8",
-      "0:3": "6.4",
-      "1:3": "8.5",
-      "2:3": "28",
-      "0:4": "9",
-      "1:4": "13",
-      "2:4": "45",
-      "0:5": "15",
-      "1:5": "24",
-      "2:5": "100",
-      "负其他": "10"
-    },
-    "总进球": {
-      "0": "23",
-      "1": "7",
-      "2": "4.4",
-      "3": "3.6",
-      "4": "4.25",
-      "5": "6.25",
-      "6": "11",
-      "7+": "13"
-    },
-    "半全场": {
-      "胜胜": "30",
-      "胜平": "29",
-      "胜负": "28",
-      "平胜": "40",
-      "平平": "11.5",
-      "平负": "3.95",
-      "负胜": "100",
-      "负平": "29",
-      "负负": "1.35"
-    }
-  },
-  "2026-06-26_日本_瑞典": {
-    "胜": "1.83",
-    "平": "3.3",
-    "负": "3.57",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "3.43",
-        "平": "3.8",
-        "负": "1.74"
-      }
-    ],
-    "比分": {
-      "1:0": "8",
-      "2:0": "10.5",
-      "2:1": "6",
-      "3:0": "18",
-      "3:1": "12",
-      "3:2": "20",
-      "4:0": "45",
-      "4:1": "30",
-      "4:2": "50",
-      "5:0": "120",
-      "5:1": "100",
-      "5:2": "150",
-      "胜其他": "55",
-      "0:0": "13",
-      "1:1": "6.5",
-      "2:2": "12",
-      "3:3": "50",
-      "平其他": "350",
-      "0:1": "12",
-      "0:2": "20",
-      "1:2": "9.5",
-      "0:3": "50",
-      "1:3": "24",
-      "2:3": "30",
-      "0:4": "150",
-      "1:4": "90",
-      "2:4": "100",
-      "0:5": "550",
-      "1:5": "400",
-      "2:5": "400",
-      "负其他": "100"
-    },
-    "总进球": {
-      "0": "13",
-      "1": "5.5",
-      "2": "3.8",
-      "3": "3.45",
-      "4": "4.75",
-      "5": "8.5",
-      "6": "14.5",
-      "7+": "22"
-    },
-    "半全场": {
-      "胜胜": "2.9",
-      "胜平": "13.5",
-      "胜负": "24",
-      "平胜": "4.9",
-      "平平": "5.75",
-      "平负": "8",
-      "负胜": "20",
-      "负平": "13.5",
-      "负负": "6"
-    }
-  },
-  "2026-06-27_巴拉圭_澳大利亚": {
-    "胜": "2.63",
-    "平": "2.06",
-    "负": "3.8",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "6.1",
-        "平": "4.35",
-        "负": "1.36"
-      }
-    ],
-    "比分": {
-      "1:0": "6.5",
-      "2:0": "9.5",
-      "2:1": "9.6",
-      "3:0": "22",
-      "3:1": "25",
-      "3:2": "50",
-      "4:0": "75",
-      "4:1": "75",
-      "4:2": "175",
-      "5:0": "300",
-      "5:1": "300",
-      "5:2": "500",
-      "胜其他": "200",
-      "0:0": "4.5",
-      "1:1": "3.6",
-      "2:2": "13",
-      "3:3": "90",
-      "平其他": "500",
-      "0:1": "9",
-      "0:2": "19",
-      "1:2": "14",
-      "0:3": "60",
-      "1:3": "50",
-      "2:3": "75",
-      "0:4": "300",
-      "1:4": "200",
-      "2:4": "300",
-      "0:5": "500",
-      "1:5": "500",
-      "2:5": "600",
-      "负其他": "500"
-    },
-    "总进球": {
-      "0": "4.5",
-      "1": "4.25",
-      "2": "2.6",
-      "3": "5.15",
-      "4": "7.9",
-      "5": "24",
-      "6": "30",
-      "7+": "60"
-    },
-    "半全场": {
-      "胜胜": "4.65",
-      "胜平": "14",
-      "胜负": "40",
-      "平胜": "4.65",
-      "平平": "2.85",
-      "平负": "6.8",
-      "负胜": "34",
-      "负平": "14",
-      "负负": "7.75"
-    }
-  },
-  "2026-06-27_土耳其_美国": {
-    "胜": "3.3",
-    "平": "3.5",
-    "负": "1.85",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "1.74",
-        "平": "4",
-        "负": "3.28"
-      }
-    ],
-    "比分": {
-      "1:0": "12",
-      "2:0": "18",
-      "2:1": "9.5",
-      "3:0": "40",
-      "3:1": "23",
-      "3:2": "28",
-      "4:0": "100",
-      "4:1": "70",
-      "4:2": "90",
-      "5:0": "350",
-      "5:1": "200",
-      "5:2": "300",
-      "胜其他": "90",
-      "0:0": "14",
-      "1:1": "6.5",
-      "2:2": "11",
-      "3:3": "50",
-      "平其他": "300",
-      "0:1": "8.5",
-      "0:2": "10",
-      "1:2": "6.5",
-      "0:3": "18",
-      "1:3": "13",
-      "2:3": "21",
-      "0:4": "45",
-      "1:4": "35",
-      "2:4": "55",
-      "0:5": "125",
-      "1:5": "100",
-      "2:5": "150",
-      "负其他": "55"
-    },
-    "总进球": {
-      "0": "14",
-      "1": "5.5",
-      "2": "3.7",
-      "3": "3.4",
-      "4": "4.9",
-      "5": "8.5",
-      "6": "14",
-      "7+": "23"
-    },
-    "半全场": {
-      "胜胜": "5.55",
-      "胜平": "13",
-      "胜负": "25",
-      "平胜": "8.25",
-      "平平": "6",
-      "平负": "4.8",
-      "负胜": "30",
-      "负平": "13",
-      "负负": "2.85"
-    }
-  },
-  "2026-06-27_挪威_法国": {
-    "胜": "4.65",
-    "平": "3.9",
-    "负": "1.52",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "2.18",
-        "平": "3.45",
-        "负": "2.63"
-      }
-    ],
-    "比分": {
-      "1:0": "16",
-      "2:0": "28",
-      "2:1": "12",
-      "3:0": "75",
-      "3:1": "34",
-      "3:2": "35",
-      "4:0": "275",
-      "4:1": "150",
-      "4:2": "150",
-      "5:0": "700",
-      "5:1": "500",
-      "5:2": "400",
-      "胜其他": "100",
-      "0:0": "16",
-      "1:1": "6.9",
-      "2:2": "12.5",
-      "3:3": "50",
-      "平其他": "300",
-      "0:1": "8.3",
-      "0:2": "8.25",
-      "1:2": "6.5",
-      "0:3": "12",
-      "1:3": "10.5",
-      "2:3": "20",
-      "0:4": "23",
-      "1:4": "22",
-      "2:4": "50",
-      "0:5": "60",
-      "1:5": "60",
-      "2:5": "100",
-      "负其他": "29"
-    },
-    "总进球": {
-      "0": "16",
-      "1": "6",
-      "2": "3.8",
-      "3": "3.45",
-      "4": "4.75",
-      "5": "7.5",
-      "6": "13.5",
-      "7+": "18.5"
-    },
-    "半全场": {
-      "胜胜": "8",
-      "胜平": "15",
-      "胜负": "20",
-      "平胜": "10.5",
-      "平平": "6.5",
-      "平负": "4.5",
-      "负胜": "33",
-      "负平": "15",
-      "负负": "2.25"
-    }
-  },
-  "2026-06-27_塞内加尔_伊拉克": {
-    "胜": "",
-    "平": "",
-    "负": "",
-    "让球": [
-      {
-        "concede": "-2",
-        "胜": "2.6",
-        "平": "3.96",
-        "负": "2.03"
-      }
-    ],
-    "比分": {
-      "1:0": "7.75",
-      "2:0": "6.2",
-      "2:1": "7.3",
-      "3:0": "7.5",
-      "3:1": "9",
-      "3:2": "23",
-      "4:0": "11",
-      "4:1": "15",
-      "4:2": "40",
-      "5:0": "21",
-      "5:1": "29",
-      "5:2": "75",
-      "胜其他": "13",
-      "0:0": "24",
-      "1:1": "10",
-      "2:2": "23",
-      "3:3": "100",
-      "平其他": "450",
-      "0:1": "26",
-      "0:2": "70",
-      "1:2": "21",
-      "0:3": "200",
-      "1:3": "90",
-      "2:3": "80",
-      "0:4": "600",
-      "1:4": "450",
-      "2:4": "350",
-      "0:5": "1000",
-      "1:5": "1000",
-      "2:5": "800",
-      "负其他": "350"
-    },
-    "总进球": {
-      "0": "24",
-      "1": "6.7",
-      "2": "4.1",
-      "3": "3.4",
-      "4": "4.5",
-      "5": "6.7",
-      "6": "12",
-      "7+": "14.5"
-    },
-    "半全场": {
-      "胜胜": "1.52",
-      "胜平": "23",
-      "胜负": "80",
-      "平胜": "4",
-      "平平": "10",
-      "平负": "23",
-      "负胜": "20",
-      "负平": "23",
-      "负负": "19"
-    }
-  },
-  "2026-06-27_佛得角_沙特": {
-    "胜": "2.46",
-    "平": "3.05",
-    "负": "2.53",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "5.8",
-        "平": "4.05",
-        "负": "1.41"
-      }
-    ],
-    "比分": {
-      "1:0": "7.6",
-      "2:0": "11",
-      "2:1": "7.5",
-      "3:0": "26",
-      "3:1": "20",
-      "3:2": "30",
-      "4:0": "90",
-      "4:1": "75",
-      "4:2": "100",
-      "5:0": "350",
-      "5:1": "250",
-      "5:2": "350",
-      "胜其他": "125",
-      "0:0": "10",
-      "1:1": "5.5",
-      "2:2": "13",
-      "3:3": "70",
-      "平其他": "400",
-      "0:1": "7.8",
-      "0:2": "12",
-      "1:2": "7.75",
-      "0:3": "27",
-      "1:3": "21",
-      "2:3": "32",
-      "0:4": "100",
-      "1:4": "80",
-      "2:4": "120",
-      "0:5": "400",
-      "1:5": "300",
-      "2:5": "400",
-      "负其他": "130"
-    },
-    "总进球": {
-      "0": "10",
-      "1": "4.25",
-      "2": "3.15",
-      "3": "3.6",
-      "4": "6",
-      "5": "12",
-      "6": "22",
-      "7+": "35"
-    },
-    "半全场": {
-      "胜胜": "4",
-      "胜平": "16",
-      "胜负": "28",
-      "平胜": "5.6",
-      "平平": "4.8",
-      "平负": "5.7",
-      "负胜": "27",
-      "负平": "16",
-      "负负": "4.1"
-    }
-  },
-  "2026-06-27_乌拉圭_西班牙": {
-    "胜": "6.85",
-    "平": "4.22",
-    "负": "1.34",
-    "让球": [
-      {
-        "concede": "+1",
-        "胜": "2.65",
-        "平": "3.35",
-        "负": "2.21"
-      }
-    ],
-    "比分": {
-      "1:0": "16",
-      "2:0": "42",
-      "2:1": "17",
-      "3:0": "150",
-      "3:1": "75",
-      "3:2": "75",
-      "4:0": "500",
-      "4:1": "350",
-      "4:2": "350",
-      "5:0": "1000",
-      "5:1": "900",
-      "5:2": "900",
-      "胜其他": "350",
-      "0:0": "13",
-      "1:1": "7",
-      "2:2": "18",
-      "3:3": "90",
-      "平其他": "500",
-      "0:1": "6.25",
-      "0:2": "6.2",
-      "1:2": "7",
-      "0:3": "8.5",
-      "1:3": "10.5",
-      "2:3": "26",
-      "0:4": "16",
-      "1:4": "21",
-      "2:4": "60",
-      "0:5": "40",
-      "1:5": "50",
-      "2:5": "125",
-      "负其他": "30"
-    },
-    "总进球": {
-      "0": "13",
-      "1": "5.1",
-      "2": "3.5",
-      "3": "3.45",
-      "4": "5.3",
-      "5": "9",
-      "6": "16",
-      "7+": "24"
-    },
-    "半全场": {
-      "胜胜": "13",
-      "胜平": "18",
-      "胜负": "24",
-      "平胜": "15",
-      "平平": "6.5",
-      "平负": "3.8",
-      "负胜": "50",
-      "负平": "18",
-      "负负": "1.92"
-    }
-  },
-  "2026-06-26_埃及_伊朗": {
-    "胜": "2.32",
-    "平": "2.5",
-    "负": "3.35",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "5.5",
-        "平": "3.8",
-        "负": "1.46"
-      }
-    ],
-    "比分": {
-      "1:0": "6.5",
-      "2:0": "10",
-      "2:1": "8",
-      "3:0": "22",
-      "3:1": "20",
-      "3:2": "40",
-      "4:0": "70",
-      "4:1": "70",
-      "4:2": "150",
-      "5:0": "300",
-      "5:1": "300",
-      "5:2": "400",
-      "胜其他": "175",
-      "0:0": "6",
-      "1:1": "4.3",
-      "2:2": "15",
-      "3:3": "120",
-      "平其他": "700",
-      "0:1": "8",
-      "0:2": "15",
-      "1:2": "11",
-      "0:3": "45",
-      "1:3": "30",
-      "2:3": "50",
-      "0:4": "175",
-      "1:4": "150",
-      "2:4": "200",
-      "0:5": "500",
-      "1:5": "500",
-      "2:5": "600",
-      "负其他": "350"
-    },
-    "总进球": {
-      "0": "6",
-      "1": "3.6",
-      "2": "2.8",
-      "3": "4.65",
-      "4": "7.5",
-      "5": "18",
-      "6": "34",
-      "7+": "50"
-    },
-    "半全场": {
-      "胜胜": "4",
-      "胜平": "13.5",
-      "胜负": "28",
-      "平胜": "5",
-      "平平": "3.9",
-      "平负": "6.75",
-      "负胜": "25",
-      "负平": "13.5",
-      "负负": "5.7"
-    }
-  },
-  "2026-06-26_新西兰_比利时": {
-    "胜": "",
-    "平": "",
-    "负": "",
-    "让球": [
-      {
-        "concede": "+2",
-        "胜": "2.23",
-        "平": "3.9",
-        "负": "2.36"
-      }
-    ],
-    "比分": {
-      "1:0": "30",
-      "2:0": "100",
-      "2:1": "35",
-      "3:0": "400",
-      "3:1": "150",
-      "3:2": "100",
-      "4:0": "850",
-      "4:1": "550",
-      "4:2": "550",
-      "5:0": "1000",
-      "5:1": "1000",
-      "5:2": "1000",
-      "胜其他": "550",
-      "0:0": "23",
-      "1:1": "12.5",
-      "2:2": "27",
-      "3:3": "150",
-      "平其他": "700",
-      "0:1": "7.5",
-      "0:2": "6.25",
-      "1:2": "7",
-      "0:3": "6.75",
-      "1:3": "8",
-      "2:3": "27",
-      "0:4": "10",
-      "1:4": "13",
-      "2:4": "40",
-      "0:5": "17",
-      "1:5": "25",
-      "2:5": "75",
-      "负其他": "12.5"
-    },
-    "总进球": {
-      "0": "23",
-      "1": "7",
-      "2": "4.5",
-      "3": "3.45",
-      "4": "4.3",
-      "5": "6.5",
-      "6": "10.5",
-      "7+": "13.5"
-    },
-    "半全场": {
-      "胜胜": "25",
-      "胜平": "26",
-      "胜负": "27",
-      "平胜": "30",
-      "平平": "11",
-      "平负": "4",
-      "负胜": "85",
-      "负平": "26",
-      "负负": "1.4"
-    }
-  }
-};
-    var order = ["瑞士 vs 加拿大", "波黑 vs 卡塔尔", "苏格兰 vs 巴西", "摩洛哥 vs 海地", "南非 vs 韩国", "捷克 vs 墨西哥", "厄瓜多尔 vs 德国", "库拉索 vs 科特迪瓦", "突尼斯 vs 荷兰", "日本 vs 瑞典", "巴拉圭 vs 澳大利亚", "土耳其 vs 美国", "挪威 vs 法国", "塞内加尔 vs 伊拉克", "佛得角 vs 沙特", "乌拉圭 vs 西班牙", "埃及 vs 伊朗", "新西兰 vs 比利时"];
-    localStorage.setItem('worldcup_odds_v737', JSON.stringify(data));
-    localStorage.setItem('worldcup_odds_v737_order', JSON.stringify(order));
-    console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
-  } catch(e) {
-    console.error('[网易赔率] 注入失败', e);
-  }
-})();
-// === 结束注入 ===
-
-// === 网易赔率自动注入（2026-06-24 18:29）===
-(function(){
-  try {
-    var data = {
-  "2026-06-25_瑞士_加拿大": {
-    "胜": "2.21",
-    "平": "2.66",
-    "负": "3.32",
-    "让球": [
-      {
-        "concede": "-1",
-        "胜": "4.7",
-        "平": "3.86",
-        "负": "1.52"
-      }
-    ],
-    "比分": {
-      "1:0": "8.25",
-      "2:0": "11",
-      "2:1": "7",
-      "3:0": "24",
-      "3:1": "16",
-      "3:2": "25",
-      "4:0": "70",
-      "4:1": "50",
-      "4:2": "75",
-      "5:0": "200",
-      "5:1": "175",
-      "5:2": "175",
-      "胜其他": "100",
-      "0:0": "8",
-      "1:1": "4.6",
-      "2:2": "11",
-      "3:3": "35",
-      "平其他": "250",
-      "0:1": "10",
-      "0:2": "16",
-      "1:2": "10.5",
-      "0:3": "55",
-      "1:3": "30",
-      "2:3": "40",
-      "0:4": "150",
-      "1:4": "100",
-      "2:4": "150",
-      "0:5": "500",
-      "1:5": "500",
-      "2:5": "500",
-      "负其他": "150"
-    },
-    "总进球": {
-      "0": "8",
-      "1": "4.8",
-      "2": "3.05",
-      "3": "3.9",
       "4": "5.75",
-      "5": "11",
+      "5": "12.5",
       "6": "22",
       "7+": "37"
     },
@@ -12872,20 +11166,20 @@ function init() {
   },
   "2026-06-25_波黑_卡塔尔": {
     "胜": "1.26",
-    "平": "5.1",
-    "负": "7.15",
+    "平": "5.17",
+    "负": "7",
     "让球": [
       {
         "concede": "-1",
-        "胜": "1.89",
-        "平": "3.6",
-        "负": "3.1"
+        "胜": "1.86",
+        "平": "3.65",
+        "负": "3.15"
       }
     ],
     "比分": {
       "1:0": "8",
       "2:0": "5.5",
-      "2:1": "6",
+      "2:1": "5.6",
       "3:0": "9.25",
       "3:1": "8.5",
       "3:2": "22",
@@ -12898,15 +11192,15 @@ function init() {
       "胜其他": "27",
       "0:0": "18",
       "1:1": "9",
-      "2:2": "16",
+      "2:2": "17",
       "3:3": "55",
       "平其他": "300",
-      "0:1": "22",
-      "0:2": "45",
+      "0:1": "24",
+      "0:2": "50",
       "1:2": "22",
       "0:3": "120",
-      "1:3": "70",
-      "2:3": "60",
+      "1:3": "75",
+      "2:3": "65",
       "0:4": "300",
       "1:4": "200",
       "2:4": "200",
@@ -12918,12 +11212,12 @@ function init() {
     "总进球": {
       "0": "18",
       "1": "6.25",
-      "2": "4.1",
+      "2": "3.9",
       "3": "3.3",
       "4": "4.55",
-      "5": "7.5",
-      "6": "12.5",
-      "7+": "17"
+      "5": "7.7",
+      "6": "13.5",
+      "7+": "18"
     },
     "半全场": {
       "胜胜": "1.77",
@@ -12944,15 +11238,15 @@ function init() {
     "让球": [
       {
         "concede": "+1",
-        "胜": "3.6",
-        "平": "3.75",
-        "负": "1.71"
+        "胜": "3.7",
+        "平": "3.8",
+        "负": "1.68"
       }
     ],
     "比分": {
-      "1:0": "21",
-      "2:0": "60",
-      "2:1": "26",
+      "1:0": "24",
+      "2:0": "70",
+      "2:1": "28",
       "3:0": "150",
       "3:1": "95",
       "3:2": "85",
@@ -12965,15 +11259,15 @@ function init() {
       "胜其他": "400",
       "0:0": "14",
       "1:1": "9.5",
-      "2:2": "25",
+      "2:2": "28",
       "3:3": "90",
       "平其他": "500",
       "0:1": "6.85",
-      "0:2": "5.35",
+      "0:2": "5",
       "1:2": "7",
-      "0:3": "6.75",
+      "0:3": "6.5",
       "1:3": "8.5",
-      "2:3": "29",
+      "2:3": "32",
       "0:4": "13",
       "1:4": "19",
       "2:4": "45",
@@ -12984,20 +11278,20 @@ function init() {
     },
     "总进球": {
       "0": "14",
-      "1": "5.3",
-      "2": "3.7",
-      "3": "3.4",
-      "4": "5",
-      "5": "8.5",
+      "1": "5.4",
+      "2": "3.8",
+      "3": "3.3",
+      "4": "4.85",
+      "5": "8.8",
       "6": "15",
       "7+": "22"
     },
     "半全场": {
       "胜胜": "19",
       "胜平": "21",
-      "胜负": "27",
-      "平胜": "21",
-      "平平": "7.5",
+      "胜负": "23",
+      "平胜": "22",
+      "平平": "7.75",
       "平负": "3.65",
       "负胜": "65",
       "负平": "21",
@@ -13011,14 +11305,14 @@ function init() {
     "让球": [
       {
         "concede": "-2",
-        "胜": "2.19",
+        "胜": "2.15",
         "平": "3.85",
-        "负": "2.42"
+        "负": "2.48"
       }
     ],
     "比分": {
       "1:0": "7.5",
-      "2:0": "5",
+      "2:0": "4.8",
       "2:1": "8.5",
       "3:0": "5.2",
       "3:1": "10.5",
@@ -13035,9 +11329,9 @@ function init() {
       "2:2": "40",
       "3:3": "120",
       "平其他": "500",
-      "0:1": "35",
-      "0:2": "100",
-      "1:2": "50",
+      "0:1": "40",
+      "0:2": "120",
+      "1:2": "60",
       "0:3": "500",
       "1:3": "200",
       "2:3": "160",
@@ -13072,20 +11366,20 @@ function init() {
     }
   },
   "2026-06-25_南非_韩国": {
-    "胜": "5.55",
-    "平": "3.78",
-    "负": "1.46",
+    "胜": "5.65",
+    "平": "3.87",
+    "负": "1.44",
     "让球": [
       {
         "concede": "+1",
-        "胜": "2.28",
-        "平": "3.2",
-        "负": "2.64"
+        "胜": "2.34",
+        "平": "3.15",
+        "负": "2.6"
       }
     ],
     "比分": {
       "1:0": "13",
-      "2:0": "32",
+      "2:0": "33",
       "2:1": "18.5",
       "3:0": "85",
       "3:1": "55",
@@ -13097,13 +11391,13 @@ function init() {
       "5:1": "600",
       "5:2": "700",
       "胜其他": "300",
-      "0:0": "9",
+      "0:0": "10",
       "1:1": "6.6",
       "2:2": "15",
       "3:3": "60",
       "平其他": "500",
       "0:1": "6",
-      "0:2": "6.25",
+      "0:2": "5.8",
       "1:2": "6",
       "0:3": "12",
       "1:3": "11",
@@ -13117,43 +11411,43 @@ function init() {
       "负其他": "60"
     },
     "总进球": {
-      "0": "9",
-      "1": "4.2",
-      "2": "3.2",
-      "3": "3.8",
+      "0": "10",
+      "1": "4.4",
+      "2": "3.1",
+      "3": "3.65",
       "4": "6",
       "5": "11",
       "6": "22",
       "7+": "37"
     },
     "半全场": {
-      "胜胜": "9.05",
+      "胜胜": "9.8",
       "胜平": "16",
       "胜负": "25",
       "平胜": "12",
-      "平平": "5.15",
+      "平平": "5.45",
       "平负": "4",
       "负胜": "39",
       "负平": "16",
-      "负负": "2.35"
+      "负负": "2.25"
     }
   },
   "2026-06-25_捷克_墨西哥": {
-    "胜": "3.63",
+    "胜": "3.55",
     "平": "3.5",
-    "负": "1.76",
+    "负": "1.78",
     "让球": [
       {
         "concede": "+1",
-        "胜": "1.81",
-        "平": "3.43",
-        "负": "3.5"
+        "胜": "1.78",
+        "平": "3.45",
+        "负": "3.6"
       }
     ],
     "比分": {
-      "1:0": "9",
-      "2:0": "17.5",
-      "2:1": "10",
+      "1:0": "10",
+      "2:0": "18",
+      "2:1": "10.5",
       "3:0": "50",
       "3:1": "30",
       "3:2": "40",
@@ -13165,12 +11459,12 @@ function init() {
       "5:2": "500",
       "胜其他": "200",
       "0:0": "9.5",
-      "1:1": "6",
+      "1:1": "5.75",
       "2:2": "13",
       "3:3": "50",
       "平其他": "300",
-      "0:1": "6.5",
-      "0:2": "8.75",
+      "0:1": "6.25",
+      "0:2": "8.5",
       "1:2": "6.75",
       "0:3": "18",
       "1:3": "15",
@@ -13194,14 +11488,14 @@ function init() {
       "7+": "36"
     },
     "半全场": {
-      "胜胜": "6",
-      "胜平": "14",
-      "胜负": "24",
+      "胜胜": "6.4",
+      "胜平": "13.5",
+      "胜负": "22",
       "平胜": "8",
       "平平": "5",
       "平负": "4.6",
-      "负胜": "38",
-      "负平": "14",
+      "负胜": "35",
+      "负平": "13.5",
       "负负": "3"
     }
   },
@@ -14020,51 +12314,2467 @@ function init() {
 })();
 // === 结束注入 ===
 
+// === 网易赔率自动注入（2026-06-24 20:08）===
+(function(){
+  try {
+    var data = {
+  "2026-06-25_瑞士_加拿大": {
+    "胜": "2.21",
+    "平": "2.66",
+    "负": "3.32",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "4.7",
+        "平": "3.86",
+        "负": "1.52"
+      }
+    ],
+    "比分": {
+      "1:0": "8.25",
+      "2:0": "11",
+      "2:1": "7",
+      "3:0": "25",
+      "3:1": "16",
+      "3:2": "25",
+      "4:0": "70",
+      "4:1": "50",
+      "4:2": "75",
+      "5:0": "200",
+      "5:1": "175",
+      "5:2": "175",
+      "胜其他": "100",
+      "0:0": "8",
+      "1:1": "4.5",
+      "2:2": "11",
+      "3:3": "35",
+      "平其他": "250",
+      "0:1": "10",
+      "0:2": "17",
+      "1:2": "10.5",
+      "0:3": "55",
+      "1:3": "30",
+      "2:3": "40",
+      "0:4": "150",
+      "1:4": "100",
+      "2:4": "150",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "500",
+      "负其他": "150"
+    },
+    "总进球": {
+      "0": "8",
+      "1": "4.85",
+      "2": "3",
+      "3": "3.8",
+      "4": "5.75",
+      "5": "12.5",
+      "6": "22",
+      "7+": "37"
+    },
+    "半全场": {
+      "胜胜": "3.9",
+      "胜平": "13",
+      "胜负": "30",
+      "平胜": "5",
+      "平平": "4",
+      "平负": "6.85",
+      "负胜": "25",
+      "负平": "13",
+      "负负": "5.75"
+    }
+  },
+  "2026-06-25_波黑_卡塔尔": {
+    "胜": "1.26",
+    "平": "5.17",
+    "负": "7",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "1.86",
+        "平": "3.65",
+        "负": "3.15"
+      }
+    ],
+    "比分": {
+      "1:0": "8",
+      "2:0": "5.5",
+      "2:1": "5.6",
+      "3:0": "9.25",
+      "3:1": "8.5",
+      "3:2": "22",
+      "4:0": "18",
+      "4:1": "18",
+      "4:2": "36",
+      "5:0": "45",
+      "5:1": "40",
+      "5:2": "70",
+      "胜其他": "27",
+      "0:0": "18",
+      "1:1": "9",
+      "2:2": "17",
+      "3:3": "55",
+      "平其他": "300",
+      "0:1": "24",
+      "0:2": "50",
+      "1:2": "22",
+      "0:3": "120",
+      "1:3": "75",
+      "2:3": "65",
+      "0:4": "300",
+      "1:4": "200",
+      "2:4": "200",
+      "0:5": "600",
+      "1:5": "500",
+      "2:5": "500",
+      "负其他": "200"
+    },
+    "总进球": {
+      "0": "18",
+      "1": "6.25",
+      "2": "3.9",
+      "3": "3.3",
+      "4": "4.55",
+      "5": "7.7",
+      "6": "13.5",
+      "7+": "18"
+    },
+    "半全场": {
+      "胜胜": "1.77",
+      "胜平": "18",
+      "胜负": "40",
+      "平胜": "4.1",
+      "平平": "8.05",
+      "平负": "16.5",
+      "负胜": "21",
+      "负平": "18",
+      "负负": "13"
+    }
+  },
+  "2026-06-25_苏格兰_巴西": {
+    "胜": "9.6",
+    "平": "5.4",
+    "负": "1.19",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "3.7",
+        "平": "3.8",
+        "负": "1.68"
+      }
+    ],
+    "比分": {
+      "1:0": "24",
+      "2:0": "70",
+      "2:1": "28",
+      "3:0": "150",
+      "3:1": "95",
+      "3:2": "85",
+      "4:0": "500",
+      "4:1": "400",
+      "4:2": "400",
+      "5:0": "800",
+      "5:1": "800",
+      "5:2": "800",
+      "胜其他": "400",
+      "0:0": "14",
+      "1:1": "9.5",
+      "2:2": "28",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "6.85",
+      "0:2": "5",
+      "1:2": "7",
+      "0:3": "6.5",
+      "1:3": "8.5",
+      "2:3": "32",
+      "0:4": "13",
+      "1:4": "19",
+      "2:4": "45",
+      "0:5": "30",
+      "1:5": "45",
+      "2:5": "90",
+      "负其他": "25"
+    },
+    "总进球": {
+      "0": "14",
+      "1": "5.4",
+      "2": "3.8",
+      "3": "3.3",
+      "4": "4.85",
+      "5": "8.8",
+      "6": "15",
+      "7+": "22"
+    },
+    "半全场": {
+      "胜胜": "19",
+      "胜平": "21",
+      "胜负": "23",
+      "平胜": "22",
+      "平平": "7.75",
+      "平负": "3.65",
+      "负胜": "65",
+      "负平": "21",
+      "负负": "1.67"
+    }
+  },
+  "2026-06-25_摩洛哥_海地": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "concede": "-2",
+        "胜": "2.15",
+        "平": "3.85",
+        "负": "2.48"
+      }
+    ],
+    "比分": {
+      "1:0": "7.5",
+      "2:0": "4.8",
+      "2:1": "8.5",
+      "3:0": "5.2",
+      "3:1": "10.5",
+      "3:2": "30",
+      "4:0": "8.5",
+      "4:1": "16",
+      "4:2": "60",
+      "5:0": "14",
+      "5:1": "28",
+      "5:2": "80",
+      "胜其他": "12",
+      "0:0": "21",
+      "1:1": "14",
+      "2:2": "40",
+      "3:3": "120",
+      "平其他": "500",
+      "0:1": "40",
+      "0:2": "120",
+      "1:2": "60",
+      "0:3": "500",
+      "1:3": "200",
+      "2:3": "160",
+      "0:4": "800",
+      "1:4": "500",
+      "2:4": "500",
+      "0:5": "800",
+      "1:5": "800",
+      "2:5": "800",
+      "负其他": "500"
+    },
+    "总进球": {
+      "0": "21",
+      "1": "6.8",
+      "2": "4.4",
+      "3": "3.45",
+      "4": "4.3",
+      "5": "7.1",
+      "6": "10.5",
+      "7+": "13.5"
+    },
+    "半全场": {
+      "胜胜": "1.36",
+      "胜平": "33",
+      "胜负": "100",
+      "平胜": "3.85",
+      "平平": "10.5",
+      "平负": "37",
+      "负胜": "30",
+      "负平": "33",
+      "负负": "30"
+    }
+  },
+  "2026-06-25_南非_韩国": {
+    "胜": "5.65",
+    "平": "3.87",
+    "负": "1.44",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "2.34",
+        "平": "3.15",
+        "负": "2.6"
+      }
+    ],
+    "比分": {
+      "1:0": "13",
+      "2:0": "33",
+      "2:1": "18.5",
+      "3:0": "85",
+      "3:1": "55",
+      "3:2": "65",
+      "4:0": "300",
+      "4:1": "200",
+      "4:2": "250",
+      "5:0": "800",
+      "5:1": "600",
+      "5:2": "700",
+      "胜其他": "300",
+      "0:0": "10",
+      "1:1": "6.6",
+      "2:2": "15",
+      "3:3": "60",
+      "平其他": "500",
+      "0:1": "6",
+      "0:2": "5.8",
+      "1:2": "6",
+      "0:3": "12",
+      "1:3": "11",
+      "2:3": "30",
+      "0:4": "30",
+      "1:4": "30",
+      "2:4": "60",
+      "0:5": "75",
+      "1:5": "80",
+      "2:5": "150",
+      "负其他": "60"
+    },
+    "总进球": {
+      "0": "10",
+      "1": "4.4",
+      "2": "3.1",
+      "3": "3.65",
+      "4": "6",
+      "5": "11",
+      "6": "22",
+      "7+": "37"
+    },
+    "半全场": {
+      "胜胜": "9.8",
+      "胜平": "16",
+      "胜负": "25",
+      "平胜": "12",
+      "平平": "5.45",
+      "平负": "4",
+      "负胜": "39",
+      "负平": "16",
+      "负负": "2.25"
+    }
+  },
+  "2026-06-25_捷克_墨西哥": {
+    "胜": "3.55",
+    "平": "3.5",
+    "负": "1.78",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "1.78",
+        "平": "3.45",
+        "负": "3.6"
+      }
+    ],
+    "比分": {
+      "1:0": "10",
+      "2:0": "18",
+      "2:1": "10.5",
+      "3:0": "50",
+      "3:1": "30",
+      "3:2": "40",
+      "4:0": "150",
+      "4:1": "100",
+      "4:2": "150",
+      "5:0": "500",
+      "5:1": "500",
+      "5:2": "500",
+      "胜其他": "200",
+      "0:0": "9.5",
+      "1:1": "5.75",
+      "2:2": "13",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "6.25",
+      "0:2": "8.5",
+      "1:2": "6.75",
+      "0:3": "18",
+      "1:3": "15",
+      "2:3": "30",
+      "0:4": "55",
+      "1:4": "45",
+      "2:4": "75",
+      "0:5": "150",
+      "1:5": "120",
+      "2:5": "200",
+      "负其他": "90"
+    },
+    "总进球": {
+      "0": "9.5",
+      "1": "4.05",
+      "2": "3.25",
+      "3": "3.6",
+      "4": "6.25",
+      "5": "12",
+      "6": "22",
+      "7+": "36"
+    },
+    "半全场": {
+      "胜胜": "6.4",
+      "胜平": "13.5",
+      "胜负": "22",
+      "平胜": "8",
+      "平平": "5",
+      "平负": "4.6",
+      "负胜": "35",
+      "负平": "13.5",
+      "负负": "3"
+    }
+  },
+  "2026-06-26_厄瓜多尔_德国": {
+    "胜": "3.7",
+    "平": "3.65",
+    "负": "1.71",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "1.86",
+        "平": "3.5",
+        "负": "3.27"
+      }
+    ],
+    "比分": {
+      "1:0": "12",
+      "2:0": "23",
+      "2:1": "11.5",
+      "3:0": "65",
+      "3:1": "32",
+      "3:2": "40",
+      "4:0": "200",
+      "4:1": "100",
+      "4:2": "150",
+      "5:0": "500",
+      "5:1": "500",
+      "5:2": "500",
+      "胜其他": "175",
+      "0:0": "13",
+      "1:1": "6.5",
+      "2:2": "13.5",
+      "3:3": "70",
+      "平其他": "400",
+      "0:1": "7",
+      "0:2": "8.5",
+      "1:2": "6",
+      "0:3": "15",
+      "1:3": "11",
+      "2:3": "20",
+      "0:4": "35",
+      "1:4": "28",
+      "2:4": "45",
+      "0:5": "100",
+      "1:5": "85",
+      "2:5": "125",
+      "负其他": "55"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "4.9",
+      "2": "3.75",
+      "3": "3.35",
+      "4": "5.2",
+      "5": "9",
+      "6": "16",
+      "7+": "24"
+    },
+    "半全场": {
+      "胜胜": "6.5",
+      "胜平": "13",
+      "胜负": "20",
+      "平胜": "9.3",
+      "平平": "6.25",
+      "平负": "4.75",
+      "负胜": "29",
+      "负平": "13",
+      "负负": "2.6"
+    }
+  },
+  "2026-06-26_库拉索_科特迪瓦": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "concede": "+2",
+        "胜": "2.4",
+        "平": "3.85",
+        "负": "2.21"
+      }
+    ],
+    "比分": {
+      "1:0": "35",
+      "2:0": "120",
+      "2:1": "40",
+      "3:0": "500",
+      "3:1": "200",
+      "3:2": "150",
+      "4:0": "1000",
+      "4:1": "700",
+      "4:2": "600",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "600",
+      "0:0": "21",
+      "1:1": "12",
+      "2:2": "30",
+      "3:3": "175",
+      "平其他": "800",
+      "0:1": "7",
+      "0:2": "5.8",
+      "1:2": "7.5",
+      "0:3": "6.5",
+      "1:3": "8.5",
+      "2:3": "30",
+      "0:4": "8.5",
+      "1:4": "15",
+      "2:4": "50",
+      "0:5": "15",
+      "1:5": "28",
+      "2:5": "100",
+      "负其他": "12"
+    },
+    "总进球": {
+      "0": "21",
+      "1": "6.6",
+      "2": "4.3",
+      "3": "3.5",
+      "4": "4.4",
+      "5": "6.8",
+      "6": "11",
+      "7+": "14"
+    },
+    "半全场": {
+      "胜胜": "29",
+      "胜平": "28",
+      "胜负": "30",
+      "平胜": "32",
+      "平平": "11",
+      "平负": "3.95",
+      "负胜": "100",
+      "负平": "28",
+      "负负": "1.37"
+    }
+  },
+  "2026-06-26_突尼斯_荷兰": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "concede": "+2",
+        "胜": "2.6",
+        "平": "3.9",
+        "负": "2.05"
+      }
+    ],
+    "比分": {
+      "1:0": "40",
+      "2:0": "120",
+      "2:1": "50",
+      "3:0": "550",
+      "3:1": "175",
+      "3:2": "120",
+      "4:0": "1000",
+      "4:1": "650",
+      "4:2": "550",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "550",
+      "0:0": "23",
+      "1:1": "13",
+      "2:2": "30",
+      "3:3": "150",
+      "平其他": "700",
+      "0:1": "7.5",
+      "0:2": "5.8",
+      "1:2": "8",
+      "0:3": "6.4",
+      "1:3": "8.5",
+      "2:3": "28",
+      "0:4": "9",
+      "1:4": "13",
+      "2:4": "45",
+      "0:5": "15",
+      "1:5": "24",
+      "2:5": "100",
+      "负其他": "10"
+    },
+    "总进球": {
+      "0": "23",
+      "1": "7",
+      "2": "4.4",
+      "3": "3.6",
+      "4": "4.25",
+      "5": "6.25",
+      "6": "11",
+      "7+": "13"
+    },
+    "半全场": {
+      "胜胜": "37",
+      "胜平": "29",
+      "胜负": "28",
+      "平胜": "45",
+      "平平": "12.5",
+      "平负": "3.95",
+      "负胜": "100",
+      "负平": "29",
+      "负负": "1.32"
+    }
+  },
+  "2026-06-26_日本_瑞典": {
+    "胜": "1.83",
+    "平": "3.3",
+    "负": "3.57",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "3.43",
+        "平": "3.8",
+        "负": "1.74"
+      }
+    ],
+    "比分": {
+      "1:0": "8",
+      "2:0": "10.5",
+      "2:1": "6",
+      "3:0": "18",
+      "3:1": "12",
+      "3:2": "20",
+      "4:0": "45",
+      "4:1": "30",
+      "4:2": "50",
+      "5:0": "120",
+      "5:1": "100",
+      "5:2": "150",
+      "胜其他": "55",
+      "0:0": "13",
+      "1:1": "6.5",
+      "2:2": "12",
+      "3:3": "50",
+      "平其他": "350",
+      "0:1": "12",
+      "0:2": "20",
+      "1:2": "9.5",
+      "0:3": "50",
+      "1:3": "24",
+      "2:3": "30",
+      "0:4": "150",
+      "1:4": "90",
+      "2:4": "100",
+      "0:5": "550",
+      "1:5": "400",
+      "2:5": "400",
+      "负其他": "100"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "5.5",
+      "2": "3.8",
+      "3": "3.45",
+      "4": "4.75",
+      "5": "8.5",
+      "6": "14.5",
+      "7+": "22"
+    },
+    "半全场": {
+      "胜胜": "2.9",
+      "胜平": "13.5",
+      "胜负": "24",
+      "平胜": "4.9",
+      "平平": "5.75",
+      "平负": "8",
+      "负胜": "20",
+      "负平": "13.5",
+      "负负": "6"
+    }
+  },
+  "2026-06-27_巴拉圭_澳大利亚": {
+    "胜": "2.63",
+    "平": "2.06",
+    "负": "3.8",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "6.1",
+        "平": "4.35",
+        "负": "1.36"
+      }
+    ],
+    "比分": {
+      "1:0": "6.5",
+      "2:0": "9.5",
+      "2:1": "9.6",
+      "3:0": "22",
+      "3:1": "25",
+      "3:2": "50",
+      "4:0": "75",
+      "4:1": "75",
+      "4:2": "175",
+      "5:0": "300",
+      "5:1": "300",
+      "5:2": "500",
+      "胜其他": "200",
+      "0:0": "4.5",
+      "1:1": "3.6",
+      "2:2": "13",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "9",
+      "0:2": "19",
+      "1:2": "14",
+      "0:3": "60",
+      "1:3": "50",
+      "2:3": "75",
+      "0:4": "300",
+      "1:4": "200",
+      "2:4": "300",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "600",
+      "负其他": "500"
+    },
+    "总进球": {
+      "0": "4.5",
+      "1": "4.25",
+      "2": "2.6",
+      "3": "5.15",
+      "4": "7.9",
+      "5": "24",
+      "6": "30",
+      "7+": "60"
+    },
+    "半全场": {
+      "胜胜": "4.65",
+      "胜平": "14",
+      "胜负": "40",
+      "平胜": "4.65",
+      "平平": "2.85",
+      "平负": "6.8",
+      "负胜": "34",
+      "负平": "14",
+      "负负": "7.75"
+    }
+  },
+  "2026-06-27_土耳其_美国": {
+    "胜": "3.3",
+    "平": "3.5",
+    "负": "1.85",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "1.74",
+        "平": "4",
+        "负": "3.28"
+      }
+    ],
+    "比分": {
+      "1:0": "12",
+      "2:0": "18",
+      "2:1": "9.5",
+      "3:0": "40",
+      "3:1": "23",
+      "3:2": "28",
+      "4:0": "100",
+      "4:1": "70",
+      "4:2": "90",
+      "5:0": "350",
+      "5:1": "200",
+      "5:2": "300",
+      "胜其他": "90",
+      "0:0": "14",
+      "1:1": "6.5",
+      "2:2": "11",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "8.5",
+      "0:2": "10",
+      "1:2": "6.5",
+      "0:3": "18",
+      "1:3": "13",
+      "2:3": "21",
+      "0:4": "45",
+      "1:4": "35",
+      "2:4": "55",
+      "0:5": "125",
+      "1:5": "100",
+      "2:5": "150",
+      "负其他": "55"
+    },
+    "总进球": {
+      "0": "14",
+      "1": "5.5",
+      "2": "3.7",
+      "3": "3.4",
+      "4": "4.9",
+      "5": "8.5",
+      "6": "14",
+      "7+": "23"
+    },
+    "半全场": {
+      "胜胜": "5.55",
+      "胜平": "13",
+      "胜负": "25",
+      "平胜": "8.25",
+      "平平": "6",
+      "平负": "4.8",
+      "负胜": "30",
+      "负平": "13",
+      "负负": "2.85"
+    }
+  },
+  "2026-06-27_挪威_法国": {
+    "胜": "4.65",
+    "平": "3.9",
+    "负": "1.52",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "2.18",
+        "平": "3.45",
+        "负": "2.63"
+      }
+    ],
+    "比分": {
+      "1:0": "16",
+      "2:0": "28",
+      "2:1": "12",
+      "3:0": "75",
+      "3:1": "34",
+      "3:2": "35",
+      "4:0": "275",
+      "4:1": "150",
+      "4:2": "150",
+      "5:0": "700",
+      "5:1": "500",
+      "5:2": "400",
+      "胜其他": "100",
+      "0:0": "16",
+      "1:1": "6.9",
+      "2:2": "12.5",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "8.3",
+      "0:2": "8.25",
+      "1:2": "6.5",
+      "0:3": "12",
+      "1:3": "10.5",
+      "2:3": "20",
+      "0:4": "23",
+      "1:4": "22",
+      "2:4": "50",
+      "0:5": "60",
+      "1:5": "60",
+      "2:5": "100",
+      "负其他": "29"
+    },
+    "总进球": {
+      "0": "16",
+      "1": "6",
+      "2": "3.8",
+      "3": "3.45",
+      "4": "4.75",
+      "5": "7.5",
+      "6": "13.5",
+      "7+": "18.5"
+    },
+    "半全场": {
+      "胜胜": "8",
+      "胜平": "15",
+      "胜负": "20",
+      "平胜": "10.5",
+      "平平": "6.5",
+      "平负": "4.5",
+      "负胜": "33",
+      "负平": "15",
+      "负负": "2.25"
+    }
+  },
+  "2026-06-27_塞内加尔_伊拉克": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "concede": "-2",
+        "胜": "2.6",
+        "平": "3.96",
+        "负": "2.03"
+      }
+    ],
+    "比分": {
+      "1:0": "7.75",
+      "2:0": "6.2",
+      "2:1": "7.3",
+      "3:0": "7.5",
+      "3:1": "9",
+      "3:2": "23",
+      "4:0": "11",
+      "4:1": "15",
+      "4:2": "40",
+      "5:0": "21",
+      "5:1": "29",
+      "5:2": "75",
+      "胜其他": "13",
+      "0:0": "24",
+      "1:1": "10",
+      "2:2": "23",
+      "3:3": "100",
+      "平其他": "450",
+      "0:1": "26",
+      "0:2": "70",
+      "1:2": "21",
+      "0:3": "200",
+      "1:3": "90",
+      "2:3": "80",
+      "0:4": "600",
+      "1:4": "450",
+      "2:4": "350",
+      "0:5": "1000",
+      "1:5": "1000",
+      "2:5": "800",
+      "负其他": "350"
+    },
+    "总进球": {
+      "0": "24",
+      "1": "6.7",
+      "2": "4.1",
+      "3": "3.4",
+      "4": "4.5",
+      "5": "6.7",
+      "6": "12",
+      "7+": "14.5"
+    },
+    "半全场": {
+      "胜胜": "1.52",
+      "胜平": "23",
+      "胜负": "80",
+      "平胜": "4",
+      "平平": "10",
+      "平负": "23",
+      "负胜": "20",
+      "负平": "23",
+      "负负": "19"
+    }
+  },
+  "2026-06-27_佛得角_沙特": {
+    "胜": "2.46",
+    "平": "3.05",
+    "负": "2.53",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "5.8",
+        "平": "4.05",
+        "负": "1.41"
+      }
+    ],
+    "比分": {
+      "1:0": "7.6",
+      "2:0": "11",
+      "2:1": "7.5",
+      "3:0": "26",
+      "3:1": "20",
+      "3:2": "30",
+      "4:0": "90",
+      "4:1": "75",
+      "4:2": "100",
+      "5:0": "350",
+      "5:1": "250",
+      "5:2": "350",
+      "胜其他": "125",
+      "0:0": "10",
+      "1:1": "5.5",
+      "2:2": "13",
+      "3:3": "70",
+      "平其他": "400",
+      "0:1": "7.8",
+      "0:2": "12",
+      "1:2": "7.75",
+      "0:3": "27",
+      "1:3": "21",
+      "2:3": "32",
+      "0:4": "100",
+      "1:4": "80",
+      "2:4": "120",
+      "0:5": "400",
+      "1:5": "300",
+      "2:5": "400",
+      "负其他": "130"
+    },
+    "总进球": {
+      "0": "10",
+      "1": "4.25",
+      "2": "3.15",
+      "3": "3.6",
+      "4": "6",
+      "5": "12",
+      "6": "22",
+      "7+": "35"
+    },
+    "半全场": {
+      "胜胜": "4",
+      "胜平": "16",
+      "胜负": "28",
+      "平胜": "5.6",
+      "平平": "4.8",
+      "平负": "5.7",
+      "负胜": "27",
+      "负平": "16",
+      "负负": "4.1"
+    }
+  },
+  "2026-06-27_乌拉圭_西班牙": {
+    "胜": "6.85",
+    "平": "4.22",
+    "负": "1.34",
+    "让球": [
+      {
+        "concede": "+1",
+        "胜": "2.65",
+        "平": "3.35",
+        "负": "2.21"
+      }
+    ],
+    "比分": {
+      "1:0": "16",
+      "2:0": "42",
+      "2:1": "17",
+      "3:0": "150",
+      "3:1": "75",
+      "3:2": "75",
+      "4:0": "500",
+      "4:1": "350",
+      "4:2": "350",
+      "5:0": "1000",
+      "5:1": "900",
+      "5:2": "900",
+      "胜其他": "350",
+      "0:0": "13",
+      "1:1": "7",
+      "2:2": "18",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "6.25",
+      "0:2": "6.2",
+      "1:2": "7",
+      "0:3": "8.5",
+      "1:3": "10.5",
+      "2:3": "26",
+      "0:4": "16",
+      "1:4": "21",
+      "2:4": "60",
+      "0:5": "40",
+      "1:5": "50",
+      "2:5": "125",
+      "负其他": "30"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "5.1",
+      "2": "3.5",
+      "3": "3.45",
+      "4": "5.3",
+      "5": "9",
+      "6": "16",
+      "7+": "24"
+    },
+    "半全场": {
+      "胜胜": "13",
+      "胜平": "18",
+      "胜负": "24",
+      "平胜": "15",
+      "平平": "6.5",
+      "平负": "3.8",
+      "负胜": "50",
+      "负平": "18",
+      "负负": "1.92"
+    }
+  },
+  "2026-06-26_埃及_伊朗": {
+    "胜": "2.32",
+    "平": "2.5",
+    "负": "3.35",
+    "让球": [
+      {
+        "concede": "-1",
+        "胜": "5.5",
+        "平": "3.8",
+        "负": "1.46"
+      }
+    ],
+    "比分": {
+      "1:0": "6.5",
+      "2:0": "10",
+      "2:1": "8",
+      "3:0": "22",
+      "3:1": "20",
+      "3:2": "40",
+      "4:0": "70",
+      "4:1": "70",
+      "4:2": "150",
+      "5:0": "300",
+      "5:1": "300",
+      "5:2": "400",
+      "胜其他": "175",
+      "0:0": "6",
+      "1:1": "4.3",
+      "2:2": "15",
+      "3:3": "120",
+      "平其他": "700",
+      "0:1": "8",
+      "0:2": "15",
+      "1:2": "11",
+      "0:3": "45",
+      "1:3": "30",
+      "2:3": "50",
+      "0:4": "175",
+      "1:4": "150",
+      "2:4": "200",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "600",
+      "负其他": "350"
+    },
+    "总进球": {
+      "0": "6",
+      "1": "3.6",
+      "2": "2.8",
+      "3": "4.65",
+      "4": "7.5",
+      "5": "18",
+      "6": "34",
+      "7+": "50"
+    },
+    "半全场": {
+      "胜胜": "4",
+      "胜平": "13.5",
+      "胜负": "28",
+      "平胜": "5",
+      "平平": "3.9",
+      "平负": "6.75",
+      "负胜": "25",
+      "负平": "13.5",
+      "负负": "5.7"
+    }
+  },
+  "2026-06-26_新西兰_比利时": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "concede": "+2",
+        "胜": "2.23",
+        "平": "3.9",
+        "负": "2.36"
+      }
+    ],
+    "比分": {
+      "1:0": "30",
+      "2:0": "100",
+      "2:1": "35",
+      "3:0": "400",
+      "3:1": "150",
+      "3:2": "100",
+      "4:0": "850",
+      "4:1": "550",
+      "4:2": "550",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "550",
+      "0:0": "23",
+      "1:1": "12.5",
+      "2:2": "27",
+      "3:3": "150",
+      "平其他": "700",
+      "0:1": "7.5",
+      "0:2": "6.25",
+      "1:2": "7",
+      "0:3": "6.75",
+      "1:3": "8",
+      "2:3": "27",
+      "0:4": "10",
+      "1:4": "13",
+      "2:4": "40",
+      "0:5": "17",
+      "1:5": "25",
+      "2:5": "75",
+      "负其他": "12.5"
+    },
+    "总进球": {
+      "0": "23",
+      "1": "7",
+      "2": "4.5",
+      "3": "3.45",
+      "4": "4.3",
+      "5": "6.5",
+      "6": "10.5",
+      "7+": "13.5"
+    },
+    "半全场": {
+      "胜胜": "25",
+      "胜平": "26",
+      "胜负": "27",
+      "平胜": "30",
+      "平平": "11",
+      "平负": "4",
+      "负胜": "85",
+      "负平": "26",
+      "负负": "1.4"
+    }
+  }
+};
+    var order = ["瑞士 vs 加拿大", "波黑 vs 卡塔尔", "苏格兰 vs 巴西", "摩洛哥 vs 海地", "南非 vs 韩国", "捷克 vs 墨西哥", "厄瓜多尔 vs 德国", "库拉索 vs 科特迪瓦", "突尼斯 vs 荷兰", "日本 vs 瑞典", "巴拉圭 vs 澳大利亚", "土耳其 vs 美国", "挪威 vs 法国", "塞内加尔 vs 伊拉克", "佛得角 vs 沙特", "乌拉圭 vs 西班牙", "埃及 vs 伊朗", "新西兰 vs 比利时"];
+    localStorage.setItem('worldcup_odds_v738', JSON.stringify(data));
+    localStorage.setItem('worldcup_odds_v738_order', JSON.stringify(order));
+    console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
+  } catch(e) {
+    console.error('[网易赔率] 注入失败', e);
+  }
+})();
+// === 结束注入 ===
+
+// === 网易赔率自动注入（2026-06-24 20:10）===
+(function(){
+  try {
+    var data = {
+  "2026-06-25_瑞士_加拿大": {
+    "胜": "2.21",
+    "平": "2.66",
+    "负": "3.32",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "4.7",
+        "平": "3.86",
+        "负": "1.52"
+      }
+    ],
+    "比分": {
+      "1:0": "8.25",
+      "2:0": "11",
+      "2:1": "7",
+      "3:0": "25",
+      "3:1": "16",
+      "3:2": "25",
+      "4:0": "70",
+      "4:1": "50",
+      "4:2": "75",
+      "5:0": "200",
+      "5:1": "175",
+      "5:2": "175",
+      "胜其他": "100",
+      "0:0": "8",
+      "1:1": "4.5",
+      "2:2": "11",
+      "3:3": "35",
+      "平其他": "250",
+      "0:1": "10",
+      "0:2": "17",
+      "1:2": "10.5",
+      "0:3": "55",
+      "1:3": "30",
+      "2:3": "40",
+      "0:4": "150",
+      "1:4": "100",
+      "2:4": "150",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "500",
+      "负其他": "150"
+    },
+    "总进球": {
+      "0": "8",
+      "1": "4.85",
+      "2": "3",
+      "3": "3.8",
+      "4": "5.75",
+      "5": "12.5",
+      "6": "22",
+      "7+": "37"
+    },
+    "半全场": {
+      "胜胜": "3.9",
+      "胜平": "13",
+      "胜负": "30",
+      "平胜": "5",
+      "平平": "4",
+      "平负": "6.85",
+      "负胜": "25",
+      "负平": "13",
+      "负负": "5.75"
+    }
+  },
+  "2026-06-25_波黑_卡塔尔": {
+    "胜": "1.26",
+    "平": "5.17",
+    "负": "7",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "1.86",
+        "平": "3.65",
+        "负": "3.15"
+      }
+    ],
+    "比分": {
+      "1:0": "8",
+      "2:0": "5.5",
+      "2:1": "5.6",
+      "3:0": "9.25",
+      "3:1": "8.5",
+      "3:2": "22",
+      "4:0": "18",
+      "4:1": "18",
+      "4:2": "36",
+      "5:0": "45",
+      "5:1": "40",
+      "5:2": "70",
+      "胜其他": "27",
+      "0:0": "18",
+      "1:1": "9",
+      "2:2": "17",
+      "3:3": "55",
+      "平其他": "300",
+      "0:1": "24",
+      "0:2": "50",
+      "1:2": "22",
+      "0:3": "120",
+      "1:3": "75",
+      "2:3": "65",
+      "0:4": "300",
+      "1:4": "200",
+      "2:4": "200",
+      "0:5": "600",
+      "1:5": "500",
+      "2:5": "500",
+      "负其他": "200"
+    },
+    "总进球": {
+      "0": "18",
+      "1": "6.25",
+      "2": "3.9",
+      "3": "3.3",
+      "4": "4.55",
+      "5": "7.7",
+      "6": "13.5",
+      "7+": "18"
+    },
+    "半全场": {
+      "胜胜": "1.77",
+      "胜平": "18",
+      "胜负": "40",
+      "平胜": "4.1",
+      "平平": "8.05",
+      "平负": "16.5",
+      "负胜": "21",
+      "负平": "18",
+      "负负": "13"
+    }
+  },
+  "2026-06-25_苏格兰_巴西": {
+    "胜": "9.6",
+    "平": "5.4",
+    "负": "1.19",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "3.7",
+        "平": "3.8",
+        "负": "1.68"
+      }
+    ],
+    "比分": {
+      "1:0": "24",
+      "2:0": "70",
+      "2:1": "28",
+      "3:0": "150",
+      "3:1": "95",
+      "3:2": "85",
+      "4:0": "500",
+      "4:1": "400",
+      "4:2": "400",
+      "5:0": "800",
+      "5:1": "800",
+      "5:2": "800",
+      "胜其他": "400",
+      "0:0": "14",
+      "1:1": "9.5",
+      "2:2": "28",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "6.85",
+      "0:2": "5",
+      "1:2": "7",
+      "0:3": "6.5",
+      "1:3": "8.5",
+      "2:3": "32",
+      "0:4": "13",
+      "1:4": "19",
+      "2:4": "45",
+      "0:5": "30",
+      "1:5": "45",
+      "2:5": "90",
+      "负其他": "25"
+    },
+    "总进球": {
+      "0": "14",
+      "1": "5.4",
+      "2": "3.8",
+      "3": "3.3",
+      "4": "4.85",
+      "5": "8.8",
+      "6": "15",
+      "7+": "22"
+    },
+    "半全场": {
+      "胜胜": "19",
+      "胜平": "21",
+      "胜负": "23",
+      "平胜": "22",
+      "平平": "7.75",
+      "平负": "3.65",
+      "负胜": "65",
+      "负平": "21",
+      "负负": "1.67"
+    }
+  },
+  "2026-06-25_摩洛哥_海地": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "handicap": "-2",
+        "胜": "2.15",
+        "平": "3.85",
+        "负": "2.48"
+      }
+    ],
+    "比分": {
+      "1:0": "7.5",
+      "2:0": "4.8",
+      "2:1": "8.5",
+      "3:0": "5.2",
+      "3:1": "10.5",
+      "3:2": "30",
+      "4:0": "8.5",
+      "4:1": "16",
+      "4:2": "60",
+      "5:0": "14",
+      "5:1": "28",
+      "5:2": "80",
+      "胜其他": "12",
+      "0:0": "21",
+      "1:1": "14",
+      "2:2": "40",
+      "3:3": "120",
+      "平其他": "500",
+      "0:1": "40",
+      "0:2": "120",
+      "1:2": "60",
+      "0:3": "500",
+      "1:3": "200",
+      "2:3": "160",
+      "0:4": "800",
+      "1:4": "500",
+      "2:4": "500",
+      "0:5": "800",
+      "1:5": "800",
+      "2:5": "800",
+      "负其他": "500"
+    },
+    "总进球": {
+      "0": "21",
+      "1": "6.8",
+      "2": "4.4",
+      "3": "3.45",
+      "4": "4.3",
+      "5": "7.1",
+      "6": "10.5",
+      "7+": "13.5"
+    },
+    "半全场": {
+      "胜胜": "1.36",
+      "胜平": "33",
+      "胜负": "100",
+      "平胜": "3.85",
+      "平平": "10.5",
+      "平负": "37",
+      "负胜": "30",
+      "负平": "33",
+      "负负": "30"
+    }
+  },
+  "2026-06-25_南非_韩国": {
+    "胜": "5.65",
+    "平": "3.87",
+    "负": "1.44",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "2.34",
+        "平": "3.15",
+        "负": "2.6"
+      }
+    ],
+    "比分": {
+      "1:0": "13",
+      "2:0": "33",
+      "2:1": "18.5",
+      "3:0": "85",
+      "3:1": "55",
+      "3:2": "65",
+      "4:0": "300",
+      "4:1": "200",
+      "4:2": "250",
+      "5:0": "800",
+      "5:1": "600",
+      "5:2": "700",
+      "胜其他": "300",
+      "0:0": "10",
+      "1:1": "6.6",
+      "2:2": "15",
+      "3:3": "60",
+      "平其他": "500",
+      "0:1": "6",
+      "0:2": "5.8",
+      "1:2": "6",
+      "0:3": "12",
+      "1:3": "11",
+      "2:3": "30",
+      "0:4": "30",
+      "1:4": "30",
+      "2:4": "60",
+      "0:5": "75",
+      "1:5": "80",
+      "2:5": "150",
+      "负其他": "60"
+    },
+    "总进球": {
+      "0": "10",
+      "1": "4.4",
+      "2": "3.1",
+      "3": "3.65",
+      "4": "6",
+      "5": "11",
+      "6": "22",
+      "7+": "37"
+    },
+    "半全场": {
+      "胜胜": "9.8",
+      "胜平": "16",
+      "胜负": "25",
+      "平胜": "12",
+      "平平": "5.45",
+      "平负": "4",
+      "负胜": "39",
+      "负平": "16",
+      "负负": "2.25"
+    }
+  },
+  "2026-06-25_捷克_墨西哥": {
+    "胜": "3.55",
+    "平": "3.5",
+    "负": "1.78",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "1.78",
+        "平": "3.45",
+        "负": "3.6"
+      }
+    ],
+    "比分": {
+      "1:0": "11",
+      "2:0": "18",
+      "2:1": "10",
+      "3:0": "50",
+      "3:1": "30",
+      "3:2": "40",
+      "4:0": "150",
+      "4:1": "100",
+      "4:2": "150",
+      "5:0": "500",
+      "5:1": "500",
+      "5:2": "500",
+      "胜其他": "200",
+      "0:0": "10",
+      "1:1": "5.5",
+      "2:2": "13",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "6.75",
+      "0:2": "8",
+      "1:2": "6.5",
+      "0:3": "18",
+      "1:3": "15",
+      "2:3": "30",
+      "0:4": "55",
+      "1:4": "45",
+      "2:4": "75",
+      "0:5": "150",
+      "1:5": "120",
+      "2:5": "200",
+      "负其他": "90"
+    },
+    "总进球": {
+      "0": "10",
+      "1": "4.3",
+      "2": "3.15",
+      "3": "3.5",
+      "4": "6.25",
+      "5": "12",
+      "6": "22",
+      "7+": "36"
+    },
+    "半全场": {
+      "胜胜": "6.4",
+      "胜平": "13.5",
+      "胜负": "22",
+      "平胜": "8",
+      "平平": "5",
+      "平负": "4.6",
+      "负胜": "35",
+      "负平": "13.5",
+      "负负": "3"
+    }
+  },
+  "2026-06-26_厄瓜多尔_德国": {
+    "胜": "3.7",
+    "平": "3.65",
+    "负": "1.71",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "1.86",
+        "平": "3.5",
+        "负": "3.27"
+      }
+    ],
+    "比分": {
+      "1:0": "12",
+      "2:0": "23",
+      "2:1": "11.5",
+      "3:0": "65",
+      "3:1": "32",
+      "3:2": "40",
+      "4:0": "200",
+      "4:1": "100",
+      "4:2": "150",
+      "5:0": "500",
+      "5:1": "500",
+      "5:2": "500",
+      "胜其他": "175",
+      "0:0": "13",
+      "1:1": "6.5",
+      "2:2": "13.5",
+      "3:3": "70",
+      "平其他": "400",
+      "0:1": "7",
+      "0:2": "8.5",
+      "1:2": "6",
+      "0:3": "15",
+      "1:3": "11",
+      "2:3": "20",
+      "0:4": "35",
+      "1:4": "28",
+      "2:4": "45",
+      "0:5": "100",
+      "1:5": "85",
+      "2:5": "125",
+      "负其他": "55"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "4.9",
+      "2": "3.75",
+      "3": "3.35",
+      "4": "5.2",
+      "5": "9",
+      "6": "16",
+      "7+": "24"
+    },
+    "半全场": {
+      "胜胜": "6.5",
+      "胜平": "13",
+      "胜负": "20",
+      "平胜": "9.3",
+      "平平": "6.25",
+      "平负": "4.75",
+      "负胜": "29",
+      "负平": "13",
+      "负负": "2.6"
+    }
+  },
+  "2026-06-26_库拉索_科特迪瓦": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "handicap": "+2",
+        "胜": "2.4",
+        "平": "3.85",
+        "负": "2.21"
+      }
+    ],
+    "比分": {
+      "1:0": "35",
+      "2:0": "120",
+      "2:1": "40",
+      "3:0": "500",
+      "3:1": "200",
+      "3:2": "150",
+      "4:0": "1000",
+      "4:1": "700",
+      "4:2": "600",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "600",
+      "0:0": "21",
+      "1:1": "12",
+      "2:2": "30",
+      "3:3": "175",
+      "平其他": "800",
+      "0:1": "7",
+      "0:2": "5.8",
+      "1:2": "7.5",
+      "0:3": "6.5",
+      "1:3": "8.5",
+      "2:3": "30",
+      "0:4": "8.5",
+      "1:4": "15",
+      "2:4": "50",
+      "0:5": "15",
+      "1:5": "28",
+      "2:5": "100",
+      "负其他": "12"
+    },
+    "总进球": {
+      "0": "21",
+      "1": "6.6",
+      "2": "4.3",
+      "3": "3.5",
+      "4": "4.4",
+      "5": "6.8",
+      "6": "11",
+      "7+": "14"
+    },
+    "半全场": {
+      "胜胜": "29",
+      "胜平": "28",
+      "胜负": "30",
+      "平胜": "32",
+      "平平": "11",
+      "平负": "3.95",
+      "负胜": "100",
+      "负平": "28",
+      "负负": "1.37"
+    }
+  },
+  "2026-06-26_突尼斯_荷兰": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "handicap": "+2",
+        "胜": "2.6",
+        "平": "3.9",
+        "负": "2.05"
+      }
+    ],
+    "比分": {
+      "1:0": "40",
+      "2:0": "120",
+      "2:1": "50",
+      "3:0": "550",
+      "3:1": "175",
+      "3:2": "120",
+      "4:0": "1000",
+      "4:1": "650",
+      "4:2": "550",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "550",
+      "0:0": "23",
+      "1:1": "13",
+      "2:2": "30",
+      "3:3": "150",
+      "平其他": "700",
+      "0:1": "7.5",
+      "0:2": "5.8",
+      "1:2": "8",
+      "0:3": "6.4",
+      "1:3": "8.5",
+      "2:3": "28",
+      "0:4": "9",
+      "1:4": "13",
+      "2:4": "45",
+      "0:5": "15",
+      "1:5": "24",
+      "2:5": "100",
+      "负其他": "10"
+    },
+    "总进球": {
+      "0": "23",
+      "1": "7",
+      "2": "4.4",
+      "3": "3.6",
+      "4": "4.25",
+      "5": "6.25",
+      "6": "11",
+      "7+": "13"
+    },
+    "半全场": {
+      "胜胜": "37",
+      "胜平": "29",
+      "胜负": "28",
+      "平胜": "45",
+      "平平": "12.5",
+      "平负": "3.95",
+      "负胜": "100",
+      "负平": "29",
+      "负负": "1.32"
+    }
+  },
+  "2026-06-26_日本_瑞典": {
+    "胜": "1.83",
+    "平": "3.3",
+    "负": "3.57",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "3.43",
+        "平": "3.8",
+        "负": "1.74"
+      }
+    ],
+    "比分": {
+      "1:0": "8",
+      "2:0": "10.5",
+      "2:1": "6",
+      "3:0": "18",
+      "3:1": "12",
+      "3:2": "20",
+      "4:0": "45",
+      "4:1": "30",
+      "4:2": "50",
+      "5:0": "120",
+      "5:1": "100",
+      "5:2": "150",
+      "胜其他": "55",
+      "0:0": "13",
+      "1:1": "6.5",
+      "2:2": "12",
+      "3:3": "50",
+      "平其他": "350",
+      "0:1": "12",
+      "0:2": "20",
+      "1:2": "9.5",
+      "0:3": "50",
+      "1:3": "24",
+      "2:3": "30",
+      "0:4": "150",
+      "1:4": "90",
+      "2:4": "100",
+      "0:5": "550",
+      "1:5": "400",
+      "2:5": "400",
+      "负其他": "100"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "5.5",
+      "2": "3.8",
+      "3": "3.45",
+      "4": "4.75",
+      "5": "8.5",
+      "6": "14.5",
+      "7+": "22"
+    },
+    "半全场": {
+      "胜胜": "2.9",
+      "胜平": "13.5",
+      "胜负": "24",
+      "平胜": "4.9",
+      "平平": "5.75",
+      "平负": "8",
+      "负胜": "20",
+      "负平": "13.5",
+      "负负": "6"
+    }
+  },
+  "2026-06-27_巴拉圭_澳大利亚": {
+    "胜": "2.63",
+    "平": "2.06",
+    "负": "3.8",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "6.1",
+        "平": "4.35",
+        "负": "1.36"
+      }
+    ],
+    "比分": {
+      "1:0": "6.5",
+      "2:0": "9.5",
+      "2:1": "9.6",
+      "3:0": "22",
+      "3:1": "25",
+      "3:2": "50",
+      "4:0": "75",
+      "4:1": "75",
+      "4:2": "175",
+      "5:0": "300",
+      "5:1": "300",
+      "5:2": "500",
+      "胜其他": "200",
+      "0:0": "4.5",
+      "1:1": "3.6",
+      "2:2": "13",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "9",
+      "0:2": "19",
+      "1:2": "14",
+      "0:3": "60",
+      "1:3": "50",
+      "2:3": "75",
+      "0:4": "300",
+      "1:4": "200",
+      "2:4": "300",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "600",
+      "负其他": "500"
+    },
+    "总进球": {
+      "0": "4.5",
+      "1": "4.25",
+      "2": "2.6",
+      "3": "5.15",
+      "4": "7.9",
+      "5": "24",
+      "6": "30",
+      "7+": "60"
+    },
+    "半全场": {
+      "胜胜": "4.65",
+      "胜平": "14",
+      "胜负": "40",
+      "平胜": "4.65",
+      "平平": "2.85",
+      "平负": "6.8",
+      "负胜": "34",
+      "负平": "14",
+      "负负": "7.75"
+    }
+  },
+  "2026-06-27_土耳其_美国": {
+    "胜": "3.3",
+    "平": "3.5",
+    "负": "1.85",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "1.74",
+        "平": "4",
+        "负": "3.28"
+      }
+    ],
+    "比分": {
+      "1:0": "12",
+      "2:0": "18",
+      "2:1": "9.5",
+      "3:0": "40",
+      "3:1": "23",
+      "3:2": "28",
+      "4:0": "100",
+      "4:1": "70",
+      "4:2": "90",
+      "5:0": "350",
+      "5:1": "200",
+      "5:2": "300",
+      "胜其他": "90",
+      "0:0": "14",
+      "1:1": "6.5",
+      "2:2": "11",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "8.5",
+      "0:2": "10",
+      "1:2": "6.5",
+      "0:3": "18",
+      "1:3": "13",
+      "2:3": "21",
+      "0:4": "45",
+      "1:4": "35",
+      "2:4": "55",
+      "0:5": "125",
+      "1:5": "100",
+      "2:5": "150",
+      "负其他": "55"
+    },
+    "总进球": {
+      "0": "14",
+      "1": "5.5",
+      "2": "3.7",
+      "3": "3.4",
+      "4": "4.9",
+      "5": "8.5",
+      "6": "14",
+      "7+": "23"
+    },
+    "半全场": {
+      "胜胜": "5.55",
+      "胜平": "13",
+      "胜负": "25",
+      "平胜": "8.25",
+      "平平": "6",
+      "平负": "4.8",
+      "负胜": "30",
+      "负平": "13",
+      "负负": "2.85"
+    }
+  },
+  "2026-06-27_挪威_法国": {
+    "胜": "4.65",
+    "平": "3.9",
+    "负": "1.52",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "2.18",
+        "平": "3.45",
+        "负": "2.63"
+      }
+    ],
+    "比分": {
+      "1:0": "16",
+      "2:0": "28",
+      "2:1": "12",
+      "3:0": "75",
+      "3:1": "34",
+      "3:2": "35",
+      "4:0": "275",
+      "4:1": "150",
+      "4:2": "150",
+      "5:0": "700",
+      "5:1": "500",
+      "5:2": "400",
+      "胜其他": "100",
+      "0:0": "16",
+      "1:1": "6.9",
+      "2:2": "12.5",
+      "3:3": "50",
+      "平其他": "300",
+      "0:1": "8.3",
+      "0:2": "8.25",
+      "1:2": "6.5",
+      "0:3": "12",
+      "1:3": "10.5",
+      "2:3": "20",
+      "0:4": "23",
+      "1:4": "22",
+      "2:4": "50",
+      "0:5": "60",
+      "1:5": "60",
+      "2:5": "100",
+      "负其他": "29"
+    },
+    "总进球": {
+      "0": "16",
+      "1": "6",
+      "2": "3.8",
+      "3": "3.45",
+      "4": "4.75",
+      "5": "7.5",
+      "6": "13.5",
+      "7+": "18.5"
+    },
+    "半全场": {
+      "胜胜": "8",
+      "胜平": "15",
+      "胜负": "20",
+      "平胜": "10.5",
+      "平平": "6.5",
+      "平负": "4.5",
+      "负胜": "33",
+      "负平": "15",
+      "负负": "2.25"
+    }
+  },
+  "2026-06-27_塞内加尔_伊拉克": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "handicap": "-2",
+        "胜": "2.6",
+        "平": "3.96",
+        "负": "2.03"
+      }
+    ],
+    "比分": {
+      "1:0": "7.75",
+      "2:0": "6.2",
+      "2:1": "7.3",
+      "3:0": "7.5",
+      "3:1": "9",
+      "3:2": "23",
+      "4:0": "11",
+      "4:1": "15",
+      "4:2": "40",
+      "5:0": "21",
+      "5:1": "29",
+      "5:2": "75",
+      "胜其他": "13",
+      "0:0": "24",
+      "1:1": "10",
+      "2:2": "23",
+      "3:3": "100",
+      "平其他": "450",
+      "0:1": "26",
+      "0:2": "70",
+      "1:2": "21",
+      "0:3": "200",
+      "1:3": "90",
+      "2:3": "80",
+      "0:4": "600",
+      "1:4": "450",
+      "2:4": "350",
+      "0:5": "1000",
+      "1:5": "1000",
+      "2:5": "800",
+      "负其他": "350"
+    },
+    "总进球": {
+      "0": "24",
+      "1": "6.7",
+      "2": "4.1",
+      "3": "3.4",
+      "4": "4.5",
+      "5": "6.7",
+      "6": "12",
+      "7+": "14.5"
+    },
+    "半全场": {
+      "胜胜": "1.52",
+      "胜平": "23",
+      "胜负": "80",
+      "平胜": "4",
+      "平平": "10",
+      "平负": "23",
+      "负胜": "20",
+      "负平": "23",
+      "负负": "19"
+    }
+  },
+  "2026-06-27_佛得角_沙特": {
+    "胜": "2.46",
+    "平": "3.05",
+    "负": "2.53",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "5.8",
+        "平": "4.05",
+        "负": "1.41"
+      }
+    ],
+    "比分": {
+      "1:0": "7.6",
+      "2:0": "11",
+      "2:1": "7.5",
+      "3:0": "26",
+      "3:1": "20",
+      "3:2": "30",
+      "4:0": "90",
+      "4:1": "75",
+      "4:2": "100",
+      "5:0": "350",
+      "5:1": "250",
+      "5:2": "350",
+      "胜其他": "125",
+      "0:0": "10",
+      "1:1": "5.5",
+      "2:2": "13",
+      "3:3": "70",
+      "平其他": "400",
+      "0:1": "7.8",
+      "0:2": "12",
+      "1:2": "7.75",
+      "0:3": "27",
+      "1:3": "21",
+      "2:3": "32",
+      "0:4": "100",
+      "1:4": "80",
+      "2:4": "120",
+      "0:5": "400",
+      "1:5": "300",
+      "2:5": "400",
+      "负其他": "130"
+    },
+    "总进球": {
+      "0": "10",
+      "1": "4.25",
+      "2": "3.15",
+      "3": "3.6",
+      "4": "6",
+      "5": "12",
+      "6": "22",
+      "7+": "35"
+    },
+    "半全场": {
+      "胜胜": "4",
+      "胜平": "16",
+      "胜负": "28",
+      "平胜": "5.6",
+      "平平": "4.8",
+      "平负": "5.7",
+      "负胜": "27",
+      "负平": "16",
+      "负负": "4.1"
+    }
+  },
+  "2026-06-27_乌拉圭_西班牙": {
+    "胜": "6.85",
+    "平": "4.22",
+    "负": "1.34",
+    "让球": [
+      {
+        "handicap": "+1",
+        "胜": "2.65",
+        "平": "3.35",
+        "负": "2.21"
+      }
+    ],
+    "比分": {
+      "1:0": "16",
+      "2:0": "42",
+      "2:1": "17",
+      "3:0": "150",
+      "3:1": "75",
+      "3:2": "75",
+      "4:0": "500",
+      "4:1": "350",
+      "4:2": "350",
+      "5:0": "1000",
+      "5:1": "900",
+      "5:2": "900",
+      "胜其他": "350",
+      "0:0": "13",
+      "1:1": "7",
+      "2:2": "18",
+      "3:3": "90",
+      "平其他": "500",
+      "0:1": "6.25",
+      "0:2": "6.2",
+      "1:2": "7",
+      "0:3": "8.5",
+      "1:3": "10.5",
+      "2:3": "26",
+      "0:4": "16",
+      "1:4": "21",
+      "2:4": "60",
+      "0:5": "40",
+      "1:5": "50",
+      "2:5": "125",
+      "负其他": "30"
+    },
+    "总进球": {
+      "0": "13",
+      "1": "5.1",
+      "2": "3.5",
+      "3": "3.45",
+      "4": "5.3",
+      "5": "9",
+      "6": "16",
+      "7+": "24"
+    },
+    "半全场": {
+      "胜胜": "13",
+      "胜平": "18",
+      "胜负": "24",
+      "平胜": "15",
+      "平平": "6.5",
+      "平负": "3.8",
+      "负胜": "50",
+      "负平": "18",
+      "负负": "1.92"
+    }
+  },
+  "2026-06-26_埃及_伊朗": {
+    "胜": "2.32",
+    "平": "2.5",
+    "负": "3.35",
+    "让球": [
+      {
+        "handicap": "-1",
+        "胜": "5.5",
+        "平": "3.8",
+        "负": "1.46"
+      }
+    ],
+    "比分": {
+      "1:0": "6.5",
+      "2:0": "10",
+      "2:1": "8",
+      "3:0": "22",
+      "3:1": "20",
+      "3:2": "40",
+      "4:0": "70",
+      "4:1": "70",
+      "4:2": "150",
+      "5:0": "300",
+      "5:1": "300",
+      "5:2": "400",
+      "胜其他": "175",
+      "0:0": "6",
+      "1:1": "4.3",
+      "2:2": "15",
+      "3:3": "120",
+      "平其他": "700",
+      "0:1": "8",
+      "0:2": "15",
+      "1:2": "11",
+      "0:3": "45",
+      "1:3": "30",
+      "2:3": "50",
+      "0:4": "175",
+      "1:4": "150",
+      "2:4": "200",
+      "0:5": "500",
+      "1:5": "500",
+      "2:5": "600",
+      "负其他": "350"
+    },
+    "总进球": {
+      "0": "6",
+      "1": "3.6",
+      "2": "2.8",
+      "3": "4.65",
+      "4": "7.5",
+      "5": "18",
+      "6": "34",
+      "7+": "50"
+    },
+    "半全场": {
+      "胜胜": "4",
+      "胜平": "13.5",
+      "胜负": "28",
+      "平胜": "5",
+      "平平": "3.9",
+      "平负": "6.75",
+      "负胜": "25",
+      "负平": "13.5",
+      "负负": "5.7"
+    }
+  },
+  "2026-06-26_新西兰_比利时": {
+    "胜": "",
+    "平": "",
+    "负": "",
+    "让球": [
+      {
+        "handicap": "+2",
+        "胜": "2.23",
+        "平": "3.9",
+        "负": "2.36"
+      }
+    ],
+    "比分": {
+      "1:0": "30",
+      "2:0": "100",
+      "2:1": "35",
+      "3:0": "400",
+      "3:1": "150",
+      "3:2": "100",
+      "4:0": "850",
+      "4:1": "550",
+      "4:2": "550",
+      "5:0": "1000",
+      "5:1": "1000",
+      "5:2": "1000",
+      "胜其他": "550",
+      "0:0": "23",
+      "1:1": "12.5",
+      "2:2": "27",
+      "3:3": "150",
+      "平其他": "700",
+      "0:1": "7.5",
+      "0:2": "6.25",
+      "1:2": "7",
+      "0:3": "6.75",
+      "1:3": "8",
+      "2:3": "27",
+      "0:4": "10",
+      "1:4": "13",
+      "2:4": "40",
+      "0:5": "17",
+      "1:5": "25",
+      "2:5": "75",
+      "负其他": "12.5"
+    },
+    "总进球": {
+      "0": "23",
+      "1": "7",
+      "2": "4.5",
+      "3": "3.45",
+      "4": "4.3",
+      "5": "6.5",
+      "6": "10.5",
+      "7+": "13.5"
+    },
+    "半全场": {
+      "胜胜": "25",
+      "胜平": "26",
+      "胜负": "27",
+      "平胜": "30",
+      "平平": "11",
+      "平负": "4",
+      "负胜": "85",
+      "负平": "26",
+      "负负": "1.4"
+    }
+  }
+};
+    var order = ["瑞士 vs 加拿大", "波黑 vs 卡塔尔", "苏格兰 vs 巴西", "摩洛哥 vs 海地", "南非 vs 韩国", "捷克 vs 墨西哥", "厄瓜多尔 vs 德国", "库拉索 vs 科特迪瓦", "突尼斯 vs 荷兰", "日本 vs 瑞典", "巴拉圭 vs 澳大利亚", "土耳其 vs 美国", "挪威 vs 法国", "塞内加尔 vs 伊拉克", "佛得角 vs 沙特", "乌拉圭 vs 西班牙", "埃及 vs 伊朗", "新西兰 vs 比利时"];
+    localStorage.setItem('worldcup_odds_v738', JSON.stringify(data));
+    localStorage.setItem('worldcup_odds_v738_order', JSON.stringify(order));
+    console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
+  } catch(e) {
+    console.error('[网易赔率] 注入失败', e);
+  }
+})();
+// === 结束注入 ===
+
 init();
 // ──────────────────────────────────────────────
 //  赔率手动更新（静默抓取163.com）
 // ──────────────────────────────────────────────
-// ── 更新赔率：直接调用本地 Python 脚本（无需代理）──
-function openOddsUpdater() {
-    var btn = document.getElementById('btnRefreshOdds');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.textContent = '⏳ 正在抓取…';
+// ── 在线版赔率更新（从 odds_data.json 读取，GitHub Actions 自动更新）──
+var _onlineOddsTimestamp = null; // 记录在线数据的更新时间
 
-    // 方案A: 尝试通过本地代理获取（如果 odds_proxy.py 在运行）
-    tryFetchViaProxy(51888, function(odds_vs, order) {
-        applyOddsData(odds_vs, order, btn);
-    }, function(proxyErr) {
-        // 代理不可用 → 提示用户脚本会自动运行
-        alert('⏳ 正在调用 Python 脚本更新赔率…\n\n请稍等几秒，脚本正在后台执行。\n完成后会自动刷新页面数据。');
-        // 直接用 fetch 触发后端更新（通过 update_163_odds.py 的 /cron-update 接口或直接执行）
-        // 这里我们改为：提示用户刷新，因为 HTML 无法直接调 Python
-        // 但我们可以尝试启动一个隐藏的代理进程
-        tryStartProxyAndFetch(btn);
-    });
+function loadOnlineOdds() {
+    return fetch('odds_data.json?v=2&t=' + Date.now(), { cache: 'no-cache' })
+        .then(function(r) { return r.json(); })
+        .then(function(json) {
+            _onlineOddsTimestamp = json.updated;
+            return json.data;
+        });
 }
 
-function tryFetchViaProxy(port, onOk, onErr) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'http://127.0.0.1:' + port + '/odds', true);
-    xhr.timeout = 8000;
-    xhr.onload = function() {
-        if (xhr.status === 200) {
-            try {
-                var r = JSON.parse(xhr.responseText);
-                if (r.ok) { onOk(r.data, r.order); }
-                else { onErr(r.error || '未知错误'); }
-            } catch(e) { onErr('解析失败'); }
-        } else { onErr('HTTP ' + xhr.status); }
-    };
-    xhr.onerror = function() { onErr('代理未运行'); };
-    xhr.ontimeout = function() { onErr('代理未运行'); };
-    xhr.send();
-}
-
-function applyOddsData(odds_vs, order, btn) {
+function applyOnlineOdds(onlineData) {
+    // onlineData: { "瑞士 vs 加拿大": {胜,平,负,...}, ... }
     var vs_to_date = {};
-    var fixed = {};
     for (var date in SCHEDULE) {
         (SCHEDULE[date] || []).forEach(function(g) {
             vs_to_date[g.home + ' vs ' + g.away] = date;
@@ -14076,55 +14786,84 @@ function applyOddsData(odds_vs, order, btn) {
         '佛得角 vs 沙特': '2026-06-27',
         '乌拉圭 vs 西班牙': '2026-06-27',
     };
-    for (var ek in extra) { vs_to_date[ek] = extra[ek]; }
+    for (var ek in extra) vs_to_date[ek] = extra[ek];
 
+    var fixed = {};
     var missCount = 0;
-    for (var k in odds_vs) {
+    for (var k in onlineData) {
         var d = vs_to_date[k];
         if (!d) { missCount++; continue; }
         var g = (SCHEDULE[d] || []).find(function(gg) { return (gg.home + ' vs ' + gg.away) === k; });
         if (!g) { missCount++; continue; }
-        fixed[d + '_' + g.home + '_' + g.away] = odds_vs[k];
+        fixed[d + '_' + g.home + '_' + g.away] = onlineData[k];
     }
 
     if (Object.keys(fixed).length === 0) {
-        alert('❌ 未能匹配任何比赛，赛程表可能需更新。\n（' + missCount + '场无法匹配）');
-        btn.disabled = false; btn.textContent = '🔄 更新赔率'; return;
+        return { ok: false, miss: missCount };
     }
-
-    localStorage.setItem('worldcup_odds_v737', JSON.stringify(fixed));
-    localStorage.setItem('worldcup_odds_v737_order', JSON.stringify(order));
-    btn.textContent = '✅ 已更新 ' + Object.keys(fixed).length + ' 场';
-    oddsData = {}; matchOrder = [];
-    loadFromStorage();
-    loadOddsSchedule();
+    localStorage.setItem('worldcup_odds_v738', JSON.stringify(fixed));
+    return { ok: true, count: Object.keys(fixed).length };
 }
 
-// ── 启动本地代理并抓取（Windows: PowerShell 静默启动 odds_proxy.py）──
-function tryStartProxyAndFetch(btn) {
-    btn.textContent = '🔄 启动代理中…';
-    // 使用 ActiveXObject (IE/Edge) 或 fetch 尝试启动代理
-    // Windows 下最佳方案: 通过 XMLHttpRequest 触发一个本地服务
-    // 由于浏览器安全限制, file:// 无法直接启动进程
-    // 改进方案: 自动轮询检测代理是否已由定时任务/外部方式启动
-    var attempts = 0;
-    var maxAttempts = 15; // 最多等 15 秒
-    var pollInterval = setInterval(function() {
-        attempts++;
-        tryFetchViaProxy(51888, function(odds_vs, order) {
-            clearInterval(pollInterval);
-            applyOddsData(odds_vs, order, btn);
-        }, function(err) {
-            if (attempts >= maxAttempts) {
-                clearInterval(pollInterval);
-                btn.disabled = false;
-                btn.textContent = '🔄 更新赔率';
-                alert('⚠️ 无法连接到赔率代理。\n\n请选择以下任一方式:\n\n【推荐】在文件夹中双击 run_update.bat\n         (会自动抓取并注入HTML, 完成后刷新页面)\n\n【或】打开终端运行:\n   python odds_proxy.py\n   然后再点此按钮\n\n【或】等待定时任务(每小时)自动更新后刷新页面');
-            } else {
-                btn.textContent = '⏳ 等待代理启动… (' + attempts + 's)';
+// 自动加载在线赔率
+(function() {
+    loadOnlineOdds().then(function(onlineData) {
+        var result = applyOnlineOdds(onlineData);
+        if (result.ok) {
+            oddsData = {}; matchOrder = [];
+            loadFromStorage();
+            loadOddsSchedule();
+            // 标记在线数据来源
+            var badge = document.getElementById('onlineBadge');
+            if (badge) {
+                badge.textContent = '📡 在线 ' + _onlineOddsTimestamp;
+                badge.style.display = '';
+            }
+        }
+    }).catch(function() {
+        // 无网络数据，静默使用 localStorage
+    });
+
+    // 每30分钟自动刷新一次在线数据
+    setInterval(function() {
+        loadOnlineOdds().then(function(onlineData) {
+            var result = applyOnlineOdds(onlineData);
+            if (result.ok) {
+                oddsData = {}; matchOrder = [];
+                loadFromStorage();
+                loadOddsSchedule();
+                var badge = document.getElementById('onlineBadge');
+                if (badge) badge.textContent = '📡 在线 ' + _onlineOddsTimestamp;
             }
         });
-    }, 1000);
+    }, 30 * 60 * 1000);
+})();
+
+function openOddsUpdater() {
+    var btn = document.getElementById('btnRefreshOdds');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = '⏳ 刷新中…';
+
+    loadOnlineOdds().then(function(onlineData) {
+        var result = applyOnlineOdds(onlineData);
+        if (result.ok) {
+            oddsData = {}; matchOrder = [];
+            loadFromStorage();
+            loadOddsSchedule();
+            btn.textContent = '✅ ' + result.count + '场已刷新';
+            var badge = document.getElementById('onlineBadge');
+            if (badge) badge.textContent = '📡 在线 ' + _onlineOddsTimestamp;
+        } else {
+            alert('未能匹配比赛（' + result.miss + '场无法匹配），赛程表可能需更新。');
+            btn.textContent = '🔄 更新赔率';
+        }
+        btn.disabled = false;
+        setTimeout(function() { btn.textContent = '🔄 更新赔率'; }, 3000);
+    }).catch(function(err) {
+        alert('刷新失败：' + err + '\n请检查网络连接，稍后重试。');
+        btn.disabled = false; btn.textContent = '🔄 更新赔率';
+    });
 }
 
 

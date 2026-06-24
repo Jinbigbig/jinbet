@@ -17,12 +17,13 @@
 """
 
 import re, json, html, sys, os, argparse, datetime, urllib.request, urllib.error
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 # ── 配置 ──────────────────────────────────
 LOCAL_HTML   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'v7.28.html')
 BACKUP_DIR   = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'odds_backup')
 LOG_FILE     = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'odds_update.log')
-STORAGE_KEY  = 'worldcup_odds_v737'        # 与 HTML 内的一致
+STORAGE_KEY  = 'worldcup_odds_v738'        # 与 HTML 内的一致
 # ────────────────────────────────────────────
 
 def log(msg):
@@ -206,7 +207,7 @@ def convert_to_odds_data(matches_163):
       oddsData = {
         "瑞士 vs 加拿大": {
           '胜': '2.21', '平': '2.71', '负': '3.25',
-          '让球': [{concede:'-1', '胜':'4.7', '平':'3.86', '负':'1.52'}],
+          '让球': [{handicap:'-1', '胜':'4.7', '平':'3.86', '负':'1.52'}],
           '比分': {'1:0':'8.25', '2:0':'10.5', ...},
           '总进球': {'0':'8', '1':'4.8', ...},
 '半全场': {'胜胜':'3.85', ...}
@@ -252,7 +253,7 @@ def convert_to_odds_data(matches_163):
                 elif name == '平':   item_map['平'] = odds
                 elif name == '客胜': item_map['负'] = odds
             if item_map:
-                entry['让球'] = [{'concede': c, **item_map}]
+                entry['让球'] = [{'handicap': c, **item_map}]
 
         # 比分（FBF）
         fbf = plays.get('FBF', {})

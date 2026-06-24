@@ -4,6 +4,7 @@ GitHub Actions 赔率抓取脚本
 输出 odds_data.json，供网页在线查看
 """
 import re, json, html, sys, os, datetime, urllib.request, urllib.error
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 OUTPUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'odds_data.json')
 
