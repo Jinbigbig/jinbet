@@ -1372,7 +1372,7 @@ function getTeamDatalistHTML(id) {
 //  核心存储
 // ================================================================
 const STORAGE_KEY_BETS = 'worldcup_bets_v737';
-const STORAGE_KEY_ODDS = 'worldcup_odds_v737';
+const STORAGE_KEY_ODDS = 'worldcup_odds_v738';
 let bets = [];
 let oddsData = {};
 let editingId = null;
@@ -11042,7 +11042,7 @@ init();
 var _onlineOddsTimestamp = null; // 记录在线数据的更新时间
 
 function loadOnlineOdds() {
-    return fetch('odds_data.json?t=' + Date.now(), { cache: 'no-cache' })
+    return fetch('odds_data.json?v=2&t=' + Date.now(), { cache: 'no-cache' })
         .then(function(r) { return r.json(); })
         .then(function(json) {
             _onlineOddsTimestamp = json.updated;
@@ -11079,7 +11079,7 @@ function applyOnlineOdds(onlineData) {
     if (Object.keys(fixed).length === 0) {
         return { ok: false, miss: missCount };
     }
-    localStorage.setItem('worldcup_odds_v737', JSON.stringify(fixed));
+    localStorage.setItem('worldcup_odds_v738', JSON.stringify(fixed));
     return { ok: true, count: Object.keys(fixed).length };
 }
 
