@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>世界杯足彩记录 v7.37（完整版）</title>
+    <title>世界杯足彩记录 v7.43（完整版 - 总进球赔率）</title>
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -762,19 +762,16 @@
             border-bottom: 1px solid #e2e5ec;
             width: 50px;
         }
-        .person-table th:first-child { width: 50px; }
-        .person-table th:nth-child(2) { width: 80px; }
-        .person-table th:nth-child(3) { width: 28px; }
+        .person-table th:first-child { width: 80px; }
+        .person-table th:nth-child(2) { width: 140px; }
         .person-table td {
             padding: 3px 2px;
             text-align: center;
             vertical-align: middle;
             border-bottom: 1px solid #eef0f4;
-            overflow: hidden;
         }
-        .person-table td:first-child { width: 50px; }
-        .person-table td:nth-child(2) { width: 80px; }
-        .person-table td:nth-child(3) { width: 28px; }
+        .person-table td:first-child { width: 80px; }
+        .person-table td:nth-child(2) { width: 140px; }
         .person-table tr:last-child td { border-bottom: none; }
         .person-table .person-name {
             font-weight: 600;
@@ -784,28 +781,42 @@
             text-overflow: ellipsis;
         }
         .person-table .person-multiplier {
-            width: 100%;
+            width: 65px;
             padding: 2px 4px;
             border: 1.5px solid #e2e5ec;
             border-radius: 4px;
             font-size: 12px;
             text-align: center;
             height: 26px;
-            max-width: 70px;
             box-sizing: border-box;
+            vertical-align: middle;
+        }
+        .person-table .person-action-cell {
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
         }
         .person-table .remove-person-btn {
-            background: none;
-            border: none;
-            color: #e94560;
+            background: #fee2e2;
+            border: 2px solid #f87171;
+            color: #dc2626;
             cursor: pointer;
-            font-size: 24px;
-            font-weight: 900;
-            padding: 0 8px;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
             line-height: 1;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            visibility: visible;
+            height: 26px;
+            box-sizing: border-box;
+            text-align: center;
+            vertical-align: middle;
+            margin-left: 4px;
         }
-        .person-table .remove-person-btn:hover { color: #c73652; transform: scale(1.3); }
+        .person-table .remove-person-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
         .person-add-row td {
             padding: 4px 2px;
             text-align: center;
@@ -1154,7 +1165,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 世界杯足彩记录 v7.37（完整版 - 总进球赔率）</div>
+    <div class="version-footer">⚽ 世界杯足彩记录 v7.43（完整版 - 总进球赔率）</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -1173,11 +1184,11 @@
                 <label>参与人员与倍数 <span style="color:#e94560;font-weight:bold;">（点击右侧红色 ✕ 删除人员）</span></label>
                 <div class="person-table-wrap">
                     <table class="person-table" id="personTable">
-                        <thead><tr><th>人员</th><th>倍数</th><th></th></tr></thead>
+                        <thead><tr><th>人员</th><th>倍数</th></tr></thead>
                         <tbody id="personTableBody"></tbody>
                         <tfoot>
                             <tr class="person-add-row">
-                                <td colspan="3" style="padding:4px 3px;text-align:center;">
+                                <td colspan="2" style="padding:4px 3px;text-align:center;">
                                     <select id="personSelect" style="width:70px;padding:3px 4px;border:1.5px solid #e2e5ec;border-radius:4px;font-size:11px;height:26px;">
                                         <option value="">— 选择 —</option>
                                         <option value="岩哥">岩哥</option><option value="超哥">超哥</option><option value="蓉哥">蓉哥</option>
@@ -1719,15 +1730,9 @@ function syncOddsToBets() {
                 g.options.forEach(opt => {
                     const playType = g.playType || '胜平负';
                     if (playType === '让球胜平负') {
-                        const handicap = g.handicap || '0';
-                        const rqList = matchedOdds['让球'] || [];
-                        let matchedRQ = null;
-                        for (let rq of rqList) {
-                            if (String(rq.handicap) === String(handicap)) {
-                                matchedRQ = rq;
-                                break;
-                            }
-                        }
+                        const handicap = resolveHandicap(g.handicap || '', matchedOdds, playType);
+                        if (handicap && handicap !== '0') g.handicap = handicap;
+                        const matchedRQ = getRQEntry(matchedOdds, handicap, playType);
                         if (matchedRQ && matchedRQ[opt.betOption] !== undefined) {
                             if (opt.odds !== matchedRQ[opt.betOption]) {
                                 opt.odds = matchedRQ[opt.betOption];
@@ -1824,6 +1829,98 @@ function getOddsForMatch(date, home, away) {
     return oddsData[key] || null;
 }
 
+function getOddsObjForGame(game) {
+    const date = game.date || '';
+    const home = game.home || '';
+    const away = game.away || '';
+    if (date) {
+        const key = date + '_' + home + '_' + away;
+        if (oddsData[key]) return oddsData[key];
+    }
+    for (const [key, odds] of Object.entries(oddsData)) {
+        const parts = key.split('_');
+        if (parts.length === 3 && home === parts[1] && away === parts[2]) {
+            return odds;
+        }
+    }
+    return null;
+}
+
+// 让球数：优先用投注记录里的值，否则从赔率「让球」字段自动读取（如 -1、+1）
+function resolveHandicap(handicapStr, oddsObj, playType) {
+    if (playType !== '让球胜平负') return (handicapStr || '').trim();
+    const trimmed = (handicapStr || '').trim();
+    if (trimmed && trimmed !== '0') return trimmed;
+    const rqList = (oddsObj && oddsObj['让球']) || [];
+    if (rqList.length > 0 && rqList[0].handicap != null && rqList[0].handicap !== '') {
+        return String(rqList[0].handicap);
+    }
+    return trimmed;
+}
+
+function getRQEntry(oddsObj, handicapStr, playType) {
+    const rqList = (oddsObj && oddsObj['让球']) || [];
+    if (rqList.length === 0) return null;
+    const h = resolveHandicap(handicapStr, oddsObj, playType);
+    if (playType === '让球胜平负' && h) {
+        for (const rq of rqList) {
+            if (String(rq.handicap) === String(h)) return rq;
+        }
+    }
+    return rqList[0];
+}
+
+function syncHandicapUI(gameItem, handicapStr) {
+    const hc = gameItem && gameItem.querySelector('.handicap-container');
+    if (!hc) return;
+    const s = String(handicapStr).trim();
+    const signSel = hc.querySelector('.game-handicapSign');
+    const valInp = hc.querySelector('.game-handicapValue');
+    if (!signSel || !valInp) return;
+    if (!s || s === '0') {
+        signSel.value = '0';
+        valInp.value = '';
+        return;
+    }
+    if (s.startsWith('-')) {
+        signSel.value = '-';
+        valInp.value = s.slice(1);
+    } else if (s.startsWith('+')) {
+        signSel.value = '+';
+        valInp.value = s.slice(1);
+    } else {
+        const num = parseFloat(s);
+        if (num < 0) { signSel.value = '-'; valInp.value = String(Math.abs(num)); }
+        else { signSel.value = '+'; valInp.value = s; }
+    }
+}
+
+function autoSyncHandicapFromOdds(gameItem) {
+    if (!gameItem) return '';
+    const playType = gameItem.querySelector('.game-playType')?.value;
+    if (playType !== '让球胜平负') return '';
+    const home = gameItem.querySelector('.game-home')?.value.trim();
+    const away = gameItem.querySelector('.game-away')?.value.trim();
+    if (!home || !away) return '';
+    const date = document.getElementById('scheduleDate')?.value;
+    const odds = getOddsForMatch(date, home, away);
+    const h = resolveHandicap('', odds, '让球胜平负');
+    if (h && h !== '0') syncHandicapUI(gameItem, h);
+    return h;
+}
+
+function matchOptionForGame(option, scoreStr, game, oddsObj) {
+    const playType = game.playType || '胜平负';
+    const handicap = resolveHandicap(game.handicap || '', oddsObj, playType);
+    return isOptionMatched(option, scoreStr, handicap, oddsObj);
+}
+
+function ensureGameHandicap(game, oddsObj) {
+    if (game.playType !== '让球胜平负') return;
+    const h = resolveHandicap(game.handicap || '', oddsObj, game.playType);
+    if (h && h !== '0') game.handicap = h;
+}
+
 // ================================================================
 //  比分解析与匹配（含其他、总进球）
 // ================================================================
@@ -1842,9 +1939,19 @@ function parseScore(scoreStr) {
 }
 
 function isOptionMatched(option, scoreStr, handicapStr, oddsObj) {
-    const parsed = parseScore(scoreStr);
-    if (!parsed) return false;
     const opt = option.trim();
+    const resultStr = (scoreStr || '').trim();
+
+    // 赛果直接录入胜/平/负（录入赛果弹窗）
+    if (resultStr === '胜' || resultStr === '平' || resultStr === '负') {
+        if (opt === '胜' || opt === '平' || opt === '负') {
+            return opt === resultStr;
+        }
+        return false;
+    }
+
+    const parsed = parseScore(resultStr);
+    if (!parsed) return false;
 
     // 胜平负（含让球）
     if (opt === '胜' || opt === '平' || opt === '负') {
@@ -1974,26 +2081,9 @@ function applyBatchResults() {
             results.forEach(r => {
                 if (gHome === r.home && gAway === r.away) {
                     g.result = r.score;
-                    const date = g.date || '';
-                    let oddsObj = null;
-                    if (date) {
-                        const key = date + '_' + gHome + '_' + gAway;
-                        oddsObj = oddsData[key] || null;
-                    }
-                    if (!oddsObj) {
-                        for (const [key, odds] of Object.entries(oddsData)) {
-                            const parts = key.split('_');
-                            if (parts.length === 3) {
-                                const home = parts[1];
-                                const away = parts[2];
-                                if (gHome === home && gAway === away) {
-                                    oddsObj = odds;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    const matched = g.options.some(o => isOptionMatched(o.betOption, r.score, g.handicap || '', oddsObj));
+                    const oddsObj = getOddsObjForGame(g);
+                    ensureGameHandicap(g, oddsObj);
+                    const matched = g.options.some(o => matchOptionForGame(o.betOption, r.score, g, oddsObj));
                     g.isWin = matched;
                     anyUpdated = true;
                 }
@@ -2024,28 +2114,11 @@ function recalcBetWin(bet) {
                 if (allWin) {
                     const matchedOdds = idxArr.map(i => {
                         const g = bet.games[i];
+                        const oddsObj = getOddsObjForGame(g);
+                        ensureGameHandicap(g, oddsObj);
                         let matchedOpt = null;
                         for (let o of g.options) {
-                            const date = g.date || '';
-                            let oddsObj = null;
-                            if (date) {
-                                const key = date + '_' + g.home + '_' + g.away;
-                                oddsObj = oddsData[key] || null;
-                            }
-                            if (!oddsObj) {
-                                for (const [key, odds] of Object.entries(oddsData)) {
-                                    const parts = key.split('_');
-                                    if (parts.length === 3) {
-                                        const home = parts[1];
-                                        const away = parts[2];
-                                        if (g.home === home && g.away === away) {
-                                            oddsObj = odds;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                            if (isOptionMatched(o.betOption, g.result, g.handicap || '', oddsObj)) {
+                            if (matchOptionForGame(o.betOption, g.result, g, oddsObj)) {
                                 matchedOpt = o;
                                 break;
                             }
@@ -2105,8 +2178,10 @@ function addPersonRowToTable(name, multiplier) {
     tr.dataset.name = name;
     tr.innerHTML = `
         <td class="person-name">${name}</td>
-        <td><input type="number" class="person-multiplier" value="${multiplier}" min="0" step="any" /></td>
-        <td><button type="button" class="remove-person-btn" onclick="removePersonRow(this)" title="删除此人员">✕</button></td>
+        <td class="person-action-cell">
+            <input type="number" class="person-multiplier" value="${multiplier}" min="0" step="any" />
+            <button type="button" class="remove-person-btn" onclick="removePersonRow(this)" title="删除此人员">✕</button>
+        </td>
     `;
     tr.querySelector('.person-multiplier').addEventListener('input', calculateAll);
     tbody.appendChild(tr);
@@ -2269,16 +2344,18 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
                             oddsInput.dispatchEvent(new Event('input'));
                         }
                     } else if (playType === '让球胜平负') {
-                        const rqList = odds['让球'] || [];
-                        const rq = rqList[0] || {};
-                        if (rq['胜'] && val === '胜') {
-                            oddsInput.value = rq['胜'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (rq['平'] && val === '平') {
-                            oddsInput.value = rq['平'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (rq['负'] && val === '负') {
-                            oddsInput.value = rq['负'];
+                        const gameItem = item.closest('.game-item');
+                        autoSyncHandicapFromOdds(gameItem);
+                        const hc = gameItem && gameItem.querySelector('.handicap-container');
+                        let handicap = '';
+                        if (hc && !hc.classList.contains('hidden')) {
+                            const sign = hc.querySelector('.game-handicapSign').value;
+                            const hval = hc.querySelector('.game-handicapValue').value.trim();
+                            if (sign !== '0' && hval) handicap = sign + hval;
+                        }
+                        const rq = getRQEntry(odds, handicap, '让球胜平负');
+                        if (rq && rq[val]) {
+                            oddsInput.value = rq[val];
                             oddsInput.dispatchEvent(new Event('input'));
                         }
                     }
@@ -2494,16 +2571,17 @@ function addOptionToList(btn, playTypeOverride) {
                     oddsInput.dispatchEvent(new Event('input'));
                 }
             } else if (playType === '让球胜平负') {
-                const rqList = odds['让球'] || [];
-                const rq = rqList[0] || {};
-                if (rq['胜'] && val === '胜') {
-                    oddsInput.value = rq['胜'];
-                    oddsInput.dispatchEvent(new Event('input'));
-                } else if (rq['平'] && val === '平') {
-                    oddsInput.value = rq['平'];
-                    oddsInput.dispatchEvent(new Event('input'));
-                } else if (rq['负'] && val === '负') {
-                    oddsInput.value = rq['负'];
+                autoSyncHandicapFromOdds(gameItem);
+                const hc = gameItem && gameItem.querySelector('.handicap-container');
+                let handicap = '';
+                if (hc && !hc.classList.contains('hidden')) {
+                    const sign = hc.querySelector('.game-handicapSign').value;
+                    const hval = hc.querySelector('.game-handicapValue').value.trim();
+                    if (sign !== '0' && hval) handicap = sign + hval;
+                }
+                const rq = getRQEntry(odds, handicap, '让球胜平负');
+                if (rq && rq[val]) {
+                    oddsInput.value = rq[val];
                     oddsInput.dispatchEvent(new Event('input'));
                 }
             }
@@ -2611,279 +2689,89 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
     const matchHome = home;
     const matchAway = away;
     if (multiSelect) {
-        const list = document.createElement('div');
-        list.className = 'option-list';
+        // 多选模式：使用 createBetOptionControl 统一处理
         const opts = options.length ? options : [{ betOption: '', odds: '' }];
-        const isSelectMulti = (playType === '胜平负' || playType === '让球胜平负');
-        
-        opts.forEach(opt => {
-            const item = document.createElement('div');
-            item.className = 'option-item';
-            
-            if (isSelectMulti) {
-                // 胜平负/让球胜平负：下拉选择
-                const displayMap = { '胜': '主胜', '平': '平', '负': '客胜' };
-                let selectHtml = '<select class="option-bet-select" style="width:80px;margin-right:8px;">';
-                ['胜','平','负'].forEach(v => {
-                    const selected = opt.betOption === v ? 'selected' : '';
-                    selectHtml += `<option value="${v}" ${selected}>${displayMap[v]}</option>`;
-                });
-                selectHtml += '</select>';
-                item.innerHTML = `
-                    ${selectHtml}
-                    <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" style="width:70px;" />
-                    <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
-                `;
-            } else {
-                // 比分/总进球：文本输入
-                const placeholder = playType === '比分' ? '比分' : '总进球数';
-                item.innerHTML = `
-                    <input type="text" class="option-bet" placeholder="${placeholder}" value="${opt.betOption || ''}" />
-                    <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
-                    <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
-                `;
-            }
-            list.appendChild(item);
-        });
-        
-        const addBtn = document.createElement('button');
-        addBtn.type = 'button';
-        addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-        const btnText2 = playType === '比分' ? '比分' : (playType === '总进球' ? '总进球' : (playType === '让球胜平负' ? '让球' : '胜平负'));
-        addBtn.textContent = '＋ 添加' + btnText2 + '选项';
-        addBtn.onclick = function() { addOptionToList(this, playType); };
-        betContainer.appendChild(list);
-        betContainer.appendChild(addBtn);
-
-        // 自动填充
-        const date = document.getElementById('scheduleDate').value;
-        const home = matchHome;
-        const away = matchAway;
-        list.querySelectorAll('.option-item').forEach(item => {
-            const betInput = isSelectMulti ? item.querySelector('.option-bet-select') : item.querySelector('.option-bet');
-            const oddsInput = item.querySelector('.option-odds');
-            const fillOdds = function() {
-                const val = isSelectMulti ? betInput.value : betInput.value.trim();
-                if (val && home && away) {
-                    const odds = getOddsForMatch(date, home, away);
-                    if (!odds) return;
-                    if (playType === '比分') {
-                        if (odds['比分'] && odds['比分'][val]) {
-                            oddsInput.value = odds['比分'][val];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (odds['其他']) {
-                            const parsed = parseScore(val);
-                            if (parsed && parsed.totalGoals >= 6) {
-                                const key = parsed.result === '胜' ? '胜其他' : (parsed.result === '平' ? '平其他' : '负其他');
-                                if (odds['其他'][key]) {
-                                    oddsInput.value = odds['其他'][key];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                }
-                            }
-                        }
-                    } else if (playType === '总进球') {
-                        if (odds['总进球'] && odds['总进球'][val]) {
-                            oddsInput.value = odds['总进球'][val];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        }
-                    } else if (playType === '胜平负') {
-                        if (odds['胜'] && val === '胜') {
-                            oddsInput.value = odds['胜'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (odds['平'] && val === '平') {
-                            oddsInput.value = odds['平'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (odds['负'] && val === '负') {
-                            oddsInput.value = odds['负'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        }
-                    } else if (playType === '让球胜平负') {
-                        const rqList = odds['让球'] || [];
-                        const rq = rqList[0] || {};
-                        if (rq['胜'] && val === '胜') {
-                            oddsInput.value = rq['胜'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (rq['平'] && val === '平') {
-                            oddsInput.value = rq['平'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        } else if (rq['负'] && val === '负') {
-                            oddsInput.value = rq['负'];
-                            oddsInput.dispatchEvent(new Event('input'));
-                        }
-                    }
-                }
-            };
-            if (!isSelectMulti) {
-                betInput.addEventListener('input', fillOdds);
-            }
-            betInput.addEventListener('change', fillOdds);
-            setTimeout(fillOdds, 50);
-        });
+        createBetOptionControl(playType, opts, betContainer, matchHome, matchAway);
+        if (playType === '让球胜平负') setTimeout(function() { autoSyncHandicapFromOdds(div); }, 80);
     } else {
+        // 非多选模式：使用 createBetOptionControl
         const singleOpt = options.length > 0 ? options[0] : { betOption: '', odds: 0 };
         createBetOptionControl(playType, [singleOpt], betContainer, matchHome, matchAway);
     }
-    // 让球容器切换
-    if (!multiSelect) {
-        const handicapContainer = div.querySelector('.handicap-container');
-        if (playType !== '让球胜平负') {
-            handicapContainer.classList.add('hidden');
-        }
-        const playSelect = div.querySelector('.game-playType');
-        playSelect.addEventListener('change', function() {
-            const newPlayType = this.value;
-            const betContainer = div.querySelector('.bet-option-container');
-            const isMulti = (newPlayType === '胜平负' || newPlayType === '让球胜平负' || newPlayType === '比分' || newPlayType === '总进球');
-            if (isMulti) {
-                betContainer.innerHTML = '';
-                const list = document.createElement('div');
-                list.className = 'option-list';
-                const isSelectMulti = (newPlayType === '胜平负' || newPlayType === '让球胜平负');
-                const item = document.createElement('div');
-                item.className = 'option-item';
-                
-                if (isSelectMulti) {
-                    // 胜平负/让球胜平负：下拉选择
-                    const displayMap = { '胜': '主胜', '平': '平', '负': '客胜' };
-                    let selectHtml = '<select class="option-bet-select" style="width:80px;margin-right:8px;">';
-                    ['胜','平','负'].forEach(v => {
-                        selectHtml += `<option value="${v}">${displayMap[v]}</option>`;
-                    });
-                    selectHtml += '</select>';
-                    item.innerHTML = `
-                        ${selectHtml}
-                        <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" style="width:70px;" />
-                        <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
-                    `;
+    // 让球容器初始状态
+    const handicapContainer = div.querySelector('.handicap-container');
+    if (playType !== '让球胜平负') {
+        handicapContainer.classList.add('hidden');
+    }
+    
+    // 玩法切换事件监听器（所有模式都添加）
+    const playSelect = div.querySelector('.game-playType');
+    playSelect.addEventListener('change', function() {
+        const newPlayType = this.value;
+        const betContainer = div.querySelector('.bet-option-container');
+        const isMulti = (newPlayType === '胜平负' || newPlayType === '让球胜平负' || newPlayType === '比分' || newPlayType === '总进球');
+        
+        // 清空容器并重新创建内容
+        betContainer.innerHTML = '';
+        
+        // 移除可能存在的独立赔率输入框
+        const oldOddsInput = div.querySelector('.game-odds');
+        if (oldOddsInput) oldOddsInput.remove();
+        
+        if (isMulti) {
+            // 多选模式：使用 createBetOptionControl
+            const home = div.querySelector('.game-home').value.trim();
+            const away = div.querySelector('.game-away').value.trim();
+            createBetOptionControl(newPlayType, [{ betOption: '', odds: '' }], betContainer, home, away);
+            
+            // 隐藏让球容器（多选模式下让球选择器在选项内部处理）
+            const hc = div.querySelector('.handicap-container');
+            if (hc) hc.classList.add('hidden');
+            if (newPlayType === '让球胜平负') autoSyncHandicapFromOdds(div);
+        } else {
+            // 非多选模式：使用 createBetOptionControl
+            const home = div.querySelector('.game-home').value.trim();
+            const away = div.querySelector('.game-away').value.trim();
+            createBetOptionControl(newPlayType, [{ betOption: '', odds: 0 }], betContainer, home, away);
+            
+            // 处理让球容器显示/隐藏
+            const hc = div.querySelector('.handicap-container');
+            if (hc) {
+                if (newPlayType === '让球胜平负') {
+                    hc.classList.remove('hidden');
                 } else {
-                    // 比分/总进球：文本输入
-                    const placeholder = newPlayType === '比分' ? '比分' : '总进球数';
-                    item.innerHTML = `
-                        <input type="text" class="option-bet" placeholder="${placeholder}" value="" />
-                        <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" />
-                        <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
-                    `;
-                }
-                list.appendChild(item);
-                const addBtn = document.createElement('button');
-                addBtn.type = 'button';
-                addBtn.className = 'add-option-btn btn btn-cyan btn-sm';
-                const btnText3 = newPlayType === '比分' ? '比分' : (newPlayType === '总进球' ? '总进球' : (newPlayType === '让球胜平负' ? '让球' : '胜平负'));
-                addBtn.textContent = '＋ 添加' + btnText3 + '选项';
-                addBtn.onclick = function() { addOptionToList(this, newPlayType); };
-                betContainer.appendChild(list);
-                betContainer.appendChild(addBtn);
-                // 为新行绑定自动填充
-                const home = div.querySelector('.game-home').value.trim();
-                const away = div.querySelector('.game-away').value.trim();
-                const date = document.getElementById('scheduleDate').value;
-                list.querySelectorAll('.option-item').forEach(item => {
-                    const betInput = isSelectMulti ? item.querySelector('.option-bet-select') : item.querySelector('.option-bet');
-                    const oddsInput = item.querySelector('.option-odds');
-                    const fillOdds = function() {
-                        const val = isSelectMulti ? betInput.value : betInput.value.trim();
-                        if (val && home && away) {
-                            const odds = getOddsForMatch(date, home, away);
-                            if (!odds) return;
-                            if (newPlayType === '比分') {
-                                if (odds['比分'] && odds['比分'][val]) {
-                                    oddsInput.value = odds['比分'][val];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                } else if (odds['其他']) {
-                                    const parsed = parseScore(val);
-                                    if (parsed && parsed.totalGoals >= 6) {
-                                        const key = parsed.result === '胜' ? '胜其他' : (parsed.result === '平' ? '平其他' : '负其他');
-                                        if (odds['其他'][key]) {
-                                            oddsInput.value = odds['其他'][key];
-                                            oddsInput.dispatchEvent(new Event('input'));
-                                        }
-                                    }
-                                }
-                            } else if (newPlayType === '总进球') {
-                                if (odds['总进球'] && odds['总进球'][val]) {
-                                    oddsInput.value = odds['总进球'][val];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                }
-                            } else if (newPlayType === '胜平负') {
-                                if (odds['胜'] && val === '胜') {
-                                    oddsInput.value = odds['胜'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                } else if (odds['平'] && val === '平') {
-                                    oddsInput.value = odds['平'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                } else if (odds['负'] && val === '负') {
-                                    oddsInput.value = odds['负'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                }
-                            } else if (newPlayType === '让球胜平负') {
-                                const rqList = odds['让球'] || [];
-                                const rq = rqList[0] || {};
-                                if (rq['胜'] && val === '胜') {
-                                    oddsInput.value = rq['胜'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                } else if (rq['平'] && val === '平') {
-                                    oddsInput.value = rq['平'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                } else if (rq['负'] && val === '负') {
-                                    oddsInput.value = rq['负'];
-                                    oddsInput.dispatchEvent(new Event('input'));
-                                }
-                            }
-                        }
-                    };
-                    if (!isSelectMulti) {
-                        betInput.addEventListener('input', fillOdds);
-                    }
-                    betInput.addEventListener('change', fillOdds);
-                    setTimeout(fillOdds, 50);
-                });
-                list.querySelectorAll('input, select').forEach(inp => {
-                    inp.addEventListener('input', function() { updatePassCheckboxes(); calculateAll(); });
-                    inp.addEventListener('change', function() { updatePassCheckboxes(); calculateAll(); });
-                });
-                const hc = div.querySelector('.handicap-container');
-                if (hc) hc.classList.add('hidden');
-                const oddsInput = div.querySelector('.game-odds');
-                if (oddsInput) oddsInput.remove();
-            } else {
-                betContainer.innerHTML = '';
-                const home = div.querySelector('.game-home').value.trim();
-                const away = div.querySelector('.game-away').value.trim();
-                createBetOptionControl(newPlayType, [{ betOption: '', odds: 0 }], betContainer, home, away);
-                const hc = div.querySelector('.handicap-container');
-                if (hc) {
-                    if (newPlayType === '让球胜平负') {
-                        hc.classList.remove('hidden');
-                    } else {
-                        hc.classList.add('hidden');
-                        hc.querySelector('.game-handicapSign').value = '0';
-                        hc.querySelector('.game-handicapValue').value = '';
-                    }
-                }
-                let oddsInput = div.querySelector('.game-odds');
-                if (!oddsInput) {
-                    const wrapper = div.querySelector('.bet-option-wrapper');
-                    const input = document.createElement('input');
-                    input.type = 'number';
-                    input.className = 'game-odds';
-                    input.placeholder = '赔率';
-                    input.step = '0.01';
-                    input.min = '0.01';
-                    input.value = '';
-                    wrapper.parentNode.insertBefore(input, wrapper.nextSibling);
-                    input.addEventListener('input', function() { updatePassCheckboxes(); calculateAll(); });
-                    input.addEventListener('change', function() { updatePassCheckboxes(); calculateAll(); });
+                    hc.classList.add('hidden');
+                    hc.querySelector('.game-handicapSign').value = '0';
+                    hc.querySelector('.game-handicapValue').value = '';
                 }
             }
-            updatePassCheckboxes();
-            calculateAll();
-        });
-    }
+            
+            // 非多选模式需要独立的赔率输入框
+            let oddsInput = div.querySelector('.game-odds');
+            if (!oddsInput) {
+                const wrapper = div.querySelector('.bet-option-wrapper');
+                const input = document.createElement('input');
+                input.type = 'number';
+                input.className = 'game-odds';
+                input.placeholder = '赔率';
+                input.step = '0.01';
+                input.min = '0.01';
+                input.value = '';
+                wrapper.parentNode.insertBefore(input, wrapper.nextSibling);
+                input.addEventListener('input', function() { updatePassCheckboxes(); calculateAll(); });
+                input.addEventListener('change', function() { updatePassCheckboxes(); calculateAll(); });
+            }
+        }
+        updatePassCheckboxes();
+        calculateAll();
+    });
     // 主客队变化时重新填充赔率
     div.querySelectorAll('.game-home, .game-away').forEach(el => {
         el.addEventListener('change', function() {
             const home = div.querySelector('.game-home').value.trim();
             const away = div.querySelector('.game-away').value.trim();
+            const playType = div.querySelector('.game-playType').value;
+            if (playType === '让球胜平负') autoSyncHandicapFromOdds(div);
             if (home && away) {
                 const date = document.getElementById('scheduleDate').value;
                 const odds = getOddsForMatch(date, home, away);
@@ -2980,18 +2868,27 @@ function getGameDataFromUI() {
                 handicap = '0';
             }
         }
+        if (playType === '让球胜平负') {
+            const odds = getOddsForMatch(date, home, away);
+            handicap = resolveHandicap(handicap === '0' ? '' : handicap, odds, playType);
+        }
         const betContainer = item.querySelector('.bet-option-container');
         let options = [];
-        const isMulti = (playType === '比分' || playType === '总进球');
+        const isMulti = (playType === '胜平负' || playType === '让球胜平负' || playType === '比分' || playType === '总进球');
         if (isMulti) {
             const list = betContainer.querySelector('.option-list');
             if (list) {
                 const items = list.querySelectorAll('.option-item');
                 items.forEach(el => {
-                    const bet = el.querySelector('.option-bet').value.trim();
-                    const odds = parseFloat(el.querySelector('.option-odds').value) || 0;
-                    if (bet && odds > 0) {
-                        options.push({ betOption: bet, odds: odds });
+                    const betSelect = el.querySelector('.option-bet-select');
+                    const betText = el.querySelector('.option-bet');
+                    const oddsInput = el.querySelector('.option-odds');
+                    if (oddsInput) {
+                        const bet = betSelect ? betSelect.value : (betText ? betText.value.trim() : '');
+                        const odds = parseFloat(oddsInput.value) || 0;
+                        if (bet && odds > 0) {
+                            options.push({ betOption: bet, odds: odds });
+                        }
                     }
                 });
             }
@@ -3000,11 +2897,12 @@ function getGameDataFromUI() {
             const bet = betInput ? betInput.value.trim() : '';
             const oddsInput = item.querySelector('.game-odds');
             const odds = oddsInput ? parseFloat(oddsInput.value) || 0 : 0;
-            if (bet && odds > 0) {
-                options.push({ betOption: bet, odds: odds });
+            // 即使没有投注选项或赔率为0，也添加一个空选项用于计算
+            if (bet) {
+                options.push({ betOption: bet, odds: odds > 0 ? odds : 1 });
             }
         }
-        if (home && away && options.length > 0) {
+        if (home && away) {
             games.push({ match, home, away, playType, handicap, options, result: '', isWin: null, date: date });
         }
     });
@@ -3031,8 +2929,15 @@ function loadGameDataToUI(games) {
 //  过关方式
 // ================================================================
 function updatePassCheckboxes() {
-    const games = getGameDataFromUI();
-    const n = games.length;
+    // 直接从UI获取有队名的比赛数量，不要求必须有投注选项
+    const items = document.querySelectorAll('#gameListContainer .game-item');
+    let n = 0;
+    items.forEach(item => {
+        const home = item.querySelector('.game-home').value.trim();
+        const away = item.querySelector('.game-away').value.trim();
+        if (home && away) n++;
+    });
+    
     const container = document.getElementById('passCheckboxes');
     const shortcutContainer = document.getElementById('passShortcuts');
     container.innerHTML = '';
@@ -3120,10 +3025,34 @@ function cartesian(arrays) {
 function calculateAll() {
     const games = getGameDataFromUI();
     const n = games.length;
+    console.log('有效比赛数量:', n);
+    
+    // 检查是否有有效的比赛数据
+    if (n === 0) {
+        document.getElementById('amountInput').value = '0.00';
+        document.getElementById('spRangeDisplay').textContent = '—';
+        document.getElementById('winInput').value = '—';
+        renderComboDetails([]);
+        return { comboDetails: [], totalWin: 0, minSp: 0, maxSp: 0, totalSpSum: 0 };
+    }
+    
     const combos = getSelectedPassCombos();
     const persons = getPersonsFromUI();
     const totalMultiplier = persons.reduce((s,p) => s + p.multiplier, 0);
+    console.log('选中的过关方式:', combos);
+    console.log('人员倍数总和:', totalMultiplier);
+    
+    // 检查是否选择了过关方式
+    if (combos.length === 0) {
+        document.getElementById('amountInput').value = '0.00';
+        document.getElementById('spRangeDisplay').textContent = '—';
+        document.getElementById('winInput').value = '—';
+        renderComboDetails([]);
+        return { comboDetails: [], totalWin: 0, minSp: 0, maxSp: 0, totalSpSum: 0 };
+    }
+    
     const gameOptions = games.map(g => g.options.map(opt => ({ ...opt, gameIdx: games.indexOf(g) })));
+    console.log('每场比赛的投注选项:', gameOptions);
     let totalUnits = 0;
     let comboDetails = [];
     let allSpValues = [];
@@ -3162,6 +3091,8 @@ function calculateAll() {
             });
         }
     });
+    console.log('总注数:', totalUnits);
+    console.log('所有SP值:', allSpValues);
     const totalStake = totalUnits * 2;
     document.getElementById('amountInput').value = totalStake.toFixed(2);
     let minSp = Infinity, maxSp = -Infinity;
@@ -3174,12 +3105,16 @@ function calculateAll() {
     }
     const spRangeDisplay = (minSp === Infinity || maxSp === -Infinity) ? '—' : `${minSp.toFixed(3)} ～ ${maxSp.toFixed(3)}`;
     document.getElementById('spRangeDisplay').textContent = spRangeDisplay;
-    const minWin = totalMultiplier * 2 * minSp;
-    const maxWin = totalMultiplier * 2 * maxSp;
+    // 正确计算中奖金额区间：
+    // 最小中奖金额 = 所有组合都中最低SP = 倍数 × 2 × minSp × 组合数
+    // 最大中奖金额 = 所有组合都中各自的SP = 倍数 × 2 × totalSp（所有SP之和）
+    const totalSpSum = allSpValues.reduce((s, v) => s + v, 0);
+    const comboCount = allSpValues.length;
+    const minWin = totalMultiplier * 2 * minSp * comboCount;
+    const maxWin = totalMultiplier * 2 * totalSpSum;
     const winDisplay = (minSp === Infinity || maxSp === -Infinity) ? '—' : `${minWin.toFixed(2)} ～ ${maxWin.toFixed(2)}`;
     document.getElementById('winInput').value = winDisplay;
     renderComboDetails(comboDetails);
-    const totalSpSum = allSpValues.reduce((s, v) => s + v, 0);
     return { comboDetails, totalWin: 0, minSp, maxSp, totalSpSum };
 }
 function renderComboDetails(comboDetails) {
@@ -3471,26 +3406,9 @@ function saveResults() {
         if (control.tagName === 'SELECT') val = control.value;
         else if (control.tagName === 'INPUT') val = control.value.trim();
         bet.games[idx].result = val;
-        const date = bet.games[idx].date || '';
-        let oddsObj = null;
-        if (date) {
-            const key = date + '_' + bet.games[idx].home + '_' + bet.games[idx].away;
-            oddsObj = oddsData[key] || null;
-        }
-        if (!oddsObj) {
-            for (const [key, odds] of Object.entries(oddsData)) {
-                const parts = key.split('_');
-                if (parts.length === 3) {
-                    const home = parts[1];
-                    const away = parts[2];
-                    if (bet.games[idx].home === home && bet.games[idx].away === away) {
-                        oddsObj = odds;
-                        break;
-                    }
-                }
-            }
-        }
-        const matched = bet.games[idx].options.some(o => isOptionMatched(o.betOption, val, bet.games[idx].handicap || '', oddsObj));
+        const oddsObj = getOddsObjForGame(bet.games[idx]);
+        ensureGameHandicap(bet.games[idx], oddsObj);
+        const matched = bet.games[idx].options.some(o => matchOptionForGame(o.betOption, val, bet.games[idx], oddsObj));
         bet.games[idx].isWin = (val && matched);
         if (!val) allSelected = false;
     });
@@ -3717,8 +3635,12 @@ function renderTable() {
         }
         let winDisplay = '—';
         if (bet.status === 'pending' && bet.spRange && bet.spRange.min > 0 && bet.spRange.max > 0) {
-            const minWin = totalMultiplier * 2 * bet.spRange.min;
-            const maxWin = totalMultiplier * 2 * bet.spRange.max;
+            // 正确计算中奖金额区间：
+            // 最小中奖金额 = 所有组合都中最低SP = 倍数 × 2 × minSp × 组合数
+            // 最大中奖金额 = 所有组合都中各自的SP = 倍数 × 2 × totalSp（所有SP之和）
+            const comboCount = (bet.totalUnits || 0) / totalMultiplier;
+            const minWin = totalMultiplier * 2 * bet.spRange.min * comboCount;
+            const maxWin = totalMultiplier * 2 * (bet.totalSp || 0);
             winDisplay = minWin.toFixed(2) + ' ～ ' + maxWin.toFixed(2);
         } else if (bet.status !== 'pending') {
             winDisplay = bet.winAmount.toFixed(2);
@@ -3895,6 +3817,12 @@ function init() {
         const el = document.getElementById(id);
         if (el) el.value = tomorrowStr;
     });
+
+    // [注入投注记录] 来自用户本地数据
+    try {
+        var _injectedBets = {"bets":[{"id":"mqs5e99r1ewh","passCombos":[6],"persons":[{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":2},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":224,"totalAmount":448,"totalSp":3543.195341125441,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":2.66},{"betOption":"负","odds":3.32}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26},{"betOption":"负","odds":7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"胜平负","handicap":"","options":[{"betOption":"负","odds":1.19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.87},{"betOption":"负","odds":1.44}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.5},{"betOption":"负","odds":1.78}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":21.97961583552,"max":805.3794693},"createdAt":"2026-06-24T14:07:47.055Z"},{"id":"mqs5j7bymeme","passCombos":[6],"persons":[{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"岩哥","multiplier":3},{"name":"超哥","multiplier":1}],"totalUnits":112,"totalAmount":224,"totalSp":2054.86306704,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86},{"betOption":"负","odds":1.52}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":1.68}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15},{"betOption":"平","odds":3.85}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.15},{"betOption":"负","odds":2.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":1.78},{"betOption":"平","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":32.015126707200004,"max":341.86725896400003},"createdAt":"2026-06-24T14:11:37.822Z"},{"id":"mqs5l8oc5ep6","passCombos":[4],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"B王哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":6692.400000000001,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"2:2","odds":11}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"0:0","odds":18}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":6.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"3:0","odds":5.2}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":6692.400000000001,"max":6692.400000000001},"createdAt":"2026-06-24T14:13:12.876Z"},{"id":"mqs5mlqay036","passCombos":[2],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":96,"winAmount":0,"games":[{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"0:2","odds":8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":96,"max":96},"createdAt":"2026-06-24T14:14:16.450Z"},{"id":"mqs5plvicpn1","passCombos":[3],"persons":[{"name":"超哥","multiplier":10},{"name":"麟哥","multiplier":10},{"name":"蓉哥","multiplier":60},{"name":"岩哥","multiplier":25}],"totalUnits":105,"totalAmount":210,"totalSp":33.2112,"winAmount":0,"games":[{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":3.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":3.4}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":33.2112,"max":33.2112},"createdAt":"2026-06-24T14:16:36.606Z"},{"id":"mqs5ua9pzlrp","passCombos":[4],"persons":[{"name":"麟哥","multiplier":2},{"name":"蓉哥","multiplier":3},{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":10}],"totalUnits":25,"totalAmount":50,"totalSp":130.18236,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.65}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":130.18236,"max":130.18236},"createdAt":"2026-06-24T14:20:14.845Z"},{"id":"mqs5w2cd329f","passCombos":[3],"persons":[{"name":"超哥","multiplier":5},{"name":"岩哥","multiplier":5},{"name":"麟哥","multiplier":3},{"name":"蓉哥","multiplier":2}],"totalUnits":15,"totalAmount":30,"totalSp":124.19999999999999,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"半全场","handicap":"","options":[{"betOption":"胜平","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"半全场","handicap":"","options":[{"betOption":"负负","odds":2.25}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"半全场","handicap":"","options":[{"betOption":"平负","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":124.19999999999999,"max":124.19999999999999},"createdAt":"2026-06-24T14:21:37.885Z"},{"id":"mqs5xymkz45p","passCombos":[3],"persons":[{"name":"超哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":2}],"totalUnits":48,"totalAmount":96,"totalSp":1137.0449999999998,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3},{"betOption":"3","odds":3.8}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.55},{"betOption":"5","odds":7.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.85},{"betOption":"5","odds":8.8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":66.20249999999999,"max":257.488},"createdAt":"2026-06-24T14:23:06.380Z"},{"id":"mqs5zcl0xtoz","passCombos":[3],"persons":[{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":1}],"totalUnits":32,"totalAmount":64,"totalSp":518.9046250000001,"winAmount":0,"games":[{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":4.4},{"betOption":"3","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"总进球","handicap":"","options":[{"betOption":"3","odds":3.65},{"betOption":"4","odds":6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3.25},{"betOption":"3","odds":3.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":40.925625000000004,"max":95.04},"createdAt":"2026-06-24T14:24:11.124Z"},{"id":"mqs6268n5gle","passCombos":[4],"persons":[{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"麟哥","multiplier":1},{"name":"岩哥","multiplier":2}],"totalUnits":90,"totalAmount":180,"totalSp":29411.853999999992,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":4.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"2:1","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"1:4","odds":19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"2:0","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"1:2","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":5.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":637.56,"max":3277.1199999999994},"createdAt":"2026-06-24T14:26:22.871Z"}],"exportedAt":"2026-06-24T14:29:38.861Z"};
+        localStorage.setItem(STORAGE_KEY_BETS, JSON.stringify(_injectedBets));
+    } catch(e) { /* 静默忽略注入错误 */ }
 
     loadFromStorage();
     renderAll();
@@ -14910,11 +14838,24 @@ init();
 var _onlineOddsTimestamp = null; // 记录在线数据的更新时间
 
 function loadOnlineOdds() {
-    return fetch('odds_data.json?v=2&t=' + Date.now(), { cache: 'no-cache' })
+    // 优先尝试从本地代理服务器获取数据
+    return fetch('http://127.0.0.1:51888/odds?t=' + Date.now(), { cache: 'no-cache' })
         .then(function(r) { return r.json(); })
         .then(function(json) {
-            _onlineOddsTimestamp = json.updated;
-            return json.data;
+            if (json.ok && json.data) {
+                _onlineOddsTimestamp = new Date().toLocaleString();
+                return json.data;
+            }
+            throw new Error('代理服务器返回无效数据');
+        })
+        .catch(function() {
+            // 代理服务器失败，尝试从本地JSON文件获取
+            return fetch('odds_data.json?v=2&t=' + Date.now(), { cache: 'no-cache' })
+                .then(function(r) { return r.json(); })
+                .then(function(json) {
+                    _onlineOddsTimestamp = json.updated;
+                    return json.data;
+                });
         });
 }
 
