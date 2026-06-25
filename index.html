@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>世界杯足彩记录 v7.52（完整版 - 总进球赔率）</title>
+    <title>世界杯足彩记录 v7.56（完整版 - 总进球赔率）</title>
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1084,6 +1084,7 @@
                 <button class="btn btn-outline btn-sm" onclick="exportOdds()">📥 导出赔率</button>
                 <button class="btn btn-outline btn-sm" onclick="document.getElementById('importOddsInput').click()">📤 导入赔率</button>
                 <input type="file" id="importOddsInput" accept=".json" style="display:none" onchange="importOdds(event)" />
+                <button class="btn btn-cyan btn-sm" onclick="openArchiveModal()">🗄 数据存档</button>
             </div>
             <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑 清空</button>
         </div>
@@ -1174,7 +1175,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 世界杯足彩记录 v7.51（完整版 - 总进球赔率）</div>
+    <div class="version-footer">⚽ 世界杯足彩记录 v7.56（完整版 - 总进球赔率）</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -1276,6 +1277,40 @@
         <div id="oddsListContainer"></div>
         <div class="form-actions">
             <button class="btn btn-outline" onclick="closeModal('oddsModal')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 数据存档模态框 ===== -->
+<div class="modal-overlay" id="archiveModal">
+    <div class="modal" style="max-width:800px;">
+        <h3>🗄 数据存档（保存到本地文件）</h3>
+        <div style="background:#fef3c7;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;color:#92400e;line-height:1.6;">
+            💡 <b>使用说明：</b><br>
+            • 点击"💾 下载此日"会将该比赛日期的数据保存为 JSON 文件到<b>浏览器下载文件夹</b>（通常 <code>C:\Users\Jin\Downloads\</code>）<br>
+            • 文件名格式：<code>jinbet_archive_2026-06-25.json</code><br>
+            • 点击"📂 导入存档查看"可选择之前下载的 JSON 文件查看详情<br>
+            • 清空页面数据<b>不影响</b>已下载的存档文件
+        </div>
+        <div class="batch-toolbar">
+            <button class="btn btn-primary btn-sm" onclick="archiveAllByGameDate()">💾 一键存档所有比赛日期（下载文件）</button>
+            <button class="btn btn-cyan btn-sm" onclick="document.getElementById('importArchiveInput').click()">📂 导入存档查看</button>
+            <input type="file" id="importArchiveInput" accept=".json" multiple style="display:none" onchange="importArchives(event)" />
+        </div>
+        <div style="margin-top:8px;margin-bottom:6px;">
+            <label style="font-size:13px;color:#374151;font-weight:600;">📋 当前记录按比赛日期分组：</label>
+            <div id="currentBetsByDateContainer" style="max-height:180px;overflow-y:auto;background:#fffbeb;border-radius:10px;padding:10px;border:1px solid #fde68a;margin-top:6px;">
+                <div style="text-align:center;color:#9ca3af;padding:10px;">暂无记录</div>
+            </div>
+        </div>
+        <div>
+            <label style="font-size:13px;color:#374151;font-weight:600;">📂 已导入的存档（可查看）：</label>
+            <div id="archiveListContainer" style="max-height:340px;overflow-y:auto;background:#fafbfc;border-radius:10px;padding:10px;border:1px solid #eef0f4;margin-top:6px;">
+                <div style="text-align:center;color:#9ca3af;padding:20px;">暂未导入任何存档<br><span style="font-size:12px;">点击"📂 导入存档查看"按钮选择 JSON 文件</span></div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-outline" onclick="closeModal('archiveModal')">关闭</button>
         </div>
     </div>
 </div>
@@ -3864,6 +3899,247 @@ function importOdds(event) {
 // ================================================================
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ===== 数据存档功能（保存到本地文件，不受清空影响） =====
+let sessionArchives = []; // 当前会话内已导入的存档
+
+function getBetGameDate(bet) {
+    if (!bet.games || bet.games.length === 0) return null;
+    for (let g of bet.games) {
+        if (g.gameDate) return g.gameDate;
+    }
+    for (let date in SCHEDULE) {
+        for (let g of bet.games) {
+            if (SCHEDULE[date] && SCHEDULE[date].some(s => s.home === g.home && s.away === g.away)) {
+                return date;
+            }
+        }
+    }
+    return null;
+}
+
+function groupBetsByGameDate() {
+    const groups = {};
+    bets.forEach((bet) => {
+        const date = getBetGameDate(bet) || '未分类';
+        if (!groups[date]) groups[date] = [];
+        groups[date].push(bet);
+    });
+    return groups;
+}
+
+function openArchiveModal() {
+    renderCurrentBetsByDate();
+    renderSessionArchives();
+    openModal('archiveModal');
+}
+
+function renderCurrentBetsByDate() {
+    const container = document.getElementById('currentBetsByDateContainer');
+    if (bets.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:10px;">暂无记录</div>';
+        return;
+    }
+    const groups = groupBetsByGameDate();
+    const dates = Object.keys(groups).sort();
+    container.innerHTML = dates.map(date => {
+        const items = groups[date];
+        const totalAmount = items.reduce((s, b) => s + (b.totalAmount || 0), 0);
+        return `<div style="background:white;padding:8px 12px;border-radius:6px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;border:1px solid #fef3c7;">
+            <div>
+                <span style="font-weight:600;color:#92400e;">📅 ${date}</span>
+                <span style="color:#6b7280;font-size:12px;margin-left:8px;">${items.length} 条记录　¥${totalAmount.toFixed(0)}</span>
+            </div>
+            <button class="btn btn-gold btn-xs" onclick="archiveSingleDate('${date}')">💾 下载此日</button>
+        </div>`;
+    }).join('');
+}
+
+function archiveSingleDate(date) {
+    const groups = groupBetsByGameDate();
+    const items = groups[date];
+    if (!items || items.length === 0) { showToast('❌ 该日期无记录'); return; }
+    const data = {
+        date: date,
+        timestamp: new Date().toISOString(),
+        bets: items,
+        oddsData: oddsData,
+        persons: persons
+    };
+    downloadArchiveFile(data, date);
+    showToast('✅ 已下载存档：' + date);
+}
+
+function archiveAllByGameDate() {
+    if (bets.length === 0) { showToast('❌ 暂无记录可存档'); return; }
+    const groups = groupBetsByGameDate();
+    const dates = Object.keys(groups);
+    if (!confirm(`将下载 ${dates.length} 个比赛日期的存档文件（每个日期一个 JSON），确定继续吗？`)) return;
+    dates.forEach((date, idx) => {
+        setTimeout(() => {
+            const data = {
+                date: date,
+                timestamp: new Date().toISOString(),
+                bets: groups[date],
+                oddsData: oddsData,
+                persons: persons
+            };
+            downloadArchiveFile(data, date);
+        }, idx * 400);
+    });
+    showToast('✅ 开始下载 ' + dates.length + ' 个存档文件');
+}
+
+function downloadArchiveFile(data, date) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `jinbet_archive_${date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function importArchives(event) {
+    const files = Array.from(event.target.files);
+    if (files.length === 0) return;
+    let loaded = 0;
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data.date || !data.bets) throw new Error('文件格式不正确');
+                const exists = sessionArchives.findIndex(a => a.date === data.date);
+                if (exists >= 0) sessionArchives[exists] = data;
+                else sessionArchives.push(data);
+                loaded++;
+                if (loaded === files.length) {
+                    sessionArchives.sort((a, b) => b.date.localeCompare(a.date));
+                    renderSessionArchives();
+                    showToast('✅ 已导入 ' + loaded + ' 个存档');
+                }
+            } catch (err) {
+                showToast('❌ 文件 ' + file.name + ' 读取失败：' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    });
+    event.target.value = '';
+}
+
+function renderSessionArchives() {
+    const container = document.getElementById('archiveListContainer');
+    if (sessionArchives.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px;">暂未导入任何存档<br><span style="font-size:12px;">点击"📂 导入存档查看"按钮选择 JSON 文件</span></div>';
+        return;
+    }
+    container.innerHTML = sessionArchives.map((data, idx) => {
+        const betCount = (data.bets || []).length;
+        const winCount = (data.bets || []).filter(b => b.status === 'win').length;
+        const totalAmount = (data.bets || []).reduce((s, b) => s + (b.totalAmount || 0), 0);
+        const time = data.timestamp ? new Date(data.timestamp).toLocaleString('zh-CN') : '—';
+        return `<div style="background:white;padding:12px;border-radius:8px;margin-bottom:8px;border:1px solid #eef0f4;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+            <div style="flex:1;cursor:pointer;" onclick="viewArchiveDetail(${idx})">
+                <div style="font-weight:600;color:#374151;font-size:14px;">📅 ${data.date}</div>
+                <div style="font-size:12px;color:#6b7280;margin-top:4px;">
+                    📋 ${betCount} 条记录　✅ 中奖 ${winCount} 条　💰 投注 ¥${totalAmount.toFixed(0)}　🕐 ${time}
+                </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-shrink:0;">
+                <button class="btn btn-cyan btn-xs" onclick="viewArchiveDetail(${idx})">👁 查看</button>
+                <button class="btn btn-primary btn-xs" onclick="loadArchiveToCurrent(${idx})">📥 载入</button>
+                <button class="btn btn-danger btn-xs" onclick="removeSessionArchive(${idx})">🗑 移除</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function removeSessionArchive(idx) {
+    sessionArchives.splice(idx, 1);
+    renderSessionArchives();
+    showToast('🗑 已从列表中移除');
+}
+
+function viewArchiveDetail(idx) {
+    const data = sessionArchives[idx];
+    if (!data) return;
+    showArchiveDetailModal(data.date, data.bets || []);
+}
+
+function showArchiveDetailModal(date, archivedBets) {
+    const totalAmount = archivedBets.reduce((s, b) => s + (b.totalAmount || 0), 0);
+    const totalWin = archivedBets.reduce((s, b) => s + (b.winAmount || 0), 0);
+    const winCount = archivedBets.filter(b => b.status === 'win').length;
+    const loseCount = archivedBets.filter(b => b.status === 'lose').length;
+    const pendingCount = archivedBets.filter(b => b.status === 'pending').length;
+    const detailHtml = `<div class="modal-overlay active" id="archiveDetailModal" style="z-index:9999;">
+        <div class="modal" style="max-width:960px;">
+            <h3>📅 ${date} 存档详情（共 ${archivedBets.length} 条）</h3>
+            <div style="display:flex;gap:8px;margin-bottom:10px;font-size:13px;flex-wrap:wrap;">
+                <span class="badge" style="background:#10b981;color:white;padding:4px 10px;border-radius:12px;">✅ 中奖 ${winCount}</span>
+                <span class="badge" style="background:#ef4444;color:white;padding:4px 10px;border-radius:12px;">❌ 未中 ${loseCount}</span>
+                <span class="badge" style="background:#f59e0b;color:white;padding:4px 10px;border-radius:12px;">⏳ 待开 ${pendingCount}</span>
+                <span class="badge" style="background:#3b82f6;color:white;padding:4px 10px;border-radius:12px;">💰 投注 ¥${totalAmount.toFixed(0)}</span>
+                <span class="badge" style="background:#8b5cf6;color:white;padding:4px 10px;border-radius:12px;">💎 中奖 ¥${totalWin.toFixed(0)}</span>
+            </div>
+            <div id="archiveBetsList" style="max-height:500px;overflow-y:auto;background:#fafbfc;border-radius:10px;padding:10px;border:1px solid #eef0f4;">
+                ${renderArchiveBetsTable(archivedBets)}
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-outline" onclick="document.getElementById('archiveDetailModal').remove();">关闭</button>
+            </div>
+        </div>
+    </div>`;
+    const old = document.getElementById('archiveDetailModal');
+    if (old) old.remove();
+    const div = document.createElement('div');
+    div.innerHTML = detailHtml;
+    document.body.appendChild(div.firstChild);
+    document.getElementById('archiveDetailModal').addEventListener('click', function(e) {
+        if (e.target === this) this.remove();
+    });
+}
+
+function renderArchiveBetsTable(archivedBets) {
+    if (archivedBets.length === 0) return '<div style="text-align:center;color:#9ca3af;padding:20px;">该日期无记录</div>';
+    return `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr style="background:#f3f4f6;">
+            <th style="padding:8px;text-align:left;">对阵</th>
+            <th style="padding:8px;text-align:center;">过关</th>
+            <th style="padding:8px;text-align:right;">金额</th>
+            <th style="padding:8px;text-align:right;">中奖</th>
+            <th style="padding:8px;text-align:center;">状态</th>
+        </tr></thead>
+        <tbody>${archivedBets.map(b => {
+            const matches = (b.games || []).map(g => g.home + 'vs' + g.away).join(' / ');
+            const statusMap = { 'win':'✅ 中奖', 'lose':'❌ 未中', 'pending':'⏳ 待开' };
+            const statusColor = { 'win':'#10b981', 'lose':'#ef4444', 'pending':'#f59e0b' };
+            return `<tr style="border-bottom:1px solid #eef0f4;">
+                <td style="padding:8px;">${matches}</td>
+                <td style="padding:8px;text-align:center;">${(b.passCombos||[]).join('/')}</td>
+                <td style="padding:8px;text-align:right;">¥${(b.totalAmount||0).toFixed(0)}</td>
+                <td style="padding:8px;text-align:right;">¥${(b.winAmount||0).toFixed(2)}</td>
+                <td style="padding:8px;text-align:center;color:${statusColor[b.status]||'#9ca3af'}">${statusMap[b.status]||'—'}</td>
+            </tr>`;
+        }).join('')}</tbody>
+    </table>`;
+}
+
+function loadArchiveToCurrent(idx) {
+    const data = sessionArchives[idx];
+    if (!data) return;
+    if (!confirm(`确定要用 ${data.date} 的存档替换当前所有数据吗？\n（建议先下载当前数据的存档）`)) return;
+    bets = data.bets || [];
+    oddsData = data.oddsData || {};
+    persons = data.persons || [];
+    saveAll();
+    renderAll();
+    showToast('✅ 已载入 ' + data.date + ' 的存档（' + bets.length + ' 条记录）');
+    closeModal('archiveModal');
+}
 document.querySelectorAll('.modal-overlay').forEach(el => {
     el.addEventListener('click', function(e) {
         if (e.target === this) this.classList.remove('active');
