@@ -290,6 +290,14 @@ def inject_into_html(odds_data, match_order):
     with open(LOCAL_HTML, 'r', encoding='utf-8') as f:
         content = f.read()
 
+    # 清理旧的注入代码（防止重复注入）
+    import re
+    old_content_length = len(content)
+    content = re.sub(r'\n+// === 网易赔率[\s\S]*?// === 结束注入 ===\n', '\n', content)
+    cleaned_count = old_content_length - len(content)
+    if cleaned_count > 0:
+        log(f"  🧹 清理旧注入代码: 删除 {cleaned_count} 字符")
+
     # 备份
     os.makedirs(BACKUP_DIR, exist_ok=True)
     ts = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')

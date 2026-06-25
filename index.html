@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>世界杯足彩记录 v7.50（完整版 - 总进球赔率）</title>
+    <title>世界杯足彩记录 v7.52（完整版 - 总进球赔率）</title>
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1174,7 +1174,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 世界杯足彩记录 v7.50（完整版 - 总进球赔率）</div>
+    <div class="version-footer">⚽ 世界杯足彩记录 v7.51（完整版 - 总进球赔率）</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -2037,12 +2037,52 @@ function addBatchRow(home = '', away = '', score = '') {
     div.className = 'batch-row';
     const homeId = 'batch_home_' + (batchRowCounter++);
     const awayId = 'batch_away_' + (batchRowCounter++);
-    const scoreId = 'batch_score_' + (batchRowCounter++);
     const homeDatalist = getTeamDatalistHTML(homeId);
     const awayDatalist = getTeamDatalistHTML(awayId);
-    // 常见比分选项
-    const scoreOptions = ['0:0','1:0','0:1','1:1','2:0','0:2','2:1','1:2','2:2','3:0','0:3','3:1','1:3','3:2','2:3','3:3','4:0','0:4','4:1','1:4','4:2','2:4','5:0','0:5','5:1','1:5','5:2','2:5','6:0','0:6','6:1','1:6'];
-    const scoreDatalist = `<datalist id="${scoreId}">${scoreOptions.map(s=>`<option value="${s}">`).join('')}</datalist>`;
+    // 使用赔率管理中的完整比分选项
+    const scoreOptions = [
+        { val:'', label:'— 选择 —' },
+        // 预设比分（主胜）
+        { val:'1:0', label:'1:0' },
+        { val:'2:0', label:'2:0' },
+        { val:'2:1', label:'2:1' },
+        { val:'3:0', label:'3:0' },
+        { val:'3:1', label:'3:1' },
+        { val:'3:2', label:'3:2' },
+        { val:'4:0', label:'4:0' },
+        { val:'4:1', label:'4:1' },
+        { val:'4:2', label:'4:2' },
+        { val:'5:0', label:'5:0' },
+        { val:'5:1', label:'5:1' },
+        { val:'5:2', label:'5:2' },
+        // 平局
+        { val:'0:0', label:'0:0' },
+        { val:'1:1', label:'1:1' },
+        { val:'2:2', label:'2:2' },
+        { val:'3:3', label:'3:3' },
+        // 客胜
+        { val:'0:1', label:'0:1' },
+        { val:'0:2', label:'0:2' },
+        { val:'1:2', label:'1:2' },
+        { val:'0:3', label:'0:3' },
+        { val:'1:3', label:'1:3' },
+        { val:'2:3', label:'2:3' },
+        { val:'0:4', label:'0:4' },
+        { val:'1:4', label:'1:4' },
+        { val:'2:4', label:'2:4' },
+        { val:'0:5', label:'0:5' },
+        { val:'1:5', label:'1:5' },
+        { val:'2:5', label:'2:5' },
+        // 其他
+        { val:'胜其他', label:'★ 胜其他' },
+        { val:'平其他', label:'★ 平其他' },
+        { val:'负其他', label:'★ 负其他' },
+        // 自定义
+        { val:'__custom__', label:'✎ 自定义' },
+    ];
+    const optionHtml = scoreOptions.map(opt => 
+        `<option value="${opt.val}" ${opt.val===score?'selected':''}>${opt.label}</option>`
+    ).join('');
     div.innerHTML = `
         <div class="team-pair">
             <input type="text" class="batch-home" list="${homeId}" placeholder="主队" value="${home}" autocomplete="off" />
@@ -2051,10 +2091,26 @@ function addBatchRow(home = '', away = '', score = '') {
             <input type="text" class="batch-away" list="${awayId}" placeholder="客队" value="${away}" autocomplete="off" />
             ${awayDatalist}
         </div>
-        <input type="text" class="batch-score" list="${scoreId}" placeholder="比分" value="${score}" autocomplete="off" style="width:80px;text-align:center;" />
-        ${scoreDatalist}
+        <div style="display:flex;align-items:center;">
+            <select class="batch-score-select" style="width:100px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;">
+                ${optionHtml}
+            </select>
+            <input type="text" class="batch-score-custom" placeholder="如 6:3" value="" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:none;text-align:center;" />
+        </div>
         <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
     `;
+    // 绑定select切换事件
+    const select = div.querySelector('.batch-score-select');
+    const customInput = div.querySelector('.batch-score-custom');
+    select.addEventListener('change', function() {
+        customInput.style.display = this.value === '__custom__' ? 'inline-block' : 'none';
+    });
+    // 如果已有比分且不在选项中，自动切换到自定义
+    if (score && !scoreOptions.some(opt => opt.val === score)) {
+        select.value = '__custom__';
+        customInput.value = score;
+        customInput.style.display = 'inline-block';
+    }
     container.appendChild(div);
 }
 function clearBatchRows() {
@@ -2069,7 +2125,9 @@ function applyBatchResults() {
     rows.forEach(row => {
         const home = row.querySelector('.batch-home').value.trim();
         const away = row.querySelector('.batch-away').value.trim();
-        const score = row.querySelector('.batch-score').value.trim();
+        const select = row.querySelector('.batch-score-select');
+        const customInput = row.querySelector('.batch-score-custom');
+        const score = select.value === '__custom__' ? customInput.value.trim() : select.value.trim();
         if (home && away && score) {
             const parsed = parseScore(score);
             if (!parsed) {
