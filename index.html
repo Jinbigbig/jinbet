@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>世界杯足彩记录 v7.43（完整版 - 总进球赔率）</title>
+    <title>世界杯足彩记录 v7.50（完整版 - 总进球赔率）</title>
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -739,104 +739,113 @@
 
         .person-table-wrap {
             border: 1px solid #e2e5ec;
-            border-radius: 16px;
-            padding: 8px 10px;
+            border-radius: 12px;
+            padding: 12px;
             background: #fafbfc;
             width: 100%;
             overflow: hidden;
-            display: inline-block;
         }
         .person-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 13px;
             table-layout: fixed;
         }
         .person-table th {
-            background: #f0f2f5;
-            padding: 4px 2px;
-            text-align: center;
+            background: #f8f9fb;
+            padding: 8px 10px;
+            text-align: left;
             font-weight: 600;
-            font-size: 11px;
-            color: #374151;
-            border-bottom: 1px solid #e2e5ec;
-            width: 50px;
+            font-size: 12px;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .person-table th:first-child { width: 80px; }
-        .person-table th:nth-child(2) { width: 140px; }
+        .person-table th:nth-child(2) { width: 150px; }
         .person-table td {
-            padding: 3px 2px;
-            text-align: center;
+            padding: 10px 8px;
             vertical-align: middle;
-            border-bottom: 1px solid #eef0f4;
+            border-bottom: 1px solid #f3f4f6;
         }
         .person-table td:first-child { width: 80px; }
-        .person-table td:nth-child(2) { width: 140px; }
+        .person-table td:nth-child(2) { width: 150px; overflow: visible; }
         .person-table tr:last-child td { border-bottom: none; }
+        .person-table tr:hover { background: #fafbfc; }
         .person-table .person-name {
             font-weight: 600;
-            font-size: 12px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .person-table .person-multiplier {
-            width: 65px;
-            padding: 2px 4px;
-            border: 1.5px solid #e2e5ec;
-            border-radius: 4px;
-            font-size: 12px;
-            text-align: center;
-            height: 26px;
-            box-sizing: border-box;
-            vertical-align: middle;
+            font-size: 13px;
+            color: #374151;
         }
         .person-table .person-action-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow: visible;
+        }
+        .person-table .person-multiplier {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
             text-align: center;
+            height: 28px;
+            box-sizing: border-box;
             vertical-align: middle;
-            white-space: nowrap;
+            flex-shrink: 0;
+            transition: border-color 0.2s;
+        }
+        .person-table .person-multiplier:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
         }
         .person-table .remove-person-btn {
-            background: #fee2e2;
-            border: 2px solid #f87171;
-            color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1.5px solid #fca5a5;
+            color: #ef4444;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: bold;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             line-height: 1;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            visibility: visible;
-            height: 26px;
+            height: 28px;
             box-sizing: border-box;
-            text-align: center;
-            vertical-align: middle;
-            margin-left: 4px;
+            flex-shrink: 0;
+            transition: all 0.2s;
         }
-        .person-table .remove-person-btn:hover { background: #ef4444; color: #fff; border-color: #ef4444; }
+        .person-table .remove-person-btn:hover {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #ef4444;
+            color: #dc2626;
+            transform: scale(1.05);
+        }
         .person-add-row td {
-            padding: 4px 2px;
-            text-align: center;
+            padding: 8px;
+            text-align: left;
+            background: #fafbfc;
         }
         .person-add-row select,
         .person-add-row input {
-            padding: 2px 4px;
-            border: 1.5px solid #e2e5ec;
-            border-radius: 4px;
-            font-size: 11px;
-            height: 26px;
+            padding: 6px 10px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 12px;
+            height: 32px;
             background: #fff;
             box-sizing: border-box;
-            text-align: center;
         }
-        .person-add-row select { width: 70px; }
-        .person-add-row input#newPersonName { width: 60px; display: none; }
-        .person-add-row input#newPersonMult { width: 70px; margin-left: 3px; }
+        .person-add-row select { width: 80px; text-align: center; }
+        .person-add-row input#newPersonName { width: 70px; display: none; text-align: center; }
+        .person-add-row input#newPersonMult { width: 70px; margin-left: 4px; text-align: center; }
         .person-add-row .btn {
-            padding: 2px 8px;
+            padding: 6px 14px;
             font-size: 11px;
             height: 26px;
             margin-left: 3px;
@@ -1165,7 +1174,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 世界杯足彩记录 v7.43（完整版 - 总进球赔率）</div>
+    <div class="version-footer">⚽ 世界杯足彩记录 v7.50（完整版 - 总进球赔率）</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -2028,8 +2037,12 @@ function addBatchRow(home = '', away = '', score = '') {
     div.className = 'batch-row';
     const homeId = 'batch_home_' + (batchRowCounter++);
     const awayId = 'batch_away_' + (batchRowCounter++);
+    const scoreId = 'batch_score_' + (batchRowCounter++);
     const homeDatalist = getTeamDatalistHTML(homeId);
     const awayDatalist = getTeamDatalistHTML(awayId);
+    // 常见比分选项
+    const scoreOptions = ['0:0','1:0','0:1','1:1','2:0','0:2','2:1','1:2','2:2','3:0','0:3','3:1','1:3','3:2','2:3','3:3','4:0','0:4','4:1','1:4','4:2','2:4','5:0','0:5','5:1','1:5','5:2','2:5','6:0','0:6','6:1','1:6'];
+    const scoreDatalist = `<datalist id="${scoreId}">${scoreOptions.map(s=>`<option value="${s}">`).join('')}</datalist>`;
     div.innerHTML = `
         <div class="team-pair">
             <input type="text" class="batch-home" list="${homeId}" placeholder="主队" value="${home}" autocomplete="off" />
@@ -2038,7 +2051,8 @@ function addBatchRow(home = '', away = '', score = '') {
             <input type="text" class="batch-away" list="${awayId}" placeholder="客队" value="${away}" autocomplete="off" />
             ${awayDatalist}
         </div>
-        <input type="text" class="batch-score" placeholder="比分 如 3:1" value="${score}" />
+        <input type="text" class="batch-score" list="${scoreId}" placeholder="比分" value="${score}" autocomplete="off" style="width:80px;text-align:center;" />
+        ${scoreDatalist}
         <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
     `;
     container.appendChild(div);
@@ -2073,7 +2087,7 @@ function applyBatchResults() {
     }
     let updatedCount = 0;
     bets.forEach(bet => {
-        if (bet.status !== 'pending') return;
+        // 允许重新计算，不再跳过已标记状态的记录
         let anyUpdated = false;
         bet.games.forEach(g => {
             const gHome = g.home || '';
@@ -2105,13 +2119,23 @@ function recalcBetWin(bet) {
     const totalMultiplier = (bet.persons || []).reduce((s, p) => s + p.multiplier, 0);
     const perUnit = bet.totalAmount / bet.totalUnits;
     const comboWinAmounts = {};
+
+    // 检查是否有比赛标记为未中奖（isWin === false 且有结果）
+    const hasLose = bet.games.some(g => g.result && g.isWin === false);
+
+    // 检查是否有比赛未填写结果（没有 result）
+    const hasUnfilled = bet.games.some(g => !g.result);
+
     combos.forEach(k => {
         if (k <= n) {
             const gameIndices = getCombinations([...Array(n).keys()], k);
             let sumComb = 0;
             gameIndices.forEach(idxArr => {
+                // 只有当组合内所有比赛都有结果且都中奖时才计算
+                const allHaveResult = idxArr.every(i => bet.games[i].result);
                 const allWin = idxArr.every(i => bet.games[i].isWin === true);
-                if (allWin) {
+
+                if (allHaveResult && allWin) {
                     const matchedOdds = idxArr.map(i => {
                         const g = bet.games[i];
                         const oddsObj = getOddsObjForGame(g);
@@ -2137,9 +2161,21 @@ function recalcBetWin(bet) {
             comboWinAmounts[k] = winAmount;
         }
     });
+
     bet.winAmount = totalWin;
-    bet.status = (totalWin > 0) ? 'win' : 'lose';
     bet.comboWinAmounts = comboWinAmounts;
+
+    // 状态判断逻辑：
+    // 1. 有比赛明确未中奖(有结果但isWin=false) → 未中奖
+    // 2. 有比赛未填写结果(没有result) → 待开奖
+    // 3. 所有比赛都有结果且都中奖 → 中奖
+    if (hasLose) {
+        bet.status = 'lose';
+    } else if (hasUnfilled) {
+        bet.status = 'pending';
+    } else {
+        bet.status = 'win';
+    }
 }
 
 // ================================================================
@@ -3818,13 +3854,17 @@ function init() {
         if (el) el.value = tomorrowStr;
     });
 
-    // [注入投注记录] 来自用户本地数据
-    try {
-        var _injectedBets = {"bets":[{"id":"mqs5e99r1ewh","passCombos":[6],"persons":[{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":2},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":224,"totalAmount":448,"totalSp":3543.195341125441,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":2.66},{"betOption":"负","odds":3.32}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26},{"betOption":"负","odds":7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"胜平负","handicap":"","options":[{"betOption":"负","odds":1.19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.87},{"betOption":"负","odds":1.44}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.5},{"betOption":"负","odds":1.78}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":21.97961583552,"max":805.3794693},"createdAt":"2026-06-24T14:07:47.055Z"},{"id":"mqs5j7bymeme","passCombos":[6],"persons":[{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"岩哥","multiplier":3},{"name":"超哥","multiplier":1}],"totalUnits":112,"totalAmount":224,"totalSp":2054.86306704,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86},{"betOption":"负","odds":1.52}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":1.68}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15},{"betOption":"平","odds":3.85}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.15},{"betOption":"负","odds":2.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":1.78},{"betOption":"平","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":32.015126707200004,"max":341.86725896400003},"createdAt":"2026-06-24T14:11:37.822Z"},{"id":"mqs5l8oc5ep6","passCombos":[4],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"B王哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":6692.400000000001,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"2:2","odds":11}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"0:0","odds":18}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":6.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"3:0","odds":5.2}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":6692.400000000001,"max":6692.400000000001},"createdAt":"2026-06-24T14:13:12.876Z"},{"id":"mqs5mlqay036","passCombos":[2],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":96,"winAmount":0,"games":[{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"0:2","odds":8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":96,"max":96},"createdAt":"2026-06-24T14:14:16.450Z"},{"id":"mqs5plvicpn1","passCombos":[3],"persons":[{"name":"超哥","multiplier":10},{"name":"麟哥","multiplier":10},{"name":"蓉哥","multiplier":60},{"name":"岩哥","multiplier":25}],"totalUnits":105,"totalAmount":210,"totalSp":33.2112,"winAmount":0,"games":[{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":3.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":3.4}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":33.2112,"max":33.2112},"createdAt":"2026-06-24T14:16:36.606Z"},{"id":"mqs5ua9pzlrp","passCombos":[4],"persons":[{"name":"麟哥","multiplier":2},{"name":"蓉哥","multiplier":3},{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":10}],"totalUnits":25,"totalAmount":50,"totalSp":130.18236,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.65}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":130.18236,"max":130.18236},"createdAt":"2026-06-24T14:20:14.845Z"},{"id":"mqs5w2cd329f","passCombos":[3],"persons":[{"name":"超哥","multiplier":5},{"name":"岩哥","multiplier":5},{"name":"麟哥","multiplier":3},{"name":"蓉哥","multiplier":2}],"totalUnits":15,"totalAmount":30,"totalSp":124.19999999999999,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"半全场","handicap":"","options":[{"betOption":"胜平","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"半全场","handicap":"","options":[{"betOption":"负负","odds":2.25}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"半全场","handicap":"","options":[{"betOption":"平负","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":124.19999999999999,"max":124.19999999999999},"createdAt":"2026-06-24T14:21:37.885Z"},{"id":"mqs5xymkz45p","passCombos":[3],"persons":[{"name":"超哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":2}],"totalUnits":48,"totalAmount":96,"totalSp":1137.0449999999998,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3},{"betOption":"3","odds":3.8}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.55},{"betOption":"5","odds":7.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.85},{"betOption":"5","odds":8.8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":66.20249999999999,"max":257.488},"createdAt":"2026-06-24T14:23:06.380Z"},{"id":"mqs5zcl0xtoz","passCombos":[3],"persons":[{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":1}],"totalUnits":32,"totalAmount":64,"totalSp":518.9046250000001,"winAmount":0,"games":[{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":4.4},{"betOption":"3","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"总进球","handicap":"","options":[{"betOption":"3","odds":3.65},{"betOption":"4","odds":6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3.25},{"betOption":"3","odds":3.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":40.925625000000004,"max":95.04},"createdAt":"2026-06-24T14:24:11.124Z"},{"id":"mqs6268n5gle","passCombos":[4],"persons":[{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"麟哥","multiplier":1},{"name":"岩哥","multiplier":2}],"totalUnits":90,"totalAmount":180,"totalSp":29411.853999999992,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":4.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"2:1","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"1:4","odds":19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"2:0","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"1:2","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":5.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":637.56,"max":3277.1199999999994},"createdAt":"2026-06-24T14:26:22.871Z"}],"exportedAt":"2026-06-24T14:29:38.861Z"};
-        localStorage.setItem(STORAGE_KEY_BETS, JSON.stringify(_injectedBets));
-    } catch(e) { /* 静默忽略注入错误 */ }
-
     loadFromStorage();
+    
+    // [注入投注记录] 如果本地没有数据，注入用户提供的记录
+    if (!bets || bets.length === 0) {
+        try {
+            var _injectedBets = [{"id":"mqs5e99r1ewh","passCombos":[6],"persons":[{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":2},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":224,"totalAmount":448,"totalSp":3543.195341125441,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":2.66},{"betOption":"负","odds":3.32}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26},{"betOption":"负","odds":7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"胜平负","handicap":"","options":[{"betOption":"负","odds":1.19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.87},{"betOption":"负","odds":1.44}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"平","odds":3.5},{"betOption":"负","odds":1.78}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":21.97961583552,"max":805.3794693},"createdAt":"2026-06-24T14:07:47.055Z"},{"id":"mqs5j7bymeme","passCombos":[6],"persons":[{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"岩哥","multiplier":3},{"name":"超哥","multiplier":1}],"totalUnits":112,"totalAmount":224,"totalSp":2054.86306704,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86},{"betOption":"负","odds":1.52}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":1.26}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":1.68}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":2.15},{"betOption":"平","odds":3.85}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.15},{"betOption":"负","odds":2.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":1.78},{"betOption":"平","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":32.015126707200004,"max":341.86725896400003},"createdAt":"2026-06-24T14:11:37.822Z"},{"id":"mqs5l8oc5ep6","passCombos":[4],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"B王哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":6692.400000000001,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"2:2","odds":11}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"0:0","odds":18}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":6.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"3:0","odds":5.2}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":6692.400000000001,"max":6692.400000000001},"createdAt":"2026-06-24T14:13:12.876Z"},{"id":"mqs5mlqay036","passCombos":[2],"persons":[{"name":"岩哥","multiplier":1},{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":1},{"name":"B王哥","multiplier":1},{"name":"麟哥","multiplier":1}],"totalUnits":5,"totalAmount":10,"totalSp":96,"winAmount":0,"games":[{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"0:3","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"0:2","odds":8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":96,"max":96},"createdAt":"2026-06-24T14:14:16.450Z"},{"id":"mqs5plvicpn1","passCombos":[3],"persons":[{"name":"超哥","multiplier":10},{"name":"麟哥","multiplier":10},{"name":"蓉哥","multiplier":60},{"name":"岩哥","multiplier":25}],"totalUnits":105,"totalAmount":210,"totalSp":33.2112,"winAmount":0,"games":[{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"让球胜平负","handicap":"","options":[{"betOption":"胜","odds":3.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"胜平负","handicap":"","options":[{"betOption":"胜","odds":3.4}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":33.2112,"max":33.2112},"createdAt":"2026-06-24T14:16:36.606Z"},{"id":"mqs5ua9pzlrp","passCombos":[4],"persons":[{"name":"麟哥","multiplier":2},{"name":"蓉哥","multiplier":3},{"name":"超哥","multiplier":10},{"name":"岩哥","multiplier":10}],"totalUnits":25,"totalAmount":50,"totalSp":130.18236,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.86}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.65}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"让球胜平负","handicap":"","options":[{"betOption":"负","odds":2.64}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"让球胜平负","handicap":"","options":[{"betOption":"平","odds":3.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":130.18236,"max":130.18236},"createdAt":"2026-06-24T14:20:14.845Z"},{"id":"mqs5w2cd329f","passCombos":[3],"persons":[{"name":"超哥","multiplier":5},{"name":"岩哥","multiplier":5},{"name":"麟哥","multiplier":3},{"name":"蓉哥","multiplier":2}],"totalUnits":15,"totalAmount":30,"totalSp":124.19999999999999,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"半全场","handicap":"","options":[{"betOption":"胜平","odds":12}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"半全场","handicap":"","options":[{"betOption":"负负","odds":2.25}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"半全场","handicap":"","options":[{"betOption":"平负","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":124.19999999999999,"max":124.19999999999999},"createdAt":"2026-06-24T14:21:37.885Z"},{"id":"mqs5xymkz45p","passCombos":[3],"persons":[{"name":"超哥","multiplier":1},{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":2}],"totalUnits":48,"totalAmount":96,"totalSp":1137.0449999999998,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3},{"betOption":"3","odds":3.8}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.55},{"betOption":"5","odds":7.7}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"总进球","handicap":"","options":[{"betOption":"4","odds":4.85},{"betOption":"5","odds":8.8}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":66.20249999999999,"max":257.488},"createdAt":"2026-06-24T14:23:06.380Z"},{"id":"mqs5zcl0xtoz","passCombos":[3],"persons":[{"name":"麟哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"岩哥","multiplier":1}],"totalUnits":32,"totalAmount":64,"totalSp":518.9046250000001,"winAmount":0,"games":[{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":4.4},{"betOption":"3","odds":3.45}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"总进球","handicap":"","options":[{"betOption":"3","odds":3.65},{"betOption":"4","odds":6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"总进球","handicap":"","options":[{"betOption":"2","odds":3.25},{"betOption":"3","odds":3.6}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":40.925625000000004,"max":95.04},"createdAt":"2026-06-24T14:24:11.124Z"},{"id":"mqs6268n5gle","passCombos":[4],"persons":[{"name":"超哥","multiplier":1},{"name":"蓉哥","multiplier":2},{"name":"麟哥","multiplier":1},{"name":"岩哥","multiplier":2}],"totalUnits":90,"totalAmount":180,"totalSp":29411.853999999992,"winAmount":0,"games":[{"match":"瑞士 vs 加拿大","home":"瑞士","away":"加拿大","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":4.5}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"波黑 vs 卡塔尔","home":"波黑","away":"卡塔尔","playType":"比分","handicap":"","options":[{"betOption":"2:1","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"苏格兰 vs 巴西","home":"苏格兰","away":"巴西","playType":"比分","handicap":"","options":[{"betOption":"1:4","odds":19}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"摩洛哥 vs 海地","home":"摩洛哥","away":"海地","playType":"比分","handicap":"","options":[{"betOption":"2:0","odds":4.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"南非 vs 韩国","home":"南非","away":"韩国","playType":"比分","handicap":"","options":[{"betOption":"1:2","odds":5.6}],"result":"","isWin":null,"date":"2026-06-25"},{"match":"捷克 vs 墨西哥","home":"捷克","away":"墨西哥","playType":"比分","handicap":"","options":[{"betOption":"1:1","odds":5.5}],"result":"","isWin":null,"date":"2026-06-25"}],"images":[],"status":"pending","comboWinAmounts":{},"spRange":{"min":637.56,"max":3277.1199999999994},"createdAt":"2026-06-24T14:26:22.871Z"}];
+            bets = _injectedBets;
+            localStorage.setItem(STORAGE_KEY_BETS, JSON.stringify(bets));
+            console.log('[注入] 已加载 ' + bets.length + ' 条投注记录');
+        } catch(e) { console.error('[注入] 失败:', e); }
+    }
     renderAll();
     if (document.getElementById('gameListContainer').children.length === 0) {
         addGameRow();
