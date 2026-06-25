@@ -1,6 +1,11 @@
 import re
+import os
 
-with open(r'C:\Users\Jin\Desktop\jinbet_update\jinbet_update\index.html', encoding='utf-8') as f:
+# 路径自动定位：脚本位于 tools/，目标文件在上级目录
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INDEX_HTML = os.path.join(BASE_DIR, 'index.html')
+
+with open(INDEX_HTML, encoding='utf-8') as f:
     content = f.read()
 
 # Find injected data section

@@ -1,4 +1,40 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 日志与临时
 *.log
+*.bak
+*.tmp
+
+# 赔率备份
 odds_backup/
+odds_update.log
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Node（如果未来引入）
+node_modules/
+dist/
+build/
+
+# 工具缓存
+.prettiercache
+.eslintcache
+
+# 本地配置
+.env
+.env.local

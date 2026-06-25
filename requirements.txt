@@ -1,0 +1,15 @@
+# JinBet Python 依赖
+# 当前所有抓取脚本仅使用 Python 标准库，标准库随 Python 一起发布无需安装。
+# 保留此文件以便未来添加依赖时统一定义。
+
+# 当前依赖（均为标准库）:
+#   - urllib.request   抓取网页
+#   - json             解析与序列化
+#   - re               正则表达式
+#   - html             HTML 实体解码
+#   - http.server      本地代理服务
+#   - argparse         命令行参数
+#   - datetime         时间处理
+
+# Python 版本要求
+# 建议 Python 3.10+，与 GitHub Actions 使用的 3.12 保持兼容

@@ -1,4 +1,10 @@
-with open(r'C:\Users\Jin\Desktop\jinbet_update\jinbet_update\update_163_odds.py', encoding='utf-8') as f:
+import os
+
+# 路径自动定位：脚本位于 tools/，目标文件在上级目录
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TARGET = os.path.join(BASE_DIR, 'update_163_odds.py')
+
+with open(TARGET, encoding='utf-8') as f:
     content = f.read()
 
 # 1. Remove '其他': {} from initialization
@@ -19,7 +25,7 @@ content = content.replace(
     ""
 )
 
-with open(r'C:\Users\Jin\Desktop\jinbet_update\jinbet_update\update_163_odds.py', 'w', encoding='utf-8') as f:
+with open(TARGET, 'w', encoding='utf-8') as f:
     f.write(content)
 
 print("Done!")
