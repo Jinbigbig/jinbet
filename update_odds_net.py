@@ -398,59 +398,101 @@ def main():
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
     
-    print('\n[2.5/3] 替换赛程数据...')
-    print(f'    删除旧赛程: {len(schedule)} 个日期')
-    schedule = schedule_data
-    print(f'    新增赛程: {len(schedule)} 个日期')
+    print('\n[2.5/3] 合并赛程数据...')
+    print(f'    原有赛程: {len(schedule)} 个日期')
+    print(f'    新增赛程: {len(schedule_data)} 个日期')
+
+    # 合并新旧赛程：保留旧数据，追加/更新新数据
+    for date, games in schedule_data.items():
+        schedule[date] = games
+    print(f'    合并后: {len(schedule)} 个日期')
+
+    # 清理超过7天的旧数据
+    import time
+    from datetime import datetime, timedelta
+    KEEP_DAYS = 7
+    cutoff = (datetime.now() - timedelta(days=KEEP_DAYS)).strftime('%Y-%m-%d')
+    removed_dates = []
+    for date in list(schedule.keys()):
+        if date < cutoff:
+            removed_dates.append(date)
+            del schedule[date]
+    if removed_dates:
+        print(f'    清理旧数据: {len(removed_dates)} 个日期（{cutoff} 之前）')
+        for d in removed_dates:
+            print(f'      - {d}')
+    else:
+        print(f'    无需清理旧数据（保留最近 {KEEP_DAYS} 天）')
+
     for date, games in schedule.items():
         for game in games:
             print(f'    {date} {game["home"]} vs {game["away"]}')
-    print(f'  ✅ 赛程替换完成')
+    print(f'  ✅ 赛程合并完成')
     
-    print('\n[3/3] 匹配赛程赔率...')
+    print('\n[3/3] 合并历史赔率数据...')
+    # 从现有 index.html 提取已有的 ODDS 数据
+    odds_pattern = r'const ODDS = \{([\s\S]*?)\};'
+    odds_match = re.search(odds_pattern, html_content)
+    existing_odds = {}
+    if odds_match:
+        odds_str = '{' + odds_match.group(1) + '}'
+        odds_str = parse_js_obj_to_json(odds_str)
+        try:
+            existing_odds = json.loads(odds_str)
+            print(f'    从 index.html 读取到 {len(existing_odds)} 条历史赔率')
+        except:
+            print('    读取历史赔率失败，将使用新数据')
+
+    # 合并新旧赔率：新数据覆盖旧数据，保留未更新的历史数据
+    merged_odds = dict(existing_odds)
+    for key, odds in odds_data.items():
+        merged_odds[key] = odds
+    print(f'    合并后共 {len(merged_odds)} 条赔率')
+
+    # 清理超过7天的旧赔率数据
+    removed_odds = []
+    for key in list(merged_odds.keys()):
+        date = key.split('_')[0]
+        if date < cutoff:
+            removed_odds.append(key)
+            del merged_odds[key]
+    if removed_odds:
+        print(f'    清理旧赔率: {len(removed_odds)} 条（{cutoff} 之前）')
+
+    # 为当前 schedule 中的所有比赛构建 matched_odds
+    # 优先使用合并后的数据，缺失的留空
     matched_odds = {}
-    
     for date, games in schedule.items():
         for game in games:
             home = game['home']
             away = game['away']
-            
-            for map_home, standard_home in TEAM_NAME_MAP.items():
-                if map_home in home:
-                    home = standard_home
-                    break
-            
-            for map_away, standard_away in TEAM_NAME_MAP.items():
-                if map_away in away:
-                    away = standard_away
-                    break
-            
             key = f'{date}_{home}_{away}'
-            if key in odds_data:
-                matched_odds[key] = odds_data[key]
-                print(f'  {date} {game["home"]} vs {game["away"]}: ✅')
+            if key in merged_odds:
+                matched_odds[key] = merged_odds[key]
             else:
-                print(f'  {date} {game["home"]} vs {game["away"]}: ❌ 未找到')
                 matched_odds[key] = {
-                    '胜': '',
-                    '平': '',
-                    '负': '',
-                    '让球': [],
-                    '比分': {},
-                    '总进球': {},
-                    '半全场': {}
+                    '胜': '', '平': '', '负': '',
+                    '让球': [], '比分': {}, '总进球': {}, '半全场': {}
                 }
-    
+
+    # 显示匹配结果
+    for date, games in schedule.items():
+        for game in games:
+            key = f'{date}_{game["home"]}_{game["away"]}'
+            has_odds = bool(matched_odds.get(key, {}).get('胜'))
+            icon = '✅' if has_odds else '⬜'
+            print(f'  {date} {game["home"]} vs {game["away"]}: {icon}')
+
     print('\n[4/4] 更新 index.html...')
     new_html = update_html_schedule(html_content, schedule)
     new_html = update_html_odds(new_html, schedule, matched_odds)
     new_html = update_localstorage_injection(new_html, matched_odds)
-    
+
     with open(HTML_PATH, 'w', encoding='utf-8') as f:
         f.write(new_html)
-    
+
     print('  ✅ index.html 已更新')
-    
+
     print('\n[5/5] 更新 odds_data.json...')
     update_odds_json(matched_odds)
     print('  ✅ odds_data.json 已更新')
