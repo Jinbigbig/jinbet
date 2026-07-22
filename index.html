@@ -1574,12 +1574,11 @@
         <div class="batch-toolbar">
             <input type="date" id="oddsDate" />
             <button class="btn btn-cyan btn-sm" onclick="loadOddsSchedule()">📅 加载赛程</button>
-            <button class="btn btn-success btn-sm" onclick="saveOdds()">💾 保存赔率（并同步更新已有记录）</button>
+            <button class="btn btn-success btn-sm" onclick="saveOdds()">💾 保存赔率</button>
             <button class="btn btn-cyan btn-sm" id="btnRefreshOdds" onclick="openOddsUpdater()">🔄 更新赔率</button>
               <span id="onlineBadge" style="display:none;font-size:12px;color:#4caf50;margin-left:6px;"></span>
-            <button class="btn btn-outline btn-sm" onclick="clearOdds()">🗑 清空当日赔率</button>
-            <button class="btn btn-outline btn-sm" onclick="openOddsArchive()">📦 历史归档</button>
-            <span style="font-size:12px;color:#6b7280;margin-left:8px;">录入后，添加记录时自动填入，修改后同步更新历史记录</span>
+            <button class="btn btn-outline btn-sm" onclick="clearOdds()">🗑 清空</button>
+            <button class="btn btn-outline btn-sm" onclick="openOddsArchive()">📦 归档</button>
         </div>
         <div id="oddsListContainer"></div>
         <div id="oddsArchivePanel" style="display:none;">
