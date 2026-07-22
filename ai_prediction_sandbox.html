@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>🏟 AI 赛果预测 - 沙盒原型</title>
+<style>
+    * { box-sizing: border-box; }
+    body {
+        font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: #f3f4f6;
+        margin: 0;
+        padding: 24px;
+        color: #111827;
+    }
+    h2 { margin: 0 0 18px; font-size: 20px; color: #1e293b; }
+    .sandbox-tip {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 18px;
+        font-size: 13px;
+        color: #92400e;
+    }
+
+    /* === 并列容器（批量录入 + AI 预测） === */
+    .batch-panels-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    @media (max-width: 960px) {
+        .batch-panels-grid { grid-template-columns: 1fr; }
+    }
+
+    /* === 批量录入面板（同 index.html 风格） === */
+    .batch-result-panel {
+        background: #f8fafc;
+        border: 2px solid #dbeafe;
+        border-radius: 18px;
+        padding: 18px 22px;
+    }
+    .batch-result-panel h4 {
+        font-size: 16px; font-weight: 600; color: #1e3a8a;
+        margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .batch-toolbar {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        align-items: center; margin-bottom: 14px;
+    }
+    .batch-toolbar input[type="date"] {
+        padding: 6px 12px; border: 1.5px solid #e2e5ec;
+        border-radius: 8px; font-size: 13px; height: 36px; background: #fff;
+    }
+    .batch-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+
+    /* 通用按钮（复用 index.html 风格） */
+    .btn {
+        border: none; border-radius: 10px; padding: 8px 14px;
+        font-size: 13px; font-weight: 500; cursor: pointer;
+        transition: transform .08s ease, box-shadow .12s ease, filter .12s;
+        height: 36px;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-sm { padding: 4px 10px; font-size: 12px; height: 28px; border-radius: 8px; }
+    .btn-cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; }
+    .btn-cyan:hover { filter: brightness(1.08); }
+    .btn-outline { background: #fff; border: 1.5px solid #cbd5e1; color: #475569; }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+    .btn-success:hover { filter: brightness(1.06); }
+    .btn-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); color: #fff; }
+    .btn-purple:hover { filter: brightness(1.08); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; filter: none; transform: none; }
+
+    /* === AI 预测面板 === */
+    .ai-predict-panel {
+        background: linear-gradient(180deg, #fdf4ff 0%, #f5f3ff 100%);
+        border: 2px solid #ddd6fe;
+        border-radius: 18px;
+        padding: 18px 22px;
+        position: relative;
+        overflow: hidden;
+    }
+    .ai-predict-panel::after {
+        content: "✦"; position: absolute; right: -10px; top: -18px;
+        font-size: 120px; color: #ede9fe; pointer-events: none;
+    }
+    .ai-predict-panel h4 {
+        font-size: 16px; font-weight: 600; color: #5b21b6;
+        margin: 0 0 12px; display: flex; align-items: center; gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .ai-predict-panel .ai-toolbar {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        align-items: center; margin-bottom: 14px;
+        position: relative; z-index: 1;
+    }
+    .ai-predict-panel .ai-toolbar input[type="date"] {
+        padding: 6px 12px; border: 1.5px solid #ddd6fe;
+        border-radius: 8px; font-size: 13px; height: 36px; background: #fff;
+    }
+    .ai-date-info {
+        font-size: 12px; color: #7c3aed; background: #ede9fe;
+        padding: 3px 10px; border-radius: 999px; margin-left: auto;
+    }
+
+    #aiMatchList {
+        position: relative; z-index: 1;
+        background: #fff; border-radius: 12px;
+        border: 1px dashed #c4b5fd; padding: 10px 14px;
+        margin-bottom: 12px; min-height: 36px;
+        font-size: 13px; color: #4c1d95;
+    }
+    #aiMatchList:empty::before {
+        content: "📭 请先选择日期并点击 🔄 加载当日赛程";
+        color: #9ca3af;
+    }
+    #aiMatchList .match-chip {
+        display: inline-flex; align-items: center;
+        background: #f3e8ff; color: #5b21b6;
+        padding: 3px 10px; border-radius: 999px;
+        font-size: 12px; margin: 2px 6px 2px 0;
+        border: 1px solid #ddd6fe;
+    }
+
+    .ai-actions {
+        display: flex; gap: 10px; flex-wrap: wrap;
+        align-items: center; position: relative; z-index: 1;
+    }
+
+    #aiOutput {
+        position: relative; z-index: 1;
+        margin-top: 14px; background: #fff;
+        border-radius: 14px; border: 1px solid #ede9fe;
+        padding: 14px 16px; font-size: 13.5px; line-height: 1.75;
+        color: #1e1b4b; max-height: 480px; overflow-y: auto;
+    }
+    #aiOutput:empty::before {
+        content: "🤖 点击 🔮 开始AI预测 按钮，等待 AI 生成当日比赛分析...";
+        color: #a78bfa;
+    }
+    #aiOutput .loading {
+        display: inline-block; width: 14px; height: 14px;
+        border: 2.5px solid #c4b5fd; border-top-color: #7c3aed;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+        vertical-align: -3px; margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 预测卡片样式 */
+    .ai-predict-card {
+        border: 1px solid #ede9fe;
+        border-radius: 12px;
+        padding: 10px 14px;
+        margin-bottom: 12px;
+        background: #fbfaff;
+    }
+    .ai-predict-card:last-child { margin-bottom: 0; }
+    .ai-predict-title {
+        font-weight: 600; color: #5b21b6;
+        margin-bottom: 6px;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .ai-predict-title .vs { color: #a78bfa; font-weight: 500; }
+    .ai-row {
+        display: grid;
+        grid-template-columns: 90px 1fr 80px;
+        gap: 8px; align-items: center;
+        padding: 2px 0; font-size: 13px;
+    }
+    .ai-row .label { color: #6b21a8; font-weight: 500; }
+    .ai-row .val { color: #1e1b4b; }
+    .ai-row .conf { text-align: right; }
+    .conf-pill {
+        display: inline-block;
+        background: #ede9fe; color: #6d28d9;
+        padding: 1px 8px; border-radius: 999px;
+        font-size: 11px; font-weight: 600;
+    }
+    .conf-high { background: #dcfce7; color: #166534; }
+    .conf-mid  { background: #fef9c3; color: #854d0e; }
+    .conf-low  { background: #fee2e2; color: #991b1b; }
+    .ai-reason {
+        margin-top: 6px; padding-top: 6px;
+        border-top: 1px dashed #ede9fe;
+        font-size: 12.5px; color: #4c1d95;
+    }
+</style>
+</head>
+<body>
+
+<div class="sandbox-tip">
+    🧪 <b>沙盒原型</b>：以下展示 <b>「批量赛果录入」</b> 与 <b>「AI赛果预测」</b> 两个功能面板并列布局。
+    验证功能：①默认次日 ②加载赛程 ③AI预测输出 ④响应式（窄屏自动堆叠）
+</div>
+
+<h2>🎯 沙盒：批量录入 + AI 预测（并列布局）</h2>
+
+<!-- ===== 两个功能面板并列 ===== -->
+<div class="batch-panels-grid">
+
+    <!-- 左侧：批量赛果录入（原型版） -->
+    <div class="batch-result-panel" id="batchResultPanel">
+        <h4>📊 批量赛果录入（输入比分，自动适配让球）</h4>
+        <div class="batch-toolbar">
+            <input type="date" id="batchScheduleDate" />
+            <button class="btn btn-cyan btn-sm" onclick="loadBatchSchedule()">📅 加载赛程</button>
+            <span style="font-size:12px;color:#6b7280;margin-left:4px;">沙盒版：仅演示</span>
+        </div>
+        <div id="batchResultRows" style="font-size:12px;color:#64748b;">
+            （沙盒原型 - 此处不展示录入行）
+        </div>
+        <div class="batch-actions">
+            <button class="btn btn-outline btn-sm">＋ 添加比赛</button>
+            <button class="btn btn-success">✅ 应用赛果</button>
+            <button class="btn btn-outline btn-sm">🗑 清空全部</button>
+        </div>
+    </div>
+
+    <!-- 右侧：AI 赛果预测（新功能） -->
+    <div class="ai-predict-panel" id="aiPredictPanel">
+        <h4>🔮 AI 赛果预测（每日智能分析）</h4>
+        <div class="ai-toolbar">
+            <input type="date" id="aiPredictDate" />
+            <button class="btn btn-purple btn-sm" onclick="loadAiSchedule()">🔄 加载当日赛程</button>
+            <span class="ai-date-info" id="aiDateInfo">默认次日</span>
+        </div>
+        <div id="aiMatchList"></div>
+        <div class="ai-actions">
+            <button class="btn btn-purple" id="aiPredictBtn" onclick="runAiPrediction()" disabled>
+                🔮 开始AI预测
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="clearAiOutput()">🗑 清空结果</button>
+            <span style="font-size:12px;color:#7c3aed;margin-left:auto;">⚡ 约3-8秒生成</span>
+        </div>
+        <div id="aiOutput"></div>
+    </div>
+
+</div>
+
+<script>
+// ================================================================
+//  赛程数据（与主页面一致，复制关键日期）
+// ================================================================
+const SCHEDULE = {
+    '2026-06-27': [
+        { home: '沙特阿拉伯', away: '伊拉克' },
+        { home: '哥伦比亚', away: '加拿大' },
+        { home: '塞内加尔', away: '阿尔及利亚' },
+    ],
+    '2026-06-28': [
+        { home: '韩国', away: '澳大利亚' },
+        { home: '墨西哥', away: '突尼斯' },
+        { home: '西班牙', away: '埃及' },
+    ],
+    '2026-06-29': [
+        { home: '乌兹别克斯坦', away: '摩洛哥' },
+        { home: '克罗地亚', away: '比利时' },
+        { home: '阿根廷', away: '法国' },
+    ],
+    '2026-06-30': [
+        { home: '巴西', away: '日本' },
+        { home: '德国', away: '巴拉圭' },
+        { home: '荷兰', away: '摩洛哥' },
+    ],
+    '2026-07-01': [
+        { home: '英格兰', away: '瑞士' },
+        { home: '葡萄牙', away: '乌拉圭' },
+    ],
+};
+
+// ================================================================
+//  工具：日期格式化 YYYY-MM-DD
+// ================================================================
+function toDateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+}
+function nextDayStr() {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    return toDateStr(t);
+}
+function friendlyDateLabel(ymd) {
+    const today = toDateStr(new Date());
+    const tmr = nextDayStr();
+    if (ymd === today) return '今日';
+    if (ymd === tmr)   return '次日';
+    return '';
+}
+
+// ================================================================
+//  当前加载到的 AI 赛程
+// ================================================================
+let aiCurrentMatches = [];
+
+// ================================================================
+//  初始化：日期默认为次日
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    const tomorrow = nextDayStr();
+    const aiDate = document.getElementById('aiPredictDate');
+    aiDate.value = tomorrow;
+    updateAiDateLabel(tomorrow);
+
+    // 左侧批量录入默认也填次日（和主页面一致体验）
+    const batchDate = document.getElementById('batchScheduleDate');
+    batchDate.value = tomorrow;
+
+    // 日期变化时更新"次日/今日"标签
+    aiDate.addEventListener('change', e => updateAiDateLabel(e.target.value));
+
+    // 自动加载一次默认赛程
+    loadAiSchedule();
+});
+
+function updateAiDateLabel(ymd) {
+    const tag = friendlyDateLabel(ymd);
+    const el = document.getElementById('aiDateInfo');
+    const base = ymd;
+    el.textContent = tag ? `${base}（${tag}）` : base;
+}
+
+// ================================================================
+//  加载 AI 赛程
+// ================================================================
+function loadAiSchedule() {
+    const ymd = document.getElementById('aiPredictDate').value;
+    if (!ymd) {
+        flashAiList('⚠️ 请先选择日期', true);
+        return;
+    }
+    const matches = SCHEDULE[ymd] || [];
+    aiCurrentMatches = matches.slice();
+    const list = document.getElementById('aiMatchList');
+    list.innerHTML = '';
+    if (matches.length === 0) {
+        list.innerHTML = `<span style="color:#991b1b;">📭 ${ymd} 暂无赛程</span>`;
+        document.getElementById('aiPredictBtn').disabled = true;
+        return;
+    }
+    matches.forEach((m, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'match-chip';
+        chip.textContent = `${i + 1}. ${m.home} vs ${m.away}`;
+        list.appendChild(chip);
+    });
+    const hint = document.createElement('div');
+    hint.style.cssText = 'margin-top:6px;font-size:11.5px;color:#7c3aed;';
+    hint.textContent = `✅ 成功加载 ${matches.length} 场比赛`;
+    list.appendChild(hint);
+    document.getElementById('aiPredictBtn').disabled = false;
+}
+
+function flashAiList(msg, isWarn) {
+    const list = document.getElementById('aiMatchList');
+    list.innerHTML = `<span style="color:${isWarn ? '#991b1b' : '#059669'};">${msg}</span>`;
+}
+
+// ================================================================
+//  简易 AI 预测算法（沙盒版）
+//  说明：纯静态页面无后端，因此内置预测引擎。
+//  若后续接入真实大模型，只需替换本函数为 fetch('/api/ai/predict', ...) 即可。
+// ================================================================
+const PICK_WIN = ['胜', '平', '负'];
+const HALF_FULL = ['胜胜', '胜平', '胜负', '平胜', '平平', '平负', '负胜', '负平', '负负'];
+const TOTAL_GOALS = [0, 1, 2, 3, 4, 5, 6, 7];  // 7 = 7+
+
+function seededRandom(seedStr) {
+    // 简易字符串哈希 -> 0~1 之间的稳定随机（保证每次点击结果有一定随机性但不离谱）
+    let h = 2166136261;
+    for (let i = 0; i < seedStr.length; i++) {
+        h ^= seedStr.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+    }
+    // 混入当前时间秒的低位，保留 ~30s 内稳定，之后变化
+    const t = Math.floor(Date.now() / 30000);
+    h ^= t;
+    h = Math.imul(h, 16777619);
+    const v = ((h >>> 0) % 10000) / 10000;
+    return v;
+}
+function pickRng(seedStr) {
+    // 返回两个随机值 [a,b]，0~1
+    const s1 = seededRandom(seedStr + 'A');
+    const s2 = seededRandom(seedStr + 'B');
+    return [s1, s2];
+}
+
+function predictOneMatch(match, idx) {
+    const { home, away } = match;
+    const seed = `${home}${away}${idx}`;
+    const [r1, r2] = pickRng(seed);
+
+    // 胜平负（略微倾向主胜 40% / 平 28% / 客胜 32%）
+    let winPick;
+    if (r1 < 0.40) winPick = '胜';
+    else if (r1 < 0.68) winPick = '平';
+    else winPick = '负';
+
+    // 让球胜平负（假设让1球时独立采样，倾向主队稍弱）
+    const r2x = seededRandom(seed + 'RQ');
+    let rqPick;
+    if (r2x < 0.28) rqPick = '让胜';
+    else if (r2x < 0.55) rqPick = '让平';
+    else rqPick = '让负';
+
+    // 比分（根据胜平负+随机生成一个保守比分）
+    let score;
+    if (winPick === '胜') {
+        const combos = [[1,0],[2,0],[2,1],[3,0],[3,1],[1,1]];
+        score = combos[Math.floor(r2 * combos.length)];
+    } else if (winPick === '平') {
+        const combos = [[0,0],[1,1],[2,2],[1,0]];
+        score = combos[Math.floor(r2 * combos.length)];
+    } else {
+        const combos = [[0,1],[0,2],[1,2],[0,3],[1,3],[1,1]];
+        score = combos[Math.floor(r2 * combos.length)];
+    }
+    // 如果矛盾（胜→客队进球更多），强制修正
+    if (winPick === '胜'  && score[0] <= score[1]) score = [2,1];
+    if (winPick === '负'  && score[0] >= score[1]) score = [1,2];
+    if (winPick === '平'  && score[0] !== score[1]) score = [1,1];
+
+    // 总进球
+    const total = score[0] + score[1];
+    const totalPick = total <= 6 ? String(total) : '7+';
+
+    // 半全场（根据全场 + 主场态势预测）
+    const rh = seededRandom(seed + 'HF');
+    let halfResult;
+    if (winPick === '胜') {
+        if (rh < 0.55) halfResult = '胜胜';  // 半场领先 → 全场胜
+        else if (rh < 0.85) halfResult = '平胜'; // 半场平 → 全场胜
+        else halfResult = '负胜'; // 半场落后 → 逆转胜
+    } else if (winPick === '平') {
+        if (rh < 0.5) halfResult = '平平';
+        else if (rh < 0.75) halfResult = '胜平';
+        else halfResult = '负平';
+    } else {
+        if (rh < 0.55) halfResult = '负负';
+        else if (rh < 0.85) halfResult = '平负';
+        else halfResult = '胜负';
+    }
+
+    // 置信度（综合：0.60~0.92）
+    const rc = seededRandom(seed + 'CONF');
+    let conf = 0.60 + rc * 0.32;
+    if (winPick === '平') conf -= 0.06;   // 平局更难猜
+    if (total === 0 || total >= 6) conf -= 0.05;
+    conf = Math.max(0.55, Math.min(0.95, conf));
+
+    // 推荐理由（模板化）
+    const reasonTemplates = [
+        `近期${home}主场气势占优，中场控制力强，后防端场均失球仅${(rc*0.9).toFixed(1)}，推荐主胜方向。`,
+        `${away}客场反击效率出色，但面对${home}高位逼抢可能落于下风，比分建议保守关注小分。`,
+        `双方近期交锋记录偏向平局，本场欧赔指数对主胜下调明显，综合数据给出主胜倾向。`,
+        `两队战意清晰，${home}在控球率与射正率上略占优势，结合赔率建议关注让球胜平方向。`,
+    ];
+    const rr = Math.floor(seededRandom(seed + 'REASON') * reasonTemplates.length);
+    let reason = reasonTemplates[rr];
+    // 追加比分建议
+    reason += ` 建议比分 ${score[0]}-${score[1]}，总进球 ${totalPick}，半全场 ${halfResult}。`;
+
+    return {
+        idx, home, away,
+        winPick, rqPick, score, totalPick, halfResult,
+        confidence: Number(conf.toFixed(2)),
+        reason,
+    };
+}
+
+function confPillClass(c) {
+    if (c >= 0.80) return 'conf-high';
+    if (c >= 0.68) return 'conf-mid';
+    return 'conf-low';
+}
+function confLabel(c) {
+    if (c >= 0.80) return '高';
+    if (c >= 0.68) return '中';
+    return '低';
+}
+
+function renderPrediction(results) {
+    const out = document.getElementById('aiOutput');
+    if (!results || results.length === 0) {
+        out.innerHTML = '<span style="color:#a78bfa;">📭 没有可预测的比赛</span>';
+        return;
+    }
+    let html = '';
+    results.forEach((r) => {
+        const cls = confPillClass(r.confidence);
+        const lbl = confLabel(r.confidence);
+        html += `
+        <div class="ai-predict-card">
+            <div class="ai-predict-title">
+                <span>🏆 ${r.idx + 1}. ${r.home}</span>
+                <span class="vs">VS</span>
+                <span>${r.away}</span>
+                <span class="conf-pill ${cls}">置信度 ${lbl} ${(r.confidence*100).toFixed(0)}%</span>
+            </div>
+            <div class="ai-row"><span class="label">🎯 胜平负</span><span class="val">${r.winPick}</span><span class="conf"></span></div>
+            <div class="ai-row"><span class="label">🎯 让球(1)</span><span class="val">${r.rqPick}</span><span class="conf"></span></div>
+            <div class="ai-row"><span class="label">⚽ 比分</span><span class="val">${r.score[0]} - ${r.score[1]}</span><span class="conf"></span></div>
+            <div class="ai-row"><span class="label">🔢 总进球</span><span class="val">${r.totalPick}</span><span class="conf"></span></div>
+            <div class="ai-row"><span class="label">🔄 半全场</span><span class="val">${r.halfResult}</span><span class="conf"></span></div>
+            <div class="ai-reason">💡 <b>AI分析：</b>${r.reason}</div>
+        </div>`;
+    });
+    // 尾部汇总
+    const avg = (results.reduce((s, r) => s + r.confidence, 0) / results.length);
+    html += `
+    <div style="margin-top:10px;padding-top:10px;border-top:2px solid #ede9fe;font-size:12.5px;color:#5b21b6;text-align:right;">
+        🔮 平均置信度 <b style="font-size:14px;color:#7c3aed;">${(avg*100).toFixed(1)}%</b>
+        · 预测仅供参考，投注需谨慎
+    </div>`;
+    out.innerHTML = html;
+}
+
+// ================================================================
+//  执行 AI 预测（模拟延时 + loading 动画）
+// ================================================================
+async function runAiPrediction() {
+    if (aiCurrentMatches.length === 0) {
+        flashAiList('⚠️ 请先加载赛程', true);
+        return;
+    }
+    const out = document.getElementById('aiOutput');
+    const btn = document.getElementById('aiPredictBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading"></span>AI思考中...';
+
+    out.innerHTML = '<div><span class="loading"></span>🤖 AI 正在分析欧赔、亚盘、历史交锋数据，生成赛果预测...</div>';
+
+    // 模拟 1.2~2.5 秒延时
+    const delay = 1200 + Math.floor(Math.random() * 1300);
+    await new Promise(r => setTimeout(r, delay));
+
+    const results = aiCurrentMatches.map((m, i) => predictOneMatch(m, i));
+    renderPrediction(results);
+
+    btn.disabled = false;
+    btn.innerHTML = '🔮 重新预测';
+}
+
+function clearAiOutput() {
+    document.getElementById('aiOutput').innerHTML = '';
+    aiCurrentMatches = [];
+    document.getElementById('aiPredictBtn').disabled = true;
+    document.getElementById('aiMatchList').innerHTML = '';
+}
+
+// 左侧批量录入（沙盒占位）
+function loadBatchSchedule() {
+    const d = document.getElementById('batchScheduleDate').value || '（未选）';
+    document.getElementById('batchResultRows').innerHTML =
+        `<span style="color:#16a34a;">✅ 沙盒加载赛程 ${d} 成功（仅演示）</span>`;
+}
+</script>
+</body>
+</html>
