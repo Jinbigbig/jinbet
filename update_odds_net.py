@@ -324,6 +324,35 @@ def update_odds_json(matched_odds):
         json.dump(json_data, f, ensure_ascii=False, indent=2)
 
 
+def archive_old_data(schedule, odds, removed_dates):
+    """将超过保留天数的旧数据归档到 odds_history/YYYY-MM-DD.json"""
+    if not removed_dates:
+        return
+    
+    archive_dir = os.path.join(BASE_DIR, 'odds_history')
+    os.makedirs(archive_dir, exist_ok=True)
+    
+    for date in removed_dates:
+        # 提取该日期的赛程
+        day_schedule = schedule.get(date, [])
+        # 提取该日期的赔率
+        day_odds = {}
+        for key, val in odds.items():
+            if key.startswith(date + '_'):
+                day_odds[key] = val
+        
+        archive = {
+            'date': date,
+            'schedule': day_schedule,
+            'odds': day_odds
+        }
+        
+        archive_path = os.path.join(archive_dir, f'{date}.json')
+        with open(archive_path, 'w', encoding='utf-8') as f:
+            json.dump(archive, f, ensure_ascii=False, indent=2)
+        print(f'    📁 归档: {date}.json ({len(day_schedule)}场, {len(day_odds)}条赔率)')
+
+
 def push_to_gh_pages():
     def run_git(*args):
         cmd = ['git', '--no-pager'] + list(args)
@@ -398,38 +427,15 @@ def main():
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
     
-    print('\n[2.5/3] 合并赛程数据...')
+    print('\n[2.5/3] 合并赛程与赔率数据...')
     print(f'    原有赛程: {len(schedule)} 个日期')
     print(f'    新增赛程: {len(schedule_data)} 个日期')
 
-    # 合并新旧赛程：保留旧数据，追加/更新新数据
+    # 合并新旧赛程
     for date, games in schedule_data.items():
         schedule[date] = games
-    print(f'    合并后: {len(schedule)} 个日期')
+    print(f'    合并后赛程: {len(schedule)} 个日期')
 
-    # 清理超过7天的旧数据
-    import time
-    from datetime import datetime, timedelta
-    KEEP_DAYS = 7
-    cutoff = (datetime.now() - timedelta(days=KEEP_DAYS)).strftime('%Y-%m-%d')
-    removed_dates = []
-    for date in list(schedule.keys()):
-        if date < cutoff:
-            removed_dates.append(date)
-            del schedule[date]
-    if removed_dates:
-        print(f'    清理旧数据: {len(removed_dates)} 个日期（{cutoff} 之前）')
-        for d in removed_dates:
-            print(f'      - {d}')
-    else:
-        print(f'    无需清理旧数据（保留最近 {KEEP_DAYS} 天）')
-
-    for date, games in schedule.items():
-        for game in games:
-            print(f'    {date} {game["home"]} vs {game["away"]}')
-    print(f'  ✅ 赛程合并完成')
-    
-    print('\n[3/3] 合并历史赔率数据...')
     # 从现有 index.html 提取已有的 ODDS 数据
     odds_pattern = r'const ODDS = \{([\s\S]*?)\};'
     odds_match = re.search(odds_pattern, html_content)
@@ -439,17 +445,34 @@ def main():
         odds_str = parse_js_obj_to_json(odds_str)
         try:
             existing_odds = json.loads(odds_str)
-            print(f'    从 index.html 读取到 {len(existing_odds)} 条历史赔率')
+            print(f'    原有赔率: {len(existing_odds)} 条')
         except:
             print('    读取历史赔率失败，将使用新数据')
 
-    # 合并新旧赔率：新数据覆盖旧数据，保留未更新的历史数据
+    # 合并新旧赔率
     merged_odds = dict(existing_odds)
     for key, odds in odds_data.items():
         merged_odds[key] = odds
-    print(f'    合并后共 {len(merged_odds)} 条赔率')
+    print(f'    合并后赔率: {len(merged_odds)} 条')
 
-    # 清理超过7天的旧赔率数据
+    # 归档并清理超过7天的旧数据
+    from datetime import datetime, timedelta
+    KEEP_DAYS = 7
+    cutoff = (datetime.now() - timedelta(days=KEEP_DAYS)).strftime('%Y-%m-%d')
+    removed_dates = []
+    for date in list(schedule.keys()):
+        if date < cutoff:
+            removed_dates.append(date)
+
+    if removed_dates:
+        archive_old_data(schedule, merged_odds, removed_dates)
+        for date in removed_dates:
+            del schedule[date]
+        print(f'    清理旧赛程: {len(removed_dates)} 个日期（{cutoff} 之前）')
+    else:
+        print(f'    无需清理旧数据（保留最近 {KEEP_DAYS} 天）')
+
+    # 清理超过7天的旧赔率
     removed_odds = []
     for key in list(merged_odds.keys()):
         date = key.split('_')[0]
@@ -459,8 +482,12 @@ def main():
     if removed_odds:
         print(f'    清理旧赔率: {len(removed_odds)} 条（{cutoff} 之前）')
 
+    for date, games in schedule.items():
+        for game in games:
+            print(f'    {date} {game["home"]} vs {game["away"]}')
+    print(f'  ✅ 赛程合并完成')
+
     # 为当前 schedule 中的所有比赛构建 matched_odds
-    # 优先使用合并后的数据，缺失的留空
     matched_odds = {}
     for date, games in schedule.items():
         for game in games:
