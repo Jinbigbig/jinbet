@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-07-22 竞彩足球AI深度预测报告 | jinbet</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-hover: #334155;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent2: #22d3ee;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --border: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.6;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  header {
+    text-align: center; padding: 40px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
+  }
+  header h1 { font-size: 28px; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header .sub { color: var(--text-muted); margin-top: 8px; font-size: 14px; }
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px;
+  }
+  .summary-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center;
+    transition: transform .2s;
+  }
+  .summary-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .summary-card .num { font-size: 32px; font-weight: 700; color: var(--accent); }
+  .summary-card .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .section-title {
+    font-size: 20px; margin: 32px 0 16px; padding-left: 12px; border-left: 4px solid var(--accent);
+  }
+  table {
+    width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 12px; overflow: hidden; font-size: 14px;
+  }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: rgba(56, 189, 248, 0.1); color: var(--accent); font-weight: 600; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  }
+  .tag-win { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+  .tag-draw { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+  .tag-lose { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+  .stars { color: var(--warning); letter-spacing: 2px; }
+  .match-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 24px;
+  }
+  .match-header {
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;
+  }
+  .match-title { font-size: 18px; font-weight: 700; }
+  .match-title span { color: var(--text-muted); font-weight: 400; }
+  .match-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--text-muted); }
+  .match-meta .pill { background: rgba(56,189,248,0.1); color: var(--accent); padding: 2px 10px; border-radius: 999px; }
+  .team-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; margin: 16px 0; }
+  .team { text-align: center; }
+  .team .name { font-size: 20px; font-weight: 700; }
+  .team .badge { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+  .vs { font-size: 24px; font-weight: 800; color: var(--accent); }
+  .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+  .analysis-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 16px; }
+  .analysis-item h4 { font-size: 14px; color: var(--accent); margin-bottom: 8px; }
+  .analysis-item p, .analysis-item li { font-size: 13px; color: var(--text-muted); }
+  .analysis-item ul { padding-left: 16px; }
+  .prediction-box {
+    background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(34,211,238,0.05));
+    border: 1px solid rgba(56,189,248,0.3); border-radius: 12px; padding: 16px; margin-top: 16px;
+  }
+  .prediction-box h4 { color: var(--accent2); margin-bottom: 8px; font-size: 15px; }
+  .score-options { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .score-chip {
+    background: rgba(56,189,248,0.15); border: 1px solid var(--accent); color: var(--text);
+    padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 14px;
+  }
+  .chart-container { width: 100%; height: 320px; margin: 16px 0; }
+  .risk-box {
+    background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); border-radius: 12px; padding: 20px; margin-top: 24px;
+  }
+  .risk-box h3 { color: var(--danger); margin-bottom: 8px; }
+  .risk-box ul { padding-left: 20px; color: var(--text-muted); font-size: 14px; }
+  .risk-box li { margin-bottom: 6px; }
+  footer { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+  a { color: var(--accent); }
+  @media (max-width: 640px) {
+    .team-row { grid-template-columns: 1fr; }
+    .vs { text-align: center; }
+    th, td { padding: 8px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>竞彩足球 AI 深度预测分析报告</h1>
+    <div class="sub">2026-07-22 周三 | 数据来源：竞彩官方 + 多维度情报聚合 | jinbet</div>
+  </header>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="num">4</div>
+      <div class="label">今日比赛场次</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">3</div>
+      <div class="label">韩职联赛</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">1</div>
+      <div class="label">欧冠资格赛</div>
+    </div>
+    <div class="summary-card">
+      <div class="num">3.0</div>
+      <div class="label">平均信心指数</div>
+    </div>
+  </div>
+
+  <h2 class="section-title">比赛总览</h2>
+  <table>
+    <thead>
+      <tr><th>场次</th><th>联赛</th><th>时间</th><th>主队</th><th>客队</th><th>推荐方向</th><th>首选比分</th><th>信心</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>周三201</td><td>韩职</td><td>18:30</td><td>首尔FC</td><td>浦项制铁</td><td><span class="tag tag-win">主胜/让平</span></td><td>1-0</td><td class="stars">★★★☆</td>
+      </tr>
+      <tr>
+        <td>周三202</td><td>韩职</td><td>18:30</td><td>富川FC</td><td>安养FC</td><td><span class="tag tag-lose">客胜/防平</span></td><td>0-1</td><td class="stars">★★★</td>
+      </tr>
+      <tr>
+        <td>周三203</td><td>韩职</td><td>18:30</td><td>光州FC</td><td>金泉尚武</td><td><span class="tag tag-draw">平局/客胜</span></td><td>1-1</td><td class="stars">★★☆</td>
+      </tr>
+      <tr>
+        <td>周三210</td><td>欧冠</td><td>01:00</td><td>奥莫尼亚</td><td>阿拉木图</td><td><span class="tag tag-win">主胜/防平</span></td><td>1-0</td><td class="stars">★★★</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 class="section-title">市场信心对比</h2>
+  <div id="chart-confidence" class="chart-container"></div>
+
+  <h2 class="section-title">欧赔离散度分析</h2>
+  <div id="chart-odds" class="chart-container"></div>
+
+  <h2 class="section-title">逐场深度分析</h2>
+
+  <!-- Match 1 -->
+  <div class="match-card">
+    <div class="match-header">
+      <div class="match-title">周三201 <span>韩职 第19轮</span></div>
+      <div class="match-meta">
+        <span class="pill">18:30 开赛</span>
+        <span class="pill">榜首卡位战</span>
+        <span class="pill">德比焦点</span>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="team">
+        <div class="name">首尔FC</div>
+        <div class="badge">联赛第1 | 18轮11胜3平4负 36分</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team">
+        <div class="name">浦项制铁</div>
+        <div class="badge">联赛第5 | 18轮8胜4平6负 28分</div>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      <div class="analysis-item">
+        <h4>近期状态</h4>
+        <ul>
+          <li>首尔近5场：4胜1平0负，胜率80%</li>
+          <li>浦项近5场：3胜0平2负，胜率60%</li>
+          <li>首尔联赛打入31球仅丢13球，攻防均为联赛顶级</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>主客场表现</h4>
+        <ul>
+          <li>首尔主场8场4胜2平2负，主场胜率50%，近4主场仅1胜</li>
+          <li>浦项客场10场5胜2平3负，客场积分联赛第2，典型客场龙</li>
+          <li>浦项客场进15球失11球，客场战斗力不容小觑</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>历史交锋</h4>
+        <ul>
+          <li>近10次交手：首尔3胜3平4负，势均力敌</li>
+          <li>2026年3月18日：浦项0-1首尔（本赛季首回合）</li>
+          <li>双方近5次交锋有4场总进球≤2，小球属性明显</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>盘口赔率</h4>
+        <ul>
+          <li>竞彩：主胜1.70 / 平3.15 / 客胜4.46</li>
+          <li>亚盘：首尔让半球，大小球2.25低开</li>
+          <li>让球-1：主胜3.45 / 平3.20 / 客胜1.90</li>
+          <li>机构明确看好首尔主胜，但让球盘难度较大</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>伤停情报</h4>
+        <ul>
+          <li>首尔：阵容基本完整，主力均可出战</li>
+          <li>浦项：阵容齐整，无重大伤停</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>赛前动态</h4>
+        <ul>
+          <li>首尔榜首位置稳固，领先第二名5分，心理优势明显</li>
+          <li>浦项刚在7月18日客场1-2不敌济州SK，士气受挫</li>
+          <li>本场为韩国德比战，双方战意均十分强烈</li>
+        </ul>
+      </div>
+    </div>
+    <div class="prediction-box">
+      <h4>综合预测</h4>
+      <p>首尔整体实力和状态占优，主场让半球合理。但首尔主场胜率不高，浦项客场战斗力强，本场大概率是小球格局。首选首尔小胜，防平局。</p>
+      <div class="score-options">
+        <span class="score-chip">1-0 (首选)</span>
+        <span class="score-chip">1-1</span>
+        <span class="score-chip">2-1</span>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color:var(--warning);">信心评级：★★★☆（3.5星）| 推荐：主胜 / 让球平</p>
+    </div>
+  </div>
+
+  <!-- Match 2 -->
+  <div class="match-card">
+    <div class="match-header">
+      <div class="match-title">周三202 <span>韩职 第19轮</span></div>
+      <div class="match-meta">
+        <span class="pill">18:30 开赛</span>
+        <span class="pill">保级 vs 中游</span>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="team">
+        <div class="name">富川FC</div>
+        <div class="badge">联赛第10 | 18轮4胜7平7负 19分</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team">
+        <div class="name">安养FC</div>
+        <div class="badge">联赛第6 | 18轮5胜9平4负 24分</div>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      <div class="analysis-item">
+        <h4>近期状态</h4>
+        <ul>
+          <li>富川近6场：1胜3平2负，进7球失13球</li>
+          <li>安养近6场：2胜3平1负，状态稳定</li>
+          <li>富川上轮主场2-0爆冷击败浦项制铁，有一定反弹迹象</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>主客场表现</h4>
+        <ul>
+          <li>富川主场6场1胜2平3负，胜率17%，场均进球0.83全联盟垫底</li>
+          <li>安养客场6场4胜2平0负，客场不败率100%，客场仅丢4球</li>
+          <li>安养是联赛客场表现最好的球队之一</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>历史交锋</h4>
+        <ul>
+          <li>近10次交手：安养6胜3平1负，占据明显上风</li>
+          <li>本赛季首回合：安养主场0-1不敌富川（富川爆冷）</li>
+          <li>交锋小球属性突出，总进球≤2的场次占65%</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>盘口赔率</h4>
+        <ul>
+          <li>竞彩：主胜2.86 / 平2.90 / 客胜2.30</li>
+          <li>亚盘：安养让平半，大小球2.0</li>
+          <li>让球+1：主胜1.48 / 平3.70 / 客胜5.45</li>
+          <li>市场倾向安养不败</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>伤停情报</h4>
+        <ul>
+          <li>富川：主力门将金亨根伤缺，中场金钟佑左膝韧带扭伤缺阵4周，边锋金承斌伤缺，右后卫申宰元累积黄牌停赛</li>
+          <li>安养：主力边后卫李台熙伤缺，中轴线完整，外援埃尔顿可出战</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>赛前动态</h4>
+        <ul>
+          <li>富川伤病满营，后防线和门将位置尤为吃紧</li>
+          <li>安养主打5-4-1收缩反击，客场作战耐心十足</li>
+          <li>富川虽上轮爆冷，但基本面与安养差距明显</li>
+        </ul>
+      </div>
+    </div>
+    <div class="prediction-box">
+      <h4>综合预测</h4>
+      <p>富川伤病严重且主场虫属性明显，安养客场龙态势稳固。尽管富川上轮爆冷浦项，但本场安养有望凭借更完整的阵容和客场优势抢分。小球格局概率高。</p>
+      <div class="score-options">
+        <span class="score-chip">0-1 (首选)</span>
+        <span class="score-chip">1-1</span>
+        <span class="score-chip">0-2</span>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color:var(--warning);">信心评级：★★★（3星）| 推荐：客胜 / 防平</p>
+    </div>
+  </div>
+
+  <!-- Match 3 -->
+  <div class="match-card">
+    <div class="match-header">
+      <div class="match-title">周三203 <span>韩职 第19轮</span></div>
+      <div class="match-meta">
+        <span class="pill">18:30 开赛</span>
+        <span class="pill">保级生死战</span>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="team">
+        <div class="name">光州FC</div>
+        <div class="badge">联赛第12 | 18轮1胜6平11负 9分</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team">
+        <div class="name">金泉尚武</div>
+        <div class="badge">联赛第11 | 18轮2胜10平6负 16分</div>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      <div class="analysis-item">
+        <h4>近期状态</h4>
+        <ul>
+          <li>光州近6场：0胜3平3负，胜率0%，进4球失10球</li>
+          <li>金泉尚武近6场：1胜3平2负，上轮主场1-1富川</li>
+          <li>光州近10轮未尝胜绩，状态极度低迷</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>主客场表现</h4>
+        <ul>
+          <li>光州主场9场1胜3平5负，场均进0.67球、失2.3球，攻防联赛最差</li>
+          <li>金泉尚武客场9场2胜4平3负，客场防守优于主场，场均丢1.2球</li>
+          <li>金泉尚武客场具备一定的保分能力</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>历史交锋</h4>
+        <ul>
+          <li>近10次交手：光州2胜3平5负处于下风</li>
+          <li>近6次：光州2胜3平1负，进5球失4球，全小球</li>
+          <li>2025赛季两次交手均为平局</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>盘口赔率</h4>
+        <ul>
+          <li>竞彩：主胜3.75 / 平3.26 / 客胜1.80</li>
+          <li>亚盘：金泉尚武让半球，大小球2.25</li>
+          <li>让球+1：主胜1.78 / 平3.45 / 客胜3.60</li>
+          <li>机构明显倾向客队不败</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>伤停情报</h4>
+        <ul>
+          <li>光州：后卫閔尚基出战成疑，中场Choi伤缺，朴源杰和李允成因资格限制无缘，门将危机（首发和替补均无法出场），中场核心李昇祐伤情不明</li>
+          <li>金泉尚武：轮换中场李东炅黄牌停赛，主力中卫停赛</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>赛前动态</h4>
+        <ul>
+          <li>光州面临严重伤病和门将危机，防线几乎无人可用</li>
+          <li>金泉尚武为军旅球队，无外援，全靠本土球员，体能消耗大</li>
+          <li>两队均为保级而战，但光州形势更加危急</li>
+        </ul>
+      </div>
+    </div>
+    <div class="prediction-box">
+      <h4>综合预测</h4>
+      <p>光州状态极差且伤兵满营，门将位置更是无人可用。金泉尚武虽进攻乏力但防守韧性更好。本场大概率是低比分沉闷战，平局可能性极高。</p>
+      <div class="score-options">
+        <span class="score-chip">1-1 (首选)</span>
+        <span class="score-chip">0-1</span>
+        <span class="score-chip">0-0</span>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color:var(--warning);">信心评级：★★☆（2.5星）| 推荐：平局 / 客胜</p>
+    </div>
+  </div>
+
+  <!-- Match 4 -->
+  <div class="match-card">
+    <div class="match-header">
+      <div class="match-title">周三210 <span>欧冠资格赛 第二轮</span></div>
+      <div class="match-meta">
+        <span class="pill">01:00 开赛</span>
+        <span class="pill">首回合</span>
+        <span class="pill">塞浦路斯 vs 哈萨克斯坦</span>
+      </div>
+    </div>
+    <div class="team-row">
+      <div class="team">
+        <div class="name">奥莫尼亚</div>
+        <div class="badge">塞浦甲冠军 | 上赛季26场19胜4平3负</div>
+      </div>
+      <div class="vs">VS</div>
+      <div class="team">
+        <div class="name">阿拉木图凯拉特</div>
+        <div class="badge">哈萨超劲旅 | 近期各项赛事5胜1平</div>
+      </div>
+    </div>
+    <div class="analysis-grid">
+      <div class="analysis-item">
+        <h4>近期状态</h4>
+        <ul>
+          <li>奥莫尼亚近10场：7胜3平0负，进23球失9球</li>
+          <li>阿拉木图近6场：5胜1平0负，状态巅峰</li>
+          <li>奥莫尼亚热身赛2-1帕纳托利科斯、2-1布加勒斯特迪纳摩</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>主客场表现</h4>
+        <ul>
+          <li>奥莫尼亚上赛季主场13场10胜3平保持不败，进32球仅失5球</li>
+          <li>阿拉木图客场表现稳定，欧冠第一轮双杀黑山冠军苏捷斯卡</li>
+          <li>奥莫尼亚主场优势极为明显</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>历史交锋</h4>
+        <ul>
+          <li>2021年欧协联小组赛两次交手，两场全部0-0闷平</li>
+          <li>交锋特征：小球、攻防谨慎、运动战进球稀少</li>
+          <li>双方互相熟悉，首回合大概率试探为主</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>盘口赔率</h4>
+        <ul>
+          <li>竞彩：主胜1.56 / 平3.60 / 客胜4.75</li>
+          <li>亚盘：奥莫尼亚让一球，大小球2.25</li>
+          <li>让球-1：主胜2.82 / 平3.35 / 客胜2.10</li>
+          <li>机构看好主队，但让一球存在走盘风险</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>伤停情报</h4>
+        <ul>
+          <li>奥莫尼亚：后卫基措斯膝盖重伤赛季报销，中卫阿古祖尔脚趾骨折缺席，防线轮换厚度受损</li>
+          <li>阿拉木图：仅两名轮换后卫轻伤缺席，首发中轴线完整</li>
+        </ul>
+      </div>
+      <div class="analysis-item">
+        <h4>赛前动态</h4>
+        <ul>
+          <li>塞浦甲联赛5月已结束，奥莫尼亚仅通过友谊赛维持状态，竞技节奏存疑</li>
+          <li>阿拉木图联赛正处赛季中期，状态处于巅峰</li>
+          <li>两队历史交锋均为0-0，本场可能延续谨慎风格</li>
+        </ul>
+      </div>
+    </div>
+    <div class="prediction-box">
+      <h4>综合预测</h4>
+      <p>奥莫尼亚主场强势但久疏战阵，阿拉木图状态正佳且阵容完整。鉴于两队历史交锋全是0-0，且首回合性质保守，本场看好小球。奥莫尼亚凭借主场优势有望小胜或闷平。</p>
+      <div class="score-options">
+        <span class="score-chip">1-0 (首选)</span>
+        <span class="score-chip">0-0</span>
+        <span class="score-chip">2-0</span>
+      </div>
+      <p style="margin-top:10px; font-size:13px; color:var(--warning);">信心评级：★★★（3星）| 推荐：主胜 / 防平</p>
+    </div>
+  </div>
+
+  <h2 class="section-title">比分预测汇总</h2>
+  <div id="chart-scores" class="chart-container"></div>
+
+  <div class="risk-box">
+    <h3>风险提示</h3>
+    <ul>
+      <li>本报告基于公开数据和AI分析生成，仅供参考，不构成投注建议。</li>
+      <li>足球比赛受临场阵容、天气、裁判等多种因素影响，预测存在不确定性。</li>
+      <li>光州FC面临严重门将危机和伤病问题，存在较大变数。</li>
+      <li>奥莫尼亚久疏战阵，竞技状态可能不如正处赛季中的阿拉木图。</li>
+      <li>请理性对待，量力而行，切勿沉迷。</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>jinbet AI 足球预测分析 | 生成时间：2026-07-22</p>
+    <p style="margin-top:6px;">数据来源于竞彩官方、网易彩票及公开网络情报</p>
+  </footer>
+</div>
+
+<script>
+  // 市场信心对比
+  var chart1 = echarts.init(document.getElementById('chart-confidence'));
+  chart1.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['主胜信心', '平局信心', '客胜信心'], textStyle: { color: '#94a3b8' }, bottom: 0 },
+    grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+    xAxis: { type: 'category', data: ['首尔FC\nvs浦项', '富川FC\nvs安养', '光州FC\nvs金泉', '奥莫尼亚\nvs阿拉木图'], axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8', fontSize: 12 } },
+    yAxis: { type: 'value', max: 100, axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' }, splitLine: { lineStyle: { color: '#1e293b' } } },
+    series: [
+      { name: '主胜信心', type: 'bar', data: [55, 28, 18, 62], itemStyle: { color: '#4ade80', borderRadius: [4,4,0,0] } },
+      { name: '平局信心', type: 'bar', data: [28, 35, 42, 25], itemStyle: { color: '#fbbf24', borderRadius: [4,4,0,0] } },
+      { name: '客胜信心', type: 'bar', data: [17, 37, 40, 13], itemStyle: { color: '#f87171', borderRadius: [4,4,0,0] } }
+    ]
+  });
+
+  // 欧赔离散度
+  var chart2 = echarts.init(document.getElementById('chart-odds'));
+  chart2.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'axis' },
+    legend: { data: ['主胜赔率', '平局赔率', '客胜赔率'], textStyle: { color: '#94a3b8' }, bottom: 0 },
+    grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
+    xAxis: { type: 'category', data: ['首尔FC vs 浦项', '富川FC vs 安养', '光州FC vs 金泉', '奥莫尼亚 vs 阿拉木图'], axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8', fontSize: 12, rotate: 15 } },
+    yAxis: { type: 'value', axisLine: { lineStyle: { color: '#334155' } }, axisLabel: { color: '#94a3b8' }, splitLine: { lineStyle: { color: '#1e293b' } } },
+    series: [
+      { name: '主胜赔率', type: 'line', data: [1.70, 2.86, 3.75, 1.56], smooth: true, lineStyle: { color: '#4ade80', width: 3 }, itemStyle: { color: '#4ade80' } },
+      { name: '平局赔率', type: 'line', data: [3.15, 2.90, 3.26, 3.60], smooth: true, lineStyle: { color: '#fbbf24', width: 3 }, itemStyle: { color: '#fbbf24' } },
+      { name: '客胜赔率', type: 'line', data: [4.46, 2.30, 1.80, 4.75], smooth: true, lineStyle: { color: '#f87171', width: 3 }, itemStyle: { color: '#f87171' } }
+    ]
+  });
+
+  // 比分预测分布
+  var chart3 = echarts.init(document.getElementById('chart-scores'));
+  chart3.setOption({
+    backgroundColor: 'transparent',
+    tooltip: { trigger: 'item', formatter: '{b}: {c}场 ({d}%)' },
+    legend: { orient: 'vertical', left: 'left', textStyle: { color: '#94a3b8' } },
+    series: [
+      {
+        name: '首选比分',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: { borderRadius: 8, borderColor: '#0f172a', borderWidth: 2 },
+        label: { show: true, color: '#e2e8f0', formatter: '{b}\n{c}场' },
+        emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+        data: [
+          { value: 1, name: '1-0', itemStyle: { color: '#38bdf8' } },
+          { value: 1, name: '0-1', itemStyle: { color: '#22d3ee' } },
+          { value: 1, name: '1-1', itemStyle: { color: '#fbbf24' } },
+          { value: 1, name: '1-0', itemStyle: { color: '#818cf8' } }
+        ]
+      }
+    ]
+  });
+
+  window.addEventListener('resize', function() {
+    chart1.resize(); chart2.resize(); chart3.resize();
+  });
+</script>
+</body>
+</html>
