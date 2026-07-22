@@ -1,0 +1,37 @@
+# EditorConfig: https://EditorConfig.org
+# 跨编辑器统一代码风格
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+# Python: PEP 8
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+# JavaScript (内联在 index.html)
+[*.{js,html}]
+indent_size = 4
+max_line_length = 120
+
+# JSON 数据文件
+[*.json]
+indent_size = 2
+
+# Markdown 文档
+[*.md]
+trim_trailing_whitespace = false  # 保留行尾空格用于换行
+
+# YAML 配置
+[*.{yml,yaml}]
+indent_size = 2
+
+# Windows 批处理
+[*.bat]
+end_of_line = crlf
