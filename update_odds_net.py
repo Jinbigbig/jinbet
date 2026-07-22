@@ -110,7 +110,7 @@ def parse_odds_from_html(html_content):
             key = f'{match_date}_{home}_{away}'
             
             if key not in odds_data:
-                odds_data[key] = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}}
+                odds_data[key] = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'league': league}
             
             if match_date not in schedule_data:
                 schedule_data[match_date] = []
@@ -310,7 +310,7 @@ def update_odds_json(matched_odds):
             '比分': odds['比分'],
             '总进球': odds['总进球'],
             '半全场': odds['半全场'],
-            'league': '',
+            'league': odds.get('league', ''),
             'date_key': key
         }
     
