@@ -1578,9 +1578,21 @@
             <button class="btn btn-cyan btn-sm" id="btnRefreshOdds" onclick="openOddsUpdater()">🔄 更新赔率</button>
               <span id="onlineBadge" style="display:none;font-size:12px;color:#4caf50;margin-left:6px;"></span>
             <button class="btn btn-outline btn-sm" onclick="clearOdds()">🗑 清空当日赔率</button>
+            <button class="btn btn-outline btn-sm" onclick="openOddsArchive()">📦 历史归档</button>
             <span style="font-size:12px;color:#6b7280;margin-left:8px;">录入后，添加记录时自动填入，修改后同步更新历史记录</span>
         </div>
         <div id="oddsListContainer"></div>
+        <div id="oddsArchivePanel" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin:12px 0;padding:10px 14px;background:rgba(108,92,231,0.08);border-radius:8px;">
+                <span style="font-size:14px;font-weight:600;color:#6c5ce7;">📦 历史归档</span>
+                <select id="archiveDateSelect" onchange="loadArchiveDate(this.value)" style="flex:1;height:32px;padding:4px 8px;border:1.5px solid #d0d4dd;border-radius:6px;font-size:14px;background:#fff;">
+                    <option value="">-- 选择日期 --</option>
+                </select>
+                <button class="btn btn-outline btn-sm" onclick="closeOddsArchive()">返回当前</button>
+            </div>
+            <div id="archiveInfo" style="font-size:12px;color:#6b7280;margin-bottom:8px;display:none;"></div>
+            <div id="archiveListContainer"></div>
+        </div>
         <div class="form-actions">
             <button class="btn btn-outline" onclick="closeModal('oddsModal')">关闭</button>
         </div>
@@ -1626,19 +1638,19 @@
 // ================================================================
 const SCHEDULE = {
     '2026-07-21': [
-        { home: '济州SK', away: '江原FC', league: '' },
-        { home: '全北现代', away: '大田市民', league: '' },
-        { home: '蔚山现代', away: '仁川联', league: '' },
-        { home: '米竞技', away: '巴伊亚', league: '' },
-        { home: '萨巴赫', away: '库奥皮奥', league: '' },
-        { home: '奥胡斯', away: '波兹南', league: '' },
-        { home: '格风暴', away: '哈茨', league: '' }
+        { home: '济州SK', away: '江原FC', league: '韩K联' },
+        { home: '全北现代', away: '大田市民', league: '韩K联' },
+        { home: '蔚山现代', away: '仁川联', league: '韩K联' },
+        { home: '米竞技', away: '巴伊亚', league: '巴西甲' },
+        { home: '萨巴赫', away: '库奥皮奥', league: '欧协联' },
+        { home: '奥胡斯', away: '波兹南', league: '欧协联' },
+        { home: '格风暴', away: '哈茨', league: '欧协联' }
       ],
     '2026-07-22': [
-        { home: '首尔FC', away: '浦项制铁', league: '' },
-        { home: '富川FC', away: '安养FC', league: '' },
-        { home: '光州FC', away: '金泉尚武', league: '' },
-        { home: '奥莫尼亚', away: '阿拉木图', league: '' }
+        { home: '首尔FC', away: '浦项制铁', league: '韩K联' },
+        { home: '富川FC', away: '安养FC', league: '韩K2联' },
+        { home: '光州FC', away: '金泉尚武', league: '韩K联' },
+        { home: '奥莫尼亚', away: '阿拉木图', league: '欧协联' }
       ]
 };
 
@@ -2029,6 +2041,198 @@ function clearOdds() {
     saveToStorage();
     syncOddsToBets();
     showToast('🗑 已清空当日赔率并同步更新');
+}
+
+// ================================================================
+//  历史归档查看器
+// ================================================================
+var _archiveIndex = null; // 缓存归档索引
+
+function openOddsArchive() {
+    var panel = document.getElementById('oddsArchivePanel');
+    var listContainer = document.getElementById('oddsListContainer');
+    var batchToolbar = document.querySelector('.batch-toolbar');
+
+    // 加载归档索引
+    loadArchiveIndex().then(function(dates) {
+        var select = document.getElementById('archiveDateSelect');
+        select.innerHTML = '<option value="">-- 选择日期 --</option>';
+        if (dates && dates.length > 0) {
+            dates.forEach(function(item) {
+                var option = document.createElement('option');
+                option.value = item.date;
+                option.textContent = item.date + ' (周' + item.weekday + ') - ' + item.count + '场';
+                select.appendChild(option);
+            });
+        } else {
+            var option = document.createElement('option');
+            option.value = '';
+            option.textContent = '暂无归档数据';
+            select.appendChild(option);
+        }
+    }).catch(function() {
+        var select = document.getElementById('archiveDateSelect');
+        select.innerHTML = '<option value="">归档目录不存在</option>';
+    });
+
+    // 显示归档面板，隐藏当前赔率列表
+    panel.style.display = 'block';
+    listContainer.style.display = 'none';
+    if (batchToolbar) batchToolbar.style.opacity = '0.5';
+}
+
+function closeOddsArchive() {
+    var panel = document.getElementById('oddsArchivePanel');
+    var listContainer = document.getElementById('oddsListContainer');
+    var batchToolbar = document.querySelector('.batch-toolbar');
+
+    panel.style.display = 'none';
+    listContainer.style.display = 'block';
+    if (batchToolbar) batchToolbar.style.opacity = '1';
+
+    // 清空归档内容
+    document.getElementById('archiveListContainer').innerHTML = '';
+    document.getElementById('archiveInfo').style.display = 'none';
+    document.getElementById('archiveDateSelect').value = '';
+}
+
+function loadArchiveIndex() {
+    if (_archiveIndex) {
+        return Promise.resolve(_archiveIndex);
+    }
+    return fetch('odds_history/index.json?t=' + Date.now(), { cache: 'no-cache' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('索引文件不存在');
+            return r.json();
+        })
+        .then(function(data) {
+            _archiveIndex = data.dates || [];
+            return _archiveIndex;
+        });
+}
+
+function loadArchiveDate(dateStr) {
+    if (!dateStr) {
+        document.getElementById('archiveListContainer').innerHTML = '';
+        document.getElementById('archiveInfo').style.display = 'none';
+        return;
+    }
+
+    var infoDiv = document.getElementById('archiveInfo');
+    var listDiv = document.getElementById('archiveListContainer');
+
+    infoDiv.style.display = 'block';
+    infoDiv.textContent = '⏳ 加载中...';
+    listDiv.innerHTML = '';
+
+    fetch('odds_history/' + dateStr + '.json?t=' + Date.now(), { cache: 'no-cache' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('归档文件不存在');
+            return r.json();
+        })
+        .then(function(data) {
+            renderArchiveData(data);
+        })
+        .catch(function(err) {
+            infoDiv.textContent = '❌ 加载失败: ' + err.message;
+        });
+}
+
+function renderArchiveData(data) {
+    var dateStr = data.date || '';
+    var schedule = data.schedule || [];
+    var odds = data.odds || {};
+    var infoDiv = document.getElementById('archiveInfo');
+    var listDiv = document.getElementById('archiveListContainer');
+
+    infoDiv.textContent = '📅 ' + dateStr + ' | 共 ' + schedule.length + ' 场比赛';
+    listDiv.innerHTML = '';
+
+    if (schedule.length === 0) {
+        listDiv.innerHTML = '<div style="padding:20px;color:#9ca3af;text-align:center;">该日期无比赛数据</div>';
+        return;
+    }
+
+    schedule.forEach(function(g) {
+        var key = dateStr + '_' + g.home + '_' + g.away;
+        var gameOdds = odds[key] || null;
+        var div = document.createElement('div');
+        div.className = 'odds-row';
+        div.style.opacity = '0.85';
+
+        var html = '<div class="match-info"><span class="league-tag">' + (g.league || '') + '</span>' + g.home + ' vs ' + g.away + '</div>';
+
+        // 胜平负
+        html += '<div class="odds-section"><label>胜平负：</label>';
+        ['胜','平','负'].forEach(function(type) {
+            var val = gameOdds && gameOdds[type] ? gameOdds[type] : '-';
+            html += '<span style="display:inline-block;min-width:65px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:4px;text-align:center;font-size:13px;background:#f9fafb;">' + val + '</span>';
+        });
+        html += '</div>';
+
+        // 让球
+        if (gameOdds && gameOdds['让球'] && gameOdds['让球'].length > 0) {
+            html += '<div class="odds-section"><label>让球胜平负：</label>';
+            gameOdds['让球'].forEach(function(rq) {
+                html += '<span style="display:inline-block;margin-right:8px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:13px;background:#f9fafb;">';
+                html += '让' + (rq.handicap || '?') + ': 胜' + (rq['胜'] || '-') + ' 平' + (rq['平'] || '-') + ' 负' + (rq['负'] || '-');
+                html += '</span>';
+            });
+            html += '</div>';
+        }
+
+        // 总进球
+        if (gameOdds && gameOdds['总进球'] && Object.keys(gameOdds['总进球']).length > 0) {
+            html += '<div class="odds-section"><label>总进球：</label>';
+            var zjq = gameOdds['总进球'];
+            ['0','1','2','3','4','5','6','7+'].forEach(function(opt) {
+                var val = zjq[opt] || '-';
+                html += '<span style="display:inline-block;min-width:45px;padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;text-align:center;font-size:12px;background:#f9fafb;margin-right:4px;">';
+                html += opt + ':' + val;
+                html += '</span>';
+            });
+            html += '</div>';
+        }
+
+        // 半全场
+        if (gameOdds && gameOdds['半全场'] && Object.keys(gameOdds['半全场']).length > 0) {
+            html += '<div class="odds-section"><label>半全场：</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-width:400px;">';
+            var hq = gameOdds['半全场'];
+            ['胜胜','胜平','胜负','平胜','平平','平负','负胜','负平','负负'].forEach(function(type) {
+                var val = hq[type] || '-';
+                html += '<span style="padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;text-align:center;font-size:12px;background:#f9fafb;">';
+                html += type + ':' + val;
+                html += '</span>';
+            });
+            html += '</div></div>';
+        }
+
+        // 比分（只显示前几个常见比分）
+        if (gameOdds && gameOdds['比分'] && Object.keys(gameOdds['比分']).length > 0) {
+            html += '<div class="odds-section"><label>比分（部分）：</label><div style="display:flex;flex-wrap:wrap;gap:4px;">';
+            var bf = gameOdds['比分'];
+            var commonScores = ['1:0','2:0','2:1','1:1','0:0','0:1','0:2','1:2','胜其他','平其他','负其他'];
+            commonScores.forEach(function(score) {
+                if (bf[score]) {
+                    html += '<span style="padding:3px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;background:#f9fafb;">';
+                    html += score + ':' + bf[score];
+                    html += '</span>';
+                }
+            });
+            var totalBf = Object.keys(bf).length;
+            if (totalBf > commonScores.length) {
+                html += '<span style="padding:3px 8px;font-size:12px;color:#9ca3af;">...共' + totalBf + '个</span>';
+            }
+            html += '</div></div>';
+        }
+
+        if (!gameOdds) {
+            html += '<div style="padding:10px;color:#9ca3af;font-size:13px;">暂无赔率数据</div>';
+        }
+
+        div.innerHTML = html;
+        listDiv.appendChild(div);
+    });
 }
 
 // ================================================================
