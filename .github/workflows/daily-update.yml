@@ -27,6 +27,26 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
 
+      - name: 验证数据完整性（league 字段）
+        run: |
+          python3 -c "
+          import json, sys
+          with open('odds_data.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+          games = data.get('data', {})
+          if not games:
+              print('⚠️ 无比赛数据，跳过验证')
+              sys.exit(0)
+          empty = sum(1 for g in games.values() if not g.get('league'))
+          total = len(games)
+          ratio = empty / total
+          print(f'联赛字段检查: {empty}/{total} 为空 ({ratio:.0%})')
+          if ratio > 0.3:
+              print('❌ 超过 30% 的比赛 league 字段为空，终止发布')
+              sys.exit(1)
+          print('✅ 数据完整性校验通过')
+          "
+
       - name: 检查是否有更新
         id: check_changes
         run: |
