@@ -333,9 +333,7 @@ def archive_old_data(schedule, odds, removed_dates):
     os.makedirs(archive_dir, exist_ok=True)
     
     for date in removed_dates:
-        # 提取该日期的赛程
         day_schedule = schedule.get(date, [])
-        # 提取该日期的赔率
         day_odds = {}
         for key, val in odds.items():
             if key.startswith(date + '_'):
@@ -351,6 +349,37 @@ def archive_old_data(schedule, odds, removed_dates):
         with open(archive_path, 'w', encoding='utf-8') as f:
             json.dump(archive, f, ensure_ascii=False, indent=2)
         print(f'    📁 归档: {date}.json ({len(day_schedule)}场, {len(day_odds)}条赔率)')
+    
+    # 更新归档索引
+    update_archive_index(archive_dir)
+
+
+def update_archive_index(archive_dir):
+    """更新 odds_history/index.json 索引，供前端归档查看器使用"""
+    weekdays = ['一', '二', '三', '四', '五', '六', '日']
+    dates = []
+    for filename in sorted(os.listdir(archive_dir)):
+        if filename == 'index.json' or not filename.endswith('.json'):
+            continue
+        date_str = filename.replace('.json', '')
+        filepath = os.path.join(archive_dir, filename)
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            count = len(data.get('schedule', []))
+        except:
+            count = 0
+        try:
+            from datetime import datetime
+            weekday = weekdays[datetime.strptime(date_str, '%Y-%m-%d').weekday()]
+        except:
+            weekday = '?'
+        dates.append({'date': date_str, 'weekday': weekday, 'count': count})
+    
+    index_path = os.path.join(archive_dir, 'index.json')
+    with open(index_path, 'w', encoding='utf-8') as f:
+        json.dump({'dates': dates}, f, ensure_ascii=False, indent=2)
+    print(f'    📋 归档索引已更新（{len(dates)} 个日期）')
 
 
 def push_to_gh_pages():
