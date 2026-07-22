@@ -14,6 +14,19 @@ TEAM_NAME_MAP = {
     '沙特': '沙特阿拉伯',
 }
 
+# 竞彩联赛名称映射（当网易抓取数据中 league 为空时的兜底）
+LEAGUE_MAP = {
+    '济州SK': '韩职', '江原FC': '韩职', '全北现代': '韩职', '大田市民': '韩职',
+    '蔚山现代': '韩职', '仁川联': '韩职', '首尔FC': '韩职', '浦项制铁': '韩职',
+    '光州FC': '韩职', '金泉尚武': '韩职', '富川FC': '韩职', '安养FC': '韩职',
+    '水原FC': '韩职', '大邱FC': '韩职', '江原': '韩职', '浦项': '韩职',
+    '米竞技': '巴西甲', '巴伊亚': '巴西甲', '弗拉门戈': '巴西甲', '沙佩科': '巴西甲',
+    '圣保罗': '巴西甲', '巴竞技': '巴西甲', '科林蒂安': '巴西甲', '博塔弗戈': '巴西甲',
+    '维多利亚': '巴西甲', '里莫': '巴西甲', '克鲁塞罗': '巴西甲', '格雷米奥': '巴西甲',
+    '萨巴赫': '欧冠', '库奥皮奥': '欧冠', '奥胡斯': '欧冠', '波兹南': '欧冠',
+    '格风暴': '欧冠', '哈茨': '欧冠', '奥莫尼亚': '欧冠', '阿拉木图': '欧冠',
+}
+
 
 def decode_netease_value(s):
     s = re.sub(r'\[0,\s*"([^"]+)"\]', r'"\1"', s)
@@ -111,6 +124,10 @@ def parse_odds_from_html(html_content):
             
             if key not in odds_data:
                 odds_data[key] = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'league': league}
+            else:
+                # 同步更新 league（防止旧数据中 league 为空）
+                if not odds_data[key].get('league'):
+                    odds_data[key]['league'] = league
             
             if match_date not in schedule_data:
                 schedule_data[match_date] = []
@@ -463,6 +480,21 @@ def main():
     # 合并新旧赛程
     for date, games in schedule_data.items():
         schedule[date] = games
+    # 补全旧日期赛程中缺失的 league（从 schedule_data 中查找 + 映射表兜底）
+    for date in schedule:
+        for g in schedule[date]:
+            if g.get('league'):
+                continue
+            if date in schedule_data:
+                for ng in schedule_data[date]:
+                    if ng['home'] == g['home'] and ng['away'] == g['away'] and ng.get('league'):
+                        g['league'] = ng['league']
+                        break
+            if not g.get('league'):
+                if g['home'] in LEAGUE_MAP:
+                    g['league'] = LEAGUE_MAP[g['home']]
+                elif g['away'] in LEAGUE_MAP:
+                    g['league'] = LEAGUE_MAP[g['away']]
     print(f'    合并后赛程: {len(schedule)} 个日期')
 
     # 从现有 index.html 提取已有的 ODDS 数据
@@ -483,6 +515,42 @@ def main():
     for key, odds in odds_data.items():
         merged_odds[key] = odds
     print(f'    合并后赔率: {len(merged_odds)} 条')
+
+    # 补全旧赔率中缺失的 league（从 schedule 和 schedule_data 中查找，最后用映射表兜底）
+    league_filled = 0
+    for key in list(merged_odds.keys()):
+        if not merged_odds[key].get('league'):
+            parts = key.split('_')
+            date = parts[0]
+            home = parts[1]
+            away = '_'.join(parts[2:])
+            filled = False
+            # 先从合并后的 schedule 中查找
+            if date in schedule:
+                for g in schedule[date]:
+                    if g['home'] == home and g['away'] == away and g.get('league'):
+                        merged_odds[key]['league'] = g['league']
+                        league_filled += 1
+                        filled = True
+                        break
+            # 再从 schedule_data（网易新抓取）中查找
+            if not filled and date in schedule_data:
+                for g in schedule_data[date]:
+                    if g['home'] == home and g['away'] == away and g.get('league'):
+                        merged_odds[key]['league'] = g['league']
+                        league_filled += 1
+                        filled = True
+                        break
+            # 最后用映射表兜底
+            if not filled:
+                if home in LEAGUE_MAP:
+                    merged_odds[key]['league'] = LEAGUE_MAP[home]
+                    league_filled += 1
+                elif away in LEAGUE_MAP:
+                    merged_odds[key]['league'] = LEAGUE_MAP[away]
+                    league_filled += 1
+    if league_filled:
+        print(f'    补全 league 字段: {league_filled} 条')
 
     # 归档并清理超过7天的旧数据
     from datetime import datetime, timedelta
