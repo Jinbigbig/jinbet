@@ -5722,20 +5722,35 @@ function autoUpdateOdds() {
 setInterval(autoUpdateOdds, 300000);
 autoUpdateOdds();
 
-// === 网易赔率自动注入（2026-07-21 10:00 / build:20260721100000）===
+// === 网易赔率自动注入 ===
 (function(){
   try {
-    var CURRENT_BUILD = '20260721100000';
     var BUILD_KEY = 'jinbet_build_id';
-    var lastBuild = localStorage.getItem(BUILD_KEY);
-    if (lastBuild && lastBuild !== CURRENT_BUILD) {
-      // 检测到新版本 → 保存并强制刷新一次（绕过浏览器缓存）
-      localStorage.setItem(BUILD_KEY, CURRENT_BUILD);
-      console.log('[自动刷新] 版本变化 ' + lastBuild + ' → ' + CURRENT_BUILD + '，强制刷新');
-      setTimeout(function() { try { location.reload(true); } catch(e) { location.reload(); } }, 30);
-      return;
-    }
-    if (!lastBuild) { localStorage.setItem(BUILD_KEY, CURRENT_BUILD); }
+    var currentBuildFromHtml = '20260721100000';
+    // 远程检查版本号（从 version.txt 读取，绕过 HTML 缓存）
+    fetch('version.txt?t=' + Date.now(), { cache: 'no-cache' })
+      .then(function(r) { return r.text(); })
+      .then(function(remoteVersion) {
+        var remoteBuild = remoteVersion.trim();
+        var lastBuild = localStorage.getItem(BUILD_KEY);
+        if (lastBuild && lastBuild !== remoteBuild && remoteBuild) {
+          localStorage.setItem(BUILD_KEY, remoteBuild);
+          console.log('[自动刷新] 版本变化 ' + lastBuild + ' → ' + remoteBuild + '，强制刷新');
+          setTimeout(function() { try { location.reload(true); } catch(e) { location.reload(); } }, 30);
+          return;
+        }
+        if (!lastBuild) { localStorage.setItem(BUILD_KEY, remoteBuild || currentBuildFromHtml); }
+      })
+      .catch(function() {
+        // 远程版本检查失败，回退到 HTML 内嵌版本号
+        var lastBuild = localStorage.getItem(BUILD_KEY);
+        if (lastBuild && lastBuild !== currentBuildFromHtml) {
+          localStorage.setItem(BUILD_KEY, currentBuildFromHtml);
+          setTimeout(function() { try { location.reload(true); } catch(e) { location.reload(); } }, 30);
+          return;
+        }
+        if (!lastBuild) { localStorage.setItem(BUILD_KEY, currentBuildFromHtml); }
+      });
     var data = {
   "2026-07-21_全北现代_大田市民": {
     "胜": "1.72",
@@ -5912,7 +5927,7 @@ autoUpdateOdds();
     var order = ["全北现代 vs 大田市民", "奥胡斯 vs 波兹南", "格风暴 vs 哈茨", "济州SK vs 江原FC", "米竞技 vs 巴伊亚", "萨巴赫 vs 库奥皮奥", "蔚山现代 vs 仁川联", "光州FC vs 金泉尚武", "利勒斯特 vs 维京", "博德闪耀 vs 汉坎", "圣保罗 vs 巴竞技", "奥莫尼亚 vs 阿拉木图", "富川FC vs 安养FC", "沙佩科 vs 弗拉门戈", "洛杉矶FC vs 盐湖城", "迈国际 vs 芝加哥", "首尔FC vs 浦项制铁", "博塔弗戈 vs 维多利亚", "科林蒂安 vs 里莫"];
     localStorage.setItem('jinbet_odds_v738', JSON.stringify(data));
     localStorage.setItem('jinbet_odds_v738_order', JSON.stringify(order));
-    console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场 (build:' + CURRENT_BUILD + ')');
+    console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
   } catch(e) {
     console.error('[网易赔率] 注入失败', e);
   }
