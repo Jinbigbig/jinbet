@@ -27,6 +27,9 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
 
+      - name: 生成版本号
+        run: date '+%Y%m%d%H%M%S' > version.txt
+
       - name: 验证数据完整性（league 字段）
         run: |
           python3 -c "
@@ -70,7 +73,7 @@ jobs:
           # 归档目录（如果 master 分支上存在）
           git checkout master -- odds_history/ 2>/dev/null || true
 
-          git add index.html odds_data.json
+          git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
           git push origin gh-pages
