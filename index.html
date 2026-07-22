@@ -5821,30 +5821,31 @@ function init() {
     // 默认加载 AI 设置
     try { loadAiSettings(); updateAiProviderBadge(); } catch(e) {}
     try { updateAiDateLabel(); } catch(e) {}
-    // AI 数据本地同步恢复（优先级最高：恢复用户上次的追加/投注导入赛程 + 预测结果）
-    let _aiRestored = false;
-    try { _aiRestored = !!restoreAiData(); } catch(e) { _aiRestored = false; }
-    if (!_aiRestored) {
-        // 没有本地缓存：默认加载当日赛程（覆盖模式初始化）
-        try { loadAiSchedule(true); } catch(e) {}
-    } else {
-        try { updateAiDateLabel(); } catch(e) {}
-        // 恢复旧数据后，过滤掉非当前日期的比赛，只保留当前日期的比赛
-        const dateEl = document.getElementById('aiScheduleDate');
-        const currentDate = dateEl ? dateEl.value : '';
-        if (currentDate) {
-            const filtered = aiCurrentMatches.filter(function(m) { return m.date === currentDate; });
-            if (filtered.length === 0) {
-                // 当前日期没有比赛，自动加载
-                try { loadAiSchedule(true); } catch(e) {}
-            } else if (filtered.length !== aiCurrentMatches.length) {
-                // 有其他日期的比赛，只保留当前日期的
-                aiCurrentMatches = filtered;
-                renderAiMatchList();
-                saveAiData();
+    // AI 赛程初始化：始终以 SCHEDULE（HTML内置数据）为准，保证完整性
+    // localStorage 缓存仅用于保存用户追加的"投注导入"等自定义比赛，不缓存 SCHEDULE 的标准赛程
+    try { loadAiSchedule(true); } catch(e) {}
+    // 恢复用户追加的自定义比赛（投注导入等，不在 SCHEDULE 中的）
+    try {
+        const raw = localStorage.getItem(AI_DATA_STORAGE_KEY);
+        if (raw) {
+            const saved = JSON.parse(raw);
+            if (saved && Array.isArray(saved.matches)) {
+                const customMatches = saved.matches.filter(function(m) {
+                    // 判断是否为自定义比赛：不在 SCHEDULE 中
+                    const dateGames = SCHEDULE[m.date] || [];
+                    return !dateGames.some(function(g) { return g.home === m.home && g.away === m.away; });
+                });
+                if (customMatches.length > 0) {
+                    aiCurrentMatches = _dedupeAiMatches(aiCurrentMatches, customMatches);
+                    renderAiMatchList();
+                    // 保存恢复后的完整列表
+                    aiLastPredictions = [];
+                    saveAiData();
+                }
             }
         }
-    }
+    } catch(e) {}
+    try { updateAiDateLabel(); } catch(e) {}
 
     loadFromStorage();
     
