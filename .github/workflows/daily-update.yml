@@ -41,12 +41,18 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git checkout gh-pages
-          
+
           git checkout master -- index.html
           git checkout master -- odds_data.json
-          
-          git add index.html odds_data.json
-          git commit -m "📊 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
+
+          # 归档目录（如果存在）
+          if [ -d "odds_history" ]; then
+            mkdir -p odds_history
+            git checkout master -- odds_history/ 2>/dev/null || true
+          fi
+
+          git add index.html odds_data.json odds_history/
+          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
           git push origin gh-pages
