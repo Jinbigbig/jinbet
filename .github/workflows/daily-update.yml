@@ -1,0 +1,52 @@
+name: 每日赛程赔率自动更新
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 抓取网易赔率并更新
+        run: python update_odds_net.py --no-push
+        env:
+          PYTHONIOENCODING: utf-8
+
+      - name: 检查是否有更新
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 推送更新到 gh-pages
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git checkout gh-pages
+          
+          git checkout master -- index.html
+          git checkout master -- odds_data.json
+          
+          git add index.html odds_data.json
+          git commit -m "📊 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
+          git push origin gh-pages
