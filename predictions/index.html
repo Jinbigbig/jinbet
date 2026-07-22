@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 足球预测报告归档</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #06b6d4;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.back-link:hover { text-decoration: underline; }
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: #6c757d;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+.report-list { list-style: none; }
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 12px;
+  border: 1px solid #eef0f4;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+.report-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-color: #06b6d4;
+}
+.report-item .date {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.report-item .date-weekday {
+  font-size: 13px;
+  color: #6c757d;
+  margin-left: 8px;
+  font-weight: 400;
+}
+.report-item .meta {
+  text-align: right;
+}
+.report-item .match-count {
+  font-size: 13px;
+  color: #6c757d;
+}
+.report-item .arrow {
+  font-size: 20px;
+  color: #06b6d4;
+  margin-left: 12px;
+}
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state p { font-size: 15px; }
+.auto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(6,182,212,0.1);
+  color: #06b6d4;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+</style>
+</head>
+<body>
+<div class="page-container">
+  <a class="back-link" href="../index.html">← 返回投注工具</a>
+  <h1>AI 足球预测报告 <span class="auto-badge">每日自动更新</span></h1>
+  <p class="subtitle">基于盘口赔率、历史交锋、近期状态、伤停情报等多维度深度分析</p>
+  <ul class="report-list" id="reportList"></ul>
+</div>
+<script>
+(function() {
+  var reports = [
+    { date: '2026-07-21', weekday: '周二', matches: 7, leagues: '韩职 x3 / 巴甲 / 欧冠 x3' }
+  ];
+  var list = document.getElementById('reportList');
+  if (reports.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>暂无报告，每日 16:00 自动生成</p></div>';
+    return;
+  }
+  reports.sort(function(a, b) { return b.date.localeCompare(a.date); });
+  reports.forEach(function(r) {
+    var li = document.createElement('li');
+    li.innerHTML =
+      '<a class="report-item" href="' + r.date + '/index.html">' +
+        '<div>' +
+          '<span class="date">' + r.date + '</span>' +
+          '<span class="date-weekday">' + r.weekday + '</span>' +
+        '</div>' +
+        '<div class="meta">' +
+          '<div class="match-count">' + r.matches + ' 场比赛 · ' + r.leagues + '</div>' +
+          '<span class="arrow">→</span>' +
+        '</div>' +
+      '</a>';
+    list.appendChild(li);
+  });
+})();
+</script>
+</body>
+</html>
