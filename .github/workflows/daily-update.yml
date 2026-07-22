@@ -67,12 +67,10 @@ jobs:
           git checkout master -- index.html
           git checkout master -- odds_data.json
 
-          # 归档目录（如果存在）
-          if [ -d "odds_history" ]; then
-            mkdir -p odds_history
-            git checkout master -- odds_history/ 2>/dev/null || true
-          fi
+          # 归档目录（如果 master 分支上存在）
+          git checkout master -- odds_history/ 2>/dev/null || true
 
-          git add index.html odds_data.json odds_history/
-          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
+          git add index.html odds_data.json
+          git add odds_history/ 2>/dev/null || true
+          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
           git push origin gh-pages
