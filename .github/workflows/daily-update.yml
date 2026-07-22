@@ -65,10 +65,15 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
+          # 暂存本地修改，避免切换分支时冲突
+          git stash push -m "auto-update-temp"
+
           git checkout gh-pages
 
+          # 从 master 恢复最新文件到 gh-pages
           git checkout master -- index.html
           git checkout master -- odds_data.json
+          git checkout master -- version.txt
 
           # 归档目录（如果 master 分支上存在）
           git checkout master -- odds_history/ 2>/dev/null || true
