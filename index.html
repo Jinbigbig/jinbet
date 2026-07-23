@@ -1358,7 +1358,7 @@
     <!-- ===== 批量功能：赛果录入 + AI 预测 ===== -->
     <div class="batch-panels-grid">
         <div class="batch-result-panel" id="batchResultPanel">
-            <h4>📊 赛果录入（输入比分，自动适配让球）</h4>
+            <h4>📊 赛果录入</h4>
             <div class="batch-toolbar">
                 <input type="date" id="batchScheduleDate" />
                 <button class="btn btn-cyan btn-sm" onclick="loadBatchSchedule()">📅 加载赛程</button>
@@ -1367,7 +1367,7 @@
             <div id="batchResultRows"></div>
             <div class="batch-actions">
                 <button class="btn btn-outline btn-sm" onclick="addBatchRow()">＋ 添加比赛</button>
-                <button class="btn btn-success" onclick="applyBatchResults()">✅ 应用赛果（更新所有记录）</button>
+                <button class="btn btn-success" onclick="applyBatchResults()">✅ 应用赛果</button>
                 <button class="btn btn-outline btn-sm" onclick="clearBatchRows()">🗑 清空全部</button>
                 <span style="font-size:12px;color:#6b7280;margin-left:8px;">匹配依据：主队 + 客队，仅更新待开奖记录</span>
             </div>
@@ -1510,7 +1510,7 @@
                                     <select id="personSelect" style="width:70px;padding:3px 4px;border:1.5px solid #e2e5ec;border-radius:4px;font-size:11px;height:26px;">
                                         <option value="">— 选择 —</option>
                                         <option value="A">A</option><option value="B">B</option><option value="C">C</option>
-                                        <option value="D">D</option><option value="E">E</option><option value="朋友">朋友</option>
+                                        <option value="D">D</option><option value="E">E</option><option value="F">F</option>
                                         <option value="__custom__">自定义</option>
                                     </select>
                                     <input type="text" id="newPersonName" placeholder="名称" style="width:60px;padding:3px 4px;border:1.5px solid #e2e5ec;border-radius:4px;font-size:11px;height:26px;display:none;" />
@@ -3637,7 +3637,7 @@ function importPredictionToBet(idx) {
         id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
         createdAt: new Date().toISOString(),
         passCombos: ['单关'],
-        persons: [{ name: '岩哥', share: 1, amount: 0, winAmount: 0 }],
+        persons: [{ name: 'A', share: 1, amount: 0, winAmount: 0 }],
         totalUnits: 0,
         totalAmount: 0,
         totalSp: 0,
