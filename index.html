@@ -1482,7 +1482,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 足彩记录 v7.92.0</div>
+    <div class="version-footer">⚽ 足彩记录 v7.92.1</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -3525,6 +3525,89 @@ function importPredictionToBet(idx) {
     const match = aiCurrentMatches[idx];
     const gameDate = match ? match.date : '';
     const league = match ? match.league : '';
+    const matchText = pred.home + ' vs ' + pred.away;
+    
+    const games = [];
+    
+    if (pred.winPick) {
+        games.push({
+            match: matchText,
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '胜平负',
+            betOption: pred.winPick,
+            options: [{ betOption: pred.winPick, odds: 0 }],
+            handicap: '',
+            result: '',
+            isWin: null
+        });
+    }
+    
+    if (pred.rqPick) {
+        games.push({
+            match: matchText,
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '让球胜平负',
+            betOption: pred.rqPick,
+            options: [{ betOption: pred.rqPick, odds: 0 }],
+            handicap: '-1',
+            result: '',
+            isWin: null
+        });
+    }
+    
+    if (pred.score && pred.score[0] !== undefined && pred.score[1] !== undefined) {
+        games.push({
+            match: matchText,
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '比分',
+            betOption: pred.score[0] + ':' + pred.score[1],
+            options: [{ betOption: pred.score[0] + ':' + pred.score[1], odds: 0 }],
+            handicap: '',
+            result: '',
+            isWin: null
+        });
+    }
+    
+    if (pred.totalPick) {
+        games.push({
+            match: matchText,
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '总进球',
+            betOption: pred.totalPick,
+            options: [{ betOption: pred.totalPick, odds: 0 }],
+            handicap: '',
+            result: '',
+            isWin: null
+        });
+    }
+    
+    if (pred.halfResult) {
+        games.push({
+            match: matchText,
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '半全场',
+            betOption: pred.halfResult,
+            options: [{ betOption: pred.halfResult, odds: 0 }],
+            handicap: '',
+            result: '',
+            isWin: null
+        });
+    }
     
     const newBet = {
         id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
@@ -3539,24 +3622,13 @@ function importPredictionToBet(idx) {
         images: [],
         comboWinAmounts: {},
         spRange: { min: 0, max: 0 },
-        games: [{
-            home: pred.home,
-            away: pred.away,
-            date: gameDate,
-            league: league,
-            playType: '胜平负',
-            betOption: pred.winPick,
-            options: [{ betOption: pred.winPick, odds: 0 }],
-            handicap: '',
-            result: '',
-            isWin: null
-        }]
+        games: games
     };
     
     bets.push(newBet);
     saveToStorage();
     renderAll();
-    showToast(`✅ 已导入：${pred.home} vs ${pred.away}`);
+    showToast(`✅ 已导入：${matchText}（${games.length}项预测）`);
 }
 // ---- 主入口：真实AI优先，失败自动降级模拟（按错误码 Toast 引导 + 同 Provider 自动切换免费模型重试一次） ----
 async function runAiPrediction() {
