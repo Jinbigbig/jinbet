@@ -1482,7 +1482,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 足彩记录 v7.91.3</div>
+    <div class="version-footer">⚽ 足彩记录 v7.92.0</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -3513,9 +3513,50 @@ function renderPrediction(predList) {
             <div class="ai-row"><span class="label">🔢 总进球</span><span class="val">${p.totalPick}</span></div>
             <div class="ai-row"><span class="label">🔄 半全场</span><span class="val">${p.halfResult}</span></div>
             <div class="ai-reason">💡 <b>AI分析：</b>${_aiReason(p)}</div>
+            <div style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="importPredictionToBet(${p.idx})">📥 导入投注记录</button></div>
         `;
         out.appendChild(card);
     });
+}
+function importPredictionToBet(idx) {
+    const pred = aiLastPredictions[idx];
+    if (!pred) { showToast('未找到该场预测结果'); return; }
+    
+    const match = aiCurrentMatches[idx];
+    const gameDate = match ? match.date : '';
+    const league = match ? match.league : '';
+    
+    const newBet = {
+        id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
+        createdAt: new Date().toISOString(),
+        passCombos: ['单关'],
+        persons: [{ name: '岩哥', share: 1, amount: 0, winAmount: 0 }],
+        totalUnits: 0,
+        totalAmount: 0,
+        totalSp: 0,
+        winAmount: 0,
+        status: 'pending',
+        images: [],
+        comboWinAmounts: {},
+        spRange: { min: 0, max: 0 },
+        games: [{
+            home: pred.home,
+            away: pred.away,
+            date: gameDate,
+            league: league,
+            playType: '胜平负',
+            betOption: pred.winPick,
+            options: [{ betOption: pred.winPick, odds: 0 }],
+            handicap: '',
+            result: '',
+            isWin: null
+        }]
+    };
+    
+    bets.push(newBet);
+    saveToStorage();
+    renderAll();
+    showToast(`✅ 已导入：${pred.home} vs ${pred.away}`);
 }
 // ---- 主入口：真实AI优先，失败自动降级模拟（按错误码 Toast 引导 + 同 Provider 自动切换免费模型重试一次） ----
 async function runAiPrediction() {
