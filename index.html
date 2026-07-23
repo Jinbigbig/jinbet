@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>足彩记录</title>
@@ -1357,7 +1358,7 @@
     <!-- ===== 批量功能：赛果录入 + AI 预测 ===== -->
     <div class="batch-panels-grid">
         <div class="batch-result-panel" id="batchResultPanel">
-            <h4>📊 批量赛果录入（输入比分，自动适配让球）</h4>
+            <h4>📊 赛果录入（输入比分，自动适配让球）</h4>
             <div class="batch-toolbar">
                 <input type="date" id="batchScheduleDate" />
                 <button class="btn btn-cyan btn-sm" onclick="loadBatchSchedule()">📅 加载赛程</button>
@@ -1482,7 +1483,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 足彩记录 v7.92.1</div>
+    <div class="version-footer">⚽ 足彩记录 v7.92.2</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -1724,8 +1725,10 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const STORAGE_KEY_BETS = 'jinbet_bets_v737';
-const STORAGE_KEY_ODDS = 'jinbet_odds_v738';
+const APP_VERSION = '7.92.2';
+const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
+const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
+const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
 let bets = [];
 let oddsData = {};
 let editingId = null;
@@ -1734,6 +1737,26 @@ let tempImages = [];
 
 function loadFromStorage() {
     try {
+        const lastVersion = localStorage.getItem(STORAGE_KEY_LAST_VERSION);
+        const isVersionChanged = lastVersion !== APP_VERSION;
+        if (isVersionChanged) {
+            for (const key of Object.keys(localStorage)) {
+                if (key.startsWith('jinbet_odds_') || key.startsWith('auto_update') || key.startsWith('jinbet_force_update')) {
+                    localStorage.removeItem(key);
+                }
+            }
+            for (const key of Object.keys(localStorage)) {
+                if (key.startsWith('jinbet_bets_') && key !== STORAGE_KEY_BETS) {
+                    const oldBets = localStorage.getItem(key);
+                    if (oldBets) {
+                        localStorage.setItem(STORAGE_KEY_BETS, oldBets);
+                        localStorage.removeItem(key);
+                    }
+                }
+            }
+            localStorage.setItem(STORAGE_KEY_LAST_VERSION, APP_VERSION);
+            localStorage.setItem('jinbet_force_update', '1');
+        }
         const rawBets = localStorage.getItem(STORAGE_KEY_BETS);
         bets = rawBets ? JSON.parse(rawBets) : [];
         bets = bets.map(b => {
@@ -1778,12 +1801,13 @@ function updateScheduleFromOdds() {
                 var date = parts[0];
                 var home = parts.slice(1, -1).join('_');
                 var away = parts[parts.length - 1];
-                if (!SCHEDULE[date]) continue;
+                if (!SCHEDULE[date]) SCHEDULE[date] = [];
                 var exists = SCHEDULE[date].some(function(g) {
                     return g.home === home && g.away === away;
                 });
                 if (!exists) {
-                    delete oddsData[key];
+                    var league = isNationalTeam(home) ? '国际赛' : '';
+                    SCHEDULE[date].push({ home: home, away: away, league: league });
                 }
             }
         }
@@ -6009,25 +6033,53 @@ function init() {
 function autoUpdateOdds() {
     var lastUpdate = localStorage.getItem('auto_update_last_time') || '0';
     var now = Date.now();
-    if (now - parseInt(lastUpdate) < 300000) return;
+    var forceUpdate = localStorage.getItem('jinbet_force_update') === '1';
+    if (!forceUpdate && now - parseInt(lastUpdate) < 300000) return;
     
     fetch('odds_data.json?' + now)
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (data && data.data) {
-                var stored = localStorage.getItem('jinbet_odds_v738');
+                var converted = {};
+                for (var key in data.data) {
+                    var matchData = data.data[key];
+                    if (matchData.date_key) {
+                        converted[matchData.date_key] = matchData;
+                        var parts = matchData.date_key.split('_');
+                        if (parts.length >= 3) {
+                            var date = parts[0];
+                            var home = parts.slice(1, -1).join('_');
+                            var away = parts[parts.length - 1];
+                            if (!SCHEDULE[date]) SCHEDULE[date] = [];
+                            var exists = SCHEDULE[date].some(function(g) {
+                                return g.home === home && g.away === away;
+                            });
+                            if (!exists) {
+                                SCHEDULE[date].push({
+                                    home: home,
+                                    away: away,
+                                    league: matchData.league || (isNationalTeam(home) ? '国际赛' : '')
+                                });
+                            }
+                        }
+                    }
+                }
+                var stored = localStorage.getItem(STORAGE_KEY_ODDS);
                 var storedData = stored ? JSON.parse(stored) : {};
-                var hasChanges = JSON.stringify(data.data) !== JSON.stringify(storedData);
+                var hasChanges = JSON.stringify(converted) !== JSON.stringify(storedData);
                 if (hasChanges) {
-                    localStorage.setItem('jinbet_odds_v738', JSON.stringify(data.data));
+                    localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(converted));
                     localStorage.setItem('auto_update_last_time', String(now));
-                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(data.data).length + '场)');
+                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(converted).length + '场)');
                     loadFromStorage();
                     renderAll();
                 }
             }
+            localStorage.removeItem('jinbet_force_update');
         })
-        .catch(function() {});
+        .catch(function() {
+            localStorage.removeItem('jinbet_force_update');
+        });
 }
 setInterval(autoUpdateOdds, 300000);
 autoUpdateOdds();
@@ -6235,8 +6287,8 @@ autoUpdateOdds();
   }
 };
     var order = ["全北现代 vs 大田市民", "奥胡斯 vs 波兹南", "格风暴 vs 哈茨", "济州SK vs 江原FC", "米竞技 vs 巴伊亚", "萨巴赫 vs 库奥皮奥", "蔚山现代 vs 仁川联", "光州FC vs 金泉尚武", "利勒斯特 vs 维京", "博德闪耀 vs 汉坎", "圣保罗 vs 巴竞技", "奥莫尼亚 vs 阿拉木图", "富川FC vs 安养FC", "沙佩科 vs 弗拉门戈", "洛杉矶FC vs 盐湖城", "迈国际 vs 芝加哥", "首尔FC vs 浦项制铁", "博塔弗戈 vs 维多利亚", "科林蒂安 vs 里莫"];
-    localStorage.setItem('jinbet_odds_v738', JSON.stringify(data));
-    localStorage.setItem('jinbet_odds_v738_order', JSON.stringify(order));
+    localStorage.setItem('STORAGE_KEY_ODDS', JSON.stringify(data));
+    localStorage.setItem('STORAGE_KEY_ODDS_order', JSON.stringify(order));
     console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
   } catch(e) {
     console.error('[网易赔率] 注入失败', e);
@@ -6297,7 +6349,6 @@ function applyOnlineOdds(onlineData) {
         if (!d) { missCount++; continue; }
         var g = (SCHEDULE[d] || []).find(function(gg) {
             if ((gg.home + ' vs ' + gg.away) === k) return true;
-            // 缩写匹配：onlineData 用缩写（如"沙特"），SCHEDULE 用全称（如"沙特阿拉伯"）
             var awayShort = gg.away.replace('阿拉伯', '').replace('利亚', '').replace('共和国', '');
             if ((gg.home + ' vs ' + awayShort) === k) return true;
             return false;
@@ -6309,14 +6360,13 @@ function applyOnlineOdds(onlineData) {
     if (Object.keys(fixed).length === 0) {
         return { ok: false, miss: missCount };
     }
-    // 合并而不是覆盖：旧赔率保留，新赔率更新（防止旧JSON文件删除新注入的赔率）
     try {
-        var existingRaw = localStorage.getItem('jinbet_odds_v738');
+        var existingRaw = localStorage.getItem(STORAGE_KEY_ODDS);
         var existing = existingRaw ? JSON.parse(existingRaw) : {};
         Object.assign(existing, fixed);
-        localStorage.setItem('jinbet_odds_v738', JSON.stringify(existing));
+        localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(existing));
     } catch(e) {
-        localStorage.setItem('jinbet_odds_v738', JSON.stringify(fixed));
+        localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(fixed));
     }
     return { ok: true, count: Object.keys(fixed).length };
 }
