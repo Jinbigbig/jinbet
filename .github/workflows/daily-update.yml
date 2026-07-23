@@ -65,16 +65,14 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 备份刚才脚本更新生成的文件（在 master 工作区中）
           cp odds_data.json /tmp/odds_data.json
           cp index.html /tmp/index.html
           cp version.txt /tmp/version.txt
           cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
 
-          # 切换到 gh-pages 分支
+          git stash
           git checkout gh-pages
 
-          # 用备份的文件覆盖（这些是脚本刚生成的最新数据）
           cp /tmp/odds_data.json odds_data.json
           cp /tmp/index.html index.html
           cp /tmp/version.txt version.txt
