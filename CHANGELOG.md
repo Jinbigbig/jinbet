@@ -55,8 +55,13 @@
 
 ## 版本号约定
 
-由于本项目是单页应用 + 抓取脚本，版本号主要反映前端 `index.html` 的迭代：
-- **次版本号**（7.5X）：功能性更新
-- **补丁号**（7.XX）：bug 修复、样式微调
+版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)（MAJOR.MINOR.PATCH）：
+- **PATCH（补丁号）**：修复 bug、样式微调、小改动（如 7.90.1）
+- **MINOR（次版本号）**：新增功能、修改功能、重要改进（如 7.91.0）
+- **MAJOR（主版本号）**：重大调整、架构重构、数据 schema 变更（如 8.0.0）
 
-数据 schema 变更通过 localStorage key 反映（如 `worldcup_bets_v737`），升级时会写迁移代码。
+当前版本：从 7.90.0 开始（原 v7.90 平滑过渡）
+
+**特殊说明**：
+- `version.txt` 保持时间戳格式，用于 CI 自动刷新检测，不受 SemVer 影响
+- 数据 schema 变更通过 localStorage key 反映（如 `worldcup_bets_v737`），升级时会写迁移代码
