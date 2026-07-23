@@ -65,18 +65,20 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-          # 暂存本地修改，避免切换分支时冲突
-          git stash push -m "auto-update-temp"
+          # 备份刚才脚本更新生成的文件（在 master 工作区中）
+          cp odds_data.json /tmp/odds_data.json
+          cp index.html /tmp/index.html
+          cp version.txt /tmp/version.txt
+          cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
 
+          # 切换到 gh-pages 分支
           git checkout gh-pages
 
-          # 从 master 恢复最新文件到 gh-pages
-          git checkout master -- index.html
-          git checkout master -- odds_data.json
-          git checkout master -- version.txt
-
-          # 归档目录（如果 master 分支上存在）
-          git checkout master -- odds_history/ 2>/dev/null || true
+          # 用备份的文件覆盖（这些是脚本刚生成的最新数据）
+          cp /tmp/odds_data.json odds_data.json
+          cp /tmp/index.html index.html
+          cp /tmp/version.txt version.txt
+          cp -r /tmp/odds_history/* odds_history/ 2>/dev/null || true
 
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
