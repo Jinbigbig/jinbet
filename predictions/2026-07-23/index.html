@@ -536,23 +536,23 @@ footer .sources .src-url {
 <script>
 (function() {
   var chart = echarts.init(document.getElementById('market-chart'));
-  var names = [' + ", ".join([f"'{m["home"]} vs {m["away"]}'" for m in matches]) + '];
-  var winPct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[0]) for m in matches]) + '];
-  var drawPct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[1]) for m in matches]) + '];
-  var losePct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[2]) for m in matches]) + '];
+  var names = ['科林蒂安 vs 里莫', '博塔弗戈 vs 维多利亚', '哈马比 vs 安德莱赫特', '圣加仑 vs 本菲卡', '贝西克塔斯 vs 中日德兰', '特温特 vs 费伦茨瓦罗斯', '斯海杜克 vs 帕福斯'];
+  var winPct = [66, 56, 46, 13, 49, 63, 48];
+  var drawPct = [22, 24, 26, 19, 26, 22, 28];
+  var losePct = [13, 20, 28, 68, 25, 15, 24];
   chart.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
     grid: { left: '3%', right: '4%', bottom: '12%', top: '5%', containLabel: true },
     xAxis: { type: 'category', data: names, axisLabel: { rotate: 30, fontSize: 10 } },
-    yAxis: { type: 'value', max: 100, axisLabel: {{ formatter: '{{value}}%' }} } ,
+    yAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
     series: [
-      {{ name: '主胜概率', type: 'bar', stack: 'total', data: winPct, itemStyle: {{ color: '#2a9d8f' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }},
-      {{ name: '平局概率', type: 'bar', stack: 'total', data: drawPct, itemStyle: {{ color: '#f4a261' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }},
-      {{ name: '客胜概率', type: 'bar', stack: 'total', data: losePct, itemStyle: {{ color: '#e63946' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }}
+      { name: '主胜概率', type: 'bar', stack: 'total', data: winPct, itemStyle: { color: '#2a9d8f' }, label: { show: true, position: 'inside', formatter: '{c}%', fontSize: 10 } },
+      { name: '平局概率', type: 'bar', stack: 'total', data: drawPct, itemStyle: { color: '#f4a261' }, label: { show: true, position: 'inside', formatter: '{c}%', fontSize: 10 } },
+      { name: '客胜概率', type: 'bar', stack: 'total', data: losePct, itemStyle: { color: '#e63946' }, label: { show: true, position: 'inside', formatter: '{c}%', fontSize: 10 } }
     ]
   });
-  window.addEventListener('resize', function() {{ chart.resize(); }});
+  window.addEventListener('resize', function() { chart.resize(); });
 })();
 </script>
 
