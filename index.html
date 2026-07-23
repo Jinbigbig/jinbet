@@ -9,6 +9,7 @@
     <title>足彩记录</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="icon" href="favicon.png" type="image/png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -3871,16 +3872,31 @@ async function runAiPrediction() {
 let batchRowCounter = 0;
 function loadBatchSchedule() {
     const date = document.getElementById('batchScheduleDate').value;
-    const games = SCHEDULE[date];
-    if (!games || games.length === 0) {
+    if (!date) {
+        showToast('请选择日期');
+        return;
+    }
+    const datePrefix = date + '_';
+    const games = [];
+    for (const [key, matchData] of Object.entries(oddsData)) {
+        if (key.startsWith(datePrefix)) {
+            const parts = key.split('_');
+            if (parts.length >= 3) {
+                const home = parts.slice(1, -1).join('_');
+                const away = parts[parts.length - 1];
+                const league = matchData.league || (isNationalTeam(home) ? '国际赛' : '');
+                games.push({ home, away, league });
+            }
+        }
+    }
+    if (games.length === 0) {
         showToast('该日期暂无比赛');
         return;
     }
     const container = document.getElementById('batchResultRows');
     container.innerHTML = '';
     games.forEach(g => {
-        const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
-        addBatchRow(g.home, g.away, '', league);
+        addBatchRow(g.home, g.away, '', g.league);
     });
     showToast('✅ 已加载 ' + games.length + ' 场比赛');
 }
