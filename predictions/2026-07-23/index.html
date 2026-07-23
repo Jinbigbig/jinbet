@@ -4,8 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026年7月23日 竞彩足球2场比赛深度分析报告</title>
+<title>2026年7月23日 竞彩足球7场比赛深度分析报告</title>
 <style>
+/* === CSS Variables === */
 :root {
   --bg: #f0f2f5;
   --bg2: #ffffff;
@@ -22,6 +23,7 @@
   --away: #e76f51;
 }
 
+/* === Reset & Base === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
@@ -32,12 +34,14 @@ body {
   min-height: 100vh;
 }
 
+/* === Layout === */
 .container {
   max-width: 1080px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
+/* === Hero === */
 .hero {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   color: #fff;
@@ -87,6 +91,7 @@ body {
 }
 .back-link:hover { color: #fff; text-decoration: underline; }
 
+/* === Section Headings === */
 h2 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 700;
@@ -112,6 +117,7 @@ h4 {
   margin: 1rem 0 0.5rem;
 }
 
+/* === Cards === */
 .card {
   background: var(--bg2);
   border-radius: 10px;
@@ -170,6 +176,7 @@ h4 {
 .match-teams .home { color: var(--home); }
 .match-teams .away { color: var(--away); }
 
+/* === Odds Grid === */
 .odds-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -196,6 +203,55 @@ h4 {
 .odds-item .value.draw { color: var(--draw); }
 .odds-item .value.loss { color: var(--loss); }
 
+/* === Insight Grid === */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.insight-card {
+  background: var(--bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.insight-card .insight-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+.insight-card .insight-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* === Form Dots === */
+.form-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+.form-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #fff;
+}
+.form-dot.win { background: var(--win); }
+.form-dot.draw { background: var(--draw); }
+.form-dot.loss { background: var(--loss); }
+
+/* === Prediction Box === */
 .prediction {
   background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02));
   border: 1px solid rgba(42,157,143,0.2);
@@ -237,7 +293,20 @@ h4 {
   border-radius: 6px;
   border: 1px solid rgba(230,57,70,0.2);
 }
+.prediction .confidence-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg);
+  margin-top: 0.75rem;
+  overflow: hidden;
+}
+.prediction .confidence-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+}
 
+/* === Warning Box === */
 .warning {
   background: rgba(244,162,97,0.1);
   border: 1px solid rgba(244,162,97,0.3);
@@ -249,6 +318,7 @@ h4 {
 }
 .warning strong { color: #e76f51; }
 
+/* === Tables === */
 .table-wrap {
   overflow-x: auto;
   overflow-y: auto;
@@ -294,6 +364,7 @@ td .tag {
 .tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
 .tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
 
+/* === Summary Grid === */
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -324,6 +395,7 @@ td .tag {
   margin-top: 0.25rem;
 }
 
+/* === Analysis Grid === */
 .analysis-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -339,24 +411,12 @@ td .tag {
   margin-top: 0;
   color: var(--accent2);
 }
-.analysis-block ul {
-  list-style: none;
-  padding: 0;
-}
-.analysis-block ul li {
-  padding-left: 1rem;
-  position: relative;
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
+.analysis-block p {
+  font-size: 0.85rem;
   line-height: 1.6;
 }
-.analysis-block ul li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-}
 
+/* === Footer === */
 footer {
   margin-top: 3rem;
   padding: 2rem 0;
@@ -384,8 +444,8 @@ footer .sources .src-url {
   color: var(--accent);
   word-break: break-all;
 }
-footer .sources a { word-break: break-all; }
 
+/* === Responsive === */
 @media (max-width: 768px) {
   .hero h1 { font-size: 1.5rem; }
   .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -414,15 +474,15 @@ footer .sources a { word-break: break-all; }
   <div class="container">
     <a class="back-link" href="../index.html">&larr; 返回报告归档</a>
     <h1>2026年7月23日 竞彩足球比赛深度分析</h1>
-    <p class="subtitle">2场比赛 · 2场巴甲</p>
+    <p class="subtitle">7场比赛 · 巴甲 x2 / 欧罗巴 x5</p>
     <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 场外动态</p>
-    <p class="disclaimer">⚠ 数据采集时间：2026年7月22日 14:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
+    <p class="disclaimer">⚠ 数据采集时间：2026年7月23日 12:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
   </div>
 </header>
 
 <main class="container">
 
-<h2>一、2场比赛总览</h2>
+<h2>一、7场比赛总览</h2>
 <div class="table-wrap">
 <table>
   <thead>
@@ -433,50 +493,72 @@ footer .sources a { word-break: break-all; }
   <tbody>
     <tr>
       <td><span class="tag tag-red">001</span></td><td>巴甲</td><td>08:30</td><td>科林蒂安</td><td>vs</td><td>里莫</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.35</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.05</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">7.05</td>
+      <td style="font-family:monospace;color:var(--accent2);font-weight:700">1.35</td><td style="font-family:monospace">4.05</td><td style="font-family:monospace">7.05</td>
       <td>-1</td><td><span class="tag tag-green">主胜 75%</span></td>
     </tr>
     <tr>
       <td><span class="tag tag-red">002</span></td><td>巴甲</td><td>08:30</td><td>博塔弗戈</td><td>vs</td><td>维多利亚</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.58</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.65</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.50</td>
+      <td style="font-family:monospace;color:var(--accent2)">1.58</td><td style="font-family:monospace">3.65</td><td style="font-family:monospace">4.50</td>
       <td>-1</td><td><span class="tag tag-green">主胜 68%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">003</span></td><td>欧罗巴</td><td>01:00</td><td>哈马比</td><td>vs</td><td>安德莱赫特</td>
+      <td style="font-family:monospace;color:var(--accent2)">1.93</td><td style="font-family:monospace">3.35</td><td style="font-family:monospace">3.20</td>
+      <td>-1</td><td><span class="tag tag-yellow">主不败 53%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">004</span></td><td>欧罗巴</td><td>01:00</td><td>圣加仑</td><td>vs</td><td>本菲卡</td>
+      <td style="font-family:monospace;color:var(--accent2)">6.75</td><td style="font-family:monospace">4.60</td><td style="font-family:monospace">1.31</td>
+      <td>+1</td><td><span class="tag tag-green">客胜 72%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">005</span></td><td>欧罗巴</td><td>02:30</td><td>贝西克塔斯</td><td>vs</td><td>中日德兰</td>
+      <td style="font-family:monospace;color:var(--accent2)">1.82</td><td style="font-family:monospace">3.40</td><td style="font-family:monospace">3.50</td>
+      <td>-1</td><td><span class="tag tag-yellow">主胜 56%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">006</span></td><td>欧罗巴</td><td>02:30</td><td>特温特</td><td>vs</td><td>费伦茨瓦罗斯</td>
+      <td style="font-family:monospace;color:var(--accent2);font-weight:700">1.40</td><td style="font-family:monospace">4.00</td><td style="font-family:monospace">6.05</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 64%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">007</span></td><td>欧罗巴</td><td>02:30</td><td>斯海杜克</td><td>vs</td><td>帕福斯</td>
+      <td style="font-family:monospace;color:var(--accent2)">1.83</td><td style="font-family:monospace">3.17</td><td style="font-family:monospace">3.75</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 58%</span></td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<h2>二、2场比赛比分预测汇总</h2>
-<div class="table-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><span class="tag tag-red">001</span></td>
-      <td>科林蒂安 vs 里莫</td><td>巴甲</td>
-      <td><span class="tag tag-blue">主胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td>★★★★</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-red">002</span></td>
-      <td>博塔弗戈 vs 维多利亚</td><td>巴甲</td>
-      <td><span class="tag tag-green">主不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td>★★★</td>
-    </tr>
-  </tbody>
-</table>
-</div>
+<h2>二、市场信心指数对比</h2>
+<div id="market-chart" style="width:100%;height:400px;margin:1rem 0"></div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+(function() {
+  var chart = echarts.init(document.getElementById('market-chart'));
+  var names = [' + ", ".join([f"'{m["home"]} vs {m["away"]}'" for m in matches]) + '];
+  var winPct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[0]) for m in matches]) + '];
+  var drawPct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[1]) for m in matches]) + '];
+  var losePct = [' + ", ".join([str(calc_implied(m["odds_w"], m["odds_d"], m["odds_l"])[2]) for m in matches]) + '];
+  chart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
+    grid: { left: '3%', right: '4%', bottom: '12%', top: '5%', containLabel: true },
+    xAxis: { type: 'category', data: names, axisLabel: { rotate: 30, fontSize: 10 } },
+    yAxis: { type: 'value', max: 100, axisLabel: {{ formatter: '{{value}}%' }} } ,
+    series: [
+      {{ name: '主胜概率', type: 'bar', stack: 'total', data: winPct, itemStyle: {{ color: '#2a9d8f' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }},
+      {{ name: '平局概率', type: 'bar', stack: 'total', data: drawPct, itemStyle: {{ color: '#f4a261' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }},
+      {{ name: '客胜概率', type: 'bar', stack: 'total', data: losePct, itemStyle: {{ color: '#e63946' }}, label: {{ show: true, position: 'inside', formatter: '{{c}}%', fontSize: 10 }} }}
+    ]
+  });
+  window.addEventListener('resize', function() {{ chart.resize(); }});
+})();
+</script>
 
 <h2>三、逐场深度分析</h2>
 
-<!-- 比赛1 -->
+<!-- ===== 001: 科林蒂安 vs 里莫 ===== -->
 <div class="card">
   <div class="card-header">
     <div>
@@ -495,54 +577,85 @@ footer .sources a { word-break: break-all; }
     <div class="odds-item"><div class="label">平局</div><div class="value draw">4.05</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">7.05</div></div>
   </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">科林蒂安 · 第12名</div><div class="insight-value">18轮 6胜6平6负 / 进18失19 / 24分</div></div>
+    <div class="insight-card"><div class="insight-label">里莫 · 第19名</div><div class="insight-value">18轮 4胜6平8负 / 进21失29 / 18分 · 客场0胜</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>科林蒂安历史9胜2平1负绝对优势，但两队已近16年未交手</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+          <tr><td>2008-08-16</td><td>科林蒂安 vs 里莫</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2008</td><td>里莫 vs 科林蒂安</td><td>2-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2007-09-06</td><td>科林蒂安 vs 里莫</td><td>1-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2007-06</td><td>里莫 vs 科林蒂安</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>1987</td><td>科林蒂安 vs 里莫</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>1975-10-29</td><td>科林蒂安 vs 里莫</td><td>0-0</td><td><span class="tag tag-yellow">平</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
   <div class="analysis-grid">
     <div class="analysis-block">
-      <h4>📊 近期状态</h4>
-      <ul>
-        <li><strong>科林蒂安：</strong>巴甲传统豪门，本赛季表现稳定，主场胜率极高。近6场4胜1平1负，进攻端火力稳定。</li>
-        <li><strong>里莫：</strong>升班马身份，联赛排名靠后，客场作战能力薄弱，防守端漏洞较大。</li>
-      </ul>
+      <h4>📊 科林蒂安 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot draw"></span><span class="form-dot win"></span></div>
+      <p>近5场2胜2平1负，联赛两连胜，主场3连胜</p>
     </div>
     <div class="analysis-block">
-      <h4>⚔️ 历史交锋</h4>
-      <ul>
-        <li>两队历史交手次数有限，科林蒂安占据明显优势。</li>
-        <li>科林蒂安主场面对弱旅胜率极高，心理优势明显。</li>
-        <li>里莫客场面对传统豪门战绩惨淡，鲜有爆冷记录。</li>
-      </ul>
-    </div>
-    <div class="analysis-block">
-      <h4>🏥 伤停情报</h4>
-      <ul>
-        <li><strong>科林蒂安：</strong>阵容相对完整，主力框架齐整，替补深度充足。</li>
-        <li><strong>里莫：</strong>无重大伤停报告，但整体实力有限。</li>
-      </ul>
-    </div>
-    <div class="analysis-block">
-      <h4>💡 分析要点</h4>
-      <ul>
-        <li>主胜1.35深盘显示机构对科林蒂安信心十足。</li>
-        <li>让球-1主胜2.28仍有一定价值，主队赢球概率大。</li>
-        <li>科林蒂安主场控球压制能力强，里莫客场难有作为。</li>
-      </ul>
+      <h4>📊 里莫 近5场</h4>
+      <div class="form-dots"><span class="form-dot loss"></span><span class="form-dot loss"></span><span class="form-dot draw"></span><span class="form-dot loss"></span><span class="form-dot loss"></span></div>
+      <p>近5场0胜1平4负，近4个客场全败，深陷降级区</p>
     </div>
   </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">科林蒂安 主场胜率</div><div class="insight-value">44.4%（近期主场3连胜）</div></div>
+    <div class="insight-card"><div class="insight-label">里莫 客场胜率</div><div class="insight-value">0%（9战0胜3平6负）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 科林蒂安</h4>
+      <p>中场核心加罗停赛（2球6助攻）；后腰拉涅莱膝盖伤疑；德佩世界杯后休假大概率缺席；维蒂尼奥、雨果、凯克等4人长期伤缺</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 里莫</h4>
+      <p>主力门将兰热尔韧带损伤；塔利亚里、德保拉、塔利松、若昂卢卡斯等6-7人伤缺，阵容严重受损</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>主胜赔率1.35偏低，考虑到主队中场核心缺阵，赔率未明显上调存在一定诱导嫌疑。但里莫客场表现更差，赔率结构整体合理。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>科林蒂安排名12位远高于里莫第19位，主场3连胜状态回升。里莫客场0胜且伤停6-7人严重，客场场均失超2球。但科林蒂安中场核心加罗停赛+多人伤缺，18场仅进18球进攻乏力，大胜有难度。</strong></p>
+
   <div class="prediction">
     <div class="pred-title">🎯 预测方向</div>
     <div class="pred-row">
       <span class="pred-label">推荐：</span>
       <span class="pred-value">主胜</span>
       <span class="pred-label">首选比分：</span>
-      <span class="pred-score">2:0</span>
+      <span class="pred-score">1:0</span>
       <span class="pred-label">备选：</span>
-      <span class="pred-value">2:1</span>
+      <span class="pred-value">2:0/2:1</span>
       <span class="pred-label">信心：</span>
-      <span class="pred-value">★★★★</span>
+      <span class="pred-value">★★★☆☆</span>
     </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:60%"></div></div>
   </div>
 </div>
 
-<!-- 比赛2 -->
+<!-- ===== 002: 博塔弗戈 vs 维多利亚 ===== -->
 <div class="card">
   <div class="card-header">
     <div>
@@ -561,74 +674,655 @@ footer .sources a { word-break: break-all; }
     <div class="odds-item"><div class="label">平局</div><div class="value draw">3.65</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.50</div></div>
   </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">博塔弗戈 · 第9名</div><div class="insight-value">18轮 7胜4平7负 / 进33失32 / 25分 · 联赛进攻最强</div></div>
+    <div class="insight-card"><div class="insight-label">维多利亚 · 第11名</div><div class="insight-value">18轮 7胜4平7负 / 进22失25 / 25分 · 客场0胜</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>近10次交锋博塔弗戈5胜5平保持不败，心理优势明显</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+          <tr><td>2025-11</td><td>维多利亚 vs 博塔弗戈</td><td>0-0</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-07</td><td>博塔弗戈 vs 维多利亚</td><td>0-0</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024</td><td>博塔弗戈 vs 维多利亚</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024</td><td>维多利亚 vs 博塔弗戈</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2016-06-12</td><td>博塔弗戈 vs 维多利亚</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2015-05-30</td><td>博塔弗戈 vs 维多利亚</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
   <div class="analysis-grid">
     <div class="analysis-block">
-      <h4>📊 近期状态</h4>
-      <ul>
-        <li><strong>博塔弗戈：</strong>巴甲中游球队，主场作战能力尚可，近期状态起伏不定。</li>
-        <li><strong>维多利亚：</strong>巴甲中下游球队，客场战绩一般，保级压力较大。</li>
-      </ul>
+      <h4>📊 博塔弗戈 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span><span class="form-dot draw"></span><span class="form-dot win"></span></div>
+      <p>近5场3胜1平1负，上轮主场2-1击败桑托斯，头号射手卡布拉尔回归</p>
     </div>
     <div class="analysis-block">
-      <h4>⚔️ 历史交锋</h4>
-      <ul>
-        <li>两队历史交手互有胜负，博塔弗戈主场略占优势。</li>
-        <li>近5次交锋博塔弗戈3胜1平1负，心理占优。</li>
-        <li>维多利亚客场面对博塔弗戈鲜有取胜记录。</li>
-      </ul>
-    </div>
-    <div class="analysis-block">
-      <h4>🏥 伤停情报</h4>
-      <ul>
-        <li><strong>博塔弗戈：</strong>阵容基本完整，无重大伤病影响。</li>
-        <li><strong>维多利亚：</strong>阵容相对齐整，但整体实力处于下风。</li>
-      </ul>
-    </div>
-    <div class="analysis-block">
-      <h4>💡 分析要点</h4>
-      <ul>
-        <li>主胜1.58显示机构对博塔弗戈有一定信心。</li>
-        <li>让球-1主胜2.88偏高，主队大胜有难度。</li>
-        <li>维多利亚保级战意强，客场可能采取防守反击战术。</li>
-        <li>博塔弗戈近期状态起伏，需防平局爆冷。</li>
-      </ul>
+      <h4>📊 维多利亚 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span></div>
+      <p>近5场4胜1负，整体走势强劲，但典型主场龙客场虫</p>
     </div>
   </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">博塔弗戈 主场胜率</div><div class="insight-value">50%（主场场均进2.13球）</div></div>
+    <div class="insight-card"><div class="insight-label">维多利亚 客场胜率</div><div class="insight-value">0%（9战0胜3平6负，场均失2.4球）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 博塔弗戈</h4>
+      <p>后防核心费拉雷西停赛；潘塔莱昂ACL长期缺阵；巴尔博萨已转会离队；但头号射手卡布拉尔回归，中场蒙托罗解禁复出</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 维多利亚</h4>
+      <p>阵容相对完整，无重大伤停报告</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>平局赔率3.65值得关注——两队同分、主队防线残缺、客队并非毫无还手之力，平局概率可能被市场低估。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>两队同积25分属中游卡位战。博塔弗戈联赛进球最多（33球）但失球联赛倒数第二（32球），攻守失衡。维多利亚客场0胜且场均失2.4球，客场积分联赛倒数第一。近10次交锋博塔弗戈保持不败。但主队防线严重减员，平局可能被低估。</strong></p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 预测方向</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐：</span>
+      <span class="pred-value">主胜（防平）</span>
+      <span class="pred-label">首选比分：</span>
+      <span class="pred-score">2:1</span>
+      <span class="pred-label">备选：</span>
+      <span class="pred-value">1:1/2:0</span>
+      <span class="pred-label">信心：</span>
+      <span class="pred-value">★★★☆☆</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ===== 003: 哈马比 vs 安德莱赫特 ===== -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="match-id">003</span>
+      <span class="match-league">欧罗巴</span>
+    </div>
+    <span class="match-time">7月23日 01:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">哈马比</span>
+    <span class="vs">VS</span>
+    <span class="away">安德莱赫特</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.93</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.35</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.20</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">哈马比 · 第1名</div><div class="insight-value">瑞超第1名 · 14轮 8胜2平4负 / 进32失14 / 26分</div></div>
+    <div class="insight-card"><div class="insight-label">安德莱赫特 · 第6名</div><div class="insight-value">比甲第6名 · 30轮 12胜8平10负 / 进43失39 / 44分</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>两队此前从未交手，本场是双方历史首次碰面</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+    <p style="font-size:0.85rem;color:var(--muted)">两队无历史交锋记录</p>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>📊 哈马比 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span></div>
+      <p>瑞超排名第一，近3个主场全胜且零封，进8球失0球</p>
+    </div>
+    <div class="analysis-block">
+      <h4>📊 安德莱赫特 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot draw"></span><span class="form-dot loss"></span><span class="form-dot loss"></span><span class="form-dot win"></span></div>
+      <p>比甲第6名，热身赛2胜1平，但后防核心维尔通亨缺阵</p>
+    </div>
+  </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">哈马比 主场胜率</div><div class="insight-value">75%（近3主场全胜零封）</div></div>
+    <div class="insight-card"><div class="insight-label">安德莱赫特 客场胜率</div><div class="insight-value">约20%（近10个正式客场仅2胜）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 哈马比</h4>
+      <p>中卫芬格因伤缺阵；中场贝萨拉可出战，近期连续三场贡献关键传球</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 安德莱赫特</h4>
+      <p>后防核心维尔通亨缺阵，防线组织严重受损；主力前锋德格拉克已转会离队；新援前锋瓦斯奎兹因伤缺席</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>欧赔主胜1.93偏低，机构对主场哈马比有一定倾向。亚盘平手盘中低水，认为两队实力接近但对主队主场优势给予认可。无显著异常。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>哈马比瑞超排名第一，主场75%胜率，近3个主场全胜零封状态极佳。安德莱赫特虽底蕴更深厚，但后防核心维尔通亨缺阵+锋线减员严重，客场仅20%胜率。人工草皮对客队形成挑战。平手盘反映两队实力接近。</strong></p>
+
   <div class="prediction">
     <div class="pred-title">🎯 预测方向</div>
     <div class="pred-row">
       <span class="pred-label">推荐：</span>
       <span class="pred-value">主不败（胜/平）</span>
       <span class="pred-label">首选比分：</span>
-      <span class="pred-score">1:0</span>
+      <span class="pred-score">1:1</span>
       <span class="pred-label">备选：</span>
-      <span class="pred-value">2:1</span>
+      <span class="pred-value">2:1/1:0</span>
       <span class="pred-label">信心：</span>
-      <span class="pred-value">★★★</span>
+      <span class="pred-value">★★★☆☆</span>
     </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:60%"></div></div>
   </div>
 </div>
 
-<h2>四、核心策略与风险提示</h2>
+<!-- ===== 004: 圣加仑 vs 本菲卡 ===== -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="match-id">004</span>
+      <span class="match-league">欧罗巴</span>
+    </div>
+    <span class="match-time">7月23日 01:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">圣加仑</span>
+    <span class="vs">VS</span>
+    <span class="away">本菲卡</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">6.75</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.60</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.31</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">圣加仑 · 第2名</div><div class="insight-value">瑞士超亚军+瑞士杯冠军（终结26年无冠）</div></div>
+    <div class="insight-card"><div class="insight-label">本菲卡 · 第3名</div><div class="insight-value">葡超第3名 · 新帅马尔科席尔瓦接手，阵容大幅补强</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>两队暂无正式交手记录，本场为首次正面对决</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+    <p style="font-size:0.85rem;color:var(--muted)">两队无历史交锋记录</p>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>📊 圣加仑 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot loss"></span></div>
+      <p>热身赛3胜2负，先扬后抑，0-3负诺维奇状态堪忧</p>
+    </div>
+    <div class="analysis-block">
+      <h4>📊 本菲卡 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot draw"></span></div>
+      <p>热身赛2-0击败比利亚雷亚尔，新帅体系稳步推进</p>
+    </div>
+  </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">圣加仑 主场胜率</div><div class="insight-value">主场作战能力不俗</div></div>
+    <div class="insight-card"><div class="insight-label">本菲卡 客场胜率</div><div class="insight-value">66%（豪门客场作战能力强）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 圣加仑</h4>
+      <p>前锋内齐里ACL撕裂长期伤缺；主力门将魏贝尔膝盖有伤出战存疑</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 本菲卡</h4>
+      <p>多名主力因世界杯休假缺席；普雷斯蒂安尼停赛；布鲁马伤缺；新援杜兰、卡明斯基出战待定；德迪奇、阿拉乌霍有望复出</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>客胜赔率1.31极低，机构对本菲卡客场取胜信心极强。让球盘为本菲卡让一球，反映双方实力差距较大。凯利指数无显著异常，各家机构高度一致。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>本菲卡实力碾压圣加仑，客胜赔率仅1.31。圣加仑虽创队史佳绩（26年首冠），但欧战经验不足，热身赛0-3负诺维奇状态堪忧。本菲卡即使多名主力缺阵，剩余阵容仍远强于对手。66%客场胜率是可靠保障。</strong></p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 预测方向</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐：</span>
+      <span class="pred-value">客胜</span>
+      <span class="pred-label">首选比分：</span>
+      <span class="pred-score">0:2</span>
+      <span class="pred-label">备选：</span>
+      <span class="pred-value">1:2/0:3</span>
+      <span class="pred-label">信心：</span>
+      <span class="pred-value">★★★★☆</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:80%"></div></div>
+  </div>
+</div>
+
+<!-- ===== 005: 贝西克塔斯 vs 中日德兰 ===== -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="match-id">005</span>
+      <span class="match-league">欧罗巴</span>
+    </div>
+    <span class="match-time">7月23日 02:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">贝西克塔斯</span>
+    <span class="vs">VS</span>
+    <span class="away">中日德兰</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.82</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.40</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.50</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">贝西克塔斯 · 第4名</div><div class="insight-value">土超第4名 · 新帅意大利诺体系磨合中 · 热身赛33%胜率</div></div>
+    <div class="insight-card"><div class="insight-label">中日德兰 · 第2名</div><div class="insight-value">丹超亚军+丹麦杯冠军 · 上赛季欧联16强 · 热身赛4胜1平不败</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>两队暂无过往交手记录，本场为首次正面对话</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+    <p style="font-size:0.85rem;color:var(--muted)">两队无历史交锋记录</p>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>📊 贝西克塔斯 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot draw"></span><span class="form-dot loss"></span><span class="form-dot loss"></span><span class="form-dot draw"></span></div>
+      <p>热身赛2胜1平2负起伏较大，近期0-3负斯巴特拉纳瓦</p>
+    </div>
+    <div class="analysis-block">
+      <h4>📊 中日德兰 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot draw"></span></div>
+      <p>热身赛4胜1平不败，4-1胜欧登塞，进攻火力炸裂</p>
+    </div>
+  </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">贝西克塔斯 主场胜率</div><div class="insight-value">主场优势尚可，但新体系未磨合</div></div>
+    <div class="insight-card"><div class="insight-label">中日德兰 客场胜率</div><div class="insight-value">客场韧性极强，欧战经验丰富</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 贝西克塔斯</h4>
+      <p>核心新援特罗萨尔世界杯休假缺席；后卫乌杜奥凯停赛；萨拉赫转会未定无缘大名单</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 中日德兰</h4>
+      <p>队长索伦森出战存疑；其余主力全员健康，核心射手满血复出</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>主胜赔率1.82看似偏低，但主让一球偏深与主队低迷状态存在矛盾，需警惕冷门。中日德兰状态远优于主队，让负赔率有较高价值。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>贝西克塔斯新帅体系磨合不完整，热身赛仅33%胜率，核心特罗萨尔缺阵。中日德兰季前不败（4胜1平），进攻火力炸裂，上赛季欧联16强经验丰富。主让一球偏深需警惕冷门，中日德兰有客场拿分能力。</strong></p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 预测方向</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐：</span>
+      <span class="pred-value">让负（平局首选）</span>
+      <span class="pred-label">首选比分：</span>
+      <span class="pred-score">2:2</span>
+      <span class="pred-label">备选：</span>
+      <span class="pred-value">1:1/1:2</span>
+      <span class="pred-label">信心：</span>
+      <span class="pred-value">★★★☆☆</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ===== 006: 特温特 vs 费伦茨瓦罗斯 ===== -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="match-id">006</span>
+      <span class="match-league">欧罗巴</span>
+    </div>
+    <span class="match-time">7月23日 02:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">特温特</span>
+    <span class="vs">VS</span>
+    <span class="away">费伦茨瓦罗斯</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.40</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.00</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">6.05</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">特温特 · 第4名</div><div class="insight-value">荷甲第4名 · 34轮 15胜13平6负 / 58分 · 热身赛3胜1平</div></div>
+    <div class="insight-card"><div class="insight-label">费伦茨瓦罗斯 · 第2名</div><div class="insight-value">匈甲亚军+匈牙利杯冠军 · 资格赛首轮5-1淘汰伏伊伏丁那</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>两支球队历史上第一次正式碰面，没有往绩可查</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+    <p style="font-size:0.85rem;color:var(--muted)">两队无历史交锋记录</p>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>📊 特温特 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot draw"></span><span class="form-dot win"></span><span class="form-dot win"></span></div>
+      <p>热身赛3胜1平状态回升，但近10场丢16球防守不稳</p>
+    </div>
+    <div class="analysis-block">
+      <h4>📊 费伦茨瓦罗斯 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span></div>
+      <p>各项赛事连续9场不败，近10场进20球失5球，防守极为出色</p>
+    </div>
+  </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">特温特 主场胜率</div><div class="insight-value">52.9%（上赛季主场9胜5平3负）</div></div>
+    <div class="insight-card"><div class="insight-label">费伦茨瓦罗斯 客场胜率</div><div class="insight-value">约83%（过去6场正式客场只输1场）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 特温特</h4>
+      <p>中卫希尔格斯十字韧带撕裂确认缺席；门将乌内斯塔尔腹部受伤缺阵，两大后防核心同时缺阵</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 费伦茨瓦罗斯</h4>
+      <p>边锋阿尔扎尼腿筋受伤缺席；后卫加滕曼、中场奥特沃斯伤病名单</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>主胜赔率1.40极低，机构对特温特信心很强。但主让一球力度较大，与主队防线大面积伤病存在矛盾，建议关注让球负。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>特温特门将和中卫两大后防核心同时缺阵（近10场丢16球），防守漏洞明显。但主场进攻力强（韦格霍斯特领衔）。费伦茨瓦罗斯已踢完一轮资格赛（5-1大胜），欧战节奏进入，近10场仅丢5球防守极为出色，客场6场仅输1场韧性极强。</strong></p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 预测方向</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐：</span>
+      <span class="pred-value">主胜（防平）</span>
+      <span class="pred-label">首选比分：</span>
+      <span class="pred-score">2:1</span>
+      <span class="pred-label">备选：</span>
+      <span class="pred-value">1:0/2:2</span>
+      <span class="pred-label">信心：</span>
+      <span class="pred-value">★★★☆☆</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:60%"></div></div>
+  </div>
+</div>
+
+<!-- ===== 007: 斯海杜克 vs 帕福斯 ===== -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <span class="match-id">007</span>
+      <span class="match-league">欧罗巴</span>
+    </div>
+    <span class="match-time">7月23日 02:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">斯海杜克</span>
+    <span class="vs">VS</span>
+    <span class="away">帕福斯</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.83</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.17</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.75</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">斯海杜克 · 第3名</div><div class="insight-value">克甲第3名 · 欧联杯首轮3-2淘汰日利纳 · 热身赛3连胜</div></div>
+    <div class="insight-card"><div class="insight-label">帕福斯 · 第4名</div><div class="insight-value">塞浦甲第4名+塞浦路斯杯冠军 · 首次亮相欧战赛场</div></div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p style="font-size:0.85rem;margin-bottom:0.5rem"><strong>两队此前从未交手。海杜克对阵塞浦路斯球队1胜1平</strong></p>
+  <div class="table-wrap" style="max-height:280px">
+  <table>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+    <p style="font-size:0.85rem;color:var(--muted)">两队无历史交锋记录</p>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>近期状态</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>📊 斯海杜克 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot win"></span><span class="form-dot loss"></span><span class="form-dot win"></span></div>
+      <p>热身赛3连胜（4-0斯肯迪亚等），欧战首轮已证明实力</p>
+    </div>
+    <div class="analysis-block">
+      <h4>📊 帕福斯 近5场</h4>
+      <div class="form-dots"><span class="form-dot win"></span><span class="form-dot draw"></span><span class="form-dot loss"></span><span class="form-dot win"></span><span class="form-dot loss"></span></div>
+      <p>热身赛1胜1平2负，面对欧洲球队防守不稳</p>
+    </div>
+  </div>
+
+  <h4>主客场数据</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">斯海杜克 主场胜率</div><div class="insight-value">80%（近5主场4胜1负，波柳德球场魔鬼氛围）</div></div>
+    <div class="insight-card"><div class="insight-label">帕福斯 客场胜率</div><div class="insight-value">40%（欧战客场经验为零）</div></div>
+  </div>
+
+  <h4>伤停情报</h4>
+  <div class="analysis-grid">
+    <div class="analysis-block">
+      <h4>🏥 斯海杜克</h4>
+      <p>主力后卫埃莱兹因伤缺阵；前锋利瓦亚可出战，状态火热</p>
+    </div>
+    <div class="analysis-block">
+      <h4>🏥 帕福斯</h4>
+      <p>全员齐整，无重大伤病影响</p>
+    </div>
+  </div>
+
+  <h4>凯利指数分析</h4>
+  <div class="warning">
+    <p><strong>⚠ 凯利指数：</strong>主胜赔率1.83处于合理区间，亚盘主让半一中低水，机构对海杜克信心较强。大小球开2.25球偏小。无显著异常，各机构对主胜方向较为一致。</p>
+  </div>
+
+  <p style="font-size:0.85rem;margin:0.75rem 0"><strong>海杜克已通过欧联杯首轮考验（3-2淘汰日利纳），欧战节奏连贯。波柳德球场魔鬼氛围（欧战主场胜率60%）。帕福斯首次欧战，客场经验为零，热身赛面对欧洲球队防守不稳。实力差距和经验差距均较为明显。</strong></p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 预测方向</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐：</span>
+      <span class="pred-value">主胜</span>
+      <span class="pred-label">首选比分：</span>
+      <span class="pred-score">2:0</span>
+      <span class="pred-label">备选：</span>
+      <span class="pred-value">2:1/1:0</span>
+      <span class="pred-label">信心：</span>
+      <span class="pred-value">★★★★☆</span>
+    </div>
+    <div class="confidence-bar"><div class="confidence-fill" style="width:80%"></div></div>
+  </div>
+</div>
+
+<h2>四、7场比赛比分预测汇总</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-red">001</span></td>
+      <td>科林蒂安 vs 里莫</td><td>巴甲</td>
+      <td><span class="tag tag-blue">主胜</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">1:0</td>
+      <td style="font-family:monospace">2:0/2:1</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">002</span></td>
+      <td>博塔弗戈 vs 维多利亚</td><td>巴甲</td>
+      <td><span class="tag tag-green">主胜（防平）</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">2:1</td>
+      <td style="font-family:monospace">1:1/2:0</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">003</span></td>
+      <td>哈马比 vs 安德莱赫特</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">主不败（胜/平）</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">1:1</td>
+      <td style="font-family:monospace">2:1/1:0</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">004</span></td>
+      <td>圣加仑 vs 本菲卡</td><td>欧罗巴</td>
+      <td><span class="tag tag-green">客胜</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">0:2</td>
+      <td style="font-family:monospace">1:2/0:3</td>
+      <td>★★★★☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">005</span></td>
+      <td>贝西克塔斯 vs 中日德兰</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">让负（平局首选）</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">2:2</td>
+      <td style="font-family:monospace">1:1/1:2</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">006</span></td>
+      <td>特温特 vs 费伦茨瓦罗斯</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">主胜（防平）</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">2:1</td>
+      <td style="font-family:monospace">1:0/2:2</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">007</span></td>
+      <td>斯海杜克 vs 帕福斯</td><td>欧罗巴</td>
+      <td><span class="tag tag-blue">主胜</span></td>
+      <td style="font-family:monospace;font-weight:700;color:var(--accent)">2:0</td>
+      <td style="font-family:monospace">2:1/1:0</td>
+      <td>★★★★☆</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>五、核心策略与风险提示</h2>
 
 <h3>当日盘口特征总结</h3>
 <div class="summary-grid">
   <div class="summary-card">
-    <div class="s-match">最深盘：科林蒂安</div>
+    <div class="s-match">最深盘：科林蒂安 vs 里莫</div>
     <div class="s-pred">主胜 1.35</div>
-    <div class="s-confidence">传统豪门主场迎战升班马，实力差距悬殊</div>
+    <div class="s-confidence">实力差距最大的对决，机构极度看好主队</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">最具悬念：博塔弗戈</div>
-    <div class="s-pred">主胜 1.58</div>
-    <div class="s-confidence">主队状态起伏，客队保级战意强，需防平局</div>
+    <div class="s-match">最高信心：圣加仑 vs 本菲卡</div>
+    <div class="s-pred">客胜 ★★★★☆</div>
+    <div class="s-confidence">多维度数据支持，方向相对明确</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">最具悬念：科林蒂安 vs 里莫</div>
+    <div class="s-pred">主胜 ★★★☆☆</div>
+    <div class="s-confidence">双方实力接近或变数较多，需谨慎对待</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">欧战专题：5场欧罗巴资格赛</div>
+    <div class="s-pred">本菲卡客场 / 海杜克主场</div>
+    <div class="s-confidence">豪门客战+首次欧战球队，经验差距是关键变量</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">巴甲专题：科林蒂安+博塔弗戈</div>
+    <div class="s-pred">双主胜格局</div>
+    <div class="s-confidence">巴甲主场优势明显，但两队均有伤停困扰</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">当日策略：以稳为主</div>
+    <div class="s-pred">3场4星 + 4场3星</div>
+    <div class="s-confidence">无5星比赛，整体不确定性偏高，建议控制仓位</div>
   </div>
 </div>
 
 <div class="warning" style="font-size:0.9rem;padding:1.25rem">
-  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月22日14:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
-  <p style="margin-top:0.5rem"><strong>2. 不确定性：</strong>足球比赛存在大量不可控因素——红牌、点球、VAR判罚、天气等，任何分析都无法100%预测结果。</p>
-  <p style="margin-top:0.5rem"><strong>3. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
+  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月23日12:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
+  <p style="margin-top:0.5rem"><strong>2. 欧战特殊性：</strong>5场欧罗巴资格赛涉及多国联赛跨赛季球队，季前热身赛参考价值有限，需关注临场首发阵容和战术安排。</p>
+  <p style="margin-top:0.5rem"><strong>3. 伤停影响：</strong>科林蒂安中场核心加罗停赛、博塔弗戈后防核心费拉雷西停赛、特温特门将和中卫两大后防核心缺阵，均可能显著影响比赛走势。</p>
+  <p style="margin-top:0.5rem"><strong>4. 不确定性：</strong>足球比赛存在大量不可控因素——红牌、点球、VAR判罚、天气等，任何分析都无法100%预测结果。</p>
+  <p style="margin-top:0.5rem"><strong>5. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
 </div>
 
 </main>
@@ -639,12 +1333,21 @@ footer .sources a { word-break: break-all; }
       <h2>数据来源</h2>
       <ol>
         <li id="cite-1">
-          <span class="src-title">中国竞彩官网 (lottery.gov.cn) — 官方胜平负赔率、让球赔率、市场支持率。</span>
+          <span class="src-title">中国竞彩官网 (lottery.gov.cn) — 官方胜平负赔率、让球赔率、市场支持率。【P0级 - 核心数据源】</span>
           <a class="src-url" href="https://www.lottery.gov.cn/jc/jsq/zqspf/" target="_blank" rel="noopener">https://www.lottery.gov.cn/jc/jsq/zqspf/</a>
         </li>
         <li id="cite-2">
-          <span class="src-title">网易体育 (sports.163.com) — 竞彩足球比赛列表、基础赔率数据。</span>
+          <span class="src-title">网易体育 (sports.163.com) — 竞彩足球比赛列表、基础赔率数据。【P0级 - 核心数据源】</span>
           <a class="src-url" href="https://sports.163.com/caipiao/bet/football" target="_blank" rel="noopener">https://sports.163.com/caipiao/bet/football</a>
+        </li>
+        <li id="cite-3">
+          <span class="src-title">Transfermarkt / FotMob — 球员伤停、积分排名、近期战绩。【P1级 - 验证数据源】</span>
+        </li>
+        <li id="cite-4">
+          <span class="src-title">Sports Mole / Fotball24 — 欧战赛事情报、首发阵容预测。【P1级 - 验证数据源】</span>
+        </li>
+        <li id="cite-5">
+          <span class="src-title">Protipster / Tips.gg — 社区预测、凯利指数分析参考。【P2级 - 辅助参考】</span>
         </li>
       </ol>
     </div>
