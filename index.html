@@ -5525,12 +5525,19 @@ function deleteBet(id) {
     showToast('🗑 已删除');
 }
 function clearAll() {
-    if (bets.length === 0) { showToast('暂无投注记录'); return; }
-    if (!confirm('⚠️ 确定清空所有投注记录吗？不可撤销！')) return;
+    if (bets.length === 0 && Object.keys(oddsData).length === 0) { showToast('暂无数据'); return; }
+    if (!confirm('⚠️ 确定清空所有投注记录和本地缓存吗？不可撤销！')) return;
+    // 清除所有 jinbet 相关的 localStorage 数据
+    for (const key of Object.keys(localStorage)) {
+        if (key.startsWith('jinbet_') || key.startsWith('auto_update')) {
+            localStorage.removeItem(key);
+        }
+    }
     bets = [];
+    oddsData = {};
     saveToStorage();
     renderAll();
-    showToast('已清空投注记录');
+    showToast('已清空投注记录和本地缓存');
 }
 function resetAllStatus() {
     if (bets.length === 0) { showToast('暂无记录'); return; }
