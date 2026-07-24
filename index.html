@@ -3266,7 +3266,7 @@ function loadAiSchedule(overwrite) {
         });
     }
     // 给每场补日期字段方便去重/区分（用排序后的数组）
-    const stamped = sortedGames.map(function(g) { return { date: date, home: g.home, away: g.away }; });
+    const stamped = sortedGames.map(function(g) { return { date: date, home: g.home, away: g.away, league: g.league || '' }; });
     if (overwrite === true) {
         aiCurrentMatches = stamped.slice();  // 覆盖模式
         // ③ 和模态框一致：格式「🔄 覆盖加载 N 场比赛（YYYY-MM-DD）（按网易顺序？）」
