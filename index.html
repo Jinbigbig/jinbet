@@ -2668,7 +2668,6 @@ function recalcBetStats(bet) {
 //  获取赔率
 // ================================================================
 function getOddsForMatch(date, home, away) {
-    // 缩写映射：标准名 -> odds_data 中可能的缩写
     const homeAliases = {
         '刚果（金）': ['民主刚果', '刚果金', '刚果(金)', '刚果'],
         '阿尔及利亚': ['阿尔及利'],
@@ -2683,16 +2682,28 @@ function getOddsForMatch(date, home, away) {
         '伊拉克': ['阿拉克'],
     };
 
-    // 生成所有可能的组合
     const homeOptions = [home, ...(homeAliases[home] || [])];
     const awayOptions = [away, ...(awayAliases[away] || [])];
 
     for (const h of homeOptions) {
         for (const a of awayOptions) {
-            const key = date + '_' + h + '_' + a;
-            if (oddsData[key]) return oddsData[key];
+            const key1 = date + '_' + h + '_' + a;
+            if (oddsData[key1]) return oddsData[key1];
+            const key2 = date + '_' + h + ' vs ' + a;
+            if (oddsData[key2]) return oddsData[key2];
         }
     }
+
+    const vsKey = home + ' vs ' + away;
+    if (oddsData[vsKey]) return oddsData[vsKey];
+
+    for (const h of homeOptions) {
+        for (const a of awayOptions) {
+            const key3 = h + ' vs ' + a;
+            if (oddsData[key3]) return oddsData[key3];
+        }
+    }
+
     return null;
 }
 
@@ -3821,11 +3832,17 @@ function importPredictionToBet(idx) {
     
     if (pred.winPick) {
         let odds = 0;
-        if (oddsObj && oddsObj['胜平负']) {
-            const spf = oddsObj['胜平负'];
-            if (pred.winPick === '胜') odds = spf.win || spf.w || 0;
-            else if (pred.winPick === '平') odds = spf.draw || spf.d || 0;
-            else if (pred.winPick === '负') odds = spf.lose || spf.l || 0;
+        if (oddsObj) {
+            if (oddsObj['胜平负']) {
+                const spf = oddsObj['胜平负'];
+                if (pred.winPick === '胜') odds = spf.win || spf.w || spf['胜'] || 0;
+                else if (pred.winPick === '平') odds = spf.draw || spf.d || spf['平'] || 0;
+                else if (pred.winPick === '负') odds = spf.lose || spf.l || spf['负'] || 0;
+            } else {
+                if (pred.winPick === '胜') odds = oddsObj['胜'] || 0;
+                else if (pred.winPick === '平') odds = oddsObj['平'] || 0;
+                else if (pred.winPick === '负') odds = oddsObj['负'] || 0;
+            }
         }
         games.push({
             match: matchText,
@@ -3848,9 +3865,9 @@ function importPredictionToBet(idx) {
         if (oddsObj && oddsObj['让球'] && oddsObj['让球'].length > 0) {
             const rq = oddsObj['让球'][0];
             handicap = String(rq.handicap || '-1');
-            if (pred.rqPick === '胜') odds = rq.win || rq.w || 0;
-            else if (pred.rqPick === '平') odds = rq.draw || rq.d || 0;
-            else if (pred.rqPick === '负') odds = rq.lose || rq.l || 0;
+            if (pred.rqPick === '胜') odds = rq.win || rq.w || rq['胜'] || 0;
+            else if (pred.rqPick === '平') odds = rq.draw || rq.d || rq['平'] || 0;
+            else if (pred.rqPick === '负') odds = rq.lose || rq.l || rq['负'] || 0;
         }
         games.push({
             match: matchText,
