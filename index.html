@@ -1725,7 +1725,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.93.0';
+const APP_VERSION = '7.92.2';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6426,131 +6426,6 @@ function openOddsUpdater() {
     btn.disabled = true;
     btn.textContent = '⏳ 刷新中…';
 
-    var isOnline = window.location.hostname.includes('github.io') || window.location.hostname.includes('jinbet');
-
-    if (isOnline) {
-        triggerGitHubWorkflow(btn);
-    } else {
-        loadOnlineOdds().then(function(onlineData) {
-            var result = applyOnlineOdds(onlineData);
-            if (result.ok) {
-                oddsData = {}; matchOrder = [];
-                loadFromStorage();
-                loadOddsSchedule();
-                btn.textContent = '✅ ' + result.count + '场已刷新';
-                var badge = document.getElementById('onlineBadge');
-                if (badge) {
-                    badge.textContent = '📡 在线 ' + _onlineOddsTimestamp;
-                    badge.style.display = '';
-                }
-            } else {
-                alert('未能匹配比赛（' + result.miss + '场无法匹配），赛程表可能需更新。');
-                btn.textContent = '🔄 更新赔率';
-            }
-            btn.disabled = false;
-            setTimeout(function() { btn.textContent = '🔄 更新赔率'; }, 3000);
-        }).catch(function(err) {
-            alert('刷新失败：' + err + '\n请检查网络连接，稍后重试。');
-            btn.disabled = false; btn.textContent = '🔄 更新赔率';
-        });
-    }
-}
-
-function triggerGitHubWorkflow(btn) {
-    var repo = 'Jinbigbig/jinbet';
-    var workflowId = 'daily-update.yml';
-    var token = localStorage.getItem('jinbet_github_token');
-
-    btn.textContent = '🚀 触发更新…';
-
-    if (!token) {
-        var inputToken = prompt('首次使用需要 GitHub Token，请输入：\n\n获取地址：https://github.com/settings/tokens\n需要 repo 和 workflow 权限', 'ghp_');
-        if (inputToken) {
-            localStorage.setItem('jinbet_github_token', inputToken);
-            token = inputToken;
-        } else {
-            btn.textContent = '🔄 更新赔率';
-            btn.disabled = false;
-            return;
-        }
-    }
-
-    fetch('https://api.github.com/repos/' + repo + '/actions/workflows/' + encodeURIComponent(workflowId) + '/dispatches', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/vnd.github.v3+json',
-            'Authorization': 'token ' + token
-        },
-        body: JSON.stringify({ ref: 'master' })
-    }).then(function(response) {
-        if (response.status === 204) {
-            btn.textContent = '⏳ 更新执行中…';
-            pollWorkflowStatus(repo, btn, token);
-        } else if (response.status === 401) {
-            localStorage.removeItem('jinbet_github_token');
-            alert('Token 无效，请重新输入');
-            btn.textContent = '🔄 更新赔率';
-            btn.disabled = false;
-        } else {
-            return response.json().then(function(data) {
-                throw new Error(data.message || '触发失败');
-            });
-        }
-    }).catch(function(err) {
-        alert('触发更新失败：' + err.message + '\n将尝试直接刷新数据');
-        fallbackRefresh(btn);
-    });
-}
-
-function pollWorkflowStatus(repo, btn, token) {
-    var attempts = 0;
-    var maxAttempts = 30;
-
-    function check() {
-        attempts++;
-        if (attempts > maxAttempts) {
-            btn.textContent = '⏳ 等待超时，刷新数据…';
-            fallbackRefresh(btn);
-            return;
-        }
-
-        fetch('https://api.github.com/repos/' + repo + '/actions/runs', {
-            headers: {
-                'Accept': 'application/vnd.github.v3+json',
-                'Authorization': 'token ' + (token || localStorage.getItem('jinbet_github_token') || '')
-            }
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            if (!data.workflow_runs || data.workflow_runs.length === 0) {
-                setTimeout(check, 3000);
-                return;
-            }
-            var latest = data.workflow_runs[0];
-            btn.textContent = '⏳ ' + latest.status + ' (' + latest.conclusion + ')';
-
-            if (latest.status === 'completed') {
-                if (latest.conclusion === 'success') {
-                    btn.textContent = '✅ 线上数据已更新，刷新本地…';
-                    setTimeout(function() {
-                        fallbackRefresh(btn);
-                    }, 1000);
-                } else {
-                    alert('线上更新失败：' + latest.conclusion);
-                    btn.textContent = '🔄 更新赔率';
-                    btn.disabled = false;
-                }
-            } else {
-                setTimeout(check, 3000);
-            }
-        }).catch(function(err) {
-            setTimeout(check, 3000);
-        });
-    }
-    setTimeout(check, 3000);
-}
-
-function fallbackRefresh(btn) {
     loadOnlineOdds().then(function(onlineData) {
         var result = applyOnlineOdds(onlineData);
         if (result.ok) {
