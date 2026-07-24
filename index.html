@@ -3815,9 +3815,18 @@ function importPredictionToBet(idx) {
     const league = match ? match.league : '';
     const matchText = pred.home + ' vs ' + pred.away;
     
+    const oddsObj = gameDate ? getOddsForMatch(gameDate, pred.home, pred.away) : null;
+    
     const games = [];
     
     if (pred.winPick) {
+        let odds = 0;
+        if (oddsObj && oddsObj['胜平负']) {
+            const spf = oddsObj['胜平负'];
+            if (pred.winPick === '胜') odds = spf.win || spf.w || 0;
+            else if (pred.winPick === '平') odds = spf.draw || spf.d || 0;
+            else if (pred.winPick === '负') odds = spf.lose || spf.l || 0;
+        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3826,7 +3835,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '胜平负',
             betOption: pred.winPick,
-            options: [{ betOption: pred.winPick, odds: 0 }],
+            options: [{ betOption: pred.winPick, odds: odds }],
             handicap: '',
             result: '',
             isWin: null
@@ -3834,6 +3843,15 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.rqPick) {
+        let odds = 0;
+        let handicap = '-1';
+        if (oddsObj && oddsObj['让球'] && oddsObj['让球'].length > 0) {
+            const rq = oddsObj['让球'][0];
+            handicap = String(rq.handicap || '-1');
+            if (pred.rqPick === '胜') odds = rq.win || rq.w || 0;
+            else if (pred.rqPick === '平') odds = rq.draw || rq.d || 0;
+            else if (pred.rqPick === '负') odds = rq.lose || rq.l || 0;
+        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3842,14 +3860,19 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '让球胜平负',
             betOption: pred.rqPick,
-            options: [{ betOption: pred.rqPick, odds: 0 }],
-            handicap: '-1',
+            options: [{ betOption: pred.rqPick, odds: odds }],
+            handicap: handicap,
             result: '',
             isWin: null
         });
     }
     
     if (pred.score && pred.score[0] !== undefined && pred.score[1] !== undefined) {
+        const scoreStr = pred.score[0] + ':' + pred.score[1];
+        let odds = 0;
+        if (oddsObj && oddsObj['比分']) {
+            odds = oddsObj['比分'][scoreStr] || 0;
+        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3857,8 +3880,8 @@ function importPredictionToBet(idx) {
             date: gameDate,
             league: league,
             playType: '比分',
-            betOption: pred.score[0] + ':' + pred.score[1],
-            options: [{ betOption: pred.score[0] + ':' + pred.score[1], odds: 0 }],
+            betOption: scoreStr,
+            options: [{ betOption: scoreStr, odds: odds }],
             handicap: '',
             result: '',
             isWin: null
@@ -3866,6 +3889,10 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.totalPick) {
+        let odds = 0;
+        if (oddsObj && oddsObj['总进球']) {
+            odds = oddsObj['总进球'][pred.totalPick] || 0;
+        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3874,7 +3901,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '总进球',
             betOption: pred.totalPick,
-            options: [{ betOption: pred.totalPick, odds: 0 }],
+            options: [{ betOption: pred.totalPick, odds: odds }],
             handicap: '',
             result: '',
             isWin: null
@@ -3882,6 +3909,10 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.halfResult) {
+        let odds = 0;
+        if (oddsObj && oddsObj['半全场']) {
+            odds = oddsObj['半全场'][pred.halfResult] || 0;
+        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3890,7 +3921,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '半全场',
             betOption: pred.halfResult,
-            options: [{ betOption: pred.halfResult, odds: 0 }],
+            options: [{ betOption: pred.halfResult, odds: odds }],
             handicap: '',
             result: '',
             isWin: null
