@@ -5993,7 +5993,7 @@ function renderTable() {
             const leagueTag = g.league ? `<span class="game-league-tag">${g.league}</span>` : '';
             gameLines += `<span class="game-detail-line">${gi+1}. ${leagueTag}${g.match}${handicapStr} [${g.playType}] ${optionsStr}${resultText}${winIcon}</span>`;
         });
-        const passLabels = bet.passCombos.map(k => k === 1 ? '单关' : k + '关').join(',');
+        const passLabels = bet.passCombos.map(k => k === 1 || k === '单关' ? '单关' : k + '关').join(',');
         const totalMultiplier = (bet.persons || []).reduce((s, p) => s + p.multiplier, 0);
         let thumbHtml = '';
         if (bet.images && bet.images.length > 0) {
