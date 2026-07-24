@@ -2070,7 +2070,7 @@ function updateScheduleFromOdds() {
                     return g.home === home && g.away === away;
                 });
                 if (!exists) {
-                    var league = isNationalTeam(home) ? '国际赛' : '';
+                    var league = oddsData[key].league || (isNationalTeam(home) ? '国际赛' : '');
                     SCHEDULE[date].push({ home: home, away: away, league: league });
                 }
             }
