@@ -6464,7 +6464,7 @@ function triggerGitHubWorkflow(btn) {
     btn.textContent = '🚀 触发更新…';
 
     if (!token) {
-        var inputToken = prompt('需要 GitHub Token 才能触发更新，请输入：');
+        var inputToken = prompt('首次使用需要 GitHub Token，请输入：\n\n获取地址：https://github.com/settings/tokens\n需要 repo 和 workflow 权限', 'ghp_');
         if (inputToken) {
             localStorage.setItem('jinbet_github_token', inputToken);
             token = inputToken;
