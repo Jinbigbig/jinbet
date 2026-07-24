@@ -4371,14 +4371,21 @@ function recalcBetWin(bet) {
     bet.winAmount = totalWin;
     bet.comboWinAmounts = comboWinAmounts;
 
+    // 检查是否有比赛明确中奖(有结果且isWin=true)
+    const hasWin = bet.games.some(g => g.result && g.isWin === true);
+
     // 状态判断逻辑：
-    // 1. 有比赛明确未中奖(有结果但isWin=false) → 未中奖
-    // 2. 有比赛未填写结果(没有result) → 待开奖
-    // 3. 所有比赛都有结果且都中奖 → 中奖
-    if (hasLose) {
-        bet.status = 'lose';
-    } else if (hasUnfilled) {
+    // 1. 有比赛未填写结果(没有result) → 待开奖
+    // 2. 单关投注：只要有一场中奖就算中奖
+    // 3. 非单关投注：有比赛明确未中奖(有结果但isWin=false) → 未中奖；所有比赛都有结果且都中奖 → 中奖
+    const isSinglePass = combos.length === 1 && (combos[0] === 1 || combos[0] === '单关');
+    
+    if (hasUnfilled) {
         bet.status = 'pending';
+    } else if (isSinglePass) {
+        bet.status = hasWin ? 'win' : 'lose';
+    } else if (hasLose) {
+        bet.status = 'lose';
     } else {
         bet.status = 'win';
     }
@@ -5983,7 +5990,8 @@ function renderTable() {
             const resultText = g.result ? ' 赛果:' + g.result : '';
             const winIcon = g.isWin === true ? ' ✅' : (g.isWin === false ? ' ❌' : '');
             const handicapStr = g.handicap ? ' 让' + g.handicap : '';
-            gameLines += `<span class="game-detail-line">${gi+1}. ${g.match}${handicapStr} [${g.playType}] ${optionsStr}${resultText}${winIcon}</span>`;
+            const leagueTag = g.league ? `<span class="game-league-tag">${g.league}</span>` : '';
+            gameLines += `<span class="game-detail-line">${gi+1}. ${leagueTag}${g.match}${handicapStr} [${g.playType}] ${optionsStr}${resultText}${winIcon}</span>`;
         });
         const passLabels = bet.passCombos.map(k => k === 1 ? '单关' : k + '关').join(',');
         const totalMultiplier = (bet.persons || []).reduce((s, p) => s + p.multiplier, 0);
