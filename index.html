@@ -1747,7 +1747,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 足彩记录 v7.92.2</div>
+    <div class="version-footer">⚽ 足彩记录 v<span id="appVersion"></span></div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -6363,6 +6363,8 @@ function init() {
     }
     
     renderAll();
+    const verEl = document.getElementById('appVersion');
+    if (verEl) verEl.textContent = APP_VERSION;
     if (document.getElementById('gameListContainer').children.length === 0) {
         addGameRow();
     }
