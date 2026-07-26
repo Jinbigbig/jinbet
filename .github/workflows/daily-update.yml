@@ -81,4 +81,5 @@ jobs:
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git pull origin gh-pages --rebase || echo "Pull failed, attempting push anyway"
           git push origin gh-pages
