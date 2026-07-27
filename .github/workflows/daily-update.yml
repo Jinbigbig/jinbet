@@ -2,8 +2,7 @@ name: 每日赛程赔率自动更新
 
 on:
   schedule:
-    - cron: '5 3 * * *'
-    - cron: '35 10 * * *'
+    - cron: '15 3 * * *'
   workflow_dispatch:
 
 jobs:
