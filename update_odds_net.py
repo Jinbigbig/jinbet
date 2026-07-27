@@ -355,6 +355,8 @@ def archive_old_data(schedule, odds, removed_dates):
         for key, val in odds.items():
             if key.startswith(date + '_'):
                 day_odds[key] = val
+            elif val.get('date_key', '').startswith(date + '_'):
+                day_odds[key] = val
         
         archive = {
             'date': date,
@@ -573,6 +575,8 @@ def main():
     removed_odds = []
     for key in list(merged_odds.keys()):
         date = key.split('_')[0]
+        if not date.startswith('20'):
+            date = merged_odds[key].get('date_key', '').split('_')[0]
         if date < cutoff:
             removed_odds.append(key)
             del merged_odds[key]
