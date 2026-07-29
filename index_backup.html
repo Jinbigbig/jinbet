@@ -12,58 +12,21 @@
     <style>
         /* ===== 完整样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
-        :root {
-            --primary: #1a1a2e;
-            --primary-light: #2d2d44;
-            --accent-green: #2d6a4f;
-            --accent-red: #e94560;
-            --accent-gold: #f59e0b;
-            --accent-blue: #3b82f6;
-            --accent-purple: #6c5ce7;
-            --accent-cyan: #06b6d4;
-            --bg-main: #f0f2f5;
-            --bg-card: #f8fafc;
-            --border: #eef0f4;
-            --border-light: #f1f3f6;
-            --text-primary: #1a1a2e;
-            --text-secondary: #6b7280;
-            --text-muted: #9ca3af;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
-            --shadow-lg: 0 20px 60px rgba(0,0,0,0.08);
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 18px;
-            --radius-xl: 28px;
-        }
         body {
             font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f0f2f5 0%, #e8eaed 100%);
-            color: var(--text-primary);
-            padding: 24px;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
         }
         .app-container {
             max-width: 1600px;
             width: 100%;
             background: #fff;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            padding: 32px 36px 48px;
-            position: relative;
-            overflow: hidden;
-        }
-        .app-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent-purple), var(--accent-cyan));
-            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            padding: 30px 35px 45px;
         }
         .header {
             display: flex;
@@ -107,51 +70,33 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 9px 18px;
+            padding: 8px 18px;
             border: none;
             border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            background: var(--bg-card);
-            color: var(--text-primary);
+            transition: all 0.2s;
+            background: #f0f2f5;
+            color: #1a1a2e;
             text-decoration: none;
             line-height: 1.4;
-            position: relative;
-            overflow: hidden;
         }
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.25s;
-        }
-        .btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-        }
-        .btn:hover::before { opacity: 1; }
-        .btn:active { 
-            transform: translateY(-1px); 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-        .btn-primary { background: var(--primary); color: #fff; }
-        .btn-primary:hover { background: var(--primary-light); }
-        .btn-success { background: var(--accent-green); color: #fff; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+        .btn-primary { background: #1a1a2e; color: #fff; }
+        .btn-primary:hover { background: #2d2d44; }
+        .btn-success { background: #2d6a4f; color: #fff; }
         .btn-success:hover { background: #1e4d3a; }
-        .btn-danger { background: var(--accent-red); color: #fff; }
+        .btn-danger { background: #e94560; color: #fff; }
         .btn-danger:hover { background: #c73652; }
-        .btn-outline { background: transparent; border: 1.5px solid var(--border); }
-        .btn-outline:hover { border-color: var(--primary); background: rgba(26,26,46,0.03); }
+        .btn-outline { background: transparent; border: 1.5px solid #d0d4dd; }
+        .btn-outline:hover { border-color: #1a1a2e; background: #f8f9fc; }
         .btn-sm { padding: 5px 14px; font-size: 12px; }
-        .btn-purple { background: var(--accent-purple); color: #fff; }
+        .btn-purple { background: #6c5ce7; color: #fff; }
         .btn-purple:hover { background: #5a4bd1; }
-        .btn-gold { background: var(--accent-gold); color: #fff; }
+        .btn-gold { background: #f59e0b; color: #fff; }
         .btn-gold:hover { background: #d97706; }
-        .btn-cyan { background: var(--accent-cyan); color: #fff; }
+        .btn-cyan { background: #06b6d4; color: #fff; }
         .btn-cyan:hover { background: #0891b2; }
         .btn-xs { padding: 2px 8px; font-size: 11px; border-radius: 12px; }
         .btn-green { background: #10b981; color: #fff; }
@@ -159,115 +104,36 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
         }
         .stat-card {
-            background: linear-gradient(145deg, #fff 0%, #fafbfc 100%);
-            border-radius: var(--radius-lg);
-            padding: 20px 22px;
-            border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            background: #f8f9fc;
+            border-radius: 18px;
+            padding: 16px 20px;
+            border: 1px solid #eef0f4;
         }
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-            opacity: 0.6;
-        }
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(26,26,46,0.1);
-        }
-        .stat-card .label { 
-            font-size: 12px; 
-            font-weight: 600; 
-            color: var(--text-secondary); 
-            margin-bottom: 8px; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .stat-card .value { 
-            font-size: 30px; 
-            font-weight: 800; 
-            color: var(--text-primary); 
-            line-height: 1.2;
-        }
-        .stat-card .value .currency { 
-            font-size: 16px; 
-            font-weight: 500; 
-            color: var(--text-secondary); 
-            margin-left: 3px; 
-        }
-        .stat-card.accent { 
-            background: linear-gradient(145deg, #ecfdf5 0%, #f0fdf4 100%);
-            border-color: rgba(45,106,79,0.15);
-        }
-        .stat-card.accent::before { background: var(--accent-green); opacity: 1; }
-        .stat-card.accent .label { color: var(--accent-green); }
-        .stat-card.accent .value { color: var(--accent-green); }
-        
-        .stat-card.accent2 { 
-            background: linear-gradient(145deg, #fef2f2 0%, #fee2e2 100%);
-            border-color: rgba(233,69,96,0.15);
-        }
-        .stat-card.accent2::before { background: var(--accent-red); opacity: 1; }
-        .stat-card.accent2 .label { color: var(--accent-red); }
-        .stat-card.accent2 .value { color: var(--accent-red); }
-        
-        .stat-card.accent3 .value { color: var(--accent-gold); }
-        .stat-card.accent3 {
-            background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%);
-            border-color: rgba(245,158,11,0.15);
-        }
-        .stat-card.accent3::before { background: var(--accent-gold); opacity: 1; }
-        .stat-card.accent3 .label { color: var(--accent-gold); }
+        .stat-card .label { font-size: 13px; font-weight: 500; color: #6b7280; margin-bottom: 4px; }
+        .stat-card .value { font-size: 26px; font-weight: 700; color: #1a1a2e; }
+        .stat-card .value .currency { font-size: 16px; font-weight: 500; color: #6b7280; margin-left: 2px; }
+        .stat-card.accent .value { color: #2d6a4f; }
+        .stat-card.accent2 .value { color: #e94560; }
+        .stat-card.accent3 .value { color: #b9770e; }
 
         .person-summary-wrap {
-            background: linear-gradient(145deg, #fff 0%, var(--bg-card) 100%);
-            border-radius: var(--radius-lg);
-            padding: 20px 24px;
-            border: 1px solid var(--border);
+            background: #f8f9fc;
+            border-radius: 18px;
+            padding: 16px 20px;
+            border: 1px solid #eef0f4;
             margin-bottom: 24px;
             overflow-x: auto;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.25s;
-        }
-        .person-summary-wrap:hover {
-            box-shadow: var(--shadow-md);
         }
         .person-summary-wrap h3 {
             font-size: 16px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--border);
-            position: relative;
-        }
-        .person-summary-wrap h3::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--primary);
-            border-radius: 2px;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 10px;
         }
         .person-summary-table {
             width: 100%;
@@ -296,38 +162,20 @@
         }
 
         .batch-result-panel {
-            background: linear-gradient(145deg, #fff 0%, #eff6ff 100%);
-            border: 2px solid rgba(59,130,246,0.15);
-            border-radius: var(--radius-lg);
-            padding: 20px 24px;
+            background: #f8fafc;
+            border: 2px solid #dbeafe;
+            border-radius: 18px;
+            padding: 18px 22px;
             margin-bottom: 24px;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.25s;
-        }
-        .batch-result-panel:hover {
-            box-shadow: var(--shadow-md);
         }
         .batch-result-panel h4 {
             font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-blue);
-            margin-bottom: 16px;
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(59,130,246,0.1);
-            position: relative;
-        }
-        .batch-result-panel h4::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--accent-blue);
-            border-radius: 2px;
         }
         .batch-result-panel .batch-toolbar {
             display: flex;
@@ -434,37 +282,18 @@
         }
         .batch-panels-grid .batch-result-panel { margin-bottom: 0; }
         .ai-predict-panel {
-            background: linear-gradient(135deg, #faf5ff 0%, #eff6ff 100%);
-            border: 1px solid rgba(108,92,231,0.15);
-            border-radius: var(--radius-lg);
-            padding: 20px 22px;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.25s;
-        }
-        .ai-predict-panel:hover {
-            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, #eef4ff 0%, #f7f0ff 100%);
+            border: 1px solid #e0e7ff;
+            border-radius: 18px;
+            padding: 16px 18px;
         }
         .ai-predict-panel h3 {
-            margin: 0 0 16px 0;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--accent-purple);
+            margin: 0 0 12px 0;
+            font-size: 15px;
+            color: #1f2937;
             display: flex;
             align-items: center;
             gap: 8px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid rgba(108,92,231,0.1);
-            position: relative;
-        }
-        .ai-predict-panel h3::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: var(--accent-purple);
-            border-radius: 2px;
         }
         .ai-predict-panel .ai-toolbar {
             display: flex;
@@ -524,17 +353,11 @@
         .ai-output::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .ai-predict-card {
             background: #fff;
-            border-radius: var(--radius-md);
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(108,92,231,0.1);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .ai-predict-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(108,92,231,0.2);
+            border-radius: 14px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #e0e7ff;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.04);
         }
         .ai-predict-title {
             display: flex;
@@ -610,11 +433,10 @@
 
         .table-wrapper {
             overflow-x: auto;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
+            border-radius: 18px;
+            border: 1px solid #eef0f4;
             margin-bottom: 24px;
             background: #fff;
-            box-shadow: var(--shadow-sm);
         }
         table {
             width: 100%;
@@ -623,100 +445,33 @@
             min-width: 1200px;
         }
         thead {
-            background: linear-gradient(145deg, var(--bg-card) 0%, #f3f4f6 100%);
-            border-bottom: 2px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            background: #f8f9fc;
+            border-bottom: 2px solid #eef0f4;
         }
         thead th {
-            padding: 14px 12px;
+            padding: 12px 10px;
             text-align: left;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 12px;
-            color: var(--text-secondary);
+            color: #4b5563;
             white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
         }
-        thead th::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 12px;
-            right: 12px;
-            height: 2px;
-            background: transparent;
-            transition: background 0.25s;
-        }
-        thead th:hover::after {
-            background: var(--primary);
-            opacity: 0.2;
-        }
-        tbody tr { 
-            border-bottom: 1px solid var(--border-light); 
-            transition: all 0.2s;
-        }
-        tbody tr:nth-child(even) { background: rgba(248,249,252,0.5); }
-        tbody tr:nth-child(odd) { background: #fff; }
-        tbody tr:hover { 
-            background: rgba(26,26,46,0.03);
-            transform: scale(1.002);
-        }
-        tbody td { 
-            padding: 13px 12px; 
-            vertical-align: middle; 
-            position: relative;
-        }
+        tbody tr { border-bottom: 1px solid #f1f3f6; }
+        tbody tr:hover { background: #fafbfc; }
+        tbody td { padding: 12px 10px; vertical-align: middle; }
         .badge-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 14px;
+            display: inline-block;
+            padding: 2px 12px;
             border-radius: 30px;
             font-size: 12px;
-            font-weight: 700;
-            transition: all 0.2s;
+            font-weight: 600;
         }
-        .badge-status.pending { 
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
-            color: #b9770e; 
-            border: 1px solid rgba(245,158,11,0.2);
-        }
-        .badge-status.win { 
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); 
-            color: #065f46; 
-            border: 1px solid rgba(45,106,79,0.2);
-        }
-        .badge-status.lose { 
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); 
-            color: #991b1b; 
-            border: 1px solid rgba(233,69,96,0.2);
-        }
-        .td-actions { 
-            display: flex; 
-            gap: 6px; 
-            flex-wrap: wrap; 
-            opacity: 0.7;
-            transition: opacity 0.25s;
-        }
-        tbody tr:hover .td-actions { opacity: 1; }
+        .badge-status.pending { background: #fef3c7; color: #b9770e; }
+        .badge-status.win { background: #d1fae5; color: #065f46; }
+        .badge-status.lose { background: #fee2e2; color: #991b1b; }
+        .td-actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .td-actions .btn { padding: 4px 12px; font-size: 11px; border-radius: 20px; }
-        .empty-row td { 
-            padding: 60px 16px; 
-            text-align: center; 
-            color: var(--text-muted); 
-            font-size: 15px;
-            background: var(--bg-card);
-        }
-        .empty-row td::before {
-            content: '📋';
-            display: block;
-            font-size: 32px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
+        .empty-row td { padding: 40px 16px; text-align: center; color: #9ca3af; font-size: 15px; }
 
         .game-detail-line {
             display: block;
@@ -751,8 +506,8 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -760,40 +515,23 @@
             padding: 20px;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal {
             background: #fff;
-            border-radius: var(--radius-xl);
+            border-radius: 28px;
             max-width: 1000px;
             width: 100%;
-            padding: 36px 40px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.15);
-            transform: translateY(40px) scale(0.94);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 32px 36px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.2);
+            transform: translateY(30px) scale(0.96);
+            transition: 0.25s;
             max-height: 95vh;
             overflow-y: auto;
-            position: relative;
-        }
-        .modal::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent-purple), var(--accent-blue), var(--accent-cyan));
-            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
         }
         .modal-overlay.active .modal { transform: translateY(0) scale(1); }
-        .modal h3 { 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin-bottom: 24px; 
-            color: var(--text-primary); 
-            padding-top: 8px;
-        }
+        .modal h3 { font-size: 22px; font-weight: 700; margin-bottom: 22px; color: #1a1a2e; }
         .modal .form-group { margin-bottom: 16px; }
         .modal .form-group label {
             display: block;
@@ -806,23 +544,21 @@
         .modal .form-group select {
             width: 100%;
             padding: 10px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-md);
+            border: 1.5px solid #e2e5ec;
+            border-radius: 14px;
             font-size: 14px;
-            background: var(--bg-card);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fafbfc;
+            transition: 0.15s;
             font-family: inherit;
             height: 42px;
             text-align: center;
-            position: relative;
         }
         .modal .form-group input:focus,
         .modal .form-group select:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #1a1a2e;
             background: #fff;
-            box-shadow: 0 0 0 3px rgba(26,26,46,0.08);
-            transform: translateY(-1px);
+            box-shadow: 0 0 0 3px rgba(26,26,46,0.06);
         }
         .modal .form-row {
             display: grid;
@@ -1747,7 +1483,7 @@
         <div id="personDetailContainer"></div>
     </div>
 
-    <div class="version-footer">⚽ 足彩记录 v<span id="appVersion"></span></div>
+    <div class="version-footer">⚽ 足彩记录 v7.92.2</div>
 </div>
 
 <!-- ===== 添加/编辑模态框 ===== -->
@@ -1927,20 +1663,6 @@ const SCHEDULE = {
     '2026-07-23': [
         { home: '科林蒂安', away: '里莫', league: '巴甲' },
         { home: '博塔弗戈', away: '维多利亚', league: '巴甲' }
-      ],
-    '2026-07-24': [
-        { home: '雅罗', away: '塞伊奈', league: '芬超' },
-        { home: '韦斯特罗', away: '厄格里特', league: '瑞超' }
-      ],
-    '2026-07-25': [
-        { home: '金泉尚武', away: '大田市民', league: '韩职' },
-        { home: '浦项制铁', away: '全北现代', league: '韩职' }
-      ],
-    '2026-07-26': [
-        { home: '首尔FC', away: '蔚山现代', league: '韩职' },
-        { home: '仁川联', away: '富川FC', league: '韩职' },
-        { home: '光州FC', away: '济州SK', league: '韩职' },
-        { home: '安养FC', away: '江原FC', league: '韩职' }
       ]
 };
 
@@ -1963,15 +1685,7 @@ const ODDS = {
     '2026-07-22_洛杉矶FC_盐湖城': { '胜': '1.58', '平': '3.96', '负': '4.1', '让球': [{"handicap": "-1", "胜": "2.78", "平": "3.55", "负": "2.05"}], '比分': {"1:0": "9.75", "2:0": "9.25", "2:1": "6.75", "3:0": "13.5", "3:1": "11", "3:2": "16", "4:0": "27", "4:1": "21", "4:2": "35", "5:0": "60", "5:1": "50", "5:2": "85", "胜其他": "24", "0:0": "20", "1:1": "8.25", "2:2": "11", "3:3": "40", "平其他": "150", "0:1": "17", "0:2": "26", "1:2": "11", "0:3": "60", "1:3": "29", "2:3": "27", "0:4": "175", "1:4": "100", "2:4": "90", "0:5": "400", "1:5": "300", "2:5": "300", "负其他": "75"}, '总进球': {"0": "20", "1": "6.85", "2": "4.1", "3": "3.45", "4": "4.4", "5": "6.8", "6": "12", "7+": "15"}, '半全场': {"胜胜": "2.4", "胜平": "14.5", "胜负": "28", "平胜": "4.5", "平平": "7", "平负": "10", "负胜": "18", "负平": "14.5", "负负": "7"} },
     '2026-07-22_奥莫尼亚_阿拉木图': { '胜': '1.56', '平': '3.6', '负': '4.75', '让球': [{"handicap": "-1", "胜": "2.82", "平": "3.35", "负": "2.1"}], '比分': {"1:0": "7", "2:0": "7", "2:1": "6.75", "3:0": "11", "3:1": "13", "3:2": "24", "4:0": "25", "4:1": "27", "4:2": "55", "5:0": "65", "5:1": "65", "5:2": "120", "胜其他": "45", "0:0": "12", "1:1": "7", "2:2": "14", "3:3": "60", "平其他": "400", "0:1": "12", "0:2": "25", "1:2": "13", "0:3": "60", "1:3": "40", "2:3": "45", "0:4": "300", "1:4": "120", "2:4": "175", "0:5": "650", "1:5": "550", "2:5": "550", "负其他": "175"}, '总进球': {"0": "12", "1": "4.8", "2": "3.5", "3": "3.5", "4": "5.3", "5": "9.5", "6": "17", "7+": "27"}, '半全场': {"胜胜": "2.35", "胜平": "15", "胜负": "40", "平胜": "4.25", "平平": "6", "平负": "10", "负胜": "24", "负平": "15", "负负": "8"} },
     '2026-07-23_科林蒂安_里莫': { '胜': '1.35', '平': '4.05', '负': '7.05', '让球': [{"handicap": "-1", "胜": "2.28", "平": "3.2", "负": "2.65"}], '比分': {"1:0": "5.75", "2:0": "6", "2:1": "6.75", "3:0": "9", "3:1": "10.5", "3:2": "25", "4:0": "18", "4:1": "22", "4:2": "50", "5:0": "45", "5:1": "55", "5:2": "120", "胜其他": "36", "0:0": "12.5", "1:1": "8.25", "2:2": "18", "3:3": "90", "平其他": "550", "0:1": "14", "0:2": "36", "1:2": "19", "0:3": "120", "1:3": "60", "2:3": "65", "0:4": "450", "1:4": "300", "2:4": "300", "0:5": "1000", "1:5": "850", "2:5": "850", "负其他": "350"}, '总进球': {"0": "12.5", "1": "4.65", "2": "3.3", "3": "3.45", "4": "5.3", "5": "10", "6": "20", "7+": "36"}, '半全场': {"胜胜": "1.93", "胜平": "19", "胜负": "60", "平胜": "3.7", "平平": "6.7", "平负": "14.5", "负胜": "23.5", "负平": "19", "负负": "12"} },
-    '2026-07-23_博塔弗戈_维多利亚': { '胜': '1.58', '平': '3.65', '负': '4.5', '让球': [{"handicap": "-1", "胜": "2.88", "平": "3.3", "负": "2.09"}], '比分': {"1:0": "6.5", "2:0": "7.5", "2:1": "6.25", "3:0": "13.5", "3:1": "11", "3:2": "23", "4:0": "30", "4:1": "27", "4:2": "48", "5:0": "75", "5:1": "65", "5:2": "120", "胜其他": "48", "0:0": "14", "1:1": "7.5", "2:2": "13", "3:3": "60", "平其他": "300", "0:1": "12", "0:2": "24", "1:2": "13.5", "0:3": "65", "1:3": "35", "2:3": "40", "0:4": "250", "1:4": "120", "2:4": "120", "0:5": "650", "1:5": "450", "2:5": "450", "负其他": "120"}, '总进球': {"0": "14", "1": "4.5", "2": "3.45", "3": "3.5", "4": "5.3", "5": "9.5", "6": "19", "7+": "26"}, '半全场': {"胜胜": "2.45", "胜平": "15", "胜负": "35", "平胜": "4.3", "平平": "6.3", "平负": "9.75", "负胜": "19", "负平": "15", "负负": "7.25"} },
-    '2026-07-24_雅罗_塞伊奈': { '胜': '3.2', '平': '3.45', '负': '1.9', '让球': [{"handicap": "+1", "胜": "1.71", "平": "3.6", "负": "3.75"}], '比分': {"1:0": "13", "2:0": "19", "2:1": "10", "3:0": "40", "3:1": "24", "3:2": "25", "4:0": "100", "4:1": "65", "4:2": "75", "5:0": "300", "5:1": "200", "5:2": "200", "胜其他": "65", "0:0": "17", "1:1": "7", "2:2": "12", "3:3": "35", "平其他": "150", "0:1": "10", "0:2": "11.5", "1:2": "6.75", "0:3": "19", "1:3": "13", "2:3": "19", "0:4": "36", "1:4": "26", "2:4": "34", "0:5": "90", "1:5": "60", "2:5": "85", "负其他": "30"}, '总进球': {"0": "17", "1": "6.45", "2": "3.75", "3": "3.4", "4": "4.5", "5": "7.5", "6": "14.5", "7+": "18"}, '半全场': {"胜胜": "5.4", "胜平": "13", "胜负": "18", "平胜": "7.8", "平平": "6.25", "平负": "4.9", "负胜": "25", "负平": "13", "负负": "3.05"} },
-    '2026-07-24_韦斯特罗_厄格里特': { '胜': '1.49', '平': '3.95', '负': '4.88', '让球': [{"handicap": "-1", "胜": "2.46", "平": "3.55", "负": "2.27"}], '比分': {"1:0": "8.5", "2:0": "7.5", "2:1": "6", "3:0": "11.5", "3:1": "9.5", "3:2": "18", "4:0": "22", "4:1": "21", "4:2": "36", "5:0": "50", "5:1": "50", "5:2": "90", "胜其他": "25", "0:0": "19", "1:1": "8", "2:2": "13", "3:3": "45", "平其他": "200", "0:1": "19", "0:2": "34", "1:2": "14.5", "0:3": "85", "1:3": "40", "2:3": "39", "0:4": "300", "1:4": "120", "2:4": "120", "0:5": "600", "1:5": "400", "2:5": "400", "负其他": "100"}, '总进球': {"0": "19", "1": "7.3", "2": "4", "3": "3.2", "4": "4.3", "5": "7.3", "6": "13", "7+": "18"}, '半全场': {"胜胜": "2.15", "胜平": "16", "胜负": "40", "平胜": "4", "平平": "7", "平负": "12.5", "负胜": "20", "负平": "16", "负负": "8.6"} },
-    '2026-07-25_金泉尚武_大田市民': { '胜': '2.82', '平': '3.1', '负': '2.21', '让球': [{"handicap": "+1", "胜": "1.51", "平": "3.8", "负": "4.9"}], '比分': {"1:0": "9.5", "2:0": "14.5", "2:1": "8.5", "3:0": "32", "3:1": "22", "3:2": "29", "4:0": "100", "4:1": "80", "4:2": "120", "5:0": "350", "5:1": "300", "5:2": "400", "胜其他": "110", "0:0": "11", "1:1": "5.5", "2:2": "12", "3:3": "50", "平其他": "400", "0:1": "8", "0:2": "11", "1:2": "7.25", "0:3": "22", "1:3": "16", "2:3": "25", "0:4": "60", "1:4": "50", "2:4": "75", "0:5": "200", "1:5": "175", "2:5": "300", "负其他": "75"}, '总进球': {"0": "11", "1": "4.7", "2": "3.25", "3": "3.5", "4": "5.6", "5": "10.5", "6": "19", "7+": "32"}, '半全场': {"胜胜": "4.7", "胜平": "14.5", "胜负": "23", "平胜": "6.5", "平平": "4.9", "平负": "5.4", "负胜": "26", "负平": "14.5", "负负": "3.6"} },
-    '2026-07-25_浦项制铁_全北现代': { '胜': '3.06', '平': '3', '负': '2.13', '让球': [{"handicap": "+1", "胜": "1.54", "平": "3.6", "负": "4.95"}], '比分': {"1:0": "8", "2:0": "14.5", "2:1": "8.7", "3:0": "35", "3:1": "27", "3:2": "41", "4:0": "150", "4:1": "120", "4:2": "175", "5:0": "550", "5:1": "550", "5:2": "550", "胜其他": "250", "0:0": "9", "1:1": "5.25", "2:2": "14", "3:3": "80", "平其他": "400", "0:1": "6.8", "0:2": "9.5", "1:2": "7.25", "0:3": "21", "1:3": "17", "2:3": "31", "0:4": "65", "1:4": "60", "2:4": "100", "0:5": "200", "1:5": "200", "2:5": "350", "负其他": "120"}, '总进球': {"0": "9", "1": "3.9", "2": "3.1", "3": "3.75", "4": "6.5", "5": "13", "6": "25", "7+": "37"}, '半全场': {"胜胜": "5.25", "胜平": "15", "胜负": "26", "平胜": "6.75", "平平": "4.2", "平负": "5.1", "负胜": "28", "负平": "15", "负负": "3.65"} },
-    '2026-07-26_首尔FC_蔚山现代': { '胜': '1.68', '平': '3.48', '负': '4.05', '让球': [{"handicap": "-1", "胜": "3.1", "平": "3.45", "负": "1.94"}], '比分': {"1:0": "7.3", "2:0": "8.25", "2:1": "6.5", "3:0": "14", "3:1": "12.5", "3:2": "23", "4:0": "31", "4:1": "29", "4:2": "55", "5:0": "90", "5:1": "75", "5:2": "150", "胜其他": "50", "0:0": "13", "1:1": "6", "2:2": "12.5", "3:3": "55", "平其他": "350", "0:1": "12.5", "0:2": "24", "1:2": "10.5", "0:3": "60", "1:3": "33", "2:3": "36", "0:4": "250", "1:4": "150", "2:4": "150", "0:5": "600", "1:5": "450", "2:5": "500", "负其他": "150"}, '总进球': {"0": "13", "1": "5.2", "2": "3.45", "3": "3.45", "4": "5.1", "5": "9", "6": "17", "7+": "26"}, '半全场': {"胜胜": "2.65", "胜平": "15", "胜负": "34", "平胜": "4.5", "平平": "5.25", "平负": "9", "负胜": "21", "负平": "15", "负负": "7"} },
-    '2026-07-26_仁川联_富川FC': { '胜': '1.58', '平': '3.32', '负': '5.15', '让球': [{"handicap": "-1", "胜": "3.06", "平": "3.15", "负": "2.06"}], '比分': {"1:0": "5.5", "2:0": "6.5", "2:1": "6.6", "3:0": "11", "3:1": "13.5", "3:2": "30", "4:0": "28", "4:1": "35", "4:2": "90", "5:0": "90", "5:1": "100", "5:2": "300", "胜其他": "75", "0:0": "9", "1:1": "5.6", "2:2": "18", "3:3": "100", "平其他": "500", "0:1": "11.5", "0:2": "26", "1:2": "14", "0:3": "100", "1:3": "55", "2:3": "75", "0:4": "500", "1:4": "300", "2:4": "350", "0:5": "1000", "1:5": "800", "2:5": "900", "负其他": "400"}, '总进球': {"0": "9", "1": "3.85", "2": "3", "3": "3.75", "4": "6.75", "5": "14", "6": "26", "7+": "40"}, '半全场': {"胜胜": "2.5", "胜平": "17", "胜负": "36", "平胜": "4", "平平": "4.7", "平负": "10.5", "负胜": "25", "负平": "17", "负负": "9"} },
-    '2026-07-26_光州FC_济州SK': { '胜': '3.65', '平': '3', '负': '1.92', '让球': [{"handicap": "+1", "胜": "1.68", "平": "3.45", "负": "4.1"}], '比分': {"1:0": "9", "2:0": "17", "2:1": "10", "3:0": "50", "3:1": "30", "3:2": "50", "4:0": "200", "4:1": "150", "4:2": "200", "5:0": "500", "5:1": "500", "5:2": "600", "胜其他": "275", "0:0": "9", "1:1": "5.5", "2:2": "15", "3:3": "90", "平其他": "500", "0:1": "6.3", "0:2": "8.5", "1:2": "6.5", "0:3": "16", "1:3": "15", "2:3": "30", "0:4": "50", "1:4": "50", "2:4": "90", "0:5": "175", "1:5": "175", "2:5": "300", "负其他": "110"}, '总进球': {"0": "9", "1": "3.95", "2": "3.1", "3": "3.75", "4": "6.5", "5": "13", "6": "24", "7+": "35"}, '半全场': {"胜胜": "6.25", "胜平": "16", "胜负": "25", "平胜": "7.7", "平平": "4.3", "平负": "4.7", "负胜": "32", "负平": "16", "负负": "3.1"} },
-    '2026-07-26_安养FC_江原FC': { '胜': '3.96', '平': '3', '负': '1.84', '让球': [{"handicap": "+1", "胜": "1.74", "平": "3.3", "负": "4"}], '比分': {"1:0": "9.5", "2:0": "20", "2:1": "10", "3:0": "60", "3:1": "35", "3:2": "50", "4:0": "250", "4:1": "175", "4:2": "300", "5:0": "700", "5:1": "600", "5:2": "700", "胜其他": "350", "0:0": "8", "1:1": "5.5", "2:2": "16", "3:3": "100", "平其他": "500", "0:1": "6", "0:2": "7.8", "1:2": "6.75", "0:3": "15", "1:3": "15", "2:3": "30", "0:4": "50", "1:4": "50", "2:4": "100", "0:5": "150", "1:5": "175", "2:5": "350", "负其他": "100"}, '总进球': {"0": "8", "1": "3.75", "2": "3", "3": "3.8", "4": "7", "5": "15", "6": "29", "7+": "45"}, '半全场': {"胜胜": "7", "胜平": "16", "胜负": "26", "平胜": "8.5", "平平": "4.2", "平负": "4.5", "负胜": "32", "负平": "16", "负负": "2.95"} }
+    '2026-07-23_博塔弗戈_维多利亚': { '胜': '1.58', '平': '3.65', '负': '4.5', '让球': [{"handicap": "-1", "胜": "2.88", "平": "3.3", "负": "2.09"}], '比分': {"1:0": "6.5", "2:0": "7.5", "2:1": "6.25", "3:0": "13.5", "3:1": "11", "3:2": "23", "4:0": "30", "4:1": "27", "4:2": "48", "5:0": "75", "5:1": "65", "5:2": "120", "胜其他": "48", "0:0": "14", "1:1": "7.5", "2:2": "13", "3:3": "60", "平其他": "300", "0:1": "12", "0:2": "24", "1:2": "13.5", "0:3": "65", "1:3": "35", "2:3": "40", "0:4": "250", "1:4": "120", "2:4": "120", "0:5": "650", "1:5": "450", "2:5": "450", "负其他": "120"}, '总进球': {"0": "14", "1": "4.5", "2": "3.45", "3": "3.5", "4": "5.3", "5": "9.5", "6": "19", "7+": "26"}, '半全场': {"胜胜": "2.45", "胜平": "15", "胜负": "35", "平胜": "4.3", "平平": "6.3", "平负": "9.75", "负胜": "19", "负平": "15", "负负": "7.25"} }
 };
 
 // ================================================================
@@ -2011,7 +1725,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.93.1';
+const APP_VERSION = '7.92.2';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2510,8 +2224,8 @@ function renderArchiveData(data) {
             var zjq = gameOdds['总进球'];
             ['0','1','2','3','4','5','6','7+'].forEach(function(opt) {
                 var val = zjq[opt] || '-';
-                html += '<span style="display:inline-block;min-width:55px;padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;text-align:center;font-size:12px;background:#f9fafb;margin-right:4px;">';
-                html += '[' + opt + '] ' + val;
+                html += '<span style="display:inline-block;min-width:45px;padding:3px 6px;border:1px solid #e5e7eb;border-radius:4px;text-align:center;font-size:12px;background:#f9fafb;margin-right:4px;">';
+                html += opt + ':' + val;
                 html += '</span>';
             });
             html += '</div>';
@@ -2530,20 +2244,19 @@ function renderArchiveData(data) {
         }
 
         if (gameOdds && gameOdds['比分'] && Object.keys(gameOdds['比分']).length > 0) {
-            html += '<div class="odds-section"><label>比分：</label><div style="display:flex;flex-wrap:wrap;gap:4px;" class="bf-container">';
+            html += '<div class="odds-section"><label>比分（部分）：</label><div style="display:flex;flex-wrap:wrap;gap:4px;">';
             var bf = gameOdds['比分'];
-            var allScores = Object.keys(bf);
             var commonScores = ['1:0','2:0','2:1','1:1','0:0','0:1','0:2','1:2','胜其他','平其他','负其他'];
-            var shownCount = 0;
-            allScores.forEach(function(score) {
-                var isCommon = commonScores.indexOf(score) >= 0;
-                html += '<span class="bf-item' + (isCommon ? ' bf-common' : ' bf-extra') + '" style="padding:3px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;background:#f9fafb;' + (isCommon ? '' : 'display:none;') + '">';
-                html += score + ':' + bf[score];
-                html += '</span>';
-                shownCount++;
+            commonScores.forEach(function(score) {
+                if (bf[score]) {
+                    html += '<span style="padding:3px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;background:#f9fafb;">';
+                    html += score + ':' + bf[score];
+                    html += '</span>';
+                }
             });
-            if (allScores.length > commonScores.length) {
-                html += '<span class="bf-toggle" onclick="this.previousElementSibling.parentElement.querySelectorAll(\'.bf-extra\').forEach(function(el){el.style.display=el.style.display===\'none\'?\'inline-block\':\'none\'});this.textContent=this.textContent.indexOf(\'展开\')>=0?\'收起\':\'展开\';" style="padding:3px 8px;font-size:12px;color:#6c5ce7;cursor:pointer;border:1px solid #c7d2fe;border-radius:4px;background:#f5f3ff;">展开全部 (共' + allScores.length + '个)</span>';
+            var totalBf = Object.keys(bf).length;
+            if (totalBf > commonScores.length) {
+                html += '<span style="padding:3px 8px;font-size:12px;color:#9ca3af;">...共' + totalBf + '个</span>';
             }
             html += '</div></div>';
         }
@@ -2691,6 +2404,7 @@ function recalcBetStats(bet) {
 //  获取赔率
 // ================================================================
 function getOddsForMatch(date, home, away) {
+    // 缩写映射：标准名 -> odds_data 中可能的缩写
     const homeAliases = {
         '刚果（金）': ['民主刚果', '刚果金', '刚果(金)', '刚果'],
         '阿尔及利亚': ['阿尔及利'],
@@ -2705,28 +2419,16 @@ function getOddsForMatch(date, home, away) {
         '伊拉克': ['阿拉克'],
     };
 
+    // 生成所有可能的组合
     const homeOptions = [home, ...(homeAliases[home] || [])];
     const awayOptions = [away, ...(awayAliases[away] || [])];
 
     for (const h of homeOptions) {
         for (const a of awayOptions) {
-            const key1 = date + '_' + h + '_' + a;
-            if (oddsData[key1]) return oddsData[key1];
-            const key2 = date + '_' + h + ' vs ' + a;
-            if (oddsData[key2]) return oddsData[key2];
+            const key = date + '_' + h + '_' + a;
+            if (oddsData[key]) return oddsData[key];
         }
     }
-
-    const vsKey = home + ' vs ' + away;
-    if (oddsData[vsKey]) return oddsData[vsKey];
-
-    for (const h of homeOptions) {
-        for (const a of awayOptions) {
-            const key3 = h + ' vs ' + a;
-            if (oddsData[key3]) return oddsData[key3];
-        }
-    }
-
     return null;
 }
 
@@ -3289,7 +2991,7 @@ function loadAiSchedule(overwrite) {
         });
     }
     // 给每场补日期字段方便去重/区分（用排序后的数组）
-    const stamped = sortedGames.map(function(g) { return { date: date, home: g.home, away: g.away, league: g.league || '' }; });
+    const stamped = sortedGames.map(function(g) { return { date: date, home: g.home, away: g.away }; });
     if (overwrite === true) {
         aiCurrentMatches = stamped.slice();  // 覆盖模式
         // ③ 和模态框一致：格式「🔄 覆盖加载 N 场比赛（YYYY-MM-DD）（按网易顺序？）」
@@ -3849,24 +3551,9 @@ function importPredictionToBet(idx) {
     const league = match ? match.league : '';
     const matchText = pred.home + ' vs ' + pred.away;
     
-    const oddsObj = gameDate ? getOddsForMatch(gameDate, pred.home, pred.away) : null;
-    
     const games = [];
     
     if (pred.winPick) {
-        let odds = 0;
-        if (oddsObj) {
-            if (oddsObj['胜平负']) {
-                const spf = oddsObj['胜平负'];
-                if (pred.winPick === '胜') odds = spf.win || spf.w || spf['胜'] || 0;
-                else if (pred.winPick === '平') odds = spf.draw || spf.d || spf['平'] || 0;
-                else if (pred.winPick === '负') odds = spf.lose || spf.l || spf['负'] || 0;
-            } else {
-                if (pred.winPick === '胜') odds = oddsObj['胜'] || 0;
-                else if (pred.winPick === '平') odds = oddsObj['平'] || 0;
-                else if (pred.winPick === '负') odds = oddsObj['负'] || 0;
-            }
-        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3875,7 +3562,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '胜平负',
             betOption: pred.winPick,
-            options: [{ betOption: pred.winPick, odds: odds }],
+            options: [{ betOption: pred.winPick, odds: 0 }],
             handicap: '',
             result: '',
             isWin: null
@@ -3883,15 +3570,6 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.rqPick) {
-        let odds = 0;
-        let handicap = '-1';
-        if (oddsObj && oddsObj['让球'] && oddsObj['让球'].length > 0) {
-            const rq = oddsObj['让球'][0];
-            handicap = String(rq.handicap || '-1');
-            if (pred.rqPick === '胜') odds = rq.win || rq.w || rq['胜'] || 0;
-            else if (pred.rqPick === '平') odds = rq.draw || rq.d || rq['平'] || 0;
-            else if (pred.rqPick === '负') odds = rq.lose || rq.l || rq['负'] || 0;
-        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3900,19 +3578,14 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '让球胜平负',
             betOption: pred.rqPick,
-            options: [{ betOption: pred.rqPick, odds: odds }],
-            handicap: handicap,
+            options: [{ betOption: pred.rqPick, odds: 0 }],
+            handicap: '-1',
             result: '',
             isWin: null
         });
     }
     
     if (pred.score && pred.score[0] !== undefined && pred.score[1] !== undefined) {
-        const scoreStr = pred.score[0] + ':' + pred.score[1];
-        let odds = 0;
-        if (oddsObj && oddsObj['比分']) {
-            odds = oddsObj['比分'][scoreStr] || 0;
-        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3920,8 +3593,8 @@ function importPredictionToBet(idx) {
             date: gameDate,
             league: league,
             playType: '比分',
-            betOption: scoreStr,
-            options: [{ betOption: scoreStr, odds: odds }],
+            betOption: pred.score[0] + ':' + pred.score[1],
+            options: [{ betOption: pred.score[0] + ':' + pred.score[1], odds: 0 }],
             handicap: '',
             result: '',
             isWin: null
@@ -3929,10 +3602,6 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.totalPick) {
-        let odds = 0;
-        if (oddsObj && oddsObj['总进球']) {
-            odds = oddsObj['总进球'][pred.totalPick] || 0;
-        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3941,7 +3610,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '总进球',
             betOption: pred.totalPick,
-            options: [{ betOption: pred.totalPick, odds: odds }],
+            options: [{ betOption: pred.totalPick, odds: 0 }],
             handicap: '',
             result: '',
             isWin: null
@@ -3949,10 +3618,6 @@ function importPredictionToBet(idx) {
     }
     
     if (pred.halfResult) {
-        let odds = 0;
-        if (oddsObj && oddsObj['半全场']) {
-            odds = oddsObj['半全场'][pred.halfResult] || 0;
-        }
         games.push({
             match: matchText,
             home: pred.home,
@@ -3961,7 +3626,7 @@ function importPredictionToBet(idx) {
             league: league,
             playType: '半全场',
             betOption: pred.halfResult,
-            options: [{ betOption: pred.halfResult, odds: odds }],
+            options: [{ betOption: pred.halfResult, odds: 0 }],
             handicap: '',
             result: '',
             isWin: null
@@ -4411,21 +4076,14 @@ function recalcBetWin(bet) {
     bet.winAmount = totalWin;
     bet.comboWinAmounts = comboWinAmounts;
 
-    // 检查是否有比赛明确中奖(有结果且isWin=true)
-    const hasWin = bet.games.some(g => g.result && g.isWin === true);
-
     // 状态判断逻辑：
-    // 1. 有比赛未填写结果(没有result) → 待开奖
-    // 2. 单关投注：只要有一场中奖就算中奖
-    // 3. 非单关投注：有比赛明确未中奖(有结果但isWin=false) → 未中奖；所有比赛都有结果且都中奖 → 中奖
-    const isSinglePass = combos.length === 1 && (combos[0] === 1 || combos[0] === '单关');
-    
-    if (hasUnfilled) {
-        bet.status = 'pending';
-    } else if (isSinglePass) {
-        bet.status = hasWin ? 'win' : 'lose';
-    } else if (hasLose) {
+    // 1. 有比赛明确未中奖(有结果但isWin=false) → 未中奖
+    // 2. 有比赛未填写结果(没有result) → 待开奖
+    // 3. 所有比赛都有结果且都中奖 → 中奖
+    if (hasLose) {
         bet.status = 'lose';
+    } else if (hasUnfilled) {
+        bet.status = 'pending';
     } else {
         bet.status = 'win';
     }
@@ -6030,10 +5688,9 @@ function renderTable() {
             const resultText = g.result ? ' 赛果:' + g.result : '';
             const winIcon = g.isWin === true ? ' ✅' : (g.isWin === false ? ' ❌' : '');
             const handicapStr = g.handicap ? ' 让' + g.handicap : '';
-            const leagueTag = g.league ? `<span class="game-league-tag">${g.league}</span>` : '';
-            gameLines += `<span class="game-detail-line">${gi+1}. ${leagueTag}${g.match}${handicapStr} [${g.playType}] ${optionsStr}${resultText}${winIcon}</span>`;
+            gameLines += `<span class="game-detail-line">${gi+1}. ${g.match}${handicapStr} [${g.playType}] ${optionsStr}${resultText}${winIcon}</span>`;
         });
-        const passLabels = bet.passCombos.map(k => k === 1 || k === '单关' ? '单关' : k + '关').join(',');
+        const passLabels = bet.passCombos.map(k => k === 1 ? '单关' : k + '关').join(',');
         const totalMultiplier = (bet.persons || []).reduce((s, p) => s + p.multiplier, 0);
         let thumbHtml = '';
         if (bet.images && bet.images.length > 0) {
@@ -6364,8 +6021,6 @@ function init() {
     }
     
     renderAll();
-    const verEl = document.getElementById('appVersion');
-    if (verEl) verEl.textContent = APP_VERSION;
     if (document.getElementById('gameListContainer').children.length === 0) {
         addGameRow();
     }
@@ -6636,81 +6291,9 @@ autoUpdateOdds();
     "比分": {"1:0": "5.75", "2:0": "6", "2:1": "6.75", "3:0": "9", "3:1": "10.5", "3:2": "25", "4:0": "18", "4:1": "22", "4:2": "50", "5:0": "45", "5:1": "55", "5:2": "120", "胜其他": "36", "0:0": "12.5", "1:1": "8.25", "2:2": "18", "3:3": "90", "平其他": "550", "0:1": "14", "0:2": "36", "1:2": "19", "0:3": "120", "1:3": "60", "2:3": "65", "0:4": "450", "1:4": "300", "2:4": "300", "0:5": "1000", "1:5": "850", "2:5": "850", "负其他": "350"},
     "总进球": {"0": "12.5", "1": "4.65", "2": "3.3", "3": "3.45", "4": "5.3", "5": "10", "6": "20", "7+": "36"},
     "半全场": {"胜胜": "1.93", "胜平": "19", "胜负": "60", "平胜": "3.7", "平平": "6.7", "平负": "14.5", "负胜": "23.5", "负平": "19", "负负": "12"}
-  },
-  "2026-07-24_雅罗_塞伊奈": {
-    "胜": "3.2",
-    "平": "3.45",
-    "负": "1.9",
-    "让球": [{"handicap": "+1", "胜": "1.71", "平": "3.6", "负": "3.75"}],
-    "比分": {"1:0": "13", "2:0": "19", "2:1": "10", "3:0": "40", "3:1": "24", "3:2": "25", "4:0": "100", "4:1": "65", "4:2": "75", "5:0": "300", "5:1": "200", "5:2": "200", "胜其他": "65", "0:0": "17", "1:1": "7", "2:2": "12", "3:3": "35", "平其他": "150", "0:1": "10", "0:2": "11.5", "1:2": "6.75", "0:3": "19", "1:3": "13", "2:3": "19", "0:4": "36", "1:4": "26", "2:4": "34", "0:5": "90", "1:5": "60", "2:5": "85", "负其他": "30"},
-    "总进球": {"0": "17", "1": "6.45", "2": "3.75", "3": "3.4", "4": "4.5", "5": "7.5", "6": "14.5", "7+": "18"},
-    "半全场": {"胜胜": "5.4", "胜平": "13", "胜负": "18", "平胜": "7.8", "平平": "6.25", "平负": "4.9", "负胜": "25", "负平": "13", "负负": "3.05"}
-  },
-  "2026-07-24_韦斯特罗_厄格里特": {
-    "胜": "1.49",
-    "平": "3.95",
-    "负": "4.88",
-    "让球": [{"handicap": "-1", "胜": "2.46", "平": "3.55", "负": "2.27"}],
-    "比分": {"1:0": "8.5", "2:0": "7.5", "2:1": "6", "3:0": "11.5", "3:1": "9.5", "3:2": "18", "4:0": "22", "4:1": "21", "4:2": "36", "5:0": "50", "5:1": "50", "5:2": "90", "胜其他": "25", "0:0": "19", "1:1": "8", "2:2": "13", "3:3": "45", "平其他": "200", "0:1": "19", "0:2": "34", "1:2": "14.5", "0:3": "85", "1:3": "40", "2:3": "39", "0:4": "300", "1:4": "120", "2:4": "120", "0:5": "600", "1:5": "400", "2:5": "400", "负其他": "100"},
-    "总进球": {"0": "19", "1": "7.3", "2": "4", "3": "3.2", "4": "4.3", "5": "7.3", "6": "13", "7+": "18"},
-    "半全场": {"胜胜": "2.15", "胜平": "16", "胜负": "40", "平胜": "4", "平平": "7", "平负": "12.5", "负胜": "20", "负平": "16", "负负": "8.6"}
-  },
-  "2026-07-25_浦项制铁_全北现代": {
-    "胜": "3.06",
-    "平": "3",
-    "负": "2.13",
-    "让球": [{"handicap": "+1", "胜": "1.54", "平": "3.6", "负": "4.95"}],
-    "比分": {"1:0": "8", "2:0": "14.5", "2:1": "8.7", "3:0": "35", "3:1": "27", "3:2": "41", "4:0": "150", "4:1": "120", "4:2": "175", "5:0": "550", "5:1": "550", "5:2": "550", "胜其他": "250", "0:0": "9", "1:1": "5.25", "2:2": "14", "3:3": "80", "平其他": "400", "0:1": "6.8", "0:2": "9.5", "1:2": "7.25", "0:3": "21", "1:3": "17", "2:3": "31", "0:4": "65", "1:4": "60", "2:4": "100", "0:5": "200", "1:5": "200", "2:5": "350", "负其他": "120"},
-    "总进球": {"0": "9", "1": "3.9", "2": "3.1", "3": "3.75", "4": "6.5", "5": "13", "6": "25", "7+": "37"},
-    "半全场": {"胜胜": "5.25", "胜平": "15", "胜负": "26", "平胜": "6.75", "平平": "4.2", "平负": "5.1", "负胜": "28", "负平": "15", "负负": "3.65"}
-  },
-  "2026-07-25_金泉尚武_大田市民": {
-    "胜": "2.82",
-    "平": "3.1",
-    "负": "2.21",
-    "让球": [{"handicap": "+1", "胜": "1.51", "平": "3.8", "负": "4.9"}],
-    "比分": {"1:0": "9.5", "2:0": "14.5", "2:1": "8.5", "3:0": "32", "3:1": "22", "3:2": "29", "4:0": "100", "4:1": "80", "4:2": "120", "5:0": "350", "5:1": "300", "5:2": "400", "胜其他": "110", "0:0": "11", "1:1": "5.5", "2:2": "12", "3:3": "50", "平其他": "400", "0:1": "8", "0:2": "11", "1:2": "7.25", "0:3": "22", "1:3": "16", "2:3": "25", "0:4": "60", "1:4": "50", "2:4": "75", "0:5": "200", "1:5": "175", "2:5": "300", "负其他": "75"},
-    "总进球": {"0": "11", "1": "4.7", "2": "3.25", "3": "3.5", "4": "5.6", "5": "10.5", "6": "19", "7+": "32"},
-    "半全场": {"胜胜": "4.7", "胜平": "14.5", "胜负": "23", "平胜": "6.5", "平平": "4.9", "平负": "5.4", "负胜": "26", "负平": "14.5", "负负": "3.6"}
-  },
-  "2026-07-26_仁川联_富川FC": {
-    "胜": "1.58",
-    "平": "3.32",
-    "负": "5.15",
-    "让球": [{"handicap": "-1", "胜": "3.06", "平": "3.15", "负": "2.06"}],
-    "比分": {"1:0": "5.5", "2:0": "6.5", "2:1": "6.6", "3:0": "11", "3:1": "13.5", "3:2": "30", "4:0": "28", "4:1": "35", "4:2": "90", "5:0": "90", "5:1": "100", "5:2": "300", "胜其他": "75", "0:0": "9", "1:1": "5.6", "2:2": "18", "3:3": "100", "平其他": "500", "0:1": "11.5", "0:2": "26", "1:2": "14", "0:3": "100", "1:3": "55", "2:3": "75", "0:4": "500", "1:4": "300", "2:4": "350", "0:5": "1000", "1:5": "800", "2:5": "900", "负其他": "400"},
-    "总进球": {"0": "9", "1": "3.85", "2": "3", "3": "3.75", "4": "6.75", "5": "14", "6": "26", "7+": "40"},
-    "半全场": {"胜胜": "2.5", "胜平": "17", "胜负": "36", "平胜": "4", "平平": "4.7", "平负": "10.5", "负胜": "25", "负平": "17", "负负": "9"}
-  },
-  "2026-07-26_光州FC_济州SK": {
-    "胜": "3.65",
-    "平": "3",
-    "负": "1.92",
-    "让球": [{"handicap": "+1", "胜": "1.68", "平": "3.45", "负": "4.1"}],
-    "比分": {"1:0": "9", "2:0": "17", "2:1": "10", "3:0": "50", "3:1": "30", "3:2": "50", "4:0": "200", "4:1": "150", "4:2": "200", "5:0": "500", "5:1": "500", "5:2": "600", "胜其他": "275", "0:0": "9", "1:1": "5.5", "2:2": "15", "3:3": "90", "平其他": "500", "0:1": "6.3", "0:2": "8.5", "1:2": "6.5", "0:3": "16", "1:3": "15", "2:3": "30", "0:4": "50", "1:4": "50", "2:4": "90", "0:5": "175", "1:5": "175", "2:5": "300", "负其他": "110"},
-    "总进球": {"0": "9", "1": "3.95", "2": "3.1", "3": "3.75", "4": "6.5", "5": "13", "6": "24", "7+": "35"},
-    "半全场": {"胜胜": "6.25", "胜平": "16", "胜负": "25", "平胜": "7.7", "平平": "4.3", "平负": "4.7", "负胜": "32", "负平": "16", "负负": "3.1"}
-  },
-  "2026-07-26_安养FC_江原FC": {
-    "胜": "3.96",
-    "平": "3",
-    "负": "1.84",
-    "让球": [{"handicap": "+1", "胜": "1.74", "平": "3.3", "负": "4"}],
-    "比分": {"1:0": "9.5", "2:0": "20", "2:1": "10", "3:0": "60", "3:1": "35", "3:2": "50", "4:0": "250", "4:1": "175", "4:2": "300", "5:0": "700", "5:1": "600", "5:2": "700", "胜其他": "350", "0:0": "8", "1:1": "5.5", "2:2": "16", "3:3": "100", "平其他": "500", "0:1": "6", "0:2": "7.8", "1:2": "6.75", "0:3": "15", "1:3": "15", "2:3": "30", "0:4": "50", "1:4": "50", "2:4": "100", "0:5": "150", "1:5": "175", "2:5": "350", "负其他": "100"},
-    "总进球": {"0": "8", "1": "3.75", "2": "3", "3": "3.8", "4": "7", "5": "15", "6": "29", "7+": "45"},
-    "半全场": {"胜胜": "7", "胜平": "16", "胜负": "26", "平胜": "8.5", "平平": "4.2", "平负": "4.5", "负胜": "32", "负平": "16", "负负": "2.95"}
-  },
-  "2026-07-26_首尔FC_蔚山现代": {
-    "胜": "1.68",
-    "平": "3.48",
-    "负": "4.05",
-    "让球": [{"handicap": "-1", "胜": "3.1", "平": "3.45", "负": "1.94"}],
-    "比分": {"1:0": "7.3", "2:0": "8.25", "2:1": "6.5", "3:0": "14", "3:1": "12.5", "3:2": "23", "4:0": "31", "4:1": "29", "4:2": "55", "5:0": "90", "5:1": "75", "5:2": "150", "胜其他": "50", "0:0": "13", "1:1": "6", "2:2": "12.5", "3:3": "55", "平其他": "350", "0:1": "12.5", "0:2": "24", "1:2": "10.5", "0:3": "60", "1:3": "33", "2:3": "36", "0:4": "250", "1:4": "150", "2:4": "150", "0:5": "600", "1:5": "450", "2:5": "500", "负其他": "150"},
-    "总进球": {"0": "13", "1": "5.2", "2": "3.45", "3": "3.45", "4": "5.1", "5": "9", "6": "17", "7+": "26"},
-    "半全场": {"胜胜": "2.65", "胜平": "15", "胜负": "34", "平胜": "4.5", "平平": "5.25", "平负": "9", "负胜": "21", "负平": "15", "负负": "7"}
   }
 };
-    var order = ["全北现代 vs 大田市民", "奥胡斯 vs 波兹南", "格风暴 vs 哈茨", "济州SK vs 江原FC", "米竞技 vs 巴伊亚", "萨巴赫 vs 库奥皮奥", "蔚山现代 vs 仁川联", "光州FC vs 金泉尚武", "利勒斯特 vs 维京", "博德闪耀 vs 汉坎", "圣保罗 vs 巴竞技", "奥莫尼亚 vs 阿拉木图", "富川FC vs 安养FC", "沙佩科 vs 弗拉门戈", "洛杉矶FC vs 盐湖城", "迈国际 vs 芝加哥", "首尔FC vs 浦项制铁", "博塔弗戈 vs 维多利亚", "科林蒂安 vs 里莫", "雅罗 vs 塞伊奈", "韦斯特罗 vs 厄格里特", "浦项制铁 vs 全北现代", "金泉尚武 vs 大田市民", "仁川联 vs 富川FC", "光州FC vs 济州SK", "安养FC vs 江原FC", "首尔FC vs 蔚山现代"];
+    var order = ["全北现代 vs 大田市民", "奥胡斯 vs 波兹南", "格风暴 vs 哈茨", "济州SK vs 江原FC", "米竞技 vs 巴伊亚", "萨巴赫 vs 库奥皮奥", "蔚山现代 vs 仁川联", "光州FC vs 金泉尚武", "利勒斯特 vs 维京", "博德闪耀 vs 汉坎", "圣保罗 vs 巴竞技", "奥莫尼亚 vs 阿拉木图", "富川FC vs 安养FC", "沙佩科 vs 弗拉门戈", "洛杉矶FC vs 盐湖城", "迈国际 vs 芝加哥", "首尔FC vs 浦项制铁", "博塔弗戈 vs 维多利亚", "科林蒂安 vs 里莫"];
     localStorage.setItem('STORAGE_KEY_ODDS', JSON.stringify(data));
     localStorage.setItem('STORAGE_KEY_ODDS_order', JSON.stringify(order));
     console.log('[网易赔率] 已写入 localStorage，共' + Object.keys(data).length + '场');
