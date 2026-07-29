@@ -2011,7 +2011,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.93.1';
+const APP_VERSION = '7.93.2';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2499,7 +2499,7 @@ function renderArchiveData(data) {
             html += '<div class="odds-section"><label>让球胜平负：</label>';
             gameOdds['让球'].forEach(function(rq) {
                 html += '<span style="display:inline-block;margin-right:8px;padding:4px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:13px;background:#f9fafb;">';
-                html += '让' + (rq.handicap || '?') + ': 胜' + (rq['胜'] || '-') + ' 平' + (rq['平'] || '-') + ' 负' + (rq['负'] || '-');
+                html += '[让' + (rq.handicap || '?') + '] 胜：' + (rq['胜'] || '-') + '&nbsp;&nbsp;&nbsp;平：' + (rq['平'] || '-') + '&nbsp;&nbsp;&nbsp;负：' + (rq['负'] || '-');
                 html += '</span>';
             });
             html += '</div>';
@@ -2538,7 +2538,7 @@ function renderArchiveData(data) {
             allScores.forEach(function(score) {
                 var isCommon = commonScores.indexOf(score) >= 0;
                 html += '<span class="bf-item' + (isCommon ? ' bf-common' : ' bf-extra') + '" style="padding:3px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;background:#f9fafb;' + (isCommon ? '' : 'display:none;') + '">';
-                html += score + ':' + bf[score];
+                html += '[' + score + '] ' + bf[score];
                 html += '</span>';
                 shownCount++;
             });
