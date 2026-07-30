@@ -920,7 +920,7 @@
             font-weight: 600;
             min-width: 52px;
             text-align: center;
-            color: #6b7280;
+            color: #4b5563;
             background: #e8ebf0;
             padding: 4px 6px;
             border-radius: 4px;
@@ -2035,7 +2035,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.5';
+const APP_VERSION = '7.97.6';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2182,7 +2182,7 @@ function loadOddsSchedule() {
         rqList.forEach((rq, idx) => {
             if (String(rq.handicap) === '0' || !rq.handicap) return;
             html += `<div class="spf-row" data-handicap="${rq.handicap}">
-                <input type="text" class="spf-handicap-input" value="${rq.handicap}" placeholder="让球" />
+                <span class="spf-handicap-label">让球${rq.handicap}</span>
                 <span class="odds-label" style="font-size:12px;color:#e94560;min-width:20px;text-align:center;font-weight:600;">胜</span>
                 <input type="number" step="0.01" class="spf-odds" data-type="胜" value="${rq['胜'] || ''}" placeholder="赔率" />
                 <span class="odds-label" style="font-size:12px;color:#6b7280;min-width:20px;text-align:center;font-weight:600;">平</span>
@@ -2238,7 +2238,7 @@ function addBFRow(btn) {
 function addSPFRow(btn) {
     const container = btn.previousElementSibling;
     let html = `<div class="spf-row">
-        <input type="text" class="spf-handicap-input" placeholder="让球" />
+        <input type="text" class="spf-handicap-input" placeholder="让球" style="width:52px;text-align:center;font-size:12px;font-weight:600;color:#4b5563;background:#e8ebf0;border-radius:4px;border:1px solid #d1d5db;height:28px;" />
         <span class="odds-label" style="font-size:12px;color:#e94560;min-width:20px;text-align:center;font-weight:600;">胜</span>
         <input type="number" step="0.01" class="spf-odds" data-type="胜" placeholder="赔率" />
         <span class="odds-label" style="font-size:12px;color:#6b7280;min-width:20px;text-align:center;font-weight:600;">平</span>
@@ -2248,6 +2248,24 @@ function addSPFRow(btn) {
         <span class="spf-remove" onclick="this.parentElement.remove()">✕</span>
     </div>`;
     container.insertAdjacentHTML('beforeend', html);
+    const newRow = container.lastElementChild;
+    const handicapInput = newRow.querySelector('.spf-handicap-input');
+    if (handicapInput) {
+        handicapInput.focus();
+        handicapInput.addEventListener('blur', function() {
+            const val = this.value.trim();
+            if (val) {
+                newRow.dataset.handicap = val;
+                this.outerHTML = `<span class="spf-handicap-label">让球${val}</span>`;
+            }
+        });
+        handicapInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.blur();
+            }
+        });
+    }
 }
 
 function saveOdds() {
@@ -2273,9 +2291,12 @@ function saveOdds() {
                 if (oddsMap['平'] !== undefined) odds['平'] = oddsMap['平'];
                 if (oddsMap['负'] !== undefined) odds['负'] = oddsMap['负'];
             } else {
-                // 其他让球
+                // 其他让球：优先使用 data-handicap，其次使用 input
+                let h = handicap;
                 const handicapInput = row.querySelector('.spf-handicap-input');
-                const h = handicapInput ? handicapInput.value.trim() : handicap;
+                if (handicapInput && !h) {
+                    h = handicapInput.value.trim();
+                }
                 if (h && Object.keys(oddsMap).length > 0) {
                     odds['让球'].push({ handicap: h, ...oddsMap });
                 }
