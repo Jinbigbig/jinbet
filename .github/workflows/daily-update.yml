@@ -67,14 +67,16 @@ jobs:
           cp odds_data.json /tmp/odds_data.json
           cp index.html /tmp/index.html
           cp version.txt /tmp/version.txt
-          cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
+          mkdir -p /tmp/odds_history
+          cp -r odds_history/* /tmp/odds_history/ 2>/dev/null || true
 
-          git stash
+          git stash -u
           git checkout gh-pages
 
           cp /tmp/odds_data.json odds_data.json
           cp /tmp/index.html index.html
           cp /tmp/version.txt version.txt
+          mkdir -p odds_history
           cp -r /tmp/odds_history/* odds_history/ 2>/dev/null || true
 
           git add index.html odds_data.json version.txt
