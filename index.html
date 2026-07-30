@@ -935,16 +935,9 @@
         }
         .odds-manager .odds-row .bf-inputs .bf-item .bf-other-label {
             font-size: 13px;
+            font-weight: 500;
             min-width: 24px;
         }
-        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf {
-            color: #e94560;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 16px;
-            padding: 0 4px;
-        }
-        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf:hover { color: #c73652; }
         .odds-manager .odds-row .add-bf-btn {
             margin-top: 4px;
         }
@@ -2011,7 +2004,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.96.1';
+const APP_VERSION = '7.96.2';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2190,10 +2183,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
         });
         const valWinOther = bfOdds['胜其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">胜其他</span><input type="number" step="0.01" class="bf-odds" value="${valWinOther}" placeholder="赔率" data-other="胜其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">胜其他</span><input type="number" step="0.01" class="bf-odds" value="${valWinOther}" placeholder="赔率" data-other="胜其他" /></div>`;
         html += `</div>`;
         
         // 平的比分 + 平其他
@@ -2204,10 +2197,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
         });
         const valDrawOther = bfOdds['平其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">平其他</span><input type="number" step="0.01" class="bf-odds" value="${valDrawOther}" placeholder="赔率" data-other="平其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">平其他</span><input type="number" step="0.01" class="bf-odds" value="${valDrawOther}" placeholder="赔率" data-other="平其他" /></div>`;
         html += `</div>`;
         
         // 负的比分 + 负其他
@@ -2218,10 +2211,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
         });
         const valLoseOther = bfOdds['负其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">负其他</span><input type="number" step="0.01" class="bf-odds" value="${valLoseOther}" placeholder="赔率" data-other="负其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">负其他</span><input type="number" step="0.01" class="bf-odds" value="${valLoseOther}" placeholder="赔率" data-other="负其他" /></div>`;
         html += `</div>`;
         
         html += `<button type="button" class="btn btn-outline btn-xs add-bf-btn" onclick="addBFRow(this)">＋ 添加比分</button></div>`;
@@ -2256,7 +2249,7 @@ function addBFRow(btn) {
     scoreOpts.forEach(s => {
         html += `<option value="${s}">${s}</option>`;
     });
-    html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+    html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
     container.insertAdjacentHTML('beforeend', html);
 }
 
@@ -2379,14 +2372,14 @@ function clearOdds() {
                 scoreOpts.forEach(s => {
                     html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
                 });
-                html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+                html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
                 bfContainer.insertAdjacentHTML('beforeend', html);
             });
             let html = `<div class="bf-item"><select class="bf-score-select">`;
             scoreOpts.forEach(s => {
                 html += `<option value="${s}">${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
             bfContainer.insertAdjacentHTML('beforeend', html);
         }
         // 重置总进球
