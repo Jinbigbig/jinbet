@@ -865,37 +865,160 @@
         .odds-manager .odds-row .odds-section {
             margin: 6px 0;
         }
-        .odds-manager .odds-row .odds-section label {
+        .odds-manager .odds-row .odds-section > label {
             font-size: 13px;
             font-weight: 500;
             display: inline-block;
-            min-width: 50px;
+            min-width: 70px;
         }
-        .odds-manager .odds-row .odds-section input {
-            width: 70px;
-            height: 32px;
-            padding: 4px 6px;
-            border: 1.5px solid #e2e5ec;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 13px;
-            margin: 2px 6px 2px 0;
-            line-height: 24px;
-            box-sizing: border-box;
-        }
-        .odds-manager .odds-row .odds-section .hq-inputs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 10px;
-        }
-        .odds-manager .odds-row .odds-section .hq-inputs .hq-item {
+        /* 统一赔率输入项样式 */
+        .odds-manager .odds-row .odds-item {
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
+            background: #f8f9fc;
+            padding: 2px 8px 2px 4px;
+            border-radius: 6px;
+            border: 1px solid #eef0f4;
         }
-        .odds-manager .odds-row .odds-section .hq-inputs .hq-item input {
-            width: 60px;
+        .odds-manager .odds-row .odds-item input {
+            width: 68px;
+            height: 30px;
+            padding: 6px 4px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+            box-sizing: border-box;
         }
+        .odds-manager .odds-row .odds-item .odds-label {
+            font-size: 12px;
+            min-width: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .odds-manager .odds-row .odds-item[data-group="win"] .odds-label { color: #e94560; }
+        .odds-manager .odds-row .odds-item[data-group="draw"] .odds-label { color: #6b7280; }
+        .odds-manager .odds-row .odds-item[data-group="lose"] .odds-label { color: #10b981; }
+
+        /* 胜平负 */
+        .odds-manager .odds-row .sf-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin-top: 4px;
+        }
+
+        /* 让球胜平负 */
+        .odds-manager .odds-row .rq-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 16px;
+            margin-top: 4px;
+        }
+        .odds-manager .odds-row .rq-inputs .rq-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8f9fc;
+            padding: 2px 8px 2px 4px;
+            border-radius: 6px;
+            border: 1px solid #eef0f4;
+        }
+        .odds-manager .odds-row .rq-inputs .rq-item input {
+            width: 68px;
+            height: 30px;
+            padding: 6px 4px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+            box-sizing: border-box;
+        }
+        .odds-manager .odds-row .rq-inputs .rq-item .remove-rq {
+            color: #e94560;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+        .odds-manager .odds-row .rq-inputs .rq-item .remove-rq:hover { color: #c73652; }
+        .odds-manager .odds-row .add-rq-btn {
+            margin-top: 4px;
+        }
+
+        /* 总进球数 */
+        .odds-manager .odds-row .zjq-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin-top: 4px;
+        }
+        .odds-manager .odds-row .zjq-inputs .zjq-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8f9fc;
+            padding: 2px 8px 2px 4px;
+            border-radius: 6px;
+            border: 1px solid #eef0f4;
+        }
+        .odds-manager .odds-row .zjq-inputs .zjq-item input {
+            width: 68px;
+            height: 30px;
+            padding: 6px 4px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+            box-sizing: border-box;
+        }
+        .odds-manager .odds-row .zjq-inputs .zjq-item .zjq-label {
+            font-size: 12px;
+            min-width: 24px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* 半全场 */
+        .odds-manager .odds-row .hq-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            margin-top: 4px;
+        }
+        .odds-manager .odds-row .hq-inputs .hq-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8f9fc;
+            padding: 2px 8px 2px 4px;
+            border-radius: 6px;
+            border: 1px solid #eef0f4;
+        }
+        .odds-manager .odds-row .hq-inputs .hq-item input {
+            width: 68px;
+            height: 30px;
+            padding: 6px 4px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+            box-sizing: border-box;
+        }
+        .odds-manager .odds-row .hq-inputs .hq-item .hq-label {
+            font-size: 12px;
+            min-width: 28px;
+            text-align: center;
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        /* 比分 */
         .odds-manager .odds-row .bf-inputs {
             display: flex;
             flex-wrap: wrap;
@@ -910,17 +1033,6 @@
             padding: 2px 8px 2px 4px;
             border-radius: 6px;
             border: 1px solid #eef0f4;
-        }
-        .odds-manager .odds-row .bf-inputs .bf-item select {
-            width: 60px;
-            height: 30px;
-            padding: 4px 4px;
-            border: 1px solid #e2e5ec;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            line-height: 18px;
-            box-sizing: border-box;
         }
         .odds-manager .odds-row .bf-inputs .bf-item input {
             width: 68px;
@@ -953,7 +1065,7 @@
             color: #e94560;
         }
         .odds-manager .odds-row .bf-inputs .bf-item[data-group="draw"] .bf-score-label,
-        .odds-manager .odds-row .bf-inputs .bf-item[data-group="draw"] .bf-other-label {
+        .odds-manager .odds-row .bf-item[data-group="draw"] .bf-other-label {
             color: #6b7280;
         }
         .odds-manager .odds-row .bf-inputs .bf-item[data-group="lose"] .bf-score-label {
@@ -961,109 +1073,6 @@
         }
         .odds-manager .odds-row .bf-inputs .bf-item[data-group="win"] .bf-other-label { color: #e94560; font-weight:600; }
         .odds-manager .odds-row .bf-inputs .bf-item[data-group="lose"] .bf-other-label { color: #10b981; font-weight:600; }
-        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf {
-            color: #e94560;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 16px;
-            padding: 0 4px;
-        }
-        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf:hover { color: #c73652; }
-        .odds-manager .odds-row .rq-inputs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px 16px;
-            margin-top: 4px;
-        }
-        .odds-manager .odds-row .rq-inputs .rq-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: #f8f9fc;
-            padding: 2px 8px 2px 4px;
-            border-radius: 6px;
-            border: 1px solid #eef0f4;
-        }
-        .odds-manager .odds-row .rq-inputs .rq-item input[type="text"] {
-            width: 50px;
-            height: 30px;
-            border: 1px solid #e2e5ec;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            line-height: 22px;
-            box-sizing: border-box;
-        }
-        .odds-manager .odds-row .rq-inputs .rq-item input[type="number"] {
-            width: 60px;
-            height: 30px;
-            border: 1.5px solid #e2e5ec;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            line-height: 22px;
-            box-sizing: border-box;
-        }
-        .odds-manager .odds-row .rq-inputs .rq-item .remove-rq {
-            color: #e94560;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 16px;
-            padding: 0 4px;
-        }
-        .odds-manager .odds-row .rq-inputs .rq-item .remove-rq:hover { color: #c73652; }
-        .odds-manager .odds-row .add-rq-btn {
-            margin-top: 4px;
-        }
-        .odds-manager .odds-row .qt-inputs {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-        .odds-manager .odds-row .qt-inputs .qt-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .odds-manager .odds-row .qt-inputs .qt-item label {
-            min-width: auto;
-        }
-        .odds-manager .odds-row .qt-inputs .qt-item input {
-            width: 70px;
-        }
-        .odds-manager .odds-row .zjq-inputs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 12px;
-            margin-top: 4px;
-        }
-        .odds-manager .odds-row .zjq-inputs .zjq-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: #f8f9fc;
-            padding: 2px 8px 2px 4px;
-            border-radius: 6px;
-            border: 1px solid #eef0f4;
-        }
-        .odds-manager .odds-row .zjq-inputs .zjq-item label {
-            font-size: 13px;
-            font-weight: 500;
-            width: 24px;
-            text-align: center;
-        }
-        .odds-manager .odds-row .zjq-inputs .zjq-item input {
-            width: 60px;
-            height: 28px;
-            padding: 5px 4px;
-            border: 1px solid #e2e5ec;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 13px;
-            line-height: 18px;
-            box-sizing: border-box;
-        }
 
         .game-list {
             border: 1px solid #e2e5ec;
@@ -2016,7 +2025,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.3';
+const APP_VERSION = '7.97.4';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2147,11 +2156,11 @@ function loadOddsSchedule() {
         let html = `<div class="match-info"><span class="league-tag">${g.league || (isNationalTeam(g.home) ? '国际赛' : '')}</span>${g.home} vs ${g.away}</div>`;
 
         // 1. 胜平负
-        html += `<div class="odds-section"><label>胜平负：</label>`;
-        ['胜','平','负'].forEach(type => {
-            html += `<input type="number" step="0.01" class="odds-sf" data-type="${type}" value="${odds[type] || ''}" placeholder="${type}" style="width:65px;" />`;
-        });
-        html += `</div>`;
+        html += `<div class="odds-section"><label>胜平负：</label><div class="sf-inputs">`;
+        html += `<div class="odds-item" data-group="win"><span class="odds-label">胜</span><input type="number" step="0.01" class="odds-sf" data-type="胜" value="${odds['胜'] || ''}" placeholder="赔率" /></div>`;
+        html += `<div class="odds-item" data-group="draw"><span class="odds-label">平</span><input type="number" step="0.01" class="odds-sf" data-type="平" value="${odds['平'] || ''}" placeholder="赔率" /></div>`;
+        html += `<div class="odds-item" data-group="lose"><span class="odds-label">负</span><input type="number" step="0.01" class="odds-sf" data-type="负" value="${odds['负'] || ''}" placeholder="赔率" /></div>`;
+        html += `</div></div>`;
 
         // 2. 让球胜平负
         html += `<div class="odds-section"><label>让球胜平负：</label><div class="rq-inputs" id="rq-${key}">`;
@@ -2161,10 +2170,10 @@ function loadOddsSchedule() {
         }
         rqList.forEach((rq, idx) => {
             html += `<div class="rq-item" data-idx="${idx}">
-                <input type="text" class="rq-handicap" value="${rq.handicap || ''}" placeholder="让球数" style="width:50px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="胜" value="${rq['胜'] || ''}" placeholder="主胜" style="width:60px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="平" value="${rq['平'] || ''}" placeholder="平" style="width:60px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="负" value="${rq['负'] || ''}" placeholder="客胜" style="width:60px;" />
+                <input type="text" class="rq-handicap" value="${rq.handicap || ''}" placeholder="让球" style="width:50px;" />
+                <input type="number" step="0.01" class="rq-odds" data-type="胜" value="${rq['胜'] || ''}" placeholder="主胜" />
+                <input type="number" step="0.01" class="rq-odds" data-type="平" value="${rq['平'] || ''}" placeholder="平" />
+                <input type="number" step="0.01" class="rq-odds" data-type="负" value="${rq['负'] || ''}" placeholder="客胜" />
                 <span class="remove-rq" onclick="this.parentElement.remove()">✕</span>
             </div>`;
         });
@@ -2189,7 +2198,7 @@ function loadOddsSchedule() {
         const zjqOdds = odds['总进球'] || {};
         ZJQ_OPTIONS.forEach(opt => {
             const val = zjqOdds[opt] || '';
-            html += `<div class="zjq-item"><label>${opt}</label><input type="number" step="0.01" class="zjq-odds" data-opt="${opt}" value="${val}" placeholder="赔率" /></div>`;
+            html += `<div class="zjq-item"><span class="zjq-label">${opt}</span><input type="number" step="0.01" class="zjq-odds" data-opt="${opt}" value="${val}" placeholder="赔率" /></div>`;
         });
         html += `</div></div>`;
 
@@ -2198,7 +2207,7 @@ function loadOddsSchedule() {
         html += `<div class="odds-section"><label>半全场：</label><div class="hq-inputs">`;
         hqTypes.forEach(type => {
             const val = (odds['半全场'] && odds['半全场'][type]) || '';
-            html += `<div class="hq-item"><span style="font-size:12px;min-width:24px;">${type}</span><input type="number" step="0.01" class="odds-hq" data-type="${type}" value="${val}" placeholder="赔率" /></div>`;
+            html += `<div class="hq-item"><span class="hq-label">${type}</span><input type="number" step="0.01" class="odds-hq" data-type="${type}" value="${val}" placeholder="赔率" /></div>`;
         });
         html += `</div></div>`;
 
@@ -2214,10 +2223,10 @@ function addBFRow(btn) {
 function addRQRow(btn) {
     const container = btn.previousElementSibling;
     let html = `<div class="rq-item">
-        <input type="text" class="rq-handicap" placeholder="让球数" style="width:50px;" />
-        <input type="number" step="0.01" class="rq-odds" data-type="胜" placeholder="主胜" style="width:60px;" />
-        <input type="number" step="0.01" class="rq-odds" data-type="平" placeholder="平" style="width:60px;" />
-        <input type="number" step="0.01" class="rq-odds" data-type="负" placeholder="客胜" style="width:60px;" />
+        <input type="text" class="rq-handicap" placeholder="让球" style="width:50px;" />
+        <input type="number" step="0.01" class="rq-odds" data-type="胜" placeholder="主胜" />
+        <input type="number" step="0.01" class="rq-odds" data-type="平" placeholder="平" />
+        <input type="number" step="0.01" class="rq-odds" data-type="负" placeholder="客胜" />
         <span class="remove-rq" onclick="this.parentElement.remove()">✕</span>
     </div>`;
     container.insertAdjacentHTML('beforeend', html);
@@ -2308,10 +2317,10 @@ function clearOdds() {
         if (rqContainer) {
             rqContainer.innerHTML = '';
             let html = `<div class="rq-item">
-                <input type="text" class="rq-handicap" placeholder="让球数" style="width:50px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="胜" placeholder="主胜" style="width:60px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="平" placeholder="平" style="width:60px;" />
-                <input type="number" step="0.01" class="rq-odds" data-type="负" placeholder="客胜" style="width:60px;" />
+                <input type="text" class="rq-handicap" placeholder="让球" style="width:50px;" />
+                <input type="number" step="0.01" class="rq-odds" data-type="胜" placeholder="主胜" />
+                <input type="number" step="0.01" class="rq-odds" data-type="平" placeholder="平" />
+                <input type="number" step="0.01" class="rq-odds" data-type="负" placeholder="客胜" />
                 <span class="remove-rq" onclick="this.parentElement.remove()">✕</span>
             </div>`;
             rqContainer.innerHTML = html;
