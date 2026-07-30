@@ -69,7 +69,7 @@ jobs:
           cp version.txt /tmp/version.txt
           cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
 
-          git stash -u
+          git stash
           git checkout gh-pages
 
           cp /tmp/odds_data.json odds_data.json

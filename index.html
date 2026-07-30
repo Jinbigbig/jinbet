@@ -2074,27 +2074,41 @@ function loadFromStorage() {
 
 function updateScheduleFromOdds() {
     for (var key in oddsData) {
-        var item = oddsData[key];
-        // 尝试从 date_key 字段或 key 本身解析日期
-        var dateKey = item.date_key || key;
-        var date, home, away;
+        var matchData = oddsData[key];
+        if (!matchData) continue;
         
-        if (dateKey.startsWith('2026-')) {
-            var parts = dateKey.split('_');
+        var date = '';
+        var home = '';
+        var away = '';
+        var league = matchData.league || '';
+        
+        // 方式1: 从 date_key 字段获取信息（新格式）
+        if (matchData.date_key) {
+            var dkParts = matchData.date_key.split('_');
+            if (dkParts.length >= 3) {
+                date = dkParts[0];
+                home = dkParts.slice(1, -1).join('_');
+                away = dkParts[dkParts.length - 1];
+            }
+        }
+        // 方式2: 从 key 获取信息（旧格式）
+        else if (key.startsWith('2026-')) {
+            var parts = key.split('_');
             if (parts.length >= 3) {
                 date = parts[0];
                 home = parts.slice(1, -1).join('_');
                 away = parts[parts.length - 1];
             }
-        } else if (key.includes(' vs ')) {
-            // key 格式为 "队名 vs 队名"
-            var matchParts = key.split(' vs ');
-            if (matchParts.length === 2) {
-                home = matchParts[0];
-                away = matchParts[1];
-                // 使用 date_key 的日期
-                if (dateKey.startsWith('2026-')) {
-                    date = dateKey.split('_')[0];
+        }
+        // 方式3: 从 "主队 vs 客队" 格式获取
+        else if (key.indexOf(' vs ') >= 0) {
+            var vsParts = key.split(' vs ');
+            if (vsParts.length === 2) {
+                home = vsParts[0].trim();
+                away = vsParts[1].trim();
+                // 日期可能在 data_key 或 date_key 中
+                if (matchData.date_key) {
+                    date = matchData.date_key.split('_')[0];
                 }
             }
         }
@@ -2105,7 +2119,7 @@ function updateScheduleFromOdds() {
                 return g.home === home && g.away === away;
             });
             if (!exists) {
-                var league = item.league || (isNationalTeam(home) ? '国际赛' : '');
+                if (!league) league = isNationalTeam(home) ? '国际赛' : '';
                 SCHEDULE[date].push({ home: home, away: away, league: league });
             }
         }
@@ -2156,11 +2170,29 @@ function loadOddsSchedule() {
     }
     const scoreOpts = getScoreOptions();
     games.forEach(g => {
-        // 尝试多种 key 格式
-        const keyOld = date + '_' + g.home + '_' + g.away;
-        const keyNew = g.home + ' vs ' + g.away;
-        const key = oddsData[keyNew] ? keyNew : keyOld;
-        const odds = oddsData[key] || { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
+        const key = date + '_' + g.home + '_' + g.away;
+        // 尝试多种格式查找赔率
+        let odds = oddsData[key];
+        if (!odds) {
+            // 尝试 "主队 vs 客队" 格式
+            const vsKey = g.home + ' vs ' + g.away;
+            odds = oddsData[vsKey];
+        }
+        if (!odds) {
+            // 遍历查找（兼容不同格式）
+            for (const k in oddsData) {
+                if (k.indexOf(g.home) >= 0 && k.indexOf(g.away) >= 0) {
+                    const md = oddsData[k];
+                    if (md.date_key && md.date_key.indexOf(date) === 0) {
+                        odds = md;
+                        break;
+                    }
+                }
+            }
+        }
+        if (!odds) {
+            odds = { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
+        }
         const div = document.createElement('div');
         div.className = 'odds-row';
         div.dataset.key = key;
@@ -2353,9 +2385,36 @@ function saveOdds() {
 
         const hasData = odds['胜'] || odds['平'] || odds['负'] || odds['让球'].length > 0 || Object.keys(odds['比分']).length > 0 || Object.keys(odds['总进球']).length > 0 || Object.keys(odds['半全场']).length > 0;
         if (hasData) {
+            // 获取比赛信息
+            const matchInfo = row.querySelector('.match-info');
+            const leagueTag = matchInfo ? matchInfo.querySelector('.league-tag') : null;
+            const matchText = matchInfo ? matchInfo.textContent.trim() : '';
+            let league = leagueTag ? leagueTag.textContent.trim() : '';
+            // 从 key 解析日期和队伍
+            const keyParts = key.split('_');
+            const date = keyParts[0];
+            const home = keyParts.slice(1, -1).join('_');
+            const away = keyParts[keyParts.length - 1];
+            
             oddsData[key] = odds;
+            oddsData[key].date_key = key;
+            if (league) oddsData[key].league = league;
+            
+            // 删除旧格式的 key（如果存在）
+            const vsKey = home + ' vs ' + away;
+            if (vsKey !== key && oddsData[vsKey]) {
+                delete oddsData[vsKey];
+            }
         } else {
             delete oddsData[key];
+            // 同时删除旧格式的 key
+            const keyParts = key.split('_');
+            const home = keyParts.slice(1, -1).join('_');
+            const away = keyParts[keyParts.length - 1];
+            const vsKey = home + ' vs ' + away;
+            if (vsKey !== key && oddsData[vsKey]) {
+                delete oddsData[vsKey];
+            }
         }
     });
     saveToStorage();
@@ -2653,28 +2712,12 @@ function syncOddsToBets() {
         bet.games.forEach(g => {
             const date = g.date || '';
             let matchedOdds = null;
-            // 先尝试新格式 key: "队名 vs 队名"
-            const newKey = g.home + ' vs ' + g.away;
-            if (oddsData[newKey]) {
-                matchedOdds = oddsData[newKey];
+            if (date) {
+                const key = date + '_' + g.home + '_' + g.away;
+                if (oddsData[key]) matchedOdds = oddsData[key];
             }
-            // 再尝试旧格式 key: "date_home_away"
-            if (!matchedOdds && date) {
-                const oldKey = date + '_' + g.home + '_' + g.away;
-                if (oddsData[oldKey]) matchedOdds = oddsData[oldKey];
-            }
-            // 最后 fallback：遍历所有 key 查找匹配
             if (!matchedOdds) {
                 for (const [key, odds] of Object.entries(oddsData)) {
-                    // 新格式: "队名 vs 队名"
-                    if (key.includes(' vs ')) {
-                        const parts = key.split(' vs ');
-                        if (parts.length === 2 && g.home === parts[0] && g.away === parts[1]) {
-                            matchedOdds = odds;
-                            break;
-                        }
-                    }
-                    // 旧格式: "date_home_away"
                     const parts = key.split('_');
                     if (parts.length === 3) {
                         const home = parts[1];
@@ -2837,43 +2880,26 @@ function getOddsObjForGame(game) {
     const home = game.home || '';
     const away = game.away || '';
     const awayShort = away.replace('阿拉伯', '').replace('利亚', '').replace('共和国', '');
-    
-    // 先尝试新格式 key: "队名 vs 队名"
-    const newKey = home + ' vs ' + away;
-    if (oddsData[newKey]) return oddsData[newKey];
-    if (awayShort !== away) {
-        const newKeyShort = home + ' vs ' + awayShort;
-        if (oddsData[newKeyShort]) return oddsData[newKeyShort];
-    }
-    
-    // 再尝试旧格式 key: "date_home_away"
     if (date) {
-        const oldKey = date + '_' + home + '_' + away;
-        if (oddsData[oldKey]) return oddsData[oldKey];
+        const key = date + '_' + home + '_' + away;
+        if (oddsData[key]) return oddsData[key];
+        // 兼容：存储时 away 用了缩写
         if (awayShort !== away) {
-            const oldKeyShort = date + '_' + home + '_' + awayShort;
-            if (oddsData[oldKeyShort]) return oddsData[oldKeyShort];
+            const shortKey = date + '_' + home + '_' + awayShort;
+            if (oddsData[shortKey]) return oddsData[shortKey];
         }
     }
-    
-    // 遍历兜底：匹配各种可能的 key 格式
+    // 遍历兜底：key 格式为 "日期_Home vs Away"（odds_data.json 原始格式）
+    const datePrefix = date + '_';
+    const homeVs = home + ' vs ';
+    const homeVsShort = home + ' vs ';
     for (const [key, odds] of Object.entries(oddsData)) {
-        // 新格式: "队名 vs 队名"
-        if (key.includes(' vs ')) {
-            const parts = key.split(' vs ');
-            if (parts.length === 2 && (parts[0] === home && (parts[1] === away || parts[1] === awayShort))) {
-                return odds;
-            }
-        }
-        // 旧格式: "date_home_away"
-        const parts = key.split('_');
-        if (parts.length >= 3) {
-            const kDate = parts[0];
-            const kHome = parts.slice(1, -1).join('_');
-            const kAway = parts[parts.length - 1];
-            if (kDate === date && kHome === home && (kAway === away || kAway === awayShort)) {
-                return odds;
-            }
+        if (!key.startsWith(datePrefix)) continue;
+        const after = key.slice(datePrefix.length);
+        // 匹配 "Home vs Away" 或 "Home vs ShortAway"
+        if (after.startsWith(homeVs) || after.startsWith(homeVsShort)) {
+            const awayPart = after.slice(homeVs.length).trim();
+            if (awayPart === away || awayPart === awayShort) return odds;
         }
     }
     return null;
