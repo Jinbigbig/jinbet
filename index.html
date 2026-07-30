@@ -937,6 +937,30 @@
             font-size: 12px;
             min-width: 24px;
         }
+        .odds-manager .odds-row .bf-inputs .bf-group-sep {
+            width: 100%;
+            height: 1px;
+            background: #e2e5ec;
+            margin: 6px 0;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item .bf-score-label {
+            font-size: 12px;
+            min-width: 32px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="win"] .bf-score-label {
+            color: #e94560;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="draw"] .bf-score-label,
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="draw"] .bf-other-label {
+            color: #6b7280;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="lose"] .bf-score-label {
+            color: #10b981;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="win"] .bf-other-label { color: #e94560; font-weight:600; }
+        .odds-manager .odds-row .bf-inputs .bf-item[data-group="lose"] .bf-other-label { color: #10b981; font-weight:600; }
         .odds-manager .odds-row .bf-inputs .bf-item .remove-bf {
             color: #e94560;
             cursor: pointer;
@@ -1992,7 +2016,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.2';
+const APP_VERSION = '7.97.3';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2093,13 +2117,14 @@ function openOddsManager() {
     openModal('oddsModal');
 }
 
-// 预设比分列表
-const PRESET_SCORES = [
-    '1:0', '2:0', '2:1', '3:0', '3:1', '3:2',
-    '4:0', '4:1', '4:2', '5:0', '5:1', '5:2',
-    '0:0', '1:1', '2:2', '3:3',
-    '0:1', '0:2', '1:2', '0:3', '1:3', '2:3',
-    '0:4', '1:4', '2:4', '0:5', '1:5', '2:5'
+// 预设比分列表 - 按胜/平/负分组
+const SCORES_WIN = ['1:0', '2:0', '2:1', '3:0', '3:1', '3:2', '4:0', '4:1', '4:2', '5:0', '5:1', '5:2'];
+const SCORES_DRAW = ['0:0', '1:1', '2:2', '3:3'];
+const SCORES_LOSE = ['0:1', '0:2', '1:2', '0:3', '1:3', '2:3', '0:4', '1:4', '2:4', '0:5', '1:5', '2:5'];
+const SCORE_GROUPS = [
+    { scores: SCORES_WIN, other: '胜其他', group: 'win' },
+    { scores: SCORES_DRAW, other: '平其他', group: 'draw' },
+    { scores: SCORES_LOSE, other: '负其他', group: 'lose' }
 ];
 // 总进球选项
 const ZJQ_OPTIONS = ['0', '1', '2', '3', '4', '5', '6', '7+'];
@@ -2145,17 +2170,17 @@ function loadOddsSchedule() {
         });
         html += `</div><button type="button" class="btn btn-outline btn-xs add-rq-btn" onclick="addRQRow(this)">＋ 添加让球</button></div>`;
 
-        // 3. 比分（含胜/平/负其他）
+        // 3. 比分（按胜/平/负分组）
         html += `<div class="odds-section"><label>比分：</label><div class="bf-inputs" id="bf-${key}">`;
         const bfOdds = odds['比分'] || {};
-        PRESET_SCORES.forEach(score => {
-            const val = bfOdds[score] || '';
-            html += `<div class="bf-item"><span class="bf-score-label" data-score="${score}">${score}</span><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" data-score="${score}" /></div>`;
-        });
-        // 比分中的胜/平/负其他
-        ['胜其他','平其他','负其他'].forEach(type => {
-            const val = bfOdds[type] || '';
-            html += `<div class="bf-item"><span class="bf-other-label">${type}</span><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" data-other="${type}" /></div>`;
+        SCORE_GROUPS.forEach((group, gi) => {
+            if (gi > 0) html += `<div class="bf-group-sep"></div>`;
+            group.scores.forEach(score => {
+                const val = bfOdds[score] || '';
+                html += `<div class="bf-item" data-group="${group.group}"><span class="bf-score-label" data-score="${score}">${score}</span><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" data-score="${score}" /></div>`;
+            });
+            const otherVal = bfOdds[group.other] || '';
+            html += `<div class="bf-item" data-group="${group.group}"><span class="bf-other-label">${group.other}</span><input type="number" step="0.01" class="bf-odds" value="${otherVal}" placeholder="赔率" data-other="${group.other}" /></div>`;
         });
         html += `</div></div>`;
 
@@ -2291,17 +2316,22 @@ function clearOdds() {
             </div>`;
             rqContainer.innerHTML = html;
         }
-        // 重置比分
+        // 重置比分（按胜/平/负分组）
         const bfContainer = row.querySelector('.bf-inputs');
         if (bfContainer) {
             bfContainer.innerHTML = '';
-            PRESET_SCORES.forEach(score => {
-                let html = `<div class="bf-item"><span class="bf-score-label" data-score="${score}">${score}</span><input type="number" step="0.01" class="bf-odds" placeholder="赔率" data-score="${score}" /></div>`;
-                bfContainer.insertAdjacentHTML('beforeend', html);
-            });
-            ['胜其他','平其他','负其他'].forEach(type => {
-                let html = `<div class="bf-item"><span class="bf-other-label">${type}</span><input type="number" step="0.01" class="bf-odds" placeholder="赔率" data-other="${type}" /></div>`;
-                bfContainer.insertAdjacentHTML('beforeend', html);
+            SCORE_GROUPS.forEach((group, gi) => {
+                if (gi > 0) {
+                    const sep = document.createElement('div');
+                    sep.className = 'bf-group-sep';
+                    bfContainer.appendChild(sep);
+                }
+                group.scores.forEach(score => {
+                    let html = `<div class="bf-item" data-group="${group.group}"><span class="bf-score-label" data-score="${score}">${score}</span><input type="number" step="0.01" class="bf-odds" placeholder="赔率" data-score="${score}" /></div>`;
+                    bfContainer.insertAdjacentHTML('beforeend', html);
+                });
+                let otherHtml = `<div class="bf-item" data-group="${group.group}"><span class="bf-other-label">${group.other}</span><input type="number" step="0.01" class="bf-odds" placeholder="赔率" data-other="${group.other}" /></div>`;
+                bfContainer.insertAdjacentHTML('beforeend', otherHtml);
             });
         }
         // 重置总进球
