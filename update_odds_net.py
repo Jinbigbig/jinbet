@@ -609,16 +609,33 @@ def main():
     net_html = fetch_odds_from_net()
     odds_data = {}
     schedule_data = {}
+    source = '网易体育'
 
     if net_html:
         print('  ✅ 网易体育获取成功')
         print('\n[2/3] 解析网易赔率数据...')
         odds_data, schedule_data = parse_odds_from_html(net_html)
         print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
+
+        # 如果网易解析返回0场比赛，尝试体彩官网
+        if len(odds_data) == 0:
+            print('  ⚠️ 网易数据为0场，尝试从体彩官网获取...')
+            source = '体彩官网'
+            lottery_html = fetch_odds_from_lottery()
+
+            if lottery_html:
+                print('  ✅ 体彩官网获取成功')
+                print('\n[2/3] 解析体彩赔率数据...')
+                odds_data, schedule_data = parse_lottery_html(lottery_html)
+                print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
+            else:
+                print('[错误] 网易数据为0且体彩官网获取失败')
+                sys.exit(1)
     else:
         # 网易获取失败，尝试体彩官网
         print('  ❌ 网易体育获取失败')
         print('\n[备用方案] 尝试从体彩官网获取赔率数据...')
+        source = '体彩官网'
         lottery_html = fetch_odds_from_lottery()
 
         if lottery_html:
@@ -629,6 +646,8 @@ def main():
         else:
             print('[错误] 无法从任何数据源获取赔率数据')
             sys.exit(1)
+
+    print(f'\n📊 本次数据源: {source}')
     
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
