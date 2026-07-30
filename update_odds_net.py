@@ -12,6 +12,11 @@ TEAM_NAME_MAP = {
     '乌兹别克': '乌兹别克斯坦', '乌兹别克斯坦': '乌兹别克斯坦',
     '阿尔及利': '阿尔及利亚', '阿尔及利亚': '阿尔及利亚',
     '沙特': '沙特阿拉伯',
+    # 体彩API队名 → 网易队名 映射（用于key统一）
+    '贝西克塔斯': '贝西克塔', '斯普利特海杜克': '斯海杜克',
+    '安德莱赫特': '安德莱', '费伦茨瓦罗斯': '费伦茨',
+    '巴拉纳竞技': '巴竞技', '多伦多FC': '多伦多',
+    '利勒斯特罗姆': '利勒斯特',
 }
 
 # 竞彩联赛名称映射（当网易抓取数据中 league 为空时的兜底）
@@ -216,13 +221,38 @@ def fetch_odds_from_net():
         return ''
 
 
+# 比分key映射：API中 crs 的 sXXsYY 格式 → 比分文本
+# sXXsYY = 主队进球XX, 客队进球YY
+_CRS_KEY_MAP = {}
+for _h in range(6):
+    for _a in range(6):
+        _key = f's{_h:02d}s{_a:02d}'
+        _CRS_KEY_MAP[_key] = f'{_h}:{_a}'
+# 胜其他/平其他/负其他
+_CRS_KEY_MAP['s1sh'] = '胜其他'
+_CRS_KEY_MAP['s1sd'] = '平其他'
+_CRS_KEY_MAP['s1sa'] = '负其他'
+
+# 总进球key映射：API中 ttg 的 s0-s7 → 0-7+
+_TTG_KEY_MAP = {f's{i}': str(i) for i in range(7)}
+_TTG_KEY_MAP['s7'] = '7+'
+
+# 半全场key映射：API中 hafu 的 key → 半全场文本
+_HAFU_KEY_MAP = {
+    'hh': '胜胜', 'hd': '胜平', 'ha': '胜负',
+    'dh': '平胜', 'dd': '平平', 'da': '平负',
+    'ah': '负胜', 'ad': '负平', 'aa': '负负',
+}
+
+
 def fetch_odds_from_lottery():
-    """从体彩官网获取赔率数据（备用方案）"""
-    url = 'https://www.sporttery.cn/jc/jsq/zqspf/'
+    """从体彩官网API获取赔率数据（备用方案），返回JSON文本"""
+    url = 'https://webapi.sporttery.cn/gateway/uniform/football/getMatchCalculatorV1.qry?channel=c'
     try:
         req = urllib.request.Request(url, headers={
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Referer': 'https://www.sporttery.cn/jc/jsq/zqhhgg/',
+            'Accept': 'application/json, text/plain, */*',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         })
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -233,128 +263,128 @@ def fetch_odds_from_lottery():
         return ''
 
 
-def parse_lottery_html(html_content):
-    """解析体彩官网HTML表格，返回赔率数据"""
+def parse_lottery_json(json_text):
+    """解析体彩官网API返回的JSON数据，返回赔率和赛程"""
     odds_data = {}
     schedule_data = {}
 
-    # 提取表格行数据
-    # 表格结构：<tr><td>周四001</td><td>欧罗巴</td><td>07-31 01:00</td><td>中日德兰 VS 贝西克塔</td><td>让球数</td><td>赔率数据</td></tr>
-    import html
-    html_content = html.unescape(html_content)
+    try:
+        data = json.loads(json_text)
+    except json.JSONDecodeError as e:
+        print(f'[错误] JSON解析失败: {e}')
+        return odds_data, schedule_data
 
-    # 匹配表格行
-    rows = re.findall(r'<tr[^>]*>.*?</tr>', html_content, re.DOTALL)
+    if not data.get('success') or not data.get('value'):
+        print(f'[错误] API返回失败: {data.get("errorMessage", "未知错误")}')
+        return odds_data, schedule_data
 
-    for row in rows:
-        # 提取比赛编号（如：周四001）
-        match_no_match = re.search(r'(周[一二三四五六日])(\d{3})', row)
-        if not match_no_match:
-            continue
+    value = data['value']
+    match_info_list = value.get('matchInfoList', [])
+    league_list = value.get('leagueList', [])
 
-        weekday = match_no_match.group(1)
-        match_no = match_no_match.group(2)
+    # 构建联赛ID→名称映射
+    league_map = {}
+    for l in league_list:
+        lid = l.get('leagueId', '')
+        lname = l.get('leagueNameAbbr', '') or l.get('leagueName', '')
+        if lid and lname:
+            league_map[str(lid)] = lname
 
-        # 提取联赛名称
-        league_match = re.search(r'leagueId=\d+[^>]*>([^<]+)<', row)
-        league = league_match.group(1) if league_match else ''
+    for date_info in match_info_list:
+        business_date = date_info.get('businessDate', '')
+        sub_matches = date_info.get('subMatchList', [])
 
-        # 提取开赛时间
-        time_match = re.search(r'(\d{2}-\d{2})\s+(\d{2}:\d{2})', row)
-        if not time_match:
-            continue
+        for m in sub_matches:
+            home = m.get('homeTeamAllName', '') or m.get('homeTeamAbbName', '')
+            away = m.get('awayTeamAllName', '') or m.get('awayTeamAbbName', '')
+            if not home or not away:
+                continue
 
-        month_day = time_match.group(1)
-        hour_min = time_match.group(2)
+            # 清理队名中的联赛排名标记
+            home = re.sub(r'\[[^\]]+\]', '', home).strip()
+            away = re.sub(r'\[[^\]]+\]', '', away).strip()
 
-        # 提取主客队名称
-        # 格式：<a ...gmtid=xxx>主队名</a> VS <a ...gmtid=xxx>客队名</a>
-        teams = re.findall(r'gmtid=\d+[^>]*>([^<]+)<', row)
-        if len(teams) < 2:
-            continue
+            # 标准化队名（体彩API → 网易）
+            for map_name, standard_name in TEAM_NAME_MAP.items():
+                if map_name in home:
+                    home = standard_name
+                    break
+            for map_name, standard_name in TEAM_NAME_MAP.items():
+                if map_name in away:
+                    away = standard_name
+                    break
 
-        home_team = teams[0].strip()
-        away_team = teams[1].strip()
+            # 获取联赛名
+            league_id = str(m.get('leagueId', ''))
+            league = league_map.get(league_id, '')
 
-        # 清理队名中的联赛排名标记（如：[巴甲19]、[巴甲18]）
-        home_team = re.sub(r'\[[^\]]+\]', '', home_team).strip()
-        away_team = re.sub(r'\[[^\]]+\]', '', away_team).strip()
+            # 胜平负赔率
+            had = m.get('had', {})
+            h = had.get('h', '')
+            d = had.get('d', '')
+            a = had.get('a', '')
 
-        # 构建日期（当前年份 + 月日）
-        from datetime import datetime
-        year = datetime.now().year
-        try:
-            date_str = f'{year}-{month_day}'
-            # 验证日期
-            datetime.strptime(date_str, '%Y-%m-%d')
-        except:
-            continue
+            # 让球胜平负赔率
+            hhad = m.get('hhad', {})
+            handicap = hhad.get('goalLine', '') or hhad.get('goalLineValue', '')
+            hhad_h = hhad.get('h', '')
+            hhad_d = hhad.get('d', '')
+            hhad_a = hhad.get('a', '')
 
-        # 提取赔率数据
-        # 胜平负赔率格式：1.72 3.70 3.60（胜 平 负）
-        # 让球赔率格式：-1 3.10 3.60 1.89（让球数 胜 平 负）
-        odds_cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+            # 比分赔率
+            crs = m.get('crs', {})
+            score_odds = {}
+            for crs_key, score_name in _CRS_KEY_MAP.items():
+                val = crs.get(crs_key, '')
+                if val and float(val) > 0:
+                    score_odds[score_name] = val
 
-        # 找到赔率单元格（通常包含数字和空格）
-        spf_odds = []
-        rq_odds = []
-        handicap = '0'
+            # 总进球赔率
+            ttg = m.get('ttg', {})
+            zjq_odds = {}
+            for ttg_key, zjq_name in _TTG_KEY_MAP.items():
+                val = ttg.get(ttg_key, '')
+                if val and float(val) > 0:
+                    zjq_odds[zjq_name] = val
 
-        for cell in odds_cells:
-            # 提取所有数字（包括小数）
-            numbers = re.findall(r'(\d+\.?\d*)', cell)
+            # 半全场赔率
+            hafu = m.get('hafu', {})
+            bqc_odds = {}
+            for hafu_key, bqc_name in _HAFU_KEY_MAP.items():
+                val = hafu.get(hafu_key, '')
+                if val and float(val) > 0:
+                    bqc_odds[bqc_name] = val
 
-            # 胜平负赔率：3个数字（胜 平 负）
-            if len(numbers) == 3 and all(float(n) > 1 for n in numbers):
-                spf_odds = numbers
+            # 构建key
+            key = f'{business_date}_{home}_{away}'
 
-            # 让球 + 赔率：4个数字（让球数 胜 平 负）
-            # 让球数通常是负数或正数，赔率通常大于1
-            if len(numbers) >= 4:
-                # 第一个可能是让球数（可能为负）
-                handicap_str = re.search(r'([-+]?\d+)', cell)
-                if handicap_str:
-                    handicap = handicap_str.group(1)
-                    # 后面3个是赔率
-                    rq_odds = numbers[-3:]
-
-        # 如果没有找到赔率，跳过
-        if not spf_odds:
-            continue
-
-        # 构建key
-        key = f'{date_str}_{home_team}_{away_team}'
-
-        # 保存数据
-        if key not in odds_data:
             odds_data[key] = {
-                '胜': spf_odds[0] if len(spf_odds) > 0 else '',
-                '平': spf_odds[1] if len(spf_odds) > 1 else '',
-                '负': spf_odds[2] if len(spf_odds) > 2 else '',
+                '胜': h,
+                '平': d,
+                '负': a,
                 '让球': [],
-                '比分': {},
-                '总进球': {},
-                '半全场': {},
-                'league': league
+                '比分': score_odds,
+                '总进球': zjq_odds,
+                '半全场': bqc_odds,
+                'league': league,
             }
 
             # 如果有让球数据
-            if rq_odds and len(rq_odds) >= 3:
+            if handicap and (hhad_h or hhad_d or hhad_a):
                 odds_data[key]['让球'].append({
                     'handicap': handicap,
-                    '胜': rq_odds[0],
-                    '平': rq_odds[1],
-                    '负': rq_odds[2]
+                    '胜': hhad_h,
+                    '平': hhad_d,
+                    '负': hhad_a,
                 })
 
-        # 保存赛程
-        if date_str not in schedule_data:
-            schedule_data[date_str] = []
-        if {'home': home_team, 'away': away_team, 'league': league} not in schedule_data[date_str]:
-            schedule_data[date_str].append({
-                'home': home_team,
-                'away': away_team,
-                'league': league
+            # 保存赛程
+            if business_date not in schedule_data:
+                schedule_data[business_date] = []
+            schedule_data[business_date].append({
+                'home': home,
+                'away': away,
+                'league': league,
             })
 
     return odds_data, schedule_data
@@ -617,31 +647,31 @@ def main():
         odds_data, schedule_data = parse_odds_from_html(net_html)
         print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
 
-        # 如果网易解析返回0场比赛，尝试体彩官网
+        # 如果网易解析返回0场比赛，尝试体彩官网API
         if len(odds_data) == 0:
-            print('  ⚠️ 网易数据为0场，尝试从体彩官网获取...')
+            print('  ⚠️ 网易数据为0场，尝试从体彩官网API获取...')
             source = '体彩官网'
-            lottery_html = fetch_odds_from_lottery()
+            lottery_json = fetch_odds_from_lottery()
 
-            if lottery_html:
-                print('  ✅ 体彩官网获取成功')
+            if lottery_json:
+                print('  ✅ 体彩官网API获取成功')
                 print('\n[2/3] 解析体彩赔率数据...')
-                odds_data, schedule_data = parse_lottery_html(lottery_html)
+                odds_data, schedule_data = parse_lottery_json(lottery_json)
                 print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
             else:
-                print('[错误] 网易数据为0且体彩官网获取失败')
+                print('[错误] 网易数据为0且体彩官网API获取失败')
                 sys.exit(1)
     else:
-        # 网易获取失败，尝试体彩官网
+        # 网易获取失败，尝试体彩官网API
         print('  ❌ 网易体育获取失败')
-        print('\n[备用方案] 尝试从体彩官网获取赔率数据...')
+        print('\n[备用方案] 尝试从体彩官网API获取赔率数据...')
         source = '体彩官网'
-        lottery_html = fetch_odds_from_lottery()
+        lottery_json = fetch_odds_from_lottery()
 
-        if lottery_html:
-            print('  ✅ 体彩官网获取成功')
+        if lottery_json:
+            print('  ✅ 体彩官网API获取成功')
             print('\n[2/3] 解析体彩赔率数据...')
-            odds_data, schedule_data = parse_lottery_html(lottery_html)
+            odds_data, schedule_data = parse_lottery_json(lottery_json)
             print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
         else:
             print('[错误] 无法从任何数据源获取赔率数据')
