@@ -935,9 +935,16 @@
         }
         .odds-manager .odds-row .bf-inputs .bf-item .bf-other-label {
             font-size: 13px;
-            font-weight: 500;
             min-width: 24px;
         }
+        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf {
+            color: #e94560;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+        .odds-manager .odds-row .bf-inputs .bf-item .remove-bf:hover { color: #c73652; }
         .odds-manager .odds-row .add-bf-btn {
             margin-top: 4px;
         }
@@ -2004,7 +2011,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.1';
+const APP_VERSION = '7.97.0';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2074,53 +2081,20 @@ function loadFromStorage() {
 
 function updateScheduleFromOdds() {
     for (var key in oddsData) {
-        var matchData = oddsData[key];
-        if (!matchData) continue;
-        
-        var date = '';
-        var home = '';
-        var away = '';
-        var league = matchData.league || '';
-        
-        // 方式1: 从 date_key 字段获取信息（新格式）
-        if (matchData.date_key) {
-            var dkParts = matchData.date_key.split('_');
-            if (dkParts.length >= 3) {
-                date = dkParts[0];
-                home = dkParts.slice(1, -1).join('_');
-                away = dkParts[dkParts.length - 1];
-            }
-        }
-        // 方式2: 从 key 获取信息（旧格式）
-        else if (key.startsWith('2026-')) {
+        if (key.startsWith('2026-')) {
             var parts = key.split('_');
             if (parts.length >= 3) {
-                date = parts[0];
-                home = parts.slice(1, -1).join('_');
-                away = parts[parts.length - 1];
-            }
-        }
-        // 方式3: 从 "主队 vs 客队" 格式获取
-        else if (key.indexOf(' vs ') >= 0) {
-            var vsParts = key.split(' vs ');
-            if (vsParts.length === 2) {
-                home = vsParts[0].trim();
-                away = vsParts[1].trim();
-                // 日期可能在 data_key 或 date_key 中
-                if (matchData.date_key) {
-                    date = matchData.date_key.split('_')[0];
+                var date = parts[0];
+                var home = parts.slice(1, -1).join('_');
+                var away = parts[parts.length - 1];
+                if (!SCHEDULE[date]) SCHEDULE[date] = [];
+                var exists = SCHEDULE[date].some(function(g) {
+                    return g.home === home && g.away === away;
+                });
+                if (!exists) {
+                    var league = isNationalTeam(home) ? '国际赛' : '';
+                    SCHEDULE[date].push({ home: home, away: away, league: league });
                 }
-            }
-        }
-        
-        if (date && home && away) {
-            if (!SCHEDULE[date]) SCHEDULE[date] = [];
-            var exists = SCHEDULE[date].some(function(g) {
-                return g.home === home && g.away === away;
-            });
-            if (!exists) {
-                if (!league) league = isNationalTeam(home) ? '国际赛' : '';
-                SCHEDULE[date].push({ home: home, away: away, league: league });
             }
         }
     }
@@ -2171,28 +2145,7 @@ function loadOddsSchedule() {
     const scoreOpts = getScoreOptions();
     games.forEach(g => {
         const key = date + '_' + g.home + '_' + g.away;
-        // 尝试多种格式查找赔率
-        let odds = oddsData[key];
-        if (!odds) {
-            // 尝试 "主队 vs 客队" 格式
-            const vsKey = g.home + ' vs ' + g.away;
-            odds = oddsData[vsKey];
-        }
-        if (!odds) {
-            // 遍历查找（兼容不同格式）
-            for (const k in oddsData) {
-                if (k.indexOf(g.home) >= 0 && k.indexOf(g.away) >= 0) {
-                    const md = oddsData[k];
-                    if (md.date_key && md.date_key.indexOf(date) === 0) {
-                        odds = md;
-                        break;
-                    }
-                }
-            }
-        }
-        if (!odds) {
-            odds = { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
-        }
+        const odds = oddsData[key] || { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
         const div = document.createElement('div');
         div.className = 'odds-row';
         div.dataset.key = key;
@@ -2237,10 +2190,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         });
         const valWinOther = bfOdds['胜其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">胜其他</span><input type="number" step="0.01" class="bf-odds" value="${valWinOther}" placeholder="赔率" data-other="胜其他" /></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">胜其他</span><input type="number" step="0.01" class="bf-odds" value="${valWinOther}" placeholder="赔率" data-other="胜其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         html += `</div>`;
         
         // 平的比分 + 平其他
@@ -2251,10 +2204,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         });
         const valDrawOther = bfOdds['平其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">平其他</span><input type="number" step="0.01" class="bf-odds" value="${valDrawOther}" placeholder="赔率" data-other="平其他" /></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">平其他</span><input type="number" step="0.01" class="bf-odds" value="${valDrawOther}" placeholder="赔率" data-other="平其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         html += `</div>`;
         
         // 负的比分 + 负其他
@@ -2265,10 +2218,10 @@ function loadOddsSchedule() {
             scoreOpts.forEach(s => {
                 html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" value="${val}" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         });
         const valLoseOther = bfOdds['负其他'] || '';
-        html += `<div class="bf-item"><span class="bf-other-label">负其他</span><input type="number" step="0.01" class="bf-odds" value="${valLoseOther}" placeholder="赔率" data-other="负其他" /></div>`;
+        html += `<div class="bf-item"><span class="bf-other-label">负其他</span><input type="number" step="0.01" class="bf-odds" value="${valLoseOther}" placeholder="赔率" data-other="负其他" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
         html += `</div>`;
         
         html += `<button type="button" class="btn btn-outline btn-xs add-bf-btn" onclick="addBFRow(this)">＋ 添加比分</button></div>`;
@@ -2303,7 +2256,7 @@ function addBFRow(btn) {
     scoreOpts.forEach(s => {
         html += `<option value="${s}">${s}</option>`;
     });
-    html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
+    html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
     container.insertAdjacentHTML('beforeend', html);
 }
 
@@ -2385,36 +2338,9 @@ function saveOdds() {
 
         const hasData = odds['胜'] || odds['平'] || odds['负'] || odds['让球'].length > 0 || Object.keys(odds['比分']).length > 0 || Object.keys(odds['总进球']).length > 0 || Object.keys(odds['半全场']).length > 0;
         if (hasData) {
-            // 获取比赛信息
-            const matchInfo = row.querySelector('.match-info');
-            const leagueTag = matchInfo ? matchInfo.querySelector('.league-tag') : null;
-            const matchText = matchInfo ? matchInfo.textContent.trim() : '';
-            let league = leagueTag ? leagueTag.textContent.trim() : '';
-            // 从 key 解析日期和队伍
-            const keyParts = key.split('_');
-            const date = keyParts[0];
-            const home = keyParts.slice(1, -1).join('_');
-            const away = keyParts[keyParts.length - 1];
-            
             oddsData[key] = odds;
-            oddsData[key].date_key = key;
-            if (league) oddsData[key].league = league;
-            
-            // 删除旧格式的 key（如果存在）
-            const vsKey = home + ' vs ' + away;
-            if (vsKey !== key && oddsData[vsKey]) {
-                delete oddsData[vsKey];
-            }
         } else {
             delete oddsData[key];
-            // 同时删除旧格式的 key
-            const keyParts = key.split('_');
-            const home = keyParts.slice(1, -1).join('_');
-            const away = keyParts[keyParts.length - 1];
-            const vsKey = home + ' vs ' + away;
-            if (vsKey !== key && oddsData[vsKey]) {
-                delete oddsData[vsKey];
-            }
         }
     });
     saveToStorage();
@@ -2453,14 +2379,14 @@ function clearOdds() {
                 scoreOpts.forEach(s => {
                     html += `<option value="${s}" ${s===score?'selected':''}>${s}</option>`;
                 });
-                html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
+                html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
                 bfContainer.insertAdjacentHTML('beforeend', html);
             });
             let html = `<div class="bf-item"><select class="bf-score-select">`;
             scoreOpts.forEach(s => {
                 html += `<option value="${s}">${s}</option>`;
             });
-            html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /></div>`;
+            html += `</select><input type="number" step="0.01" class="bf-odds" placeholder="赔率" /><span class="remove-bf" onclick="this.parentElement.remove()">✕</span></div>`;
             bfContainer.insertAdjacentHTML('beforeend', html);
         }
         // 重置总进球
@@ -6563,13 +6489,11 @@ function autoUpdateOdds() {
                 }
                 var stored = localStorage.getItem(STORAGE_KEY_ODDS);
                 var storedData = stored ? JSON.parse(stored) : {};
-                // 合并数据，保留本地已有的数据
-                var mergedData = Object.assign({}, storedData, converted);
-                var hasChanges = JSON.stringify(mergedData) !== JSON.stringify(storedData);
+                var hasChanges = JSON.stringify(converted) !== JSON.stringify(storedData);
                 if (hasChanges) {
-                    localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(mergedData));
+                    localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(converted));
                     localStorage.setItem('auto_update_last_time', String(now));
-                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(mergedData).length + '场)');
+                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(converted).length + '场)');
                     loadFromStorage();
                     renderAll();
                 }
