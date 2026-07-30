@@ -2004,7 +2004,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.0';
+const APP_VERSION = '7.97.1';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6563,11 +6563,13 @@ function autoUpdateOdds() {
                 }
                 var stored = localStorage.getItem(STORAGE_KEY_ODDS);
                 var storedData = stored ? JSON.parse(stored) : {};
-                var hasChanges = JSON.stringify(converted) !== JSON.stringify(storedData);
+                // 合并数据，保留本地已有的数据
+                var mergedData = Object.assign({}, storedData, converted);
+                var hasChanges = JSON.stringify(mergedData) !== JSON.stringify(storedData);
                 if (hasChanges) {
-                    localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(converted));
+                    localStorage.setItem(STORAGE_KEY_ODDS, JSON.stringify(mergedData));
                     localStorage.setItem('auto_update_last_time', String(now));
-                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(converted).length + '场)');
+                    console.log('[自动更新] 赔率数据已更新 (' + Object.keys(mergedData).length + '场)');
                     loadFromStorage();
                     renderAll();
                 }
