@@ -216,6 +216,150 @@ def fetch_odds_from_net():
         return ''
 
 
+def fetch_odds_from_lottery():
+    """从体彩官网获取赔率数据（备用方案）"""
+    url = 'https://www.sporttery.cn/jc/jsq/zqspf/'
+    try:
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        })
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            content = resp.read().decode('utf-8')
+        return content
+    except Exception as e:
+        print(f'[错误] 获取体彩赔率失败: {e}')
+        return ''
+
+
+def parse_lottery_html(html_content):
+    """解析体彩官网HTML表格，返回赔率数据"""
+    odds_data = {}
+    schedule_data = {}
+
+    # 提取表格行数据
+    # 表格结构：<tr><td>周四001</td><td>欧罗巴</td><td>07-31 01:00</td><td>中日德兰 VS 贝西克塔</td><td>让球数</td><td>赔率数据</td></tr>
+    import html
+    html_content = html.unescape(html_content)
+
+    # 匹配表格行
+    rows = re.findall(r'<tr[^>]*>.*?</tr>', html_content, re.DOTALL)
+
+    for row in rows:
+        # 提取比赛编号（如：周四001）
+        match_no_match = re.search(r'(周[一二三四五六日])(\d{3})', row)
+        if not match_no_match:
+            continue
+
+        weekday = match_no_match.group(1)
+        match_no = match_no_match.group(2)
+
+        # 提取联赛名称
+        league_match = re.search(r'leagueId=\d+[^>]*>([^<]+)<', row)
+        league = league_match.group(1) if league_match else ''
+
+        # 提取开赛时间
+        time_match = re.search(r'(\d{2}-\d{2})\s+(\d{2}:\d{2})', row)
+        if not time_match:
+            continue
+
+        month_day = time_match.group(1)
+        hour_min = time_match.group(2)
+
+        # 提取主客队名称
+        # 格式：<a ...gmtid=xxx>主队名</a> VS <a ...gmtid=xxx>客队名</a>
+        teams = re.findall(r'gmtid=\d+[^>]*>([^<]+)<', row)
+        if len(teams) < 2:
+            continue
+
+        home_team = teams[0].strip()
+        away_team = teams[1].strip()
+
+        # 清理队名中的联赛排名标记（如：[巴甲19]、[巴甲18]）
+        home_team = re.sub(r'\[[^\]]+\]', '', home_team).strip()
+        away_team = re.sub(r'\[[^\]]+\]', '', away_team).strip()
+
+        # 构建日期（当前年份 + 月日）
+        from datetime import datetime
+        year = datetime.now().year
+        try:
+            date_str = f'{year}-{month_day}'
+            # 验证日期
+            datetime.strptime(date_str, '%Y-%m-%d')
+        except:
+            continue
+
+        # 提取赔率数据
+        # 胜平负赔率格式：1.72 3.70 3.60（胜 平 负）
+        # 让球赔率格式：-1 3.10 3.60 1.89（让球数 胜 平 负）
+        odds_cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)
+
+        # 找到赔率单元格（通常包含数字和空格）
+        spf_odds = []
+        rq_odds = []
+        handicap = '0'
+
+        for cell in odds_cells:
+            # 提取所有数字（包括小数）
+            numbers = re.findall(r'(\d+\.?\d*)', cell)
+
+            # 胜平负赔率：3个数字（胜 平 负）
+            if len(numbers) == 3 and all(float(n) > 1 for n in numbers):
+                spf_odds = numbers
+
+            # 让球 + 赔率：4个数字（让球数 胜 平 负）
+            # 让球数通常是负数或正数，赔率通常大于1
+            if len(numbers) >= 4:
+                # 第一个可能是让球数（可能为负）
+                handicap_str = re.search(r'([-+]?\d+)', cell)
+                if handicap_str:
+                    handicap = handicap_str.group(1)
+                    # 后面3个是赔率
+                    rq_odds = numbers[-3:]
+
+        # 如果没有找到赔率，跳过
+        if not spf_odds:
+            continue
+
+        # 构建key
+        key = f'{date_str}_{home_team}_{away_team}'
+
+        # 保存数据
+        if key not in odds_data:
+            odds_data[key] = {
+                '胜': spf_odds[0] if len(spf_odds) > 0 else '',
+                '平': spf_odds[1] if len(spf_odds) > 1 else '',
+                '负': spf_odds[2] if len(spf_odds) > 2 else '',
+                '让球': [],
+                '比分': {},
+                '总进球': {},
+                '半全场': {},
+                'league': league
+            }
+
+            # 如果有让球数据
+            if rq_odds and len(rq_odds) >= 3:
+                odds_data[key]['让球'].append({
+                    'handicap': handicap,
+                    '胜': rq_odds[0],
+                    '平': rq_odds[1],
+                    '负': rq_odds[2]
+                })
+
+        # 保存赛程
+        if date_str not in schedule_data:
+            schedule_data[date_str] = []
+        if {'home': home_team, 'away': away_team, 'league': league} not in schedule_data[date_str]:
+            schedule_data[date_str].append({
+                'home': home_team,
+                'away': away_team,
+                'league': league
+            })
+
+    return odds_data, schedule_data
+
+
 def update_html_schedule(html_content, new_schedule):
     schedule_pattern = r'const SCHEDULE = \{([\s\S]*?)\};'
     
@@ -439,38 +583,52 @@ def parse_js_obj_to_json(js_str):
 
 def main():
     no_push = '--no-push' in sys.argv
-    
+
     print('=' * 60)
-    print('  从网易彩票获取赔率数据')
+    print('  从彩票网站获取赔率数据')
     print('=' * 60)
-    
+
     with open(HTML_PATH, 'r', encoding='utf-8') as f:
         html_content = f.read()
-    
+
     schedule_pattern = r'const SCHEDULE = \{([\s\S]*?)\};'
     match = re.search(schedule_pattern, html_content)
-    
+
     if not match:
         print('[错误] 未找到 SCHEDULE 定义')
         sys.exit(1)
-    
+
     schedule_str = '{' + match.group(1) + '}'
     schedule_str = parse_js_obj_to_json(schedule_str)
     schedule = json.loads(schedule_str)
-    
+
     print(f'\n当前赛程包含 {len(schedule)} 个日期')
-    
-    print('\n[1/3] 获取网易赔率数据...')
+
+    # 尝试从网易获取数据
+    print('\n[1/3] 尝试从网易体育获取赔率数据...')
     net_html = fetch_odds_from_net()
-    if not net_html:
-        print('[错误] 无法获取赔率数据')
-        sys.exit(1)
-    
-    print('  ✅ 获取成功')
-    
-    print('\n[2/3] 解析赔率数据...')
-    odds_data, schedule_data = parse_odds_from_html(net_html)
-    print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
+    odds_data = {}
+    schedule_data = {}
+
+    if net_html:
+        print('  ✅ 网易体育获取成功')
+        print('\n[2/3] 解析网易赔率数据...')
+        odds_data, schedule_data = parse_odds_from_html(net_html)
+        print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
+    else:
+        # 网易获取失败，尝试体彩官网
+        print('  ❌ 网易体育获取失败')
+        print('\n[备用方案] 尝试从体彩官网获取赔率数据...')
+        lottery_html = fetch_odds_from_lottery()
+
+        if lottery_html:
+            print('  ✅ 体彩官网获取成功')
+            print('\n[2/3] 解析体彩赔率数据...')
+            odds_data, schedule_data = parse_lottery_html(lottery_html)
+            print(f'  ✅ 解析完成，共 {len(odds_data)} 场比赛赔率')
+        else:
+            print('[错误] 无法从任何数据源获取赔率数据')
+            sys.exit(1)
     
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
