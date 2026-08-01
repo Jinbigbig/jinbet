@@ -58,27 +58,35 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 推送更新到 gh-pages
+      - name: 推送更新到 master 和 gh-pages
         if: steps.check_changes.outputs.changed == 'true'
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
+          # 保存更新文件到临时目录
           cp odds_data.json /tmp/odds_data.json
           cp index.html /tmp/index.html
           cp version.txt /tmp/version.txt
+          rm -rf /tmp/odds_history
           cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
 
-          git stash
-          git checkout gh-pages
+          # 1. 推送到 master（保持同步，清理旧赛程避免重复归档）
+          git add index.html odds_data.json version.txt
+          git add odds_history/ 2>/dev/null || true
+          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
+          git pull origin master --rebase
+          git push origin master
 
+          # 2. 推送到 gh-pages（master 已提交，工作区干净不会冲突）
+          git checkout gh-pages
           cp /tmp/odds_data.json odds_data.json
           cp /tmp/index.html index.html
           cp /tmp/version.txt version.txt
+          mkdir -p odds_history
           cp -r /tmp/odds_history/* odds_history/ 2>/dev/null || true
-
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
-          git pull origin gh-pages --rebase || echo "Pull failed, attempting push anyway"
+          git pull origin gh-pages --rebase
           git push origin gh-pages
