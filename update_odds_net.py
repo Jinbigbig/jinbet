@@ -419,6 +419,10 @@ def update_html_odds(html_content, schedule, odds_data):
         for game in games:
             key = f'{date}_{game["home"]}_{game["away"]}'
             all_keys.append(key)
+    # 同时包含 odds_data 中有但 schedule 中可能缺失的 key
+    for key in odds_data:
+        if key not in all_keys:
+            all_keys.append(key)
     
     for i, key in enumerate(all_keys):
         if key in odds_data:
@@ -519,10 +523,10 @@ def archive_old_data(schedule, odds, removed_dates):
     """将超过保留天数的旧数据归档到 odds_history/YYYY-MM-DD.json"""
     if not removed_dates:
         return
-    
+
     archive_dir = os.path.join(BASE_DIR, 'odds_history')
     os.makedirs(archive_dir, exist_ok=True)
-    
+
     for date in removed_dates:
         day_schedule = schedule.get(date, [])
         day_odds = {}
@@ -531,6 +535,17 @@ def archive_old_data(schedule, odds, removed_dates):
                 day_odds[key] = val
             elif val.get('date_key', '').startswith(date + '_'):
                 day_odds[key] = val
+
+        # 从 odds 补全 schedule 中缺失的比赛（schedule 可能被覆盖过）
+        schedule_teams = set((g['home'], g['away']) for g in day_schedule)
+        for key in day_odds:
+            parts = key.split('_', 2)
+            if len(parts) == 3 and parts[0] == date:
+                home, away = parts[1], parts[2]
+                if (home, away) not in schedule_teams:
+                    league = day_odds[key].get('league', '')
+                    day_schedule.append({'home': home, 'away': away, 'league': league})
+                    schedule_teams.add((home, away))
         
         archive = {
             'date': date,
@@ -686,9 +701,15 @@ def main():
     print(f'    原有赛程: {len(schedule)} 个日期')
     print(f'    新增赛程: {len(schedule_data)} 个日期')
 
-    # 合并新旧赛程
+    # 合并新旧赛程（追加新比赛，保留已有比赛，避免覆盖丢失）
     for date, games in schedule_data.items():
-        schedule[date] = games
+        if date not in schedule:
+            schedule[date] = games
+        else:
+            existing_keys = set((g['home'], g['away']) for g in schedule[date])
+            for g in games:
+                if (g['home'], g['away']) not in existing_keys:
+                    schedule[date].append(g)
     # 补全旧日期赛程中缺失的 league（从 schedule_data 中查找 + 映射表兜底）
     for date in schedule:
         for g in schedule[date]:
