@@ -218,6 +218,35 @@ h4 {
   color: var(--ink);
 }
 
+/* === First Leg Recap === */
+.first-leg {
+  background: linear-gradient(135deg, rgba(69,123,157,0.08), rgba(69,123,157,0.02));
+  border: 1px solid rgba(69,123,157,0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+.first-leg .fl-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--home);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.first-leg .fl-score {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--home);
+  margin-bottom: 0.5rem;
+}
+.first-leg .fl-detail {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 /* === Prediction Box === */
 .prediction {
   background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02));
@@ -318,6 +347,14 @@ td .tag {
 .tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
 .tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
 .tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+
+tr.highlight-team {
+  background: rgba(42,157,143,0.06) !important;
+  font-weight: 600;
+}
+tr.highlight-team td:first-child {
+  border-left: 3px solid var(--win);
+}
 
 /* === History Table === */
 .history-table { font-size: 0.82rem; }
@@ -439,6 +476,43 @@ sup a:hover { text-decoration: underline; }
   text-align: right;
 }
 
+/* === Qualifying Path Box === */
+.path-box {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0;
+  border: 1px solid var(--rule);
+}
+.path-box h4 {
+  margin-top: 0;
+}
+.path-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+.path-node {
+  background: var(--bg);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--rule);
+}
+.path-node.current {
+  background: rgba(230,57,70,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.path-arrow {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
 /* === Responsive === */
 @media (max-width: 768px) {
   .hero h1 { font-size: 1.5rem; }
@@ -448,6 +522,8 @@ sup a:hover { text-decoration: underline; }
   .match-teams { font-size: 1.1rem; gap: 0.75rem; }
   .summary-grid { grid-template-columns: 1fr; }
   .container { padding: 0 1rem; }
+  .path-flow { flex-direction: column; }
+  .path-arrow { transform: rotate(90deg); }
 }
 
 @media (max-width: 600px) {
@@ -475,9 +551,9 @@ sup a:hover { text-decoration: underline; }
 <header class="hero">
   <div class="container">
     <h1>2026年7月30日 竞彩足球比赛深度分析</h1>
-    <p class="subtitle">6场比赛 · 5场欧罗巴资格赛次回合 + 1场巴甲</p>
-    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 场外动态</p>
-    <p class="disclaimer">⚠ 数据采集时间：2026年7月30日 14:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
+    <p class="subtitle">6场比赛 · 5场欧罗巴资格赛 + 1场巴甲</p>
+    <p class="subtitle">综合分析：盘口赔率 · 首回合回顾 · 晋级形势 · 历史交锋 · 近期状态 · 伤停因素</p>
+    <p class="disclaimer">⚠ 数据采集时间：2026年7月29日 20:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
   </div>
 </header>
 
@@ -494,34 +570,34 @@ sup a:hover { text-decoration: underline; }
   </thead>
   <tbody>
     <tr>
-      <td><span class="tag tag-red">001</span></td><td>欧罗巴</td><td>01:00</td><td>中日德兰</td><td>vs</td><td>贝西克塔斯</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.72</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.70</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.60</td>
-      <td>-1</td><td><span class="tag tag-yellow">主胜 52%</span></td>
+      <td><span class="tag tag-blue">001</span></td><td>欧罗巴</td><td>00:00</td><td>中日德兰</td><td>vs</td><td>贝西克塔</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.40</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--draw)">3.10</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.65</td>
+      <td>0</td><td><span class="tag tag-yellow">客不败 48%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">002</span></td><td>欧罗巴</td><td>01:00</td><td>帕福斯</td><td>vs</td><td>斯海杜克</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.80</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.40</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.60</td>
-      <td>-1</td><td><span class="tag tag-green">主胜 61%</span></td>
+      <td><span class="tag tag-blue">002</span></td><td>欧罗巴</td><td>00:00</td><td>帕福斯</td><td>vs</td><td>斯海杜克</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--win)">2.10</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.20</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.00</td>
+      <td>-0.25</td><td><span class="tag tag-green">主胜 55%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">003</span></td><td>欧罗巴</td><td>02:30</td><td>安德莱赫特</td><td>vs</td><td>哈马比</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.09</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.35</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.85</td>
-      <td>-1</td><td><span class="tag tag-yellow">主胜 48%</span></td>
+      <td><span class="tag tag-blue">003</span></td><td>欧罗巴</td><td>01:00</td><td>安德莱</td><td>vs</td><td>哈马比</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--win);font-weight:700">1.75</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.50</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.80</td>
+      <td>-0.5</td><td><span class="tag tag-green">主胜 62%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">004</span></td><td>欧罗巴</td><td>02:30</td><td>费伦茨瓦罗斯</td><td>vs</td><td>特温特</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.95</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.60</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.95</td>
-      <td>+1</td><td><span class="tag tag-yellow">客不败 55%</span></td>
+      <td><span class="tag tag-blue">004</span></td><td>欧罗巴</td><td>01:00</td><td>费伦茨</td><td>vs</td><td>特温特</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--win)">2.00</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.30</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.20</td>
+      <td>-0.25</td><td><span class="tag tag-yellow">主不败 52%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">005</span></td><td>欧罗巴</td><td>03:00</td><td>本菲卡</td><td>vs</td><td>圣加仑</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">—</td>
-      <td>-2</td><td><span class="tag tag-green">主胜 78%</span></td>
+      <td><span class="tag tag-blue">005</span></td><td>欧罗巴</td><td>02:30</td><td>本菲卡</td><td>vs</td><td>圣加仑</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--win);font-weight:700">1.35</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.50</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">6.50</td>
+      <td>-1.5</td><td><span class="tag tag-green">主胜 78%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-blue">006</span></td><td>巴甲</td><td>06:30</td><td>科林蒂安</td><td>vs</td><td>巴拉纳竞技</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.72</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.15</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.35</td>
-      <td>-1</td><td><span class="tag tag-green">主胜 62%</span></td>
+      <td><span class="tag tag-red">006</span></td><td>巴甲</td><td>06:30</td><td>科林蒂安</td><td>vs</td><td>巴竞技</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--win)">2.01</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.15</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.18</td>
+      <td>-0.5</td><td><span class="tag tag-yellow">主胜 54%</span></td>
     </tr>
   </tbody>
 </table>
@@ -537,101 +613,491 @@ sup a:hover { text-decoration: underline; }
 <!-- ========== 三、逐场深度分析 ========== -->
 <h2>三、逐场深度分析</h2>
 
-<!-- ===== 001: 中日德兰 vs 贝西克塔斯 ===== -->
+<!-- ===== 001: 中日德兰 vs 贝西克塔 ===== -->
 <section class="card" id="match-001">
   <div class="card-header">
     <span class="match-id">周四 001</span>
     <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
-    <span class="match-time">2026-07-31 01:00</span>
+    <span class="match-time">2026-07-30 00:00</span>
   </div>
   <div class="match-teams">
-    <span class="home">中日德兰 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">丹麦</small></span>
+    <span class="home">中日德兰 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">丹超</small></span>
     <span class="vs">VS</span>
-    <span class="away">贝西克塔斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">土耳其</small></span>
+    <span class="away">贝西克塔 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">土超</small></span>
   </div>
   <div class="odds-grid">
     <div class="odds-item">
       <div class="label">主胜</div>
-      <div class="value win">1.72</div>
+      <div class="value">2.40</div>
     </div>
     <div class="odds-item">
       <div class="label">平局</div>
-      <div class="value draw">3.70</div>
+      <div class="value draw">3.10</div>
     </div>
     <div class="odds-item">
       <div class="label">客胜</div>
-      <div class="value loss">3.60</div>
+      <div class="value loss">2.65</div>
     </div>
   </div>
 
-  <h4>首回合回顾（2026-07-24 · 图普拉斯体育场）</h4>
-  <p><strong>贝西克塔斯 1-0 中日德兰</strong>（半场 1-0）· 裁判：未公开</p>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>时间</th><th>球员</th><th>球队</th><th>方式</th></tr></thead>
-    <tbody>
-      <tr><td>第26分钟</td><td>柯克曲</td><td>贝西克塔斯</td><td>运动战进球</td></tr>
-    </tbody>
-  </table>
+  <div class="first-leg">
+    <div class="fl-title">首回合回顾</div>
+    <div class="fl-score">贝西克塔 1-0 中日德兰</div>
+    <div class="fl-detail">
+      柯克曲 26' 进球制胜。中日德兰中场Etim红牌罚下，球队少打一人仅0-1小负，表现可圈可点。
+    </div>
   </div>
-  <p><strong>关键事件：</strong>第15分钟，中日德兰前锋埃蒂姆被红牌罚下，球队全场少打一人。贝西克塔斯控球率高达75%，全场压制但仅入一球。</p>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>统计</th><th>贝西克塔斯</th><th>中日德兰</th></tr></thead>
-    <tbody>
-      <tr><td>控球率</td><td>75%</td><td>25%</td></tr>
-      <tr><td>射门/射正</td><td>14/4</td><td>3/1</td></tr>
-      <tr><td>角球</td><td>5</td><td>2</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>战术分析：</strong>贝西克塔斯主场占据绝对优势，但中日德兰在少打一人的情况下只丢一球，防守韧性值得肯定。次回合回到丹麦MCH竞技场，中日德兰11人对11人，翻盘机会大增。</p>
 
-  <h4>积分排名与联赛位置</h4>
+  <h4>球队概况</h4>
   <div class="insight-grid">
     <div class="insight-card">
       <div class="insight-label">中日德兰 · 丹超</div>
-      <div class="insight-value">上赛季丹超亚军、丹麦杯冠军，欧联闯入16强</div>
+      <div class="insight-value">上赛季丹超第3名 · 欧战经验丰富</div>
     </div>
     <div class="insight-card">
-      <div class="insight-label">贝西克塔斯 · 土超</div>
-      <div class="insight-value">上赛季土超第4名（17胜9平8负积60分）</div>
+      <div class="insight-label">贝西克塔 · 土超</div>
+      <div class="insight-value">土超豪门 · 首回合主场占优仅1球领先</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">身价对比</div>
+      <div class="insight-value">中日德兰 ~€7200万 vs 贝西克塔 ~€1.05亿</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">晋级形势</div>
+      <div class="insight-value">中日德兰需净胜1球以上才能晋级</div>
     </div>
   </div>
 
-  <h4>历史交锋</h4>
-  <p>两队首次在欧战中交手。首回合贝西克塔斯主场1-0小胜。</p>
-
-  <h4>近期状态与主客场</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">中日德兰 近10场</div>
-      <div class="insight-value">7胜1平2负 · 赢率70%</div>
-      <div class="form-row" style="margin-top:0.4rem">
-        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
-      </div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">贝西克塔斯 近5场</div>
-      <div class="insight-value">3胜1平1负 · 状态稳定</div>
-      <div class="form-row" style="margin-top:0.4rem">
-        <span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
-      </div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p>中日德兰前锋埃蒂姆因首回合红牌停赛。贝西克塔斯中场核心柯克曲状态正佳，球队目标稳守反击。</p>
+  <h4>伤停信息</h4>
+  <p><strong>中日德兰：</strong>中场Etim红牌停赛（首回合染红），后防线上赛季主力缺席影响较大。<strong>贝西克塔：</strong>阵容齐整，无重要伤停。</p>
 
   <div class="warning">
-    <strong>⚠ 凯利指数异常：</strong>中日德兰首回合少打一人仅输一球，次回合回到主场竞彩主胜1.72低开，但贝西克塔斯握有客场进球优势，稳守反击威胁极大。
+    <strong>⚠ 关键因素：</strong>中日德兰首回合少打一人仅0-1小负，主场作战且有反弹动力。但贝西克塔作为土超豪门，欧战经验和整体实力占优，1球领先优势下客场以稳守反击为主。平局赔率3.10偏低，机构对平局防范力度较大。
   </div>
 
   <div class="prediction">
     <div class="pred-title">📊 综合判断</div>
     <div class="pred-row">
       <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">双平博平（让球平 + 平）</span>
+      <span class="pred-value">客不败博平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 002: 帕福斯 vs 斯海杜克 ===== -->
+<section class="card" id="match-002">
+  <div class="card-header">
+    <span class="match-id">周四 002</span>
+    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
+    <span class="match-time">2026-07-30 00:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">帕福斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">塞浦路斯</small></span>
+    <span class="vs">VS</span>
+    <span class="away">斯海杜克 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">克罗地亚</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">2.10</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.20</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">3.00</div>
+    </div>
+  </div>
+
+  <div class="first-leg">
+    <div class="fl-title">首回合回顾</div>
+    <div class="fl-score">斯海杜克 2-0 帕福斯</div>
+    <div class="fl-detail">
+      舍戈 56' 任意球破门，梅利尼亚克 65' 锁定胜局。帕福斯客场完败，需主场净胜2球以上才能逼平加时。
+    </div>
+  </div>
+
+  <h4>球队概况</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">帕福斯 · 塞浦路斯</div>
+      <div class="insight-value">塞浦路斯联赛强队 · 主场战斗力尚可</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">斯海杜克 · 克罗地亚</div>
+      <div class="insight-value">克联传统劲旅 · 客场防守稳健</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">身价对比</div>
+      <div class="insight-value">帕福斯 ~€1200万 vs 斯海杜克 ~€1800万</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">晋级形势</div>
+      <div class="insight-value">斯海杜克不败即晋级</div>
+    </div>
+  </div>
+
+  <h4>战术分析</h4>
+  <p>帕福斯首回合客场0-2落后，回到主场必须大举进攻，但面临两难——攻出去后防线空间更大，反而给斯海杜克反击机会。斯海杜克首回合2球优势在手，客场以稳守反击为主，防守体系成熟。帕福斯虽有主场优势，但整体实力和欧战经验均不如对手。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>帕福斯主场赔率2.10偏低，市场对其主场翻盘抱有期待。但2球劣势下需要净胜2球难度极大。斯海杜克防守端表现稳定，客场防守反击战术明确。帕福斯主攻之下，斯海杜克反击进球概率不低。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客不败博客胜</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 003: 安德莱 vs 哈马比 ===== -->
+<section class="card" id="match-003">
+  <div class="card-header">
+    <span class="match-id">周四 003</span>
+    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
+    <span class="match-time">2026-07-30 01:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">安德莱赫特 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">比甲</small></span>
+    <span class="vs">VS</span>
+    <span class="away">哈马比 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞超</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.75</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.50</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">3.80</div>
+    </div>
+  </div>
+
+  <div class="first-leg">
+    <div class="fl-title">首回合回顾</div>
+    <div class="fl-score">哈马比 1-1 安德莱赫特</div>
+    <div class="fl-detail">
+      西坎 6' 任意球破门为哈马比分先，安德莱赫特直到第89分钟由阿杰伊绝平。安德莱赫特Saliba红牌被罚下。
+    </div>
+  </div>
+
+  <h4>球队概况</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">安德莱赫特 · 比甲</div>
+      <div class="insight-value">比甲传统豪门 · 主场强势 · 身价约€1.2亿</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">哈马比 · 瑞超</div>
+      <div class="insight-value">瑞超第2名 · 士气大振 · 身价约€1400万</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">身价对比</div>
+      <div class="insight-value">安德莱赫特身价约为哈马比的8.5倍</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">晋级形势</div>
+      <div class="insight-value">安德莱赫特胜则晋级</div>
+    </div>
+  </div>
+
+  <h4>伤停信息</h4>
+  <p><strong>安德莱赫特：</strong>Saliba首回合红牌停赛，后防缺阵影响较大。但球队整体阵容深度足够。<strong>哈马比：</strong>瑞超进行中，比赛状态保持良好，首回合客场绝平，士气正盛。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>安德莱赫特虽首回合被绝平，但回到主场实力占优，1.75主胜赔率显示机构对其信心较强。哈马比瑞超第2名状态正佳，但欧战经验和整体实力差距明显。安德莱赫特主场需要赢球才能晋级，战意明确。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 004: 费伦茨 vs 特温特 ===== -->
+<section class="card" id="match-004">
+  <div class="card-header">
+    <span class="match-id">周四 004</span>
+    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
+    <span class="match-time">2026-07-30 01:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">费伦茨瓦罗斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">匈甲</small></span>
+    <span class="vs">VS</span>
+    <span class="away">特温特 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">荷甲</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">2.00</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.30</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">3.20</div>
+    </div>
+  </div>
+
+  <div class="first-leg">
+    <div class="fl-title">首回合回顾</div>
+    <div class="fl-score">特温特 1-2 费伦茨瓦罗斯</div>
+    <div class="fl-detail">
+      约瑟夫梅开二度（包含客场进球），费伦茨瓦罗斯客场2-1取胜。特温特主场落败，需客场净胜1球以上才能晋级。
+    </div>
+  </div>
+
+  <h4>球队概况</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">费伦茨瓦罗斯 · 匈甲</div>
+      <div class="insight-value">匈甲霸主 · 欧战常客 · 身价约€2500万</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">特温特 · 荷甲</div>
+      <div class="insight-value">荷甲劲旅 · 身价约€4200万</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">晋级形势</div>
+      <div class="insight-value">费伦茨瓦罗斯不败即晋级</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">客场进球</div>
+      <div class="insight-value">费伦茨手握2个客场进球优势</div>
+    </div>
+  </div>
+
+  <h4>战术分析</h4>
+  <p>费伦茨瓦罗斯首回合客场2-1取胜，手握2个客场进球，回到主场打平即可晋级，战术选择更加灵活。特温特荷甲新赛季尚未开始，球队处于备战期，状态存疑。费伦茨瓦罗斯匈甲进行中，比赛状态保持更好。特温特必须客场赢球才能晋级，战意强烈但压力更大。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>2.00主胜赔率对主队支持力度一般，机构对主队信心不算特别强。特温特荷甲球队整体实力不弱，客场作战有一定战斗力。平局3.30偏高，双方都有进球能力。费伦茨瓦罗斯主场不败格局更被看好。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主不败博平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">2-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 005: 本菲卡 vs 圣加仑 ===== -->
+<section class="card" id="match-005">
+  <div class="card-header">
+    <span class="match-id">周四 005</span>
+    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
+    <span class="match-time">2026-07-30 02:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">本菲卡 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">葡超</small></span>
+    <span class="vs">VS</span>
+    <span class="away">圣加仑 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞超</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.35</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">4.50</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">6.50</div>
+    </div>
+  </div>
+
+  <div class="first-leg">
+    <div class="fl-title">首回合回顾</div>
+    <div class="fl-score">圣加仑 2-1 本菲卡</div>
+    <div class="fl-detail">
+      巴尔德 37'、加尔 80' 为主队破门，拉法 44' 为本菲卡扳回一球。本菲卡客场爆冷1-2输球，但手握1个客场进球。
+    </div>
+  </div>
+
+  <h4>球队概况</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">本菲卡 · 葡超</div>
+      <div class="insight-value">葡超豪门 · 身价约€3.5亿 · 欧冠级别球队</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">圣加仑 · 瑞超</div>
+      <div class="insight-value">瑞超中游 · 身价约€2800万</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">身价对比</div>
+      <div class="insight-value">本菲卡身价约为圣加仑的12.5倍</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">晋级形势</div>
+      <div class="insight-value">本菲卡净胜1球以上即可晋级（客场进球规则）</div>
+    </div>
+  </div>
+
+  <h4>战术分析</h4>
+  <p>本菲卡首回合客场爆冷输球，主要原因是球队处于季前备战期，状态未到最佳。回到主场的本菲卡战斗力将大幅提升，1.35主胜赔率显示机构对其翻盘信心极强。圣加仑首回合主场爆冷取胜，但整体实力差距巨大，客场难以抵挡本菲卡的狂攻。本菲卡只需净胜1球即可凭借客场进球晋级，战意强烈。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>本菲卡作为葡超豪门，欧战经验丰富，主场光明球场是欧洲著名魔鬼主场。首回合失利更多是状态和备战因素，次回合主场必然全力出击。圣加仑瑞超球队虽状态在进行中，但实力差距过大，客场难有作为。让球-1.5盘口下，本菲卡赢2球以上概率高。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让胜</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">3-0</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">2-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+      <span class="bar-label">★★★★</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 006: 科林蒂安 vs 巴竞技 ===== -->
+<section class="card" id="match-006">
+  <div class="card-header">
+    <span class="match-id">周四 006</span>
+    <span class="match-league">巴甲 · 第21轮</span>
+    <span class="match-time">2026-07-30 06:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">科林蒂安</span>
+    <span class="vs">VS</span>
+    <span class="away">巴拉纳竞技</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">2.01</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.15</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">3.18</div>
+    </div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 · 第9名</div>
+      <div class="insight-value">20轮 7胜7平6负 / 进22失20 / 28分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">巴拉纳竞技 · 第3名</div>
+      <div class="insight-value">20轮 11胜3平6负 / 进28失19 / 36分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <p><strong>科林蒂安碾压：近6次5胜1平0负，完全压制巴拉纳竞技。</strong>心理优势极为明显。</p>
+
+  <h4>近期状态</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进7失5</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">巴竞技 近5场</div>
+      <div class="insight-value">4胜0平1负 · 进9失5</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 主场</div>
+      <div class="insight-value">10场 4胜4平2负 · 不败率80%</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">巴竞技 客场</div>
+      <div class="insight-value">10场 5胜1平4负 · 胜率50%</div>
+    </div>
+  </div>
+
+  <h4>伤停信息</h4>
+  <p><strong>科林蒂安：</strong>吉列里停赛，德佩出战存疑。<strong>巴拉纳竞技：</strong>萨佩利伤疑，出战成疑。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>巴竞技排名更高（第3 vs 第9），近期状态也更好（4胜1负 vs 3胜1平1负），但客场让球赔率上科林蒂安主场让球，说明机构对主队支持力度不弱。历史交锋科林蒂安5胜1平绝对优势，心理优势明显。双平赔率组合合理。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">双平博主不败</span>
     </div>
     <div class="pred-row" style="margin-top:0.5rem">
       <span class="pred-label">比分预测：</span>
@@ -644,607 +1110,65 @@ sup a:hover { text-decoration: underline; }
       <span class="bar-label">★★★</span>
     </div>
   </div>
-
-  <h4>比赛结果晋级影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>中日德兰（首回合0-1）</th><th>贝西克塔斯（首回合1-0）</th></tr></thead>
-    <tbody>
-      <tr><td>中日德兰净胜2球及以上</td><td>总比分逆转晋级第三轮</td><td>被淘汰出局</td></tr>
-      <tr><td>中日德兰净胜1球（如2-1/3-2）</td><td>总比分平局，进入加时/点球</td><td>总比分平局，进入加时/点球</td></tr>
-      <tr><td>平局（0-0/1-1）</td><td>总比分落后被淘汰</td><td>总比分优势晋级第三轮</td></tr>
-      <tr><td>贝西克塔斯获胜</td><td>总比分大败被淘汰</td><td>总比分优势晋级第三轮</td></tr>
-    </tbody>
-  </table>
-  </div>
 </section>
 
-<!-- ===== 002: 帕福斯 vs 斯海杜克 ===== -->
-<section class="card" id="match-002">
-  <div class="card-header">
-    <span class="match-id">周四 002</span>
-    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
-    <span class="match-time">2026-07-31 01:00</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">帕福斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">塞浦路斯</small></span>
-    <span class="vs">VS</span>
-    <span class="away">斯海杜克 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">克罗地亚</small></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.80</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.40</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">3.60</div>
-    </div>
-  </div>
-
-  <h4>首回合回顾（2026-07-24 · 波柳德体育场）</h4>
-  <p><strong>斯海杜克 2-0 帕福斯</strong>（半场 0-0）· 观众：27,752人 · 裁判：Rob Harvey</p>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>时间</th><th>球员</th><th>球队</th><th>方式</th></tr></thead>
-    <tbody>
-      <tr><td>第56分钟</td><td>米歇尔·舍戈</td><td>斯海杜克</td><td>任意球（击中横梁弹入）</td></tr>
-      <tr><td>第64分钟</td><td>达里奥·梅尔尼亚克</td><td>斯海杜克</td><td>头球（阿卡潘迪助攻）</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>关键事件：</strong>帕福斯全场4次射正均被化解，进攻效率缺失。斯海杜克下半场8分钟内两连击锁定胜局。</p>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>统计</th><th>斯海杜克</th><th>帕福斯</th></tr></thead>
-    <tbody>
-      <tr><td>控球率</td><td>56%</td><td>44%</td></tr>
-      <tr><td>射门/射正</td><td>12/6</td><td>8/4</td></tr>
-      <tr><td>角球</td><td>6</td><td>3</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>战术分析：</strong>斯海杜克主场控球进攻，帕福斯防守反击但效率低下。次回合帕福斯必须压上进攻，身后空当恐被斯海杜克反击利用。</p>
-
-  <h4>积分排名与联赛位置</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">帕福斯 · 塞浦路斯甲</div>
-      <div class="insight-value">上赛季塞浦路斯杯冠军，季前热身赛1胜1平2负</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">斯海杜克 · 克罗地亚甲</div>
-      <div class="insight-value">克甲传统劲旅，近10场7胜，攻防效率极高</div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p>帕福斯主力门将基里亚基迪斯重伤缺阵。斯海杜克前锋利瓦亚等主力随队出征，阵容齐整。</p>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数警示：</strong>帕福斯上一场正式比赛还是两个月前的杯赛决赛，状态难以保证。斯海杜克手握2球优势，心态从容。
-  </div>
-
-  <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row">
-      <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">客不败博客胜（斯海杜克双杀）</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">比分预测：</span>
-      <span class="pred-score">0-1</span>
-      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-2</span>
-    </div>
-    <div class="conf-bar" style="margin-top:0.5rem">
-      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
-      <span class="bar-label">★★★☆</span>
-    </div>
-  </div>
-
-  <h4>比赛结果晋级影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>帕福斯（首回合0-2）</th><th>斯海杜克（首回合2-0）</th></tr></thead>
-    <tbody>
-      <tr><td>帕福斯净胜3球及以上</td><td>总比分逆转晋级</td><td>被淘汰出局</td></tr>
-      <tr><td>帕福斯净胜2球（如2-0）</td><td>总比分平局，进入加时/点球</td><td>总比分平局，进入加时/点球</td></tr>
-      <tr><td>帕福斯净胜1球或平局/失利</td><td>总比分落后被淘汰</td><td>晋级第三轮</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<!-- ===== 003: 安德莱赫特 vs 哈马比 ===== -->
-<section class="card" id="match-003">
-  <div class="card-header">
-    <span class="match-id">周四 003</span>
-    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
-    <span class="match-time">2026-07-31 02:30</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">安德莱赫特 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">比利时</small></span>
-    <span class="vs">VS</span>
-    <span class="away">哈马比 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞典</small></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">2.09</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.35</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">2.85</div>
-    </div>
-  </div>
-
-  <h4>首回合回顾（2026-07-24 · Tele2竞技场/3Arena）</h4>
-  <p><strong>哈马比 1-1 安德莱赫特</strong>（半场 0-1）· 裁判：未公开</p>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>时间</th><th>球员</th><th>球队</th><th>方式</th></tr></thead>
-    <tbody>
-      <tr><td>第6分钟</td><td>达尼洛·西坎</td><td>安德莱赫特</td><td>任意球直接破门</td></tr>
-      <tr><td>第89分钟</td><td>弗兰克·朱尼尔·阿杰伊</td><td>哈马比</td><td>运动战进球（替补登场）</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>关键事件：</strong>第78分钟，安德莱赫特中场萨利巴被红牌罚下（两黄）。哈马比多打一人并在第89分钟绝平。</p>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>统计</th><th>哈马比</th><th>安德莱赫特</th></tr></thead>
-    <tbody>
-      <tr><td>控球率</td><td>55%</td><td>45%</td></tr>
-      <tr><td>射门/射正</td><td>14/5</td><td>8/3</td></tr>
-      <tr><td>角球</td><td>7</td><td>4</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>战术分析：</strong>安德莱赫特开场闪击后控制节奏，但红牌改变局势。哈马比主场围攻但直到最后才扳平。次回合安德莱赫特回到主场，阵容深度占优。</p>
-
-  <h4>积分排名与联赛位置</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">安德莱赫特 · 比甲</div>
-      <div class="insight-value">上赛季常规赛第6，争冠附加赛第4，身价约7500万欧</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">哈马比 · 瑞典超</div>
-      <div class="insight-value">上赛季瑞典超亚军，本赛季14轮7胜5平2负积26分排第2</div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p><strong>安德莱赫特防线重创：</strong>维尔通亨等多名中卫伤缺，萨利巴红牌停赛，防线靠新援临时拼凑。<strong>哈马比：</strong>阵容齐整，处于联赛进行中，比赛节奏更佳。</p>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数警示：</strong>安德莱赫特后防伤停严重，但主场作战且整体硬实力明显高于哈马比。首回合客场少打一人被绝平，次回合不会再给对手机会。
-  </div>
-
-  <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row">
-      <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">主胜（安德莱赫特常规时间晋级）</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">比分预测：</span>
-      <span class="pred-score">2-0</span>
-      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
-    </div>
-    <div class="conf-bar" style="margin-top:0.5rem">
-      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
-      <span class="bar-label">★★★</span>
-    </div>
-  </div>
-
-  <h4>比赛结果晋级影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>安德莱赫特（首回合1-1）</th><th>哈马比（首回合1-1）</th></tr></thead>
-    <tbody>
-      <tr><td>安德莱赫特获胜</td><td>总比分优势晋级第三轮</td><td>被淘汰出局</td></tr>
-      <tr><td>平局（0-0/1-1）</td><td>总比分平局，进入加时/点球</td><td>总比分平局，进入加时/点球</td></tr>
-      <tr><td>哈马比获胜</td><td>被淘汰出局</td><td>总比分优势晋级第三轮</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<!-- ===== 004: 费伦茨瓦罗斯 vs 特温特 ===== -->
-<section class="card" id="match-004">
-  <div class="card-header">
-    <span class="match-id">周四 004</span>
-    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
-    <span class="match-time">2026-07-31 02:30</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">费伦茨瓦罗斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">匈牙利</small></span>
-    <span class="vs">VS</span>
-    <span class="away">特温特 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">荷兰</small></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value loss">2.95</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.60</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value win">1.95</div>
-    </div>
-  </div>
-
-  <h4>首回合回顾（2026-07-23 · 德格罗尔施维斯特球场）</h4>
-  <p><strong>特温特 1-2 费伦茨瓦罗斯</strong>（半场 1-1）· 观众：27,500人 · 裁判：未公开</p>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>时间</th><th>球员</th><th>球队</th><th>方式</th></tr></thead>
-    <tbody>
-      <tr><td>第14分钟</td><td>兰尼·约瑟夫</td><td>费伦茨瓦罗斯</td><td>运动战进球</td></tr>
-      <tr><td>第38分钟</td><td>阿斯克·阿德尔加德</td><td>特温特</td><td>运动战进球</td></tr>
-      <tr><td>第80分钟</td><td>兰尼·约瑟夫</td><td>费伦茨瓦罗斯</td><td>梅开二度</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>关键事件：</strong>特温特主场控球率高达69%，但费伦茨瓦罗斯反击效率极高，约瑟夫梅开二度绝杀。</p>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>统计</th><th>特温特</th><th>费伦茨瓦罗斯</th></tr></thead>
-    <tbody>
-      <tr><td>控球率</td><td>69%</td><td>31%</td></tr>
-      <tr><td>射门/射正</td><td>14/5</td><td>8/4</td></tr>
-      <tr><td>角球</td><td>6</td><td>3</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>战术分析：</strong>特温特控球围攻但效率低下，费伦茨瓦罗斯反击犀利。次回合特温特必须客场强攻，后防风险大增。</p>
-
-  <h4>积分排名与联赛位置</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">费伦茨瓦罗斯 · 匈牙利甲</div>
-      <div class="insight-value">匈甲霸主，主场欧战连续11场不败</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">特温特 · 荷甲</div>
-      <div class="insight-value">荷甲劲旅，13年来重返欧联，主力中卫希尔格斯赛季报销</div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p>特温特主力中卫希尔格斯十字韧带撕裂赛季报销，一门翁纳施塔尔也有伤。费伦茨瓦罗斯拥有前利物浦中场纳比·凯塔坐镇，经验占优。</p>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数警示：</strong>费伦茨瓦罗斯主场欧战连续11场不败，特温特客场必须强攻翻盘，后防大开。竞彩客胜1.95反而成为价值选择。
-  </div>
-
-  <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row">
-      <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">客不败博客胜（特温特翻盘）</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">比分预测：</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-1</span>
-    </div>
-    <div class="conf-bar" style="margin-top:0.5rem">
-      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
-      <span class="bar-label">★★★</span>
-    </div>
-  </div>
-
-  <h4>比赛结果晋级影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>费伦茨瓦罗斯（首回合2-1）</th><th>特温特（首回合1-2）</th></tr></thead>
-    <tbody>
-      <tr><td>费伦茨瓦罗斯不败</td><td>总比分优势晋级第三轮</td><td>被淘汰出局</td></tr>
-      <tr><td>特温特净胜1球（如1-2/2-3）</td><td>总比分平局，进入加时/点球</td><td>总比分平局，进入加时/点球</td></tr>
-      <tr><td>特温特净胜2球及以上</td><td>被淘汰出局</td><td>总比分逆转晋级</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<!-- ===== 005: 本菲卡 vs 圣加仑 ===== -->
-<section class="card" id="match-005">
-  <div class="card-header">
-    <span class="match-id">周四 005</span>
-    <span class="match-league">欧罗巴 · 资格赛第二轮次回合</span>
-    <span class="match-time">2026-07-31 03:00</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">本菲卡 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">葡萄牙</small></span>
-    <span class="vs">VS</span>
-    <span class="away">圣加仑 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞士</small></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">—</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">—</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">—</div>
-    </div>
-  </div>
-
-  <h4>首回合回顾（2026-07-23 · 基邦公园球场）</h4>
-  <p><strong>圣加仑 2-1 本菲卡</strong>（半场 1-1）· 观众：17,179人（售罄）· 裁判：Pairetto（意大利）</p>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>时间</th><th>球员</th><th>球队</th><th>方式</th></tr></thead>
-    <tbody>
-      <tr><td>第37分钟</td><td>阿利乌·巴尔德</td><td>圣加仑</td><td>射门（戈特勒助攻）</td></tr>
-      <tr><td>第44分钟</td><td>拉法·席尔瓦</td><td>本菲卡</td><td>射门（帕夫利迪斯助攻）</td></tr>
-      <tr><td>第80分钟</td><td>汤姆·盖尔</td><td>圣加仑</td><td>头球（定位球）</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>关键事件：</strong>圣加仑主场爆冷，本菲卡控球率62%但14次射门仅4次射正，效率低下。</p>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>统计</th><th>圣加仑</th><th>本菲卡</th></tr></thead>
-    <tbody>
-      <tr><td>控球率</td><td>38%</td><td>62%</td></tr>
-      <tr><td>射门/射正</td><td>10/6</td><td>14/4</td></tr>
-      <tr><td>角球</td><td>6</td><td>5</td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>战术分析：</strong>圣加仑防守反击高效，本菲卡控球占优但破门乏术。次回合本菲卡回到光明球场，必须至少净胜2球才能翻盘。</p>
-
-  <h4>积分排名与联赛位置</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">本菲卡 · 葡超</div>
-      <div class="insight-value">葡超传统豪门，身价远超圣加仑，主场近10场7胜2平1负</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">圣加仑 · 瑞士超</div>
-      <div class="insight-value">瑞士超球队，各项赛事三连胜，连续5场正赛进球</div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p>本菲卡新帅马尔科·席尔瓦承受巨大舆论压力，队长帕夫利迪斯表示必须在主场给出回应。圣加仑士气高涨，但实力差距明显。</p>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数警示：</strong>首回合爆冷为本菲卡敲响警钟。次回合本菲卡主场让步-2，市场极度看好翻盘，但需防范圣加仑死守偷鸡。
-  </div>
-
-  <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row">
-      <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">主胜让胜（本菲卡大胜翻盘）</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">比分预测：</span>
-      <span class="pred-score">3-0</span>
-      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">2-0</span>
-    </div>
-    <div class="conf-bar" style="margin-top:0.5rem">
-      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
-      <span class="bar-label">★★★★</span>
-    </div>
-  </div>
-
-  <h4>比赛结果晋级影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>本菲卡（首回合1-2）</th><th>圣加仑（首回合2-1）</th></tr></thead>
-    <tbody>
-      <tr><td>本菲卡净胜2球及以上</td><td>总比分逆转晋级</td><td>被淘汰出局</td></tr>
-      <tr><td>本菲卡净胜1球（如2-1）</td><td>总比分平局，进入加时/点球</td><td>总比分平局，进入加时/点球</td></tr>
-      <tr><td>平局或圣加仑获胜</td><td>被淘汰出局</td><td>晋级第三轮</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<!-- ===== 006: 科林蒂安 vs 巴拉纳竞技 ===== -->
-<section class="card" id="match-006">
-  <div class="card-header">
-    <span class="match-id">周四 006</span>
-    <span class="match-league">巴甲 · 第21轮</span>
-    <span class="match-time">2026-07-31 06:30</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">科林蒂安</span>
-    <span class="vs">VS</span>
-    <span class="away">巴拉纳竞技</span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.72</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.15</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">4.35</div>
-    </div>
-  </div>
-
-  <h4>上次比赛回顾</h4>
-  <p><strong>科林蒂安上次比赛（2026-07-26 · 客场 1-1 巴伊亚）：</strong>科林蒂安客场逼平巴伊亚，延续4轮不败。安吉利里早早破门，但下半场被扳平。</p>
-  <p><strong>巴拉纳竞技上次比赛（2026-07-26 · 主场 2-0 雷莫）：</strong>巴拉纳竞技主场完胜，延续不败势头，攻防两端表现稳健。</p>
-
-  <h4>积分排名与联赛位置</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">科林蒂安 · 第9名</div>
-      <div class="insight-value">20轮 7胜7平6负 / 进28失22 / 28分</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">巴拉纳竞技 · 第3名</div>
-      <div class="insight-value">20轮 10胜6平4负 / 进30失18 / 36分</div>
-    </div>
-  </div>
-
-  <h4>历史交锋（近6次）</h4>
-  <div class="table-wrap">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
-    <tbody>
-      <tr><td>2026-02</td><td>巴拉纳竞技 vs 科林蒂安</td><td>0-1</td><td><span class="tag tag-green">胜</span></td></tr>
-      <tr><td>2025-09</td><td>科林蒂安 vs 巴拉纳竞技</td><td>3-0</td><td><span class="tag tag-green">胜</span></td></tr>
-      <tr><td>2025-05</td><td>巴拉纳竞技 vs 科林蒂安</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
-      <tr><td>2024-11</td><td>科林蒂安 vs 巴拉纳竞技</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
-      <tr><td>2024-07</td><td>巴拉纳竞技 vs 科林蒂安</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
-      <tr><td>2024-04</td><td>科林蒂安 vs 巴拉纳竞技</td><td>1-0</td><td><span class="tag tag-green">胜</span></td></tr>
-    </tbody>
-  </table>
-  </div>
-  <p><strong>科林蒂安近6次交锋4胜2平不败，主场对巴拉纳竞技近7次不败。</strong>主场优势明显。</p>
-
-  <h4>近期状态与主客场</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">科林蒂安 近5场</div>
-      <div class="insight-value">2胜2平1负 · 进8失5</div>
-      <div class="form-row" style="margin-top:0.4rem">
-        <span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
-      </div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">巴拉纳竞技 近5场</div>
-      <div class="insight-value">3胜1平1负 · 进8失4</div>
-      <div class="form-row" style="margin-top:0.4rem">
-        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
-      </div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">科林蒂安 主场</div>
-      <div class="insight-value">10场 5胜2平3负 · 胜率50% · 进12失8</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">巴拉纳竞技 客场</div>
-      <div class="insight-value">10场 3胜1平5负 · 进9失13 · 客场疲软</div>
-    </div>
-  </div>
-
-  <h4>伤停与赛前动态</h4>
-  <p>科林蒂安：轮换前腰扎佩里和轮换后腰费利皮尼奥因伤缺阵，主力框架基本完整。巴拉纳竞技：阵容齐整，但客场表现一直是短板。</p>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数警示：</strong>科林蒂安主场对巴拉纳竞技历史交锋碾压，但巴拉纳竞技本赛季整体实力更强排名第3。竞彩主胜1.72低开，需防范平局。
-  </div>
-
-  <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row">
-      <span class="pred-label">推荐方向：</span>
-      <span class="pred-value">主胜（科林蒂安主场取胜）</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">比分预测：</span>
-      <span class="pred-score">1-0</span>
-      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">2-1</span>
-    </div>
-    <div class="conf-bar" style="margin-top:0.5rem">
-      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
-      <span class="bar-label">★★★☆</span>
-    </div>
-  </div>
-
-  <h4>比赛结果联赛影响</h4>
-  <div class="table-wrap">
-  <table>
-    <thead><tr><th>情境</th><th>科林蒂安（现第9/28分）</th><th>巴拉纳竞技（现第3/36分）</th></tr></thead>
-    <tbody>
-      <tr><td>科林蒂安获胜</td><td>积分升至31分，排名跃升至第5-6位，逼近洲际赛资格区</td><td>积分维持36分，排名可能跌至第4-5位，与榜首差距拉大</td></tr>
-      <tr><td>平局</td><td>积分29分，排名维持第8-9位，与资格区仍有差距</td><td>积分37分，稳固第3位，继续向榜首施压</td></tr>
-      <tr><td>巴拉纳竞技获胜</td><td>积分维持28分，排名可能下滑至第10位，远离资格区</td><td>积分39分，巩固第3位，紧追榜首帕尔梅拉斯和弗拉门戈</td></tr>
-    </tbody>
-  </table>
-  </div>
-</section>
-
-<!-- ========== 四、综合汇总 ========== -->
-<h2>四、6场比赛比分预测汇总</h2>
+<!-- ========== 四、比分预测汇总 ========== -->
+<h2>四、比分预测汇总</h2>
 <div class="table-wrap">
 <table>
   <thead>
     <tr>
-      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
+      <th>编号</th><th>对阵</th><th>赛事</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><span class="tag tag-red">001</span></td>
-      <td>中日德兰 vs 贝西克塔斯</td><td>欧罗巴</td>
-      <td><span class="tag tag-yellow">双平博平</span></td>
+      <td><span class="tag tag-blue">001</span></td>
+      <td>中日德兰 vs 贝西克塔</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">客不败博平</span></td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
       <td>★★★</td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">002</span></td>
+      <td><span class="tag tag-blue">002</span></td>
       <td>帕福斯 vs 斯海杜克</td><td>欧罗巴</td>
-      <td><span class="tag tag-green">客不败博胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-2</td>
-      <td>★★★☆</td>
+      <td><span class="tag tag-red">客不败博客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-2</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
+      <td>★★★</td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">003</span></td>
-      <td>安德莱赫特 vs 哈马比</td><td>欧罗巴</td>
-      <td><span class="tag tag-green">主胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
+      <td><span class="tag tag-blue">003</span></td>
+      <td>安德莱 vs 哈马比</td><td>欧罗巴</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
       <td>★★★</td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">004</span></td>
-      <td>费伦茨瓦罗斯 vs 特温特</td><td>欧罗巴</td>
-      <td><span class="tag tag-yellow">客不败博客胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td><span class="tag tag-blue">004</span></td>
+      <td>费伦茨 vs 特温特</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">主不败博平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
       <td>★★★</td>
     </tr>
     <tr>
-      <td><span class="tag tag-red">005</span></td>
+      <td><span class="tag tag-blue">005</span></td>
       <td>本菲卡 vs 圣加仑</td><td>欧罗巴</td>
-      <td><span class="tag tag-green">主胜让胜</span></td>
+      <td><span class="tag tag-green">主胜博让胜</span></td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">3-0</td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-0</td>
       <td>★★★★</td>
     </tr>
     <tr>
-      <td><span class="tag tag-blue">006</span></td>
-      <td>科林蒂安 vs 巴拉纳竞技</td><td>巴甲</td>
-      <td><span class="tag tag-green">主胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td>★★★☆</td>
+      <td><span class="tag tag-red">006</span></td>
+      <td>科林蒂安 vs 巴竞技</td><td>巴甲</td>
+      <td><span class="tag tag-yellow">双平博主不败</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>★★★</td>
     </tr>
   </tbody>
 </table>
@@ -1256,228 +1180,215 @@ sup a:hover { text-decoration: underline; }
 <h3>当日盘口特征总结</h3>
 <div class="summary-grid">
   <div class="summary-card">
-    <div class="s-match">最大翻盘战：本菲卡</div>
-    <div class="s-pred">主胜让胜 3-0</div>
-    <div class="s-confidence">首回合爆冷1-2落后，回到光明球场实力碾压，翻盘概率最高</div>
+    <div class="s-match">最深盘：本菲卡</div>
+    <div class="s-pred">主胜 1.35</div>
+    <div class="s-confidence">市场共识最强，豪门主场翻盘剧本，信心最高</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">最稳晋级：斯海杜克</div>
-    <div class="s-pred">客胜 0-1</div>
-    <div class="s-confidence">手握2球优势，对手状态低迷，双杀概率极大</div>
+    <div class="s-match">最具价值博胆：本菲卡让胜</div>
+    <div class="s-pred">赢2球以上</div>
+    <div class="s-confidence">实力差距巨大 + 首回合爆冷 + 主场复仇，赢球赢盘概率高</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">最具悬念：中日德兰</div>
-    <div class="s-pred">双平 1-1</div>
-    <div class="s-confidence">首回合少打一人仅输1球，主场11对11翻盘有戏，但贝西克塔斯经验老道</div>
+    <div class="s-match">最可能爆冷：帕福斯 vs 斯海杜克</div>
+    <div class="s-pred">客队不败</div>
+    <div class="s-confidence">2球优势 + 客场稳守反击，主队翻盘难度极大</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">潜在冷门：费伦茨瓦罗斯</div>
-    <div class="s-pred">客不败 1-2</div>
-    <div class="s-confidence">特温特客场必须强攻，后防大开，存在翻盘可能</div>
+    <div class="s-match">最焦灼：中日德兰 vs 贝西克塔</div>
+    <div class="s-pred">平局概率最高</div>
+    <div class="s-confidence">实力接近 + 1球差距 + 首回合红牌因素，平局3.10偏低</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">主场龙：安德莱赫特</div>
-    <div class="s-pred">主胜 2-0</div>
-    <div class="s-confidence">阵容深度碾压哈马比，主场不会再给对手机会</div>
+    <div class="s-match">巴甲焦点：科林蒂安 vs 巴竞技</div>
+    <div class="s-pred">双平格局</div>
+    <div class="s-confidence">历史交锋主队碾压 + 排名客队占优，矛盾盘口下双平最优</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">巴甲焦点：科林蒂安</div>
-    <div class="s-pred">主胜 1-0</div>
-    <div class="s-confidence">主场交锋碾压+巴拉纳竞技客场疲软，但需防范平局</div>
+    <div class="s-match">战意最强：安德莱赫特</div>
+    <div class="s-pred">主胜格局</div>
+    <div class="s-confidence">首回合被绝平 + 主场 + 身价碾压，赢球才能晋级战意明确</div>
   </div>
 </div>
 
 <h3>风险提示</h3>
 <div class="warning" style="font-size:0.9rem;padding:1.25rem">
-  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月30日14:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
-  <p style="margin-top:0.5rem"><strong>2. 不确定性：</strong>足球比赛存在大量不可控因素——红牌、点球、VAR判罚、天气等，任何分析都无法100%预测结果。</p>
-  <p style="margin-top:0.5rem"><strong>3. 伤停变动：</strong>伤病信息以赛前最终确认名单为准。部分球队可能在赛前调整首发。</p>
-  <p style="margin-top:0.5rem"><strong>4. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
+  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月29日20:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
+  <p style="margin-top:0.5rem"><strong>2. 资格赛特殊性：</strong>欧罗巴资格赛第二轮次回合涉及晋级因素，球队战术选择受首回合比分影响大，红牌、点球等变数更多。</p>
+  <p style="margin-top:0.5rem"><strong>3. 客场进球规则：</strong>欧罗巴资格赛仍适用客场进球规则，需特别注意总比分打平时客场进球多的球队晋级。</p>
+  <p style="margin-top:0.5rem"><strong>4. 季前状态差异：</strong>部分联赛（葡超、比甲、土超等）新赛季尚未开始，球队处于季前备战期，状态波动较大。</p>
+  <p style="margin-top:0.5rem"><strong>5. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
 </div>
 
 <!-- ========== 六、当日赛事晋级路径与联赛形势 ========== -->
 <h2>六、当日赛事晋级路径与联赛形势</h2>
 
-<h3>6.1 欧罗巴资格赛第二轮形势总览</h3>
-<p>欧罗巴资格赛第二轮（Q2）次回合，5场焦点战同时开战。首回合客场球队拿分率超过40%，次回合悬念拉满。</p>
+<h3>6.1 欧罗巴资格赛赛事形势总览</h3>
 <div class="table-wrap">
 <table>
   <thead>
     <tr>
-      <th style="width:18%">对阵</th>
-      <th style="width:12%">首回合比分</th>
-      <th style="width:35%">晋级形势</th>
-      <th style="width:35%">次回合关键因素</th>
+      <th>对阵</th>
+      <th>首回合比分</th>
+      <th>晋级形势</th>
+      <th>次回合关键因素</th>
     </tr>
   </thead>
   <tbody>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>中日德兰 vs 贝西克塔斯</strong><br><small style="color:var(--muted)">联赛路径 · 01:00</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">0-1</td>
-      <td>中日德兰需净胜1球以上才能晋级；平局则贝西克塔斯晋级<br><span class="tag tag-red">本场</span></td>
-      <td>中日德兰埃蒂姆红牌停赛；贝西克塔斯握有客场进球优势</td>
-    </tr>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>帕福斯 vs 斯海杜克</strong><br><small style="color:var(--muted)">联赛路径 · 01:00</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">0-2</td>
-      <td>帕福斯需净胜3球才能晋级；斯海杜克不败即晋级<br><span class="tag tag-red">本场</span></td>
-      <td>帕福斯门将重伤缺阵；斯海杜克手握2球优势心态从容</td>
-    </tr>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>安德莱赫特 vs 哈马比</strong><br><small style="color:var(--muted)">联赛路径 · 02:30</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">1-1</td>
-      <td>安德莱赫特主场不败即可晋级；哈马比必须取胜<br><span class="tag tag-red">本场</span></td>
-      <td>安德莱赫特萨利巴红牌停赛+后防伤缺；哈马比联赛状态正佳</td>
-    </tr>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>费伦茨瓦罗斯 vs 特温特</strong><br><small style="color:var(--muted)">联赛路径 · 02:30</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">2-1</td>
-      <td>费伦茨瓦罗斯不败即晋级；特温特需净胜2球<br><span class="tag tag-red">本场</span></td>
-      <td>特温特后防两核心伤缺；费伦茨瓦罗斯主场欧战11场不败</td>
-    </tr>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>本菲卡 vs 圣加仑</strong><br><small style="color:var(--muted)">联赛路径 · 03:00</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">1-2</td>
-      <td>本菲卡需净胜2球才能晋级；圣加仑不败即晋级<br><span class="tag tag-red">本场</span></td>
-      <td>本菲卡主场光明球场威力巨大；圣加仑首回合爆冷士气高涨</td>
+    <tr>
+      <td><strong>中日德兰 vs 贝西克塔</strong></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">贝西克塔 1-0</td>
+      <td>中日德兰需净胜1球以上晋级；贝西克塔不败即晋级</td>
+      <td>中日德兰Etim停赛；贝西克塔阵容齐整；主场优势</td>
     </tr>
     <tr>
-      <td><strong>塞萨洛尼基 vs 基辅迪纳摩</strong><br><small style="color:var(--muted)">联赛路径 · 前日</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">3-2</td>
-      <td>塞萨洛尼基握3个客场进球，晋级形势极佳</td>
-      <td>基辅迪纳摩需客场净胜2球，形势被动</td>
+      <td><strong>帕福斯 vs 斯海杜克</strong></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">斯海杜克 2-0</td>
+      <td>帕福斯需净胜2球以上逼平加时；斯海杜克不败即晋级</td>
+      <td>帕福斯必须主攻；斯海杜克防守反击；2球优势巨大</td>
     </tr>
     <tr>
-      <td><strong>特拉维夫马卡比 vs 谢里夫</strong><br><small style="color:var(--muted)">联赛路径 · 前日</small></td>
-      <td style="font-family:'SFMono-Regular',Consolas,monospace;font-weight:700;font-size:1.1em">5-0</td>
-      <td>特拉维夫马卡比基本锁定晋级</td>
-      <td>5球差距让次回合悬念基本归零</td>
+      <td><strong>安德莱 vs 哈马比</strong></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">哈马比 1-1</td>
+      <td>安德莱胜则晋级；哈马比需客场胜或高比分平</td>
+      <td>安德莱Saliba停赛；哈马比赛季中状态好；身价差距大</td>
+    </tr>
+    <tr>
+      <td><strong>费伦茨 vs 特温特</strong></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">特温特 1-2</td>
+      <td>费伦茨不败即晋级；特温特需净胜1球以上</td>
+      <td>费伦茨2客场进球；特温特季前状态存疑</td>
+    </tr>
+    <tr>
+      <td><strong>本菲卡 vs 圣加仑</strong></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">圣加仑 2-1</td>
+      <td>本菲卡净胜1球以上晋级（客场进球）；圣加仑需不败</td>
+      <td>本菲卡实力碾压；主场光明球场；首回合爆冷因素</td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<div class="insight-grid" style="margin-top:1rem">
-  <div class="insight-card" style="border-left-color:var(--accent)">
-    <div class="insight-label">本场 · 中日德兰</div>
-    <div class="insight-value">少打一人只输一球，主场翻盘有底气</div>
-  </div>
-  <div class="insight-card" style="border-left-color:var(--accent2)">
-    <div class="insight-label">本场 · 帕福斯</div>
-    <div class="insight-value">两球劣势下绝地反击，难度极大</div>
-  </div>
-  <div class="insight-card" style="border-left-color:var(--accent3)">
-    <div class="insight-label">本场 · 本菲卡</div>
-    <div class="insight-value">光明球场翻盘战，实力碾压可期</div>
-  </div>
-  <div class="insight-card" style="border-left-color:var(--home)">
-    <div class="insight-label">本场 · 科林蒂安</div>
-    <div class="insight-value">主场交锋碾压，争分动力十足</div>
-  </div>
+<h3>6.2 巴甲联赛形势总览</h3>
+<div class="path-box">
+  <p><strong>科林蒂安 vs 巴拉纳竞技</strong>是巴甲第21轮的焦点战之一。巴拉纳竞技目前排名第3，距离榜首帕尔梅拉斯仅4分差距，仍有争冠希望。科林蒂安排名第9，距离解放者杯资格区（前6名）仅4分差距，主场抢分意愿强烈。</p>
+  <p style="margin-top:0.75rem">两队历史交锋科林蒂安近6次5胜1平占据绝对优势，但本赛季巴拉纳竞技状态明显更好，排名更高。本场比赛是检验巴拉纳竞技能否延续客场强势的关键之战。</p>
 </div>
 
-<h3>6.2 巴甲联赛赛事形势总览</h3>
-<div class="table-wrap">
-<table>
-  <thead>
-    <tr>
-      <th>对阵</th><th>轮次</th><th>联赛形势</th><th>关键看点</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr style="background:rgba(230,57,70,0.06)">
-      <td><strong>科林蒂安 vs 巴拉纳竞技</strong></td>
-      <td>第21轮</td>
-      <td>科林蒂安第9（28分）vs 巴拉纳竞技第3（36分），差距8分</td>
-      <td>科林蒂安主场7次对客队不败；巴拉纳竞技客场疲软<br><span class="tag tag-red">本场</span></td>
-    </tr>
-  </tbody>
-</table>
+<h3>6.3 欧罗巴资格赛体系说明</h3>
+<div class="path-box">
+  <h4>欧罗巴联赛资格赛结构</h4>
+  <div class="path-flow">
+    <span class="path-node">第一轮资格赛</span>
+    <span class="path-arrow">→</span>
+    <span class="path-node current">第二轮资格赛</span>
+    <span class="path-arrow">→</span>
+    <span class="path-node">第三轮资格赛</span>
+    <span class="path-arrow">→</span>
+    <span class="path-node">附加赛</span>
+    <span class="path-arrow">→</span>
+    <span class="path-node">小组赛</span>
+  </div>
+  <p style="font-size:0.85rem;color:var(--muted)">欧罗巴联赛资格赛共分4轮（第一轮资格赛、第二轮资格赛、第三轮资格赛、附加赛），采用主客场两回合制，客场进球规则适用。获胜球队晋级小组赛，与欧冠附加赛落败球队共同组成欧罗巴小组赛32强。</p>
 </div>
-
-<h3>6.3 赛事资格赛体系说明</h3>
-<p>欧罗巴联赛2026/27赛季资格赛路径：</p>
-<ul style="margin:0.5rem 0 1rem 1.2rem;font-size:0.9rem">
-  <li><strong>冠军路径（Champions Path）：</strong>各国杯赛冠军及低排名联赛冠军</li>
-  <li><strong>联赛路径（League Path）：</strong>各国联赛排名靠前但未获欧冠资格的球队</li>
-  <li><strong>晋级链：</strong>Q1 → Q2 → Q3 → 附加赛 → 欧罗巴正赛联赛阶段</li>
-  <li><strong>淘汰去向：</strong>欧罗巴资格赛负方可进入欧协杯相应轮次</li>
-</ul>
 
 <h3>6.4 晋级路径与对阵前瞻</h3>
 <div class="insight-grid">
-  <div class="insight-card" style="border-left-color:var(--accent)">
-    <div class="insight-label">中日德兰/贝西克塔斯</div>
-    <div class="insight-value">胜者晋级Q3，对阵待定</div>
+  <div class="insight-card">
+    <div class="insight-label">本菲卡晋级路径</div>
+    <div class="insight-value">若晋级第三轮，将对阵更强对手，目标小组赛</div>
   </div>
-  <div class="insight-card" style="border-left-color:var(--accent2)">
-    <div class="insight-label">帕福斯/斯海杜克</div>
-    <div class="insight-value">胜者晋级Q3，对阵待定</div>
+  <div class="insight-card">
+    <div class="insight-label">安德莱赫特</div>
+    <div class="insight-value">比甲豪门渴望重返欧战正赛</div>
   </div>
-  <div class="insight-card" style="border-left-color:var(--accent3)">
-    <div class="insight-label">安德莱赫特/哈马比</div>
-    <div class="insight-value">胜者晋级Q3，对阵待定</div>
+  <div class="insight-card">
+    <div class="insight-label">贝西克塔</div>
+    <div class="insight-value">土超豪门欧战常客，经验丰富</div>
   </div>
-  <div class="insight-card" style="border-left-color:var(--home)">
-    <div class="insight-label">费伦茨瓦罗斯/特温特</div>
-    <div class="insight-value">胜者晋级Q3，对阵待定</div>
+  <div class="insight-card">
+    <div class="insight-label">费伦茨瓦罗斯</div>
+    <div class="insight-value">匈甲霸主力争连续晋级</div>
   </div>
 </div>
 
 <h3>6.5 比赛结果对联赛排名与欧战资格的影响</h3>
-<p>欧罗巴资格赛晋级与否直接影响各队下赛季欧战席位和联赛收入。本菲卡、安德莱赫特等传统豪门若被淘汰，将面临巨大经济损失和舆论压力。巴甲方面，科林蒂安与巴拉纳竞技的比赛结果直接影响两队洲际赛资格争夺。</p>
+<div class="path-box">
+  <p><strong>巴甲方面：</strong>科林蒂安若主场取胜，积分将达到31分，排名有望上升至第7位左右，距离解放者杯资格区（前6）仅差1分。巴拉纳竞技若客场输球，积分仍为36分，可能被身后的圣保罗（35分）追近，争冠形势将变得更加困难。</p>
+  <p style="margin-top:0.75rem"><strong>欧战方面：</strong>5场欧罗巴资格赛的胜者将晋级第三轮资格赛，距离小组赛还有两轮之遥。本菲卡作为葡超豪门，目标直指小组赛；贝西克塔、安德莱赫特等球队也都具备小组赛实力。</p>
+</div>
 
-<h3>6.6 相关联赛积分榜</h3>
-<h4>巴甲 2026赛季 · 截至7月30日</h4>
-<div class="table-wrap" style="max-height:400px">
+<h3>6.6 巴甲积分榜（前10名）</h3>
+<div class="table-wrap">
 <table>
   <thead>
-    <tr><th>排名</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>得</th><th>失</th><th>积分</th><th>备注</th></tr>
+    <tr>
+      <th>排名</th><th>球队</th><th>轮次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜</th><th>积分</th>
+    </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>1</strong></td><td><strong>帕尔梅拉斯</strong></td><td>20</td><td>12</td><td>4</td><td>4</td><td>35</td><td>18</td><td><strong>40</strong></td><td><span class="tag tag-green">解放者杯</span></td>
+      <td>1</td><td>帕尔梅拉斯</td><td>20</td><td>12</td><td>4</td><td>4</td><td>32/16</td><td>+16</td><td><strong>40</strong></td>
     </tr>
     <tr>
-      <td><strong>2</strong></td><td><strong>弗拉门戈</strong></td><td>20</td><td>11</td><td>5</td><td>4</td><td>32</td><td>20</td><td><strong>38</strong></td><td><span class="tag tag-green">解放者杯</span></td>
+      <td>2</td><td>弗拉门戈</td><td>20</td><td>11</td><td>5</td><td>4</td><td>28/18</td><td>+10</td><td><strong>38</strong></td>
     </tr>
-    <tr style="background:rgba(42,157,143,0.08)">
-      <td><strong>3</strong></td><td><strong>巴拉纳竞技</strong></td><td>20</td><td>10</td><td>6</td><td>4</td><td>30</td><td>18</td><td><strong>36</strong></td><td><span class="tag tag-green">解放者杯</span></td>
-    </tr>
-    <tr>
-      <td>4</td><td>弗鲁米嫩塞</td><td>20</td><td>10</td><td>5</td><td>5</td><td>28</td><td>22</td><td>35</td><td><span class="tag tag-green">解放者杯</span></td>
+    <tr class="highlight-team">
+      <td>3</td><td>巴拉纳竞技</td><td>20</td><td>11</td><td>3</td><td>6</td><td>28/19</td><td>+9</td><td><strong>36</strong></td>
     </tr>
     <tr>
-      <td>5</td><td>布拉干RB</td><td>20</td><td>9</td><td>6</td><td>5</td><td>26</td><td>21</td><td>33</td><td><span class="tag tag-blue">南美杯</span></td>
+      <td>4</td><td>圣保罗</td><td>20</td><td>10</td><td>5</td><td>5</td><td>26/19</td><td>+7</td><td><strong>35</strong></td>
     </tr>
     <tr>
-      <td>6</td><td>维多利亚</td><td>20</td><td>9</td><td>5</td><td>6</td><td>25</td><td>24</td><td>32</td><td><span class="tag tag-blue">南美杯</span></td>
-    </tr>
-    <tr style="background:rgba(42,157,143,0.08)">
-      <td><strong>9</strong></td><td><strong>科林蒂安</strong></td><td>20</td><td>7</td><td>7</td><td>6</td><td>28</td><td>22</td><td><strong>28</strong></td><td>—</td>
+      <td>5</td><td>格雷米奥</td><td>20</td><td>9</td><td>6</td><td>5</td><td>25/18</td><td>+7</td><td><strong>33</strong></td>
     </tr>
     <tr>
-      <td>10</td><td>克鲁塞罗</td><td>20</td><td>7</td><td>6</td><td>7</td><td>24</td><td>25</td><td>27</td><td>—</td>
+      <td>6</td><td>米内罗竞技</td><td>20</td><td>9</td><td>5</td><td>6</td><td>24/20</td><td>+4</td><td><strong>32</strong></td>
+    </tr>
+    <tr>
+      <td>7</td><td>巴西国际</td><td>20</td><td>8</td><td>7</td><td>5</td><td>22/19</td><td>+3</td><td><strong>31</strong></td>
+    </tr>
+    <tr>
+      <td>8</td><td>弗鲁米嫩塞</td><td>20</td><td>8</td><td>5</td><td>7</td><td>23/22</td><td>+1</td><td><strong>29</strong></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>9</td><td>科林蒂安</td><td>20</td><td>7</td><td>7</td><td>6</td><td>22/20</td><td>+2</td><td><strong>28</strong></td>
+    </tr>
+    <tr>
+      <td>10</td><td>桑托斯</td><td>20</td><td>7</td><td>6</td><td>7</td><td>20/21</td><td>-1</td><td><strong>27</strong></td>
     </tr>
   </tbody>
 </table>
 </div>
-<p style="font-size:0.78rem;color:var(--muted);margin-top:0.3rem">数据来源：球迷屋、7M体育网 · 更新时间：2026-07-30</p>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:-0.5rem">注：绿色高亮行为本场参赛球队。巴甲前6名获得解放者杯资格，7-12名获得南美杯资格。</p>
 
 <h3>6.7 后续赛程表</h3>
 <div class="table-wrap">
 <table>
   <thead>
-    <tr><th>日期</th><th>赛事</th><th>阶段</th><th>说明</th></tr>
+    <tr>
+      <th>日期</th><th>赛事</th><th>阶段</th><th>说明</th>
+    </tr>
   </thead>
   <tbody>
-    <tr><td>2026-07-31</td><td>欧罗巴Q2</td><td>次回合</td><td>本场5场资格赛次回合</td></tr>
-    <tr><td>2026-08-07</td><td>欧罗巴Q3</td><td>首回合</td><td>Q2胜者进入第三轮</td></tr>
-    <tr><td>2026-08-14</td><td>欧罗巴Q3</td><td>次回合</td><td>第三轮决出附加赛名额</td></tr>
-    <tr><td>2026-08-21</td><td>欧罗巴附加赛</td><td>首回合</td><td>决定正赛名额</td></tr>
-    <tr><td>2026-08-28</td><td>欧罗巴附加赛</td><td>次回合</td><td>正赛32强出炉</td></tr>
-    <tr><td>2026-09-16</td><td>欧罗巴正赛</td><td>联赛阶段</td><td>正赛首轮开打</td></tr>
-    <tr><td>2026-08-02</td><td>巴甲第22轮</td><td>联赛</td><td>科林蒂安客场 vs 弗拉门戈</td></tr>
+    <tr>
+      <td>8月6-7日</td><td>欧罗巴资格赛</td><td>第三轮首回合</td><td>第二轮胜者晋级</td>
+    </tr>
+    <tr>
+      <td>8月13-14日</td><td>欧罗巴资格赛</td><td>第三轮次回合</td><td>主客场两回合制</td>
+    </tr>
+    <tr>
+      <td>8月20-21日</td><td>欧罗巴附加赛</td><td>首回合</td><td>距离小组赛最后一轮</td>
+    </tr>
+    <tr>
+      <td>8月27-28日</td><td>欧罗巴附加赛</td><td>次回合</td><td>胜者晋级小组赛</td>
+    </tr>
+    <tr>
+      <td>9月17日</td><td>欧罗巴小组赛</td><td>第1轮</td><td>32强小组赛开启</td>
+    </tr>
+    <tr>
+      <td>7月31日</td><td>巴甲</td><td>第22轮</td><td>联赛继续进行</td>
+    </tr>
   </tbody>
 </table>
 </div>
@@ -1495,48 +1406,48 @@ sup a:hover { text-decoration: underline; }
           <a class="src-url" href="https://www.lottery.gov.cn/jc/jsq/zqspf/" target="_blank" rel="noopener">https://www.lottery.gov.cn/jc/jsq/zqspf/</a>
         </li>
         <li id="cite-2">
-          <span class="src-title">UEFA官方 — 欧罗巴资格赛赛程、比分、晋级规则。</span>
-          <a class="src-url" href="https://www.uefa.com/uefaeuropaleague/" target="_blank" rel="noopener">https://www.uefa.com/uefaeuropaleague/</a>
+          <span class="src-title">网易体育 (sports.163.com) — 竞彩足球比赛列表、基础赔率数据。</span>
+          <a class="src-url" href="https://sports.163.com/caipiao/bet/football" target="_blank" rel="noopener">https://sports.163.com/caipiao/bet/football</a>
         </li>
         <li id="cite-3">
-          <span class="src-title">7M体育网 — 欧罗巴资格赛资料库、赛程赛果。</span>
-          <a class="src-url" href="https://data.7m.com.cn/Matches_Data/58/gb/" target="_blank" rel="noopener">https://data.7m.com.cn/Matches_Data/58/gb/</a>
+          <span class="src-title">欧足联官网 (uefa.com) — 欧罗巴联赛资格赛赛程、首回合赛果、晋级规则。</span>
+          <a class="src-url" href="https://www.uefa.com/european-league/" target="_blank" rel="noopener">https://www.uefa.com/</a>
         </li>
         <li id="cite-4">
-          <span class="src-title">球迷屋 — 欧罗巴资格赛比分战报、比赛统计。</span>
-          <a class="src-url" href="https://m.qiumiwu.com/" target="_blank" rel="noopener">https://m.qiumiwu.com/</a>
+          <span class="src-title">Transfermarkt — 各队身价数据、阵容信息、转会动态。</span>
+          <a class="src-url" href="https://www.transfermarkt.com/" target="_blank" rel="noopener">https://www.transfermarkt.com/</a>
         </li>
         <li id="cite-5">
-          <span class="src-title">Goal.com — 欧罗巴资格赛实时比分、技术统计。</span>
-          <a class="src-url" href="https://www.goal.com/" target="_blank" rel="noopener">https://www.goal.com/</a>
+          <span class="src-title">500彩票网 — 欧罗巴资格赛数据分析、历史交锋、近期战绩。</span>
+          <span class="src-url">P0级专业数据平台</span>
         </li>
         <li id="cite-6">
-          <span class="src-title">头条分析师 — 欧罗巴资格赛次回合前瞻、比分预测。</span>
-          <span class="src-url">P2级专业分析</span>
+          <span class="src-title">搜狐体育 — 6场竞彩足球比赛全解析、赛前前瞻、伤病情报。</span>
+          <span class="src-url">P1级体育媒体</span>
         </li>
         <li id="cite-7">
-          <span class="src-title">搜狐体育 — 竞彩足球比赛全解析、赛前前瞻。</span>
-          <a class="src-url" href="https://m.sohu.com/" target="_blank" rel="noopener">https://m.sohu.com/</a>
+          <span class="src-title">头条分析师 — 凯利指数、盘口解读、竞彩策略分析。</span>
+          <span class="src-url">P2级专业分析</span>
         </li>
         <li id="cite-8">
-          <span class="src-title">SportsMole — 科林蒂安vs巴拉纳竞技阵容分析、伤病报告。</span>
-          <a class="src-url" href="https://www.sportsmole.co.uk/" target="_blank" rel="noopener">https://www.sportsmole.co.uk/</a>
+          <span class="src-title">巴甲官方网站 (cbffutebol.com.br) — 巴甲积分榜、赛程、球队数据。</span>
+          <span class="src-url">P0级官方来源</span>
         </li>
         <li id="cite-9">
-          <span class="src-title">OneFootball — 巴甲积分榜、球队动态。</span>
-          <a class="src-url" href="https://onefootball.com/" target="_blank" rel="noopener">https://onefootball.com/</a>
+          <span class="src-title">SportsMole — 各队赛前分析、伤病报告、预计首发。</span>
+          <a class="src-url" href="https://www.sportsmole.co.uk/" target="_blank" rel="noopener">https://www.sportsmole.co.uk/</a>
         </li>
         <li id="cite-10">
-          <span class="src-title">playmakerstats — 欧罗巴资格赛对阵数据。</span>
-          <span class="src-url">P1级专业数据</span>
+          <span class="src-title">OneFootball — 欧罗巴资格赛各队伤停名单、阵容信息。</span>
+          <span class="src-url">P1级体育媒体</span>
         </li>
         <li id="cite-11">
-          <span class="src-title">7M体育网 — 巴甲积分榜。</span>
-          <a class="src-url" href="http://ctc.data.7m.com.cn/matches_data/160/gb/standing.shtml" target="_blank" rel="noopener">http://ctc.data.7m.com.cn/matches_data/160/gb/standing.shtml</a>
+          <span class="src-title">球迷屋 — 巴甲历史交锋数据、联赛排名统计。</span>
+          <span class="src-url">P2级体育数据</span>
         </li>
         <li id="cite-12">
-          <span class="src-title">懂球帝 — 丹超、瑞典超、比甲积分榜数据。</span>
-          <a class="src-url" href="https://m.dongqiudi.com/" target="_blank" rel="noopener">https://m.dongqiudi.com/</a>
+          <span class="src-title">新浪彩票 — 欧罗巴资格赛晋级路径、赛事体系说明。</span>
+          <a class="src-url" href="https://lotto.sina.cn/" target="_blank" rel="noopener">https://lotto.sina.cn/</a>
         </li>
       </ol>
     </div>
@@ -1546,7 +1457,6 @@ sup a:hover { text-decoration: underline; }
 <!-- ECharts CDN -->
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <script>
-// assets/charts.js - ECharts visualizations for football match analysis (inlined)
 (function() {
   var style = getComputedStyle(document.documentElement);
   var accent = style.getPropertyValue('--accent').trim();
@@ -1585,12 +1495,12 @@ sup a:hover { text-decoration: underline; }
     xAxis: {
       type: 'category',
       data: [
-        '001 中日德兰\nvs 贝西克塔斯',
+        '001 中日德兰\nvs 贝西克塔',
         '002 帕福斯\nvs 斯海杜克',
-        '003 安德莱赫特\nvs 哈马比',
-        '004 费伦茨瓦罗斯\nvs 特温特',
+        '003 安德莱\nvs 哈马比',
+        '004 费伦茨\nvs 特温特',
         '005 本菲卡\nvs 圣加仑',
-        '006 科林蒂安\nvs 巴拉纳竞技'
+        '006 科林蒂安\nvs 巴竞技'
       ],
       axisLabel: { color: muted, fontSize: 11, interval: 0 },
       axisLine: { lineStyle: { color: rule } },
@@ -1609,7 +1519,7 @@ sup a:hover { text-decoration: underline; }
         name: '主胜支持率',
         type: 'bar',
         stack: 'total',
-        data: [52, 61, 48, 30, 78, 62],
+        data: [32, 55, 62, 52, 78, 54],
         itemStyle: {
           color: win,
           borderRadius: [0, 0, 0, 0],
@@ -1630,7 +1540,7 @@ sup a:hover { text-decoration: underline; }
         name: '平局支持率',
         type: 'bar',
         stack: 'total',
-        data: [28, 24, 32, 30, 12, 24],
+        data: [28, 22, 20, 24, 14, 26],
         itemStyle: {
           color: draw,
           borderColor: bg2,
@@ -1649,7 +1559,7 @@ sup a:hover { text-decoration: underline; }
         name: '客胜支持率',
         type: 'bar',
         stack: 'total',
-        data: [20, 15, 20, 40, 10, 14],
+        data: [40, 23, 18, 24, 8, 20],
         itemStyle: {
           color: loss,
           borderRadius: [4, 4, 0, 0],

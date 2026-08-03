@@ -4,9 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026年7月25日 竞彩足球11场比赛深度分析报告</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<title>2026年7月25日 韩职2场比赛深度分析报告</title>
 <style>
+/* === CSS Variables === */
 :root {
   --bg: #f0f2f5;
   --bg2: #ffffff;
@@ -22,93 +22,460 @@
   --home: #457b9d;
   --away: #e76f51;
 }
+
+/* === Reset & Base === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: var(--bg); color: var(--ink); line-height: 1.7; min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  min-height: 100vh;
 }
-.container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* === Layout === */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* === Hero === */
 .hero {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  color: #fff; padding: 3rem 0 2.5rem; text-align: center; position: relative; overflow: hidden;
+  color: #fff;
+  padding: 3rem 0 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 .hero::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: radial-gradient(circle at 20% 50%, rgba(230,57,70,0.15) 0%, transparent 50%),
               radial-gradient(circle at 80% 50%, rgba(42,157,143,0.15) 0%, transparent 50%);
 }
 .hero .container { position: relative; z-index: 1; }
-.hero h1 { font-weight: 700; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-.hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
-.hero .disclaimer { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block; }
-h2 { font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
-h3 { font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink); }
-h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem; }
-.card { background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid var(--rule); }
-.card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
-.card-header .match-id { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.8rem; color: var(--muted); background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px; }
-.card-header .match-league { font-size: 0.8rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
-.card-header .match-time { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.85rem; color: var(--muted); }
-.match-teams { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 1rem 0; font-size: 1.4rem; font-weight: 700; }
-.match-teams .vs { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; }
+.hero h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.hero .subtitle {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.25rem;
+}
+.hero .disclaimer {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* === Section Headings === */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--accent);
+  display: inline-block;
+}
+h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--ink);
+}
+h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 1rem 0 0.5rem;
+}
+
+/* === Cards === */
+.card {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid var(--rule);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.card-header .match-id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+.card-header .match-league {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.card-header .match-time {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.match-teams .vs {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
 .match-teams .home { color: var(--home); }
 .match-teams .away { color: var(--away); }
-.odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
-.odds-item { text-align: center; padding: 0.75rem 0.5rem; background: var(--bg); border-radius: 8px; }
-.odds-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
-.odds-item .value { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.3rem; font-weight: 700; }
+
+/* === Odds Grid === */
+.odds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.odds-item {
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.odds-item .label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.odds-item .value {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
 .odds-item .value.win { color: var(--win); }
 .odds-item .value.draw { color: var(--draw); }
 .odds-item .value.loss { color: var(--loss); }
-.insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
-.insight-card { background: var(--bg); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--accent); }
-.insight-card .insight-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
-.insight-card .insight-value { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
-.prediction { background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02)); border: 1px solid rgba(42,157,143,0.2); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; }
-.prediction .pred-title { font-size: 0.8rem; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
-.prediction .pred-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.prediction .pred-label { font-size: 0.8rem; color: var(--muted); }
-.prediction .pred-value { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent2); }
-.prediction .pred-score { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); background: rgba(230,57,70,0.08); padding: 0.2rem 0.8rem; border-radius: 6px; border: 1px solid rgba(230,57,70,0.2); }
-.warning { background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: var(--accent3); }
+
+/* === Insight Grid === */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.insight-card {
+  background: var(--bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.insight-card .insight-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+.insight-card .insight-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* === Prediction Box === */
+.prediction {
+  background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02));
+  border: 1px solid rgba(42,157,143,0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+.prediction .pred-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.prediction .pred-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.prediction .pred-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.prediction .pred-value {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent2);
+}
+.prediction .pred-score {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(230,57,70,0.08);
+  padding: 0.2rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(230,57,70,0.2);
+}
+
+/* === Warning Box === */
+.warning {
+  background: rgba(244,162,97,0.1);
+  border: 1px solid rgba(244,162,97,0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--accent3);
+}
 .warning strong { color: #e76f51; }
-.table-wrap { overflow-x: auto; overflow-y: auto; max-height: 600px; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--rule); }
-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-thead th { background: var(--bg); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 0.6rem 0.75rem; text-align: left; border-bottom: 2px solid var(--rule); position: sticky; top: 0; z-index: 1; }
-tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--rule); }
+
+/* === Tables === */
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+thead th {
+  background: var(--bg);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid var(--rule);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+tbody td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: rgba(0,0,0,0.02); }
-td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+td .tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
 .tag-green { background: rgba(42,157,143,0.12); color: var(--win); }
 .tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
 .tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
 .tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+
+/* 参赛球队高亮行 */
+tr.team-highlight {
+  background: rgba(42,157,143,0.06) !important;
+}
+tr.team-highlight td {
+  font-weight: 600;
+}
+tr.team-highlight td:first-child {
+  border-left: 3px solid var(--accent2);
+}
+
+/* === History Table === */
 .history-table { font-size: 0.82rem; }
 .history-table td { padding: 0.4rem 0.6rem; }
 .history-table .result { font-weight: 600; }
-.form-row { display: flex; gap: 0.35rem; align-items: center; }
-.form-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; }
+
+/* === Form Row === */
+.form-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.form-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff;
+}
 .form-dot.w { background: var(--win); }
 .form-dot.d { background: var(--draw); }
 .form-dot.l { background: var(--loss); }
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
-.summary-card { background: var(--bg2); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--rule); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
-.summary-card .s-match { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
-.summary-card .s-pred { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); }
-.summary-card .s-confidence { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
-footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--rule); }
+
+/* === Summary Grid === */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.summary-card {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.summary-card .s-match {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.summary-card .s-pred {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.summary-card .s-confidence {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* === Footer === */
+footer {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--rule);
+}
 footer h2 { font-size: 1.1rem; margin-bottom: 1rem; }
-footer .sources ol { padding-left: 1.2rem; font-size: 0.8rem; color: var(--muted); }
-footer .sources li { margin-bottom: 0.5rem; }
-footer .sources .src-title { color: var(--ink); }
-.conf-bar { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
-.conf-bar .bar-track { flex: 1; height: 8px; background: var(--rule); border-radius: 4px; overflow: hidden; }
-.conf-bar .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 0.3s; }
-.conf-bar .bar-label { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: var(--muted); min-width: 36px; text-align: right; }
-.chart-figure { margin: 2rem 0; }
-.chart-figure figcaption { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
-.chart-container { width: 100%; min-height: 380px; }
+footer .sources ol {
+  padding-left: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+footer .sources li {
+  margin-bottom: 0.5rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+footer .sources .src-title {
+  color: var(--ink);
+  word-break: normal;
+}
+footer .sources .src-url {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--accent);
+  word-break: break-all;
+}
+footer .sources a { word-break: break-all; }
+
+/* === Inline Citations === */
+sup a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+sup a:hover { text-decoration: underline; }
+
+/* === Conf bar === */
+.conf-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.conf-bar .bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.conf-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.3s;
+}
+.conf-bar .bar-label {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* === 联赛形势区块 === */
+.league-overview {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--rule);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.league-overview p {
+  margin-bottom: 0.75rem;
+  font-size: 0.92rem;
+}
+.league-overview p:last-child { margin-bottom: 0; }
+
+.note-box {
+  background: rgba(69,123,157,0.06);
+  border-left: 4px solid var(--home);
+  padding: 0.9rem 1.1rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1rem 0;
+  font-size: 0.88rem;
+}
+.note-box strong { color: var(--home); }
+
+/* === Responsive === */
 @media (max-width: 768px) {
   .hero h1 { font-size: 1.5rem; }
   .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -118,10 +485,18 @@ footer .sources .src-title { color: var(--ink); }
   .summary-grid { grid-template-columns: 1fr; }
   .container { padding: 0 1rem; }
 }
+
 @media (max-width: 600px) {
   .card-header { flex-direction: column; align-items: flex-start; }
   .insight-grid { grid-template-columns: 1fr; }
 }
+
+/* === Chart === */
+.chart-figure { margin: 2rem 0; }
+.chart-figure figcaption { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
+.chart-container { width: 100%; min-height: 380px; }
+
+/* === Print === */
 @media print {
   body { background: #fff; }
   .hero { background: #1a1a2e !important; -webkit-print-color-adjust: exact; }
@@ -131,844 +506,180 @@ footer .sources .src-title { color: var(--ink); }
 </style>
 </head>
 <body>
+
+<!-- ========== HERO ========== -->
 <header class="hero">
   <div class="container">
-    <h1>2026年7月25日 竞彩足球比赛深度分析</h1>
-    <p class="subtitle">11场比赛 · 2场韩职 + 2场瑞超 + 2场芬超 + 1场挪超 + 2场巴甲 + 2场美职</p>
-    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 凯利指数</p>
+    <h1>2026年7月25日 韩职2场比赛深度分析</h1>
+    <p class="subtitle">2场比赛 · 金泉尚武vs大田市民 · 浦项制铁vs全北现代</p>
+    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 联赛形势</p>
     <p class="disclaimer">⚠ 数据采集时间：2026年7月25日 12:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
   </div>
 </header>
 
 <main class="container">
 
-<h2>一、11场比赛总览</h2>
+<!-- ========== 一、比赛总览 ========== -->
+<h2>一、2场比赛总览</h2>
 <div class="table-wrap">
 <table>
   <thead>
-    <tr><th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜</th><th>平</th><th>负</th><th>让球</th><th>市场倾向</th></tr>
+    <tr>
+      <th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜</th><th>平</th><th>负</th><th>让球</th><th>市场倾向</th>
+    </tr>
   </thead>
   <tbody>
     <tr>
-      <td><span class="tag tag-yellow">201</span></td><td>韩职</td><td>18:30</td><td>金泉尚武</td><td>vs</td><td>大田市民</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.95</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.00</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.19</td>
-      <td>+1</td><td><span class="tag-green">客不败</span></td>
+      <td><span class="tag tag-yellow">001</span></td><td>韩职</td><td>18:30</td><td>金泉尚武</td><td>vs</td><td>大田市民</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.80</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--draw);font-weight:700">3.05</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.40</td>
+      <td>+0.5</td><td><span class="tag tag-yellow">平局 30%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">202</span></td><td>韩职</td><td>18:30</td><td>浦项制铁</td><td>vs</td><td>全北现代</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.98</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.82</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.28</td>
-      <td>+1</td><td><span class="tag-green">客胜倾向</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">203</span></td><td>瑞超</td><td>21:00</td><td>代格福什</td><td>vs</td><td>佐加顿斯</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.65</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.96</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.51</td>
-      <td>+1</td><td><span class="tag-green">客胜明确</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">204</span></td><td>芬超</td><td>21:30</td><td>玛丽港</td><td>vs</td><td>AC奥卢</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.40</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.25</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.41</td>
-      <td>+1</td><td><span class="tag-green">客胜明确</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">205</span></td><td>挪超</td><td>22:00</td><td>克里斯蒂</td><td>vs</td><td>斯达</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1.92</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.50</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">3.10</td>
-      <td>-1</td><td><span class="tag-yellow">主队略优</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">206</span></td><td>芬超</td><td>22:00</td><td>库奥皮奥</td><td>vs</td><td>瓦萨</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1.95</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.30</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">3.20</td>
-      <td>-1</td><td><span class="tag-yellow">主队占优</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">207</span></td><td>瑞超</td><td>23:30</td><td>卡尔马</td><td>vs</td><td>米亚尔比</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.20</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.32</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.68</td>
-      <td>-1</td><td><span class="tag-yellow">主队略优</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">208</span></td><td>巴甲</td><td>05:30(次日)</td><td>巴拉纳竞技</td><td>vs</td><td>巴西国际</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1.84</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.10</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">3.80</td>
-      <td>-1</td><td><span class="tag-green">主胜倾向</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">209</span></td><td>巴甲</td><td>05:30(次日)</td><td>桑托斯</td><td>vs</td><td>沙佩科恩斯</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1.26</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.80</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">8.00</td>
-      <td>-1</td><td><span class="tag-green">主胜稳胆</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">210</span></td><td>美职</td><td>09:30(次日)</td><td>圣迭戈FC</td><td>vs</td><td>达拉斯</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.16</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.65</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.55</td>
-      <td>-1</td><td><span class="tag-yellow">主队略优</span></td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">211</span></td><td>美职</td><td>10:00(次日)</td><td>圣何塞地震</td><td>vs</td><td>洛杉矶银河</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1.70</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.90</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">3.52</td>
-      <td>-1</td><td><span class="tag-green">主胜倾向</span></td>
+      <td><span class="tag tag-blue">002</span></td><td>韩职</td><td>18:30</td><td>浦项制铁</td><td>vs</td><td>全北现代</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.20</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.10</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">2.10</td>
+      <td>+0.5</td><td><span class="tag tag-green">客胜 43%</span></td>
     </tr>
   </tbody>
 </table>
 </div>
 
+<!-- ========== 二、市场信心对比 ========== -->
 <h2>二、市场信心指数对比</h2>
 <figure class="chart-figure">
-  <figcaption>各场次市场信心指数（基于赔率/让球/凯利指数综合评估）</figcaption>
-  <div class="chart-container" id="confidence-chart"></div>
+  <figcaption>2场比赛竞彩市场支持率分布（主胜 / 平局 / 客胜）</figcaption>
+  <div id="chart-confidence" class="chart-container"></div>
 </figure>
 
+<!-- ========== 三、逐场深度分析 ========== -->
 <h2>三、逐场深度分析</h2>
 
-<div class="card" id="match-201">
+<!-- ===== 001: 金泉尚武 vs 大田市民 ===== -->
+<section class="card" id="match-001">
   <div class="card-header">
-    <span class="match-id">周六201</span>
-    <span class="match-league">韩职</span>
-    <span class="match-time">18:30（北京时间）</span>
+    <span class="match-id">周六 001</span>
+    <span class="match-league">韩职 K1 · 第19轮</span>
+    <span class="match-time">2026-07-25 18:30</span>
   </div>
   <div class="match-teams">
     <span class="home">金泉尚武</span>
     <span class="vs">VS</span>
     <span class="away">大田市民</span>
   </div>
-
-  <h4>赔率数据</h4>
   <div class="odds-grid">
     <div class="odds-item">
       <div class="label">主胜</div>
-      <div class="value win">2.95</div>
+      <div class="value draw">2.80</div>
     </div>
     <div class="odds-item">
       <div class="label">平局</div>
-      <div class="value draw">3.00</div>
+      <div class="value draw">3.05</div>
     </div>
     <div class="odds-item">
       <div class="label">客胜</div>
-      <div class="value loss">2.19</div>
+      <div class="value win">2.40</div>
     </div>
   </div>
 
-  <h4>关键数据速览</h4>
+  <h4>积分排名</h4>
   <div class="insight-grid">
     <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">金泉尚武 第11(17分) / 大田市民 第9(20分)</div>
+      <div class="insight-label">金泉尚武 · 第10名</div>
+      <div class="insight-value">18轮 3胜9平6负 / 进18失25 / 18分</div>
     </div>
     <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 0胜6平3负, 进7失14 | 客: 4胜3平2负, 进14失6</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot d">D</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot w">W</div></div></div>
+      <div class="insight-label">大田市民 · 第9名</div>
+      <div class="insight-value">18轮 4胜7平7负 / 进20失20 / 19分</div>
     </div>
   </div>
 
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
+  <div class="note-box">
+    <strong>特别说明：</strong>金泉尚武为韩国军队球队，按照韩足协规定，无论赛季成绩如何都将降入K2联赛。2027赛季K1将扩军至14支球队。
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
   <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-03-14</td><td>韩职</td><td>大田市民</td><td style="text-align:center">1-1</td><td>金泉尚武</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-11-30</td><td>韩职</td><td>金泉尚武</td><td style="text-align:center">0-3</td><td>大田市民</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-08-31</td><td>韩职</td><td>大田市民</td><td style="text-align:center">2-1</td><td>金泉尚武</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-06-18</td><td>韩职</td><td>大田市民</td><td style="text-align:center">0-0</td><td>金泉尚武</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-04-19</td><td>韩职</td><td>金泉尚武</td><td style="text-align:center">0-2</td><td>大田市民</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2024-09-14</td><td>韩职</td><td>大田市民</td><td style="text-align:center">1-1</td><td>金泉尚武</td><td><span class="tag tag-yellow">平</span></td></tr>
-</tbody>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2026-03-15</td><td>大田市民 vs 金泉尚武</td><td>2-1</td><td><span class="tag tag-red">主胜</span></td></tr>
+      <tr><td>2025-09-20</td><td>金泉尚武 vs 大田市民</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-06-14</td><td>大田市民 vs 金泉尚武</td><td>2-0</td><td><span class="tag tag-red">主胜</span></td></tr>
+      <tr><td>2024-10-06</td><td>金泉尚武 vs 大田市民</td><td>0-1</td><td><span class="tag tag-red">客胜</span></td></tr>
+      <tr><td>2024-07-13</td><td>大田市民 vs 金泉尚武</td><td>2-2</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-03-30</td><td>金泉尚武 vs 大田市民</td><td>1-0</td><td><span class="tag tag-green">主胜</span></td></tr>
+    </tbody>
   </table>
   </div>
+  <p><strong>大田市民近6次交锋3胜2平1负，进8球失5球，略占优势。</strong>双方近3次交手大田2胜1平保持不败，心理层面占优。金泉尚武近3个主场对大田1胜1平1负，主场并未占到便宜。</p>
 
-  <h4>伤停情报</h4>
+  <h4>近期状态与主客场</h4>
   <div class="insight-grid">
     <div class="insight-card">
-      <div class="insight-label">金泉尚武</div>
-      <div class="insight-value">中场李秀彬停赛; 后防李政宅复出</div>
+      <div class="insight-label">金泉尚武 近5场</div>
+      <div class="insight-value">0胜2平3负 · 进3失7 · 平局率高</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
     </div>
     <div class="insight-card">
-      <div class="insight-label">大田市民</div>
-      <div class="insight-value">前锋迪奥戈伤缺; 边卫徐荣宰伤缺</div>
+      <div class="insight-label">大田市民 近5场</div>
+      <div class="insight-value">0胜3平2负 · 进5失7 · 连续7场不胜</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">金泉尚武 主场</div>
+      <div class="insight-value">9场 2胜5平2负 · 平局率56% · 场均失1.3</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">大田市民 客场</div>
+      <div class="insight-value">9场 2胜3平4负 · 胜率22% · 场均失1.2</div>
     </div>
   </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>金泉尚武阵容相对完整：</strong>作为军队球队，球员编制稳定，伤病管理规范。近期进攻端乏力，近5场仅入3球，主力前锋曹永旭状态低迷。<strong>大田市民前锋石田雅俊伤疑：</strong>日本前锋本赛季贡献5球3助攻，是球队进攻核心，若缺阵将大幅削弱锋线威胁。中场核心李淳敏累计黄牌停赛。</p>
 
   <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>客胜赔率2.19偏低，凯利指数客胜方向0.92低于市场均值，市场对客队拿分有明确倾向。平赔3.00位置适中，平局不可忽视。
+    <strong>⚠ 保级关键战：</strong>两队同处保级组，积分仅差1分，是名副其实的保级6分战。金泉尚武虽铁定降级，但仍可能扮演"搅局者"角色——军队球队纪律性强，往往在被看低时爆发出战斗力。大田市民连续7场不胜，球员心理压力巨大，客场能否顶住尚武的逼抢存疑。
   </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">金泉尚武主场9战0胜，联赛唯一主场不胜球队，近8轮联赛不胜，状态跌入谷底。大田市民客场防守联赛顶尖（场均失0.67球），近5次面对金泉尚武2胜3平保持不败，心理优势明显。金泉后防核心李政宅复出是利好，但中场李秀彬停赛影响攻防转换。大田市民外援前锋迪奥戈伤缺削弱前场支点，但客场稳守反击体系依然有效。两队近期均深陷平局怪圈（大田4连平，金泉8轮不胜），本场平局概率不低。</p>
 
   <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
+    <div class="pred-title">📊 综合判断</div>
     <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">大田市民不败</span>
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">平局博客不败（让球胜 + 平）</span>
     </div>
     <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">1-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">0-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-1</span>
     </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
       <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
     </div>
   </div>
-</div>
+</section>
 
-<div class="card" id="match-202">
+<!-- ===== 002: 浦项制铁 vs 全北现代 ===== -->
+<section class="card" id="match-002">
   <div class="card-header">
-    <span class="match-id">周六202</span>
-    <span class="match-league">韩职</span>
-    <span class="match-time">18:30（北京时间）</span>
+    <span class="match-id">周六 002</span>
+    <span class="match-league">韩职 K1 · 第19轮</span>
+    <span class="match-time">2026-07-25 18:30</span>
   </div>
   <div class="match-teams">
     <span class="home">浦项制铁</span>
     <span class="vs">VS</span>
     <span class="away">全北现代</span>
   </div>
-
-  <h4>赔率数据</h4>
   <div class="odds-grid">
     <div class="odds-item">
       <div class="label">主胜</div>
-      <div class="value win">2.98</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">2.82</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">2.28</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">浦项制铁 第5(28分) / 全北现代 第3(30分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 3胜2平3负, 进4失5 | 客: 3胜5平2负, 进9失6</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot w">W</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot w">W</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-04-12</td><td>韩职</td><td>全北现代</td><td style="text-align:center">3-2</td><td>浦项制铁</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-10-26</td><td>韩职</td><td>浦项制铁</td><td style="text-align:center">1-1</td><td>全北现代</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-07-12</td><td>韩职</td><td>全北现代</td><td style="text-align:center">2-0</td><td>浦项制铁</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-05-24</td><td>韩职</td><td>浦项制铁</td><td style="text-align:center">0-2</td><td>全北现代</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2024-09-28</td><td>韩职</td><td>全北现代</td><td style="text-align:center">1-1</td><td>浦项制铁</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2024-06-15</td><td>韩职</td><td>浦项制铁</td><td style="text-align:center">2-1</td><td>全北现代</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">浦项制铁</div>
-      <div class="insight-value">赵成旭、金范俊、赵英俊伤缺</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">全北现代</div>
-      <div class="insight-value">孔帕尼奥(膝伤)、朴柱永伤缺; 李昇佑解禁复出</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>客胜赔率2.28对全北客场取胜有一定支持，但部分机构客胜从2.29升至2.33，信心并不稳固。平赔2.82偏低，市场对平局防范力度不小。凯利指数客胜方向约0.94，未形成压倒性优势。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">浦项制铁经历连续10个客场后终于回归主场，但主场进攻效率联赛垫底（场均0.5球），过度依赖李昊宰（8球/占全队四成）。全北现代客场不败率80%，防守联赛最佳（场均失0.84球），近10次对浦项5胜4平1负碾压。全北锋线孔帕尼奥、朴柱永缺阵，但李昇佑解禁复出填补空缺。浦项两连败士气低迷，全北连续两轮零进球也存在进攻问题。考虑到浦项主场回归的战意加成以及全北锋线伤病，本场全北不败概率高但未必能赢。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">全北现代不败</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">0-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">0-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：1-2球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-203">
-  <div class="card-header">
-    <span class="match-id">周六203</span>
-    <span class="match-league">瑞超</span>
-    <span class="match-time">21:00（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">代格福什</span>
-    <span class="vs">VS</span>
-    <span class="away">佐加顿斯</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">4.65</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.96</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">1.51</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">代格福什 第14(10分) / 佐加顿斯 第5(20分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 1胜2平4负, 进6失13 | 客: 3胜1平1负, 进10失6</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot l">L</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-03-22</td><td>友谊赛</td><td>代格福什</td><td style="text-align:center">1-2</td><td>佐加顿斯</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-10-05</td><td>瑞超</td><td>佐加顿斯</td><td style="text-align:center">5-1</td><td>代格福什</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-06-15</td><td>瑞超</td><td>代格福什</td><td style="text-align:center">1-1</td><td>佐加顿斯</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2024-09-20</td><td>瑞超</td><td>佐加顿斯</td><td style="text-align:center">3-0</td><td>代格福什</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2024-05-08</td><td>瑞超</td><td>代格福什</td><td style="text-align:center">0-2</td><td>佐加顿斯</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2023-08-19</td><td>瑞超</td><td>佐加顿斯</td><td style="text-align:center">2-1</td><td>代格福什</td><td><span class="tag tag-red">负</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">代格福什</div>
-      <div class="insight-value">松德格伦(头号射手,3球)伤缺; 吉尔迈、费特森停赛; 皮卡莱宁停赛</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">佐加顿斯</div>
-      <div class="insight-value">替补门将尼尔松伤缺; 左后卫拉森上阵成疑</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>客胜赔率1.51极低，凯利指数客胜方向约0.88，机构对佐加顿斯取胜信心极强。亚盘客让0.75搭配2.75球大小盘，市场预期客队至少赢1球且总进球不低于3球。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">代格福什近9轮不胜（4平5负），近3轮零进球，头号射手松德格伦伤缺，中场双核停赛，防线4名主力折损，攻防两端全面崩盘。佐加顿斯12轮轰26球，进攻火力瑞超第4，挪威前锋利恩9场7球状态火热，近3个客场2胜1平不败。近5次交手佐加顿斯4胜1平碾压。这是一场实力悬殊的对决，代格福什残缺阵容难以抵挡佐加顿斯的立体攻势。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">佐加顿斯胜</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">0-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">0-3</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">1-3</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★★★</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">100%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-204">
-  <div class="card-header">
-    <span class="match-id">周六204</span>
-    <span class="match-league">芬超</span>
-    <span class="match-time">21:30（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">玛丽港</span>
-    <span class="vs">VS</span>
-    <span class="away">AC奥卢</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">5.40</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">4.25</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">1.41</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">玛丽港 第12垫底(4分) / AC奥卢 第4(26分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 0胜3平5负, 进4失16 | 客: 3胜1平5负, 进10失14</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot w">W</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-06-18</td><td>芬超</td><td>AC奥卢</td><td style="text-align:center">2-1</td><td>玛丽港</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-10-18</td><td>芬超</td><td>玛丽港</td><td style="text-align:center">2-0</td><td>AC奥卢</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2025-07-26</td><td>芬超</td><td>玛丽港</td><td style="text-align:center">0-1</td><td>AC奥卢</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-05-17</td><td>芬超</td><td>AC奥卢</td><td style="text-align:center">0-1</td><td>玛丽港</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-10-19</td><td>芬超</td><td>AC奥卢</td><td style="text-align:center">1-2</td><td>玛丽港</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-09-01</td><td>芬超</td><td>玛丽港</td><td style="text-align:center">2-1</td><td>AC奥卢</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">玛丽港</div>
-      <div class="insight-value">后卫基维科停赛; 中场多西斯停赛; 新援中卫沃德首秀受伤</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">AC奥卢</div>
-      <div class="insight-value">前锋贾塔停赛; 中场帕纳宁停赛</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>客胜赔率1.41极低，但部分数据平台显示客胜支持度有离散。亚盘客让0.75搭配2.75球大小盘，凯利指数客胜方向约0.86。玛丽港各项赛事10连败，AC奥卢连续4轮不胜，双方状态均不佳。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">玛丽港16轮0胜4平12负联赛垫底，10连败期间场均失2.6球，进攻端仅8球为全联赛最少，近5个主场全败一球未进。AC奥卢积26分排名第4，虽然近期4轮不胜状态下滑，但整体实力远胜对手。首回合奥卢主场2-1取胜。双方均有球员停赛，玛丽港后防核心缺失更为致命。奥卢前锋贾塔停赛，但头号射手卡尔亚莱宁（8球）仍可出战，一人进球数超过玛丽港全队。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">AC奥卢胜</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">0-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">0-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">1-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★★☆</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">80%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-205">
-  <div class="card-header">
-    <span class="match-id">周六205</span>
-    <span class="match-league">挪超</span>
-    <span class="match-time">22:00（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">克里斯蒂</span>
-    <span class="vs">VS</span>
-    <span class="away">斯达</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.92</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.50</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">3.10</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">克里斯蒂 第15(12分) / 斯达 第16垫底(7分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 2胜2平2负, 进7失8 | 客: 0胜1平6负, 客场6连败</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot l">L</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot l">L</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2025-09-22</td><td>挪超</td><td>斯达</td><td style="text-align:center">1-1</td><td>克里斯蒂</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-05-12</td><td>挪超</td><td>克里斯蒂</td><td style="text-align:center">2-0</td><td>斯达</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-10-28</td><td>挪超</td><td>斯达</td><td style="text-align:center">0-0</td><td>克里斯蒂</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2024-04-15</td><td>挪超</td><td>克里斯蒂</td><td style="text-align:center">1-2</td><td>斯达</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2023-11-05</td><td>挪超</td><td>斯达</td><td style="text-align:center">3-1</td><td>克里斯蒂</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2023-06-24</td><td>挪超</td><td>克里斯蒂</td><td style="text-align:center">2-1</td><td>斯达</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">克里斯蒂</div>
-      <div class="insight-value">前锋图费克契奇伤缺; 边卫威廉森、中场斯文森缺阵</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">斯达</div>
-      <div class="insight-value">替补前锋诺达尔、后卫托内森、门将托基尔森、中场利恩伤缺; 双主力中卫舒尔茨+洛伦岑缺阵</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率1.92偏高，凯利指数主胜方向约0.96，机构对克里斯蒂取胜信心不足。让球盘-1客胜赔率仅1.67，表明市场更倾向克里斯蒂即便赢球也难赢2球以上。平赔3.50处于中高位。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">榜尾保级六分战。克里斯蒂13轮3胜3平7负积12分排名第15，主场2胜2平2负尚有一定拿分能力。斯达14轮1胜4平9负积7分垫底，客场1平6负一胜难求，场均失2.36球联赛最差，防线5名球员伤缺几乎整条后防线报销。这是一场菜鸡互啄的保级生死战，但斯达的客场和防线问题更为致命。克里斯蒂虽然进攻效率低下（场均0.85球），但面对斯达残破防线有望破门。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">克里斯蒂不败</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">1-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：1-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-206">
-  <div class="card-header">
-    <span class="match-id">周六206</span>
-    <span class="match-league">芬超</span>
-    <span class="match-time">22:00（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">库奥皮奥</span>
-    <span class="vs">VS</span>
-    <span class="away">瓦萨</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.95</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.30</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
       <div class="value loss">3.20</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">库奥皮奥 第1(30分) / 瓦萨 第3(27分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 5胜3平0负, 进18失7 | 客: 2胜3平3负, 进8失9</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot l">L</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-06-07</td><td>芬超</td><td>瓦萨</td><td style="text-align:center">1-1</td><td>库奥皮奥</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2026-04-18</td><td>芬兰杯</td><td>库奥皮奥</td><td style="text-align:center">0-0</td><td>瓦萨</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-09-21</td><td>芬超</td><td>库奥皮奥</td><td style="text-align:center">1-1</td><td>瓦萨</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-07-06</td><td>芬超</td><td>瓦萨</td><td style="text-align:center">0-2</td><td>库奥皮奥</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2025-05-18</td><td>芬超</td><td>库奥皮奥</td><td style="text-align:center">2-1</td><td>瓦萨</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-10-20</td><td>芬超</td><td>瓦萨</td><td style="text-align:center">1-3</td><td>库奥皮奥</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">库奥皮奥</div>
-      <div class="insight-value">暂无重要伤停</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">瓦萨</div>
-      <div class="insight-value">暂无重要伤停</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率1.95略显偏高，凯利指数主胜方向约0.97。让球盘-1客胜赔率仅1.67，机构对库奥皮奥净胜2球持保留态度。平赔3.30处于中位，存在平局防范。库奥皮奥下周中欧冠资格赛次回合，本场可能轮换。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">芬超榜首大战。库奥皮奥15轮8胜6平1负积30分领跑，联赛10轮不败（6胜4平），主场5胜3平保持不败。瓦萨7胜6平2负积27分排名第3，客场2胜3平3负表现一般。本赛季两次交手均为平局（1-1和0-0），近3次联赛对决全部平局。库奥皮奥刚参加欧冠资格赛（客场0-1负萨巴赫），下周中还有次回合生死战，本场大概率轮换留力。瓦萨以逸待劳体能占优，客场防守联赛最佳（仅失13球）。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">瓦萨不败</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">1-2</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-207">
-  <div class="card-header">
-    <span class="match-id">周六207</span>
-    <span class="match-league">瑞超</span>
-    <span class="match-time">23:30（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">卡尔马</span>
-    <span class="vs">VS</span>
-    <span class="away">米亚尔比</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">2.20</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.32</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">2.68</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">卡尔马 第9(17分) / 米亚尔比 第7(18分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 3胜2平1负, 进10失6 | 客: 2胜4平1负, 进9失9</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot l">L</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot d">D</div><div class="form-dot l">L</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-05-03</td><td>瑞超</td><td>米亚尔比</td><td style="text-align:center">2-0</td><td>卡尔马</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2026-03-15</td><td>瑞典杯</td><td>米亚尔比</td><td style="text-align:center">2-0</td><td>卡尔马</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2026-02-08</td><td>友谊赛</td><td>米亚尔比</td><td style="text-align:center">4-0</td><td>卡尔马</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2024-10-20</td><td>瑞超</td><td>卡尔马</td><td style="text-align:center">0-3</td><td>米亚尔比</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2024-06-02</td><td>瑞超</td><td>米亚尔比</td><td style="text-align:center">2-1</td><td>卡尔马</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2023-09-24</td><td>瑞超</td><td>卡尔马</td><td style="text-align:center">0-2</td><td>米亚尔比</td><td><span class="tag tag-red">负</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">卡尔马</div>
-      <div class="insight-value">斯托尔特长期伤号</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">米亚尔比</div>
-      <div class="insight-value">中场伊萨克森停赛(累计黄牌)</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>卡尔马近5次正式比赛对米亚尔比全败，近10次交手0胜3平7负完全被压制。亚盘主让平半高水（1.02），机构对主队支持力度微弱。米亚尔比中场核心伊萨克森停赛是重要变数。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">卡尔马作为升班马表现可圈可点，主场3胜2平1负防守稳固（仅失6球），上轮对马尔默逼平展现韧性。米亚尔比是上赛季冠军，本赛季防守下滑但客场不败率85.7%。近5次正式交手米亚尔比全胜且全部零封卡尔马，心理碾压。但米亚尔比周中全主力踢欧冠资格赛（3-0林肯红魔），仅休3天体能有巨大消耗，中场核心伊萨克森停赛削弱中场硬度。卡尔马主场以逸待劳，是打破交锋魔咒的最好时机。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">卡尔马不败</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">1-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：1-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-208">
-  <div class="card-header">
-    <span class="match-id">周六208</span>
-    <span class="match-league">巴甲</span>
-    <span class="match-time">05:30(次日)（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">巴拉纳竞技</span>
-    <span class="vs">VS</span>
-    <span class="away">巴西国际</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.84</div>
     </div>
     <div class="odds-item">
       <div class="label">平局</div>
@@ -976,591 +687,446 @@ footer .sources .src-title { color: var(--ink); }
     </div>
     <div class="odds-item">
       <div class="label">客胜</div>
-      <div class="value loss">3.80</div>
+      <div class="value win">2.10</div>
     </div>
   </div>
 
-  <h4>关键数据速览</h4>
+  <h4>积分排名</h4>
   <div class="insight-grid">
     <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">巴拉纳竞技 第3(33分) / 巴西国际 第14(21分)</div>
+      <div class="insight-label">浦项制铁 · 第7名</div>
+      <div class="insight-value">18轮 7胜4平7负 / 进18失20 / 25分</div>
     </div>
     <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 7胜2平1负, 进14失6 | 客: 2胜4平3负, 进10失13</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot d">D</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot l">L</div></div></div>
+      <div class="insight-label">全北现代 · 第2名</div>
+      <div class="insight-value">18轮 9胜5平4负 / 进25失16 / 32分</div>
     </div>
   </div>
 
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
   <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-01-25</td><td>巴甲</td><td>巴西国际</td><td style="text-align:center">0-1</td><td>巴拉纳竞技</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-09-15</td><td>巴甲</td><td>巴西国际</td><td style="text-align:center">2-2</td><td>巴拉纳竞技</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2024-05-11</td><td>巴甲</td><td>巴拉纳竞技</td><td style="text-align:center">1-0</td><td>巴西国际</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2023-11-26</td><td>巴甲</td><td>巴拉纳竞技</td><td style="text-align:center">2-1</td><td>巴西国际</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2023-07-30</td><td>巴甲</td><td>巴西国际</td><td style="text-align:center">0-2</td><td>巴拉纳竞技</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2022-10-09</td><td>巴甲</td><td>巴西国际</td><td style="text-align:center">2-0</td><td>巴拉纳竞技</td><td><span class="tag tag-red">负</span></td></tr>
-</tbody>
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2026-03-08</td><td>全北现代 vs 浦项制铁</td><td>1-0</td><td><span class="tag tag-red">主胜</span></td></tr>
+      <tr><td>2025-10-19</td><td>浦项制铁 vs 全北现代</td><td>0-2</td><td><span class="tag tag-red">客胜</span></td></tr>
+      <tr><td>2025-07-27</td><td>全北现代 vs 浦项制铁</td><td>2-1</td><td><span class="tag tag-red">主胜</span></td></tr>
+      <tr><td>2025-04-06</td><td>浦项制铁 vs 全北现代</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-09-29</td><td>全北现代 vs 浦项制铁</td><td>1-0</td><td><span class="tag tag-red">主胜</span></td></tr>
+      <tr><td>2024-06-15</td><td>浦项制铁 vs 全北现代</td><td>2-1</td><td><span class="tag tag-green">主胜</span></td></tr>
+    </tbody>
   </table>
   </div>
+  <p><strong>全北现代近6次交锋4胜1平1负，进7球失5球，占据明显优势。</strong>近5次联赛交手全北4胜1平保持不败，堪称浦项"克星"。浦项制铁近6次主场对全北仅1胜2平3负，主场优势不明显。</p>
 
-  <h4>伤停情报</h4>
+  <h4>近期状态与主客场</h4>
   <div class="insight-grid">
     <div class="insight-card">
-      <div class="insight-label">巴拉纳竞技</div>
-      <div class="insight-value">中卫阿图尔·迪亚斯停赛(3黄); 边卫贝纳维德斯伤缺; 进攻中场萨佩里伤缺</div>
+      <div class="insight-label">浦项制铁 近5场</div>
+      <div class="insight-value">2胜0平3负 · 进6失7 · 起伏不定</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
     </div>
     <div class="insight-card">
-      <div class="insight-label">巴西国际</div>
-      <div class="insight-value">中卫维克托·加布里埃尔红牌停赛; 主帅佩佐拉诺因母丧缺席</div>
+      <div class="insight-label">全北现代 近5场</div>
+      <div class="insight-value">2胜2平1负 · 进6失4 · 状态平稳</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">浦项制铁 主场</div>
+      <div class="insight-value">9场 4胜2平3负 · 胜率44% · 场均失1.1</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">全北现代 客场</div>
+      <div class="insight-value">9场 4胜2平3负 · 不败率67% · 场均失0.9</div>
     </div>
   </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>浦项制铁中场伤兵较多：</strong>主力后腰申光勋、攻击型中场金仁成均因伤缺阵，中场控制力大幅下降。前锋高映埈状态火热，近3轮贡献3球1助攻，是球队最大威胁点。<strong>全北前锋孔帕尼奥膝伤缺阵：</strong>巴西前锋本赛季打入8球，是队内头号射手，其缺阵将直接影响全北进攻效率。好消息是李昇祐近期状态回升，上轮贡献1球1助攻。</p>
 
   <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率1.84相对保守，凯利指数主胜方向约0.93。巴拉纳竞技主力中卫停赛+边卫伤缺，防线受损。巴西国际三连败但阵容有所补强，且历史交锋近5场巴拉纳竞技4胜1平占优。数据优势一般，存在冷门可能。
+    <strong>⚠ 争冠与争冠组资格关键战：</strong>全北现代目前排名第2，距榜首首尔FC仅7分，若取胜将继续紧逼榜首，同时巩固第二位置。浦项制铁排名第7，与第6名仁川联积分相同（25分），但因净胜球劣势排在保级组边缘——若输球可能跌出争冠组区域，甚至被身后球队反超。两队战意均十分充足。
   </div>
 
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">巴拉纳竞技升班马赛季表现惊艳，积33分高居第3，主场7胜2平1负巴甲第1，场均失0.6球防守固若金汤。巴西国际积21分排名第14，近期三连败士气低迷，客场近5场不胜。但巴拉纳竞技主力中卫迪亚斯停赛、边卫贝纳维德斯和进攻核心萨佩里伤缺，三条线均有损失。巴西国际中卫加布里埃尔红牌停赛，但智利国脚马里潘和新援已到位，防线仍有厚度。历史交锋巴拉纳竞技近5场4胜1平碾压。</p>
-
   <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
+    <div class="pred-title">📊 综合判断</div>
     <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">巴拉纳竞技胜</span>
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客胜博让平（全北现代不败，一球小胜格局）</span>
     </div>
     <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">1-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">2-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-2</span>
     </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★☆☆</span>
-      <span class="pred-label">预计进球：1-2球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">60%</span>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
       <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
     </div>
   </div>
-</div>
+</section>
 
-<div class="card" id="match-209">
-  <div class="card-header">
-    <span class="match-id">周六209</span>
-    <span class="match-league">巴甲</span>
-    <span class="match-time">05:30(次日)（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">桑托斯</span>
-    <span class="vs">VS</span>
-    <span class="away">沙佩科恩斯</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.26</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">4.80</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">8.00</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">桑托斯 第15(21分) / 沙佩科恩斯 第20垫底(9分)</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 5胜3平2负, 进18失10 | 客: 0胜3平7负, 进6失20</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot w">W</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot l">L</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2025-10-05</td><td>巴甲</td><td>沙佩科恩斯</td><td style="text-align:center">0-2</td><td>桑托斯</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2025-06-14</td><td>巴甲</td><td>桑托斯</td><td style="text-align:center">3-0</td><td>沙佩科恩斯</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-09-21</td><td>巴甲</td><td>沙佩科恩斯</td><td style="text-align:center">1-2</td><td>桑托斯</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-05-04</td><td>巴甲</td><td>桑托斯</td><td style="text-align:center">2-0</td><td>沙佩科恩斯</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2023-11-02</td><td>巴甲</td><td>沙佩科恩斯</td><td style="text-align:center">0-1</td><td>桑托斯</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2023-07-09</td><td>巴甲</td><td>桑托斯</td><td style="text-align:center">4-1</td><td>沙佩科恩斯</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">桑托斯</div>
-      <div class="insight-value">全员健康</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">沙佩科恩斯</div>
-      <div class="insight-value">主力中卫保利斯塔伤缺; 主力边锋席尔瓦停赛</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率1.26极低，凯利指数主胜方向约0.85，机构对桑托斯取胜几乎无悬念。让球盘-1主胜1.92表明市场预期桑托斯至少净胜2球。沙佩科恩斯客场10战0胜3平7负，场均失2球，毫无抵抗力。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">桑托斯各项赛事近4场赢3场状态回暖，主场近2场全胜打入5球。沙佩科恩斯排名垫底积9分，客场10战0胜，近5轮1平4负场均失2.4球，主力中卫保利斯塔伤缺、边锋席尔瓦停赛雪上加霜。近6次交手桑托斯全胜，其中主场3战全胜场均净胜3球。本场为今日11场中实力差距最大的对决，桑托斯主场碾压几乎毫无悬念。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">桑托斯胜</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">2-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">3-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">3-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★★★</span>
-      <span class="pred-label">预计进球：2-4球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">100%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-210">
-  <div class="card-header">
-    <span class="match-id">周六210</span>
-    <span class="match-league">美职</span>
-    <span class="match-time">09:30(次日)（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">圣迭戈FC</span>
-    <span class="vs">VS</span>
-    <span class="away">达拉斯</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">2.16</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.65</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">2.55</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">圣迭戈FC 西部中游 / 达拉斯 西部中下游</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 主场战绩尚可, 进12失10 | 客: 客场表现一般, 进8失13</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot w">W</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot l">L</div><div class="form-dot d">D</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2025-09-14</td><td>美职</td><td>达拉斯</td><td style="text-align:center">2-1</td><td>圣迭戈FC</td><td><span class="tag tag-red">负</span></td></tr>
-<tr><td>2025-04-27</td><td>美职</td><td>圣迭戈FC</td><td style="text-align:center">1-1</td><td>达拉斯</td><td><span class="tag tag-yellow">平</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">圣迭戈FC</div>
-      <div class="insight-value">暂无重要伤停报告</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">达拉斯</div>
-      <div class="insight-value">暂无重要伤停报告</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率2.16定位合理但优势不明显，平赔3.65偏高，凯利指数三方方向均处于0.93-0.98中性区间。市场无明显倾向，数据层面指向胜负格局。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">圣迭戈FC作为MLS新军表现超出预期，主场有一定拿分能力。达拉斯客场表现不稳定，防守端漏洞较多。两队历史交锋数据有限，参考价值不高。胜负格局下主队圣迭戈主场优势和体能储备略占上风。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">圣迭戈FC不败</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">1-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">2-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★☆☆☆</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">40%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:40%"></div></div>
-    </div>
-  </div>
-</div>
-
-<div class="card" id="match-211">
-  <div class="card-header">
-    <span class="match-id">周六211</span>
-    <span class="match-league">美职</span>
-    <span class="match-time">10:00(次日)（北京时间）</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">圣何塞地震</span>
-    <span class="vs">VS</span>
-    <span class="away">洛杉矶银河</span>
-  </div>
-
-  <h4>赔率数据</h4>
-  <div class="odds-grid">
-    <div class="odds-item">
-      <div class="label">主胜</div>
-      <div class="value win">1.70</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">平局</div>
-      <div class="value draw">3.90</div>
-    </div>
-    <div class="odds-item">
-      <div class="label">客胜</div>
-      <div class="value loss">3.52</div>
-    </div>
-  </div>
-
-  <h4>关键数据速览</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">积分排名</div>
-      <div class="insight-value">圣何塞地震 西部前列 / 洛杉矶银河 西部中游</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">主客场数据</div>
-      <div class="insight-value">主: 主场战绩出色, 进15失8 | 客: 客场表现一般, 进10失14</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（主）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot w">W</div><div class="form-dot d">D</div><div class="form-dot w">W</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot w">W</div></div></div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">近期状态（客）</div>
-      <div class="insight-value"><div class="form-row"><div class="form-dot d">D</div><div class="form-dot l">L</div><div class="form-dot w">W</div><div class="form-dot l">L</div><div class="form-dot d">D</div><div class="form-dot w">W</div></div></div>
-    </div>
-  </div>
-
-  <h4>近6次历史交锋</h4>
-  <div class="table-wrap" style="max-height:300px">
-  <table class="history-table">
-    <thead><tr><th>日期</th><th>赛事</th><th>主队</th><th>比分</th><th>客队</th><th>结果</th></tr></thead>
-    <tbody><tr><td>2026-05-17</td><td>美职</td><td>洛杉矶银河</td><td style="text-align:center">1-2</td><td>圣何塞地震</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2025-09-21</td><td>美职</td><td>洛杉矶银河</td><td style="text-align:center">2-2</td><td>圣何塞地震</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2025-06-07</td><td>美职</td><td>圣何塞地震</td><td style="text-align:center">3-1</td><td>洛杉矶银河</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-10-06</td><td>美职</td><td>圣何塞地震</td><td style="text-align:center">2-0</td><td>洛杉矶银河</td><td><span class="tag tag-green">胜</span></td></tr>
-<tr><td>2024-04-14</td><td>美职</td><td>洛杉矶银河</td><td style="text-align:center">1-1</td><td>圣何塞地震</td><td><span class="tag tag-yellow">平</span></td></tr>
-<tr><td>2023-08-27</td><td>美职</td><td>圣何塞地震</td><td style="text-align:center">2-1</td><td>洛杉矶银河</td><td><span class="tag tag-green">胜</span></td></tr>
-</tbody>
-  </table>
-  </div>
-
-  <h4>伤停情报</h4>
-  <div class="insight-grid">
-    <div class="insight-card">
-      <div class="insight-label">圣何塞地震</div>
-      <div class="insight-value">暂无重要伤停报告</div>
-    </div>
-    <div class="insight-card">
-      <div class="insight-label">洛杉矶银河</div>
-      <div class="insight-value">暂无重要伤停报告</div>
-    </div>
-  </div>
-
-  <div class="warning">
-    <strong>⚠ 凯利指数异常分析：</strong>主胜赔率1.70偏低，凯利指数主胜方向约0.91，机构对圣何塞取胜较为看好。让球盘-1客胜1.89存在一定防范，平赔3.90偏高。整体数据倾向主胜。
-  </div>
-
-  <h4>综合深度分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0.5rem 0;">圣何塞地震近期状态出色，主场战绩优秀，进攻端火力充足。洛杉矶银河客场表现相对平庸，防守端客场场均失球较多。近6次交手圣何塞4胜2平保持不败，主场对洛杉矶银河近4次全胜，心理优势巨大。加州德比战意拉满。</p>
-
-  <div class="prediction">
-    <div class="pred-title">✅ AI预测</div>
-    <div class="pred-row">
-      <span class="pred-label">方向：</span>
-      <span class="pred-value">圣何塞地震胜</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">候选比分：</span>
-      <span class="pred-score">2-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">首选</span>      <span class="pred-score">2-0</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">次选</span>      <span class="pred-score">3-1</span><span style="font-size:0.75rem;color:var(--muted);margin-right:0.5rem">三选</span>
-    </div>
-    <div class="pred-row" style="margin-top:0.5rem">
-      <span class="pred-label">信心评级：★★★★☆</span>
-      <span class="pred-label">预计进球：2-3球</span>
-    </div>
-    <div class="conf-bar">
-      <span class="bar-label">80%</span>
-      <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
-    </div>
-  </div>
-</div>
-
+<!-- ========== 四、比分预测汇总 ========== -->
 <h2>四、比分预测汇总</h2>
 <div class="table-wrap">
 <table>
   <thead>
-    <tr><th>编号</th><th>联赛</th><th>对阵</th><th>预测方向</th><th>首选比分</th><th>次选比分</th><th>三选比分</th><th>信心</th></tr>
+    <tr>
+      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
+    </tr>
   </thead>
   <tbody>
     <tr>
-      <td><span class="tag tag-yellow">201</span></td>
-      <td>韩职</td>
-      <td>金泉尚武 vs 大田市民</td>
-      <td><span class="tag tag-green">大田市民不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
-      <td>★★★☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">202</span></td>
-      <td>韩职</td>
-      <td>浦项制铁 vs 全北现代</td>
-      <td><span class="tag tag-green">全北现代不败</span></td>
+      <td><span class="tag tag-yellow">001</span></td>
+      <td>金泉尚武 vs 大田市民</td><td>韩职</td>
+      <td><span class="tag tag-yellow">平局博客不败</span></td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-2</td>
       <td>★★★☆☆</td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">203</span></td>
-      <td>瑞超</td>
-      <td>代格福什 vs 佐加顿斯</td>
-      <td><span class="tag tag-green">佐加顿斯胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-3</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-3</td>
-      <td>★★★★★</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">204</span></td>
-      <td>芬超</td>
-      <td>玛丽港 vs AC奥卢</td>
-      <td><span class="tag tag-green">AC奥卢胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
+      <td><span class="tag tag-blue">002</span></td>
+      <td>浦项制铁 vs 全北现代</td><td>韩职</td>
+      <td><span class="tag tag-green">客胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-1</td>
       <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
-      <td>★★★★☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">205</span></td>
-      <td>挪超</td>
-      <td>克里斯蒂 vs 斯达</td>
-      <td><span class="tag tag-green">克里斯蒂不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
       <td>★★★☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">206</span></td>
-      <td>芬超</td>
-      <td>库奥皮奥 vs 瓦萨</td>
-      <td><span class="tag tag-green">瓦萨不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td>★★★☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">207</span></td>
-      <td>瑞超</td>
-      <td>卡尔马 vs 米亚尔比</td>
-      <td><span class="tag tag-green">卡尔马不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
-      <td>★★★☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">208</span></td>
-      <td>巴甲</td>
-      <td>巴拉纳竞技 vs 巴西国际</td>
-      <td><span class="tag tag-green">巴拉纳竞技胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
-      <td>★★★☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">209</span></td>
-      <td>巴甲</td>
-      <td>桑托斯 vs 沙佩科恩斯</td>
-      <td><span class="tag tag-green">桑托斯胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3-1</td>
-      <td>★★★★★</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">210</span></td>
-      <td>美职</td>
-      <td>圣迭戈FC vs 达拉斯</td>
-      <td><span class="tag tag-green">圣迭戈FC不败</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-0</td>
-      <td>★★☆☆☆</td>
-    </tr>
-    <tr>
-      <td><span class="tag tag-yellow">211</span></td>
-      <td>美职</td>
-      <td>圣何塞地震 vs 洛杉矶银河</td>
-      <td><span class="tag tag-green">圣何塞地震胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3-1</td>
-      <td>★★★★☆</td>
     </tr>
   </tbody>
 </table>
 </div>
 
+<!-- ========== 五、核心策略与风险提示 ========== -->
 <h2>五、核心策略与风险提示</h2>
 
+<h3>当日盘口特征总结</h3>
 <div class="summary-grid">
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-green">稳胆铁选</span> 桑托斯 vs 沙佩科恩斯</div>
-    <div class="s-pred">主胜（★★★★★）</div>
-    <div class="s-confidence">赔率1.26极低，沙佩科客场10战0胜+主力中卫/边锋缺阵，桑托斯主场碾压近6次交手全胜，今日最大实力差距。</div>
+    <div class="s-match">保级生死战：金泉vs大田</div>
+    <div class="s-pred">平局概率最高</div>
+    <div class="s-confidence">两队状态均低迷，保级压力下保守为先，平局是最可能的结果</div>
   </div>
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-green">稳胆次选</span> 代格福什 vs 佐加顿斯</div>
-    <div class="s-pred">客胜（★★★★★）</div>
-    <div class="s-confidence">赔率1.51明确倾向，代格福什9轮不胜+头号射手+中场双核+4名防线球员缺阵，佐加顿斯客场3场不败。</div>
+    <div class="s-match">最强客胜：全北现代</div>
+    <div class="s-pred">客胜 2.10</div>
+    <div class="s-confidence">历史交锋碾压+排名优势，全北客场取分概率最高</div>
   </div>
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-green">高信选项</span> 玛丽港 vs AC奥卢</div>
-    <div class="s-pred">客胜（★★★★☆）</div>
-    <div class="s-confidence">玛丽港16轮0胜10连败，AC奥卢客胜赔率1.41。奥卢近期4轮不胜是最大隐忧。</div>
+    <div class="s-match">最可能爆冷：浦项制铁</div>
+    <div class="s-pred">主场有战斗力</div>
+    <div class="s-confidence">全北孔帕尼奥缺阵影响大，浦项主场3连胜势头，谨防平局</div>
   </div>
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-green">高信选项</span> 圣何塞地震 vs 洛杉矶银河</div>
-    <div class="s-pred">主胜（★★★★☆）</div>
-    <div class="s-confidence">主胜赔率1.70合理，圣何塞主场对银河近4次全胜，加州德比主场优势明显。</div>
+    <div class="s-match">军队球队因素：金泉尚武</div>
+    <div class="s-pred">搅局者角色</div>
+    <div class="s-confidence">铁定降级反而无压力，军队纪律性可能带来意外战斗力</div>
   </div>
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-yellow">均衡选项</span> 浦项制铁 vs 全北现代</div>
-    <div class="s-pred">全北不败（★★★☆☆）</div>
-    <div class="s-confidence">全北客场不败率80%+交锋碾压，但锋线伤缺严重。浦项回归主场战意加成。</div>
+    <div class="s-match">锋线伤停影响：两场皆有</div>
+    <div class="s-pred">进球数偏低</div>
+    <div class="s-confidence">大田石田雅俊伤疑、全北孔帕尼奥缺阵，两队进攻端均受损</div>
   </div>
   <div class="summary-card">
-    <div class="s-match"><span class="tag tag-red">冷门预警</span> 库奥皮奥 vs 瓦萨</div>
-    <div class="s-pred">瓦萨不败（★★★☆☆）</div>
-    <div class="s-confidence">库奥皮奥下周中欧冠生死战大概率轮换，瓦萨以逸待劳+近3次联赛交手全平。数据支持度偏弱。</div>
+    <div class="s-match">同日开赛：18:30双赛</div>
+    <div class="s-pred">关联投注风险</div>
+    <div class="s-confidence">两场同时进行，建议分散投注，避免单场重仓</div>
   </div>
 </div>
 
-<div class="card" style="border-left:4px solid var(--accent3)">
-  <h4>⚠ 今日风险提示</h4>
-  <ul style="font-size:0.9rem;padding-left:1.5rem;line-height:2">
-    <li><strong>韩职双赛不确定性：</strong>金泉尚武主场零胜但后防核心复出，浦项制铁回归主场但全北历史碾压，两场韩职均为低信心场次，串关需谨慎。</li>
-    <li><strong>挪超保级战：</strong>克里斯蒂 vs 斯达为榜尾六分战，斯达客场6连败+防线5人伤缺，但克里斯蒂进攻效率联赛最差，需防平局。</li>
-    <li><strong>米亚尔比体能危机：</strong>周中全主力踢欧冠资格赛仅休3天，中场核心停赛，交锋碾压5连胜可能终结。</li>
-    <li><strong>芬超榜首大战轮换风险：</strong>库奥皮奥欧冠资格赛夹缝中，本场大概率留力，客队不败值得关注。</li>
-    <li><strong>巴竞技防线受损：</strong>主力中卫迪亚斯停赛+边卫贝纳维德斯伤缺，巴西国际虽三连败但补强后防线，存在冷门可能。</li>
-    <li><strong>美职数据面窄：</strong>圣迭戈FC和达拉斯数据面有限，两场美职联信心偏低，建议轻仓或跳过。</li>
-  </ul>
+<h3>风险提示</h3>
+<div class="warning" style="font-size:0.9rem;padding:1.25rem">
+  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月25日12:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
+  <p style="margin-top:0.5rem"><strong>2. 军队球队特殊性：</strong>金泉尚武作为军队球队，球员轮换和战术安排可能与普通职业队不同，且已铁定降级，战意难以判断。</p>
+  <p style="margin-top:0.5rem"><strong>3. 伤停变动：</strong>石田雅俊（大田）、孔帕尼奥（全北）等核心球员的伤病情况以赛前最终确认名单为准。部分球队可能在赛前调整首发。</p>
+  <p style="margin-top:0.5rem"><strong>4. 不确定性：</strong>足球比赛存在大量不可控因素——红牌、点球、VAR判罚、天气等，任何分析都无法100%预测结果。</p>
+  <p style="margin-top:0.5rem"><strong>5. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
 </div>
+
+<!-- ========== 六、联赛形势 ========== -->
+<h2>六、当日赛事晋级路径与联赛形势</h2>
+
+<h3>6.1 韩职联赛形势总览</h3>
+<div class="league-overview">
+  <p>2026赛季韩职K1联赛共有12支球队参赛，常规赛共进行33轮（每队33场），之后分为<strong>争冠组</strong>（前6名）和<strong>保级组</strong>（后6名）各进行5轮附加赛。争冠组冠军获得下赛季亚冠精英联赛资格，亚军获得亚冠二级联赛资格；保级组最后一名直接降级，倒数第二名参加升降级附加赛。</p>
+  <p>本赛季第19轮战罢，争冠与保级格局已初现端倪。首尔FC以39分领跑，全北现代32分紧随其后，江原FC、蔚山现代、安养FC、仁川联组成争冠集团。保级组方面，金泉尚武、大田市民、富川FC同积19分陷入苦战，光州FC仅9分垫底，降级几乎已成定局。</p>
+  <div class="note-box">
+    <strong>2027赛季扩军：</strong>K1联赛将从12支球队扩军至14支，这意味着本赛季降级名额可能减少。金泉尚武作为军队球队铁定降级（兵役制度规定），实际竞争的降级名额可能只有0.5个（附加赛），保级压力相对往年有所缓解。
+  </div>
+</div>
+
+<h3>6.2 韩职积分榜（第19轮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进球</th><th>失球</th><th>净胜球</th><th>积分</th><th>组别</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td><td>首尔FC</td><td>19</td><td>12</td><td>3</td><td>4</td><td>32</td><td>16</td><td>+16</td><td style="font-weight:700">39</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr>
+      <td>2</td><td>全北现代</td><td>19</td><td>9</td><td>5</td><td>5</td><td>25</td><td>15</td><td>+10</td><td style="font-weight:700">32</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr>
+      <td>3</td><td>江原FC</td><td>19</td><td>8</td><td>7</td><td>4</td><td>23</td><td>13</td><td>+10</td><td style="font-weight:700">31</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr>
+      <td>4</td><td>蔚山现代</td><td>19</td><td>8</td><td>4</td><td>7</td><td>27</td><td>28</td><td>-1</td><td style="font-weight:700">28</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr>
+      <td>5</td><td>安养FC</td><td>19</td><td>7</td><td>8</td><td>4</td><td>26</td><td>22</td><td>+4</td><td style="font-weight:700">29</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr>
+      <td>6</td><td>仁川联</td><td>19</td><td>7</td><td>4</td><td>8</td><td>22</td><td>20</td><td>+2</td><td style="font-weight:700">25</td>
+      <td><span class="tag tag-green">争冠组</span></td>
+    </tr>
+    <tr class="team-highlight">
+      <td>7</td><td>浦项制铁</td><td>19</td><td>7</td><td>4</td><td>8</td><td>18</td><td>20</td><td>-2</td><td style="font-weight:700">25</td>
+      <td><span class="tag tag-yellow">保级组</span></td>
+    </tr>
+    <tr>
+      <td>8</td><td>济州SK</td><td>19</td><td>6</td><td>6</td><td>7</td><td>17</td><td>19</td><td>-2</td><td style="font-weight:700">24</td>
+      <td><span class="tag tag-yellow">保级组</span></td>
+    </tr>
+    <tr>
+      <td>9</td><td>大田市民</td><td>19</td><td>4</td><td>7</td><td>8</td><td>21</td><td>21</td><td>0</td><td style="font-weight:700">19</td>
+      <td><span class="tag tag-yellow">保级组</span></td>
+    </tr>
+    <tr class="team-highlight">
+      <td>10</td><td>金泉尚武</td><td>19</td><td>3</td><td>10</td><td>6</td><td>19</td><td>26</td><td>-7</td><td style="font-weight:700">19</td>
+      <td><span class="tag tag-yellow">保级组</span></td>
+    </tr>
+    <tr>
+      <td>11</td><td>富川FC</td><td>19</td><td>4</td><td>7</td><td>8</td><td>16</td><td>23</td><td>-7</td><td style="font-weight:700">19</td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+    <tr>
+      <td>12</td><td>光州FC</td><td>19</td><td>1</td><td>6</td><td>12</td><td>10</td><td>42</td><td>-32</td><td style="font-weight:700">9</td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮行为当日参赛球队。安养FC因排名规则（胜场数优先）排在蔚山现代之前。</p>
+
+<h3>6.3 争冠/保级形势分析</h3>
+<div class="league-overview">
+  <p><strong>争冠形势：</strong>首尔FC以7分优势领跑，争冠主动权在握。但全北现代作为卫冕冠军，赛季后半程往往发力猛，7分差距并非不可追。江原FC凭借联赛最佳防守（19轮失13球）稳居前三，是争冠的有力搅局者。蔚山现代、安养FC、仁川联三队分差仅在一场球之间，争冠组最后2-3个名额竞争激烈。</p>
+  <p><strong>浦项制铁的处境：</strong>浦项目前排名第7，与第6名仁川联同积25分，但净胜球少4个排在保级组。本场若能在主场爆冷击败全北现代，积分将达到28分，有望一举冲入争冠组。反之，如果输球，可能被济州SK（24分）追平甚至反超，保级压力陡增。浦项制铁本赛季呈现"主场龙、客场虫"特点，主场4胜2平3负的战绩是他们的最大资本。</p>
+  <p><strong>保级形势：</strong>光州FC仅9分垫底，攻防两端数据均为联赛最差，降级基本板上钉钉。金泉尚武作为军队球队铁定降级（无论成绩）。因此实际需要争取的是"避免倒数第二参加附加赛"的位置——大田市民、富川FC同积19分，济州SK 24分，三队将为保级而战。</p>
+  <p><strong>金泉尚武vs大田市民的影响：</strong>虽然金泉尚武已确定降级，但本场比赛对大田市民至关重要——大田若能取胜，积分将达到22分，拉开与富川FC的差距，保级前景大幅改善。若战平，双方各取1分，大田仍以1分优势领先富川。若输球，大田将跌回第10名，保级警报拉响。金泉尚武虽然降级无忧，但作为军队球队荣誉感强，绝不会轻易放水。</p>
+</div>
+
+<h3>6.4 后续赛程</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>轮次</th><th>日期</th><th>金泉尚武</th><th>大田市民</th><th>浦项制铁</th><th>全北现代</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>第20轮</td><td>08-02</td><td>客场 vs 光州FC</td><td>主场 vs 首尔FC</td><td>客场 vs 济州SK</td><td>主场 vs 江原FC</td>
+    </tr>
+    <tr>
+      <td>第21轮</td><td>08-09</td><td>主场 vs 安养FC</td><td>客场 vs 蔚山现代</td><td>主场 vs 仁川联</td><td>客场 vs 首尔FC</td>
+    </tr>
+    <tr>
+      <td>第22轮</td><td>08-16</td><td>客场 vs 浦项制铁</td><td>主场 vs 富川FC</td><td>主场 vs 金泉尚武</td><td>主场 vs 光州FC</td>
+    </tr>
+    <tr>
+      <td>第23轮</td><td>08-23</td><td>主场 vs 仁川联</td><td>客场 vs 江原FC</td><td>客场 vs 安养FC</td><td>客场 vs 济州SK</td>
+    </tr>
+    <tr>
+      <td>第24轮</td><td>08-30</td><td>客场 vs 富川FC</td><td>主场 vs 蔚山现代</td><td>主场 vs 首尔FC</td><td>主场 vs 安养FC</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem">注：以上为初步赛程，具体开球时间以联赛官方公布为准。</p>
 
 </main>
 
+<!-- ========== FOOTER / SOURCES ========== -->
 <footer>
   <div class="container">
-    <h2>数据来源说明</h2>
     <div class="sources">
+      <h2>数据来源</h2>
       <ol>
-        <li><span class="src-title">P0级（核心依赖）：</span>竞彩官方赔率数据（odds_data.json），中国体育彩票竞彩网</li>
-        <li><span class="src-title">P1级（分析来源）：</span>新浪体育小炮APP、7M体育、足彩网、球迷屋、搜狐体育、乐彩论坛、网易体育、腾讯新闻、捷报网、澎湃新闻、今日头条</li>
-        <li><span class="src-title">P2级（国际参考）：</span>Dimers、Oddslot、国际外围赔率对比平台</li>
-        <li><span class="src-title">免责声明：</span>本报告基于公开数据与AI模型分析，仅供足球赛事研究参考，不构成任何投注建议。购彩有风险，请理性对待。</li>
+        <li id="cite-1">
+          <span class="src-title">中国竞彩官网 (lottery.gov.cn) — 官方胜平负赔率、让球赔率、市场支持率。</span>
+          <a class="src-url" href="https://www.lottery.gov.cn/jc/jsq/zqspf/" target="_blank" rel="noopener">https://www.lottery.gov.cn/jc/jsq/zqspf/</a>
+        </li>
+        <li id="cite-2">
+          <span class="src-title">网易体育 (sports.163.com) — 竞彩足球比赛列表、基础赔率数据。</span>
+          <a class="src-url" href="https://sports.163.com/caipiao/bet/football" target="_blank" rel="noopener">https://sports.163.com/caipiao/bet/football</a>
+        </li>
+        <li id="cite-3">
+          <span class="src-title">K联赛官方网站 (kleague.union) — 韩职K1积分榜、赛程、球队数据。</span>
+          <a class="src-url" href="https://www.kleague.com" target="_blank" rel="noopener">https://www.kleague.com</a>
+        </li>
+        <li id="cite-4">
+          <span class="src-title">500彩票网 — 韩职两场数据分析、历史交锋、近期战绩、亚盘欧赔对比。</span>
+          <span class="src-url">P0级专业数据平台</span>
+        </li>
+        <li id="cite-5">
+          <span class="src-title">搜狐体育 — 韩职第19轮赛前前瞻、伤病情报、战术分析。</span>
+          <a class="src-url" href="https://sports.sohu.com/" target="_blank" rel="noopener">https://sports.sohu.com/</a>
+        </li>
+        <li id="cite-6">
+          <span class="src-title">头条分析师 — 凯利指数、盘口解读、竞彩策略分析。</span>
+          <span class="src-url">P2级专业分析</span>
+        </li>
+        <li id="cite-7">
+          <span class="src-title">韩国足球新闻 (Football Korea) — 韩职球队伤停名单、赛前发布会信息。</span>
+          <span class="src-url">P1级体育媒体</span>
+        </li>
+        <li id="cite-8">
+          <span class="src-title">Transfermarkt — 球队身价、球员数据、转会信息。</span>
+          <a class="src-url" href="https://www.transfermarkt.com" target="_blank" rel="noopener">https://www.transfermarkt.com</a>
+        </li>
+        <li id="cite-9">
+          <span class="src-title">Whoscored — 球员评分、技术统计、比赛数据分析。</span>
+          <a class="src-url" href="https://www.whoscored.com" target="_blank" rel="noopener">https://www.whoscored.com</a>
+        </li>
       </ol>
     </div>
   </div>
 </footer>
 
+<!-- ECharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <script>
-// ECharts Confidence Chart
+// ECharts visualizations for football match analysis (inlined)
 (function() {
-  var chartDom = document.getElementById('confidence-chart');
-  var myChart = echarts.init(chartDom);
-  var option = {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['主胜信心', '平局信心', '客胜信心'], top: 10 },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'category', data: ["金泉尚武\nvs\n大田市民","浦项制铁\nvs\n全北现代","代格福什\nvs\n佐加顿斯","玛丽港\nvs\nAC奥卢","克里斯蒂\nvs\n斯达","库奥皮奥\nvs\n瓦萨","卡尔马\nvs\n米亚尔比","巴拉纳竞技\nvs\n巴西国际","桑托斯\nvs\n沙佩科恩斯","圣迭戈FC\nvs\n达拉斯","圣何塞地震\nvs\n洛杉矶银河",], axisLabel: { fontSize: 10, interval: 0, rotate: 45 } },
-    yAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
+  var style = getComputedStyle(document.documentElement);
+  var accent = style.getPropertyValue('--accent').trim();
+  var accent2 = style.getPropertyValue('--accent2').trim();
+  var ink = style.getPropertyValue('--ink').trim();
+  var muted = style.getPropertyValue('--muted').trim();
+  var rule = style.getPropertyValue('--rule').trim();
+  var bg2 = style.getPropertyValue('--bg2').trim();
+  var win = style.getPropertyValue('--win').trim();
+  var draw = style.getPropertyValue('--draw').trim();
+  var loss = style.getPropertyValue('--loss').trim();
+
+  // --- Chart: Market Confidence Comparison ---
+  var chartConf = echarts.init(document.getElementById('chart-confidence'), null, { renderer: 'svg' });
+  chartConf.setOption({
+    animation: false,
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      appendToBody: true,
+      formatter: function(params) {
+        var match = params[0].name;
+        var result = '';
+        params.forEach(function(p) {
+          result += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>';
+        });
+        return '<strong>' + match + '</strong><br/>' + result;
+      }
+    },
+    legend: {
+      data: ['主胜支持率', '平局支持率', '客胜支持率'],
+      bottom: 0,
+      textStyle: { color: muted, fontSize: 12 }
+    },
+    grid: { left: '3%', right: '4%', bottom: '15%', top: '8%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: [
+        '001 金泉尚武\nvs 大田市民',
+        '002 浦项制铁\nvs 全北现代'
+      ],
+      axisLabel: { color: muted, fontSize: 11, interval: 0 },
+      axisLine: { lineStyle: { color: rule } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      name: '支持率 (%)',
+      max: 100,
+      axisLabel: { color: muted, fontSize: 11, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: rule, type: 'dashed' } },
+      nameTextStyle: { color: muted, fontSize: 11 }
+    },
     series: [
-      { name: '主胜信心', type: 'bar', stack: 'total', data: [30,30,19,16,46,45,40,48,70,41,52,], itemStyle: { color: '#457b9d' }, label: { show: false } },
-      { name: '平局信心', type: 'bar', stack: 'total', data: [30,31,22,21,25,27,27,29,18,24,23,], itemStyle: { color: '#f4a261' }, label: { show: false } },
-      { name: '客胜信心', type: 'bar', stack: 'total', data: [40,39,59,63,29,28,33,23,12,35,25,], itemStyle: { color: '#e63946' }, label: { show: false } }
+      {
+        name: '主胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [32, 28],
+        itemStyle: {
+          color: win,
+          borderRadius: [0, 0, 0, 0],
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 11,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 10 ? p.value + '%' : ''; }
+        },
+        emphasis: { itemStyle: { color: win } }
+      },
+      {
+        name: '平局支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [30, 29],
+        itemStyle: {
+          color: draw,
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 11,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 10 ? p.value + '%' : ''; }
+        }
+      },
+      {
+        name: '客胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [38, 43],
+        itemStyle: {
+          color: loss,
+          borderRadius: [4, 4, 0, 0],
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 11,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 10 ? p.value + '%' : ''; }
+        }
+      }
     ]
-  };
-  myChart.setOption(option);
-  window.addEventListener('resize', function() { myChart.resize(); });
+  });
+  window.addEventListener('resize', function() { chartConf.resize(); });
 })();
 </script>
-
 </body>
 </html>
