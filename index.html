@@ -4687,8 +4687,6 @@ function addBatchRow(home = '', away = '', score = '', league = '', handicap = '
 function clearBatchRows() {
     document.getElementById('batchResultRows').innerHTML = '';
     _batchLoadedDates = [];
-    addBatchRow();
-    addBatchRow();
     // 同步清除归档查询状态
     const archiveSection = document.getElementById('resultsArchiveSection');
     if (archiveSection) {
