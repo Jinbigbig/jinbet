@@ -861,5 +861,315 @@ def main():
     print('=' * 60)
 
 
+# === 赛果抓取 ===
+
+# 体彩赛果API队名 → 网易队名 映射（用于key统一）
+RESULT_TEAM_NAME_MAP = {
+    '布斯巴达': '布斯巴达', '布拉格斯巴达': '布斯巴达',
+    '圣吉联合': '圣吉联合', '圣吉尔联合': '圣吉联合',
+    '奥林匹亚': '奥林匹亚', '奥林匹亚科斯': '奥林匹亚',
+    '米亚尔比': '米亚尔比',
+    '布拉迪斯': '布拉迪斯', '布拉加': '布拉迪斯',
+    '奈梅亨': '奈梅亨', 'NEC奈梅亨': '奈梅亨',
+    '里昂': '里昂',
+    '博德闪耀': '博德闪耀',
+    '塞伊奈': '塞伊奈', '塞伊奈约基': '塞伊奈',
+    '哈尔姆斯': '哈尔姆斯', '哈尔姆斯塔德': '哈尔姆斯',
+    '天狼星': '天狼星',
+    '佐加顿斯': '佐加顿斯',
+    '韦斯特罗': '韦斯特罗', '韦斯特罗斯': '韦斯特罗',
+    '巴竞技': '巴竞技', '巴拉纳竞技': '巴竞技',
+    '维多利亚': '维多利亚',
+    '里莫': '里莫', '里奥阿维': '里莫',
+    '桑托斯': '桑托斯',
+    '奥胡斯': '奥胡斯',
+    '费内巴切': '费内巴切',
+    '格风暴': '格风暴', '格拉茨风暴': '格风暴',
+    '弗鲁米嫩': '弗鲁米嫩塞',
+    '达伽马': '达伽马', '瓦斯科达伽马': '达伽马',
+    '赫尔辛基': '赫尔辛基',
+    'TPS图尔': 'TPS图尔', 'TPS图尔库': 'TPS图尔',
+    '玛丽港': '玛丽港',
+    '拉赫蒂': '拉赫蒂',
+    '雅罗': '雅罗', '雅罗足球': '雅罗',
+    '腓特烈': '腓特烈斯塔',
+    '桑纳菲': '桑纳菲尤尔',
+    '赫根': '赫根',
+    '卡尔马': '卡尔马',
+    '浦项制铁': '浦项',
+    '金泉尚武': '金泉尚武',
+    '全北现代': '全北现代',
+    '首尔FC': '首尔FC',
+    '江原FC': '江原FC',
+    '富川FC': '富川FC',
+    '波特兰': '波特兰', '波特兰伐木工': '波特兰',
+    '西雅图': '西雅图', '西雅图海湾人': '西雅图',
+    '洛城银河': '洛城银河', '洛杉矶银河': '洛城银河',
+    '达拉斯': '达拉斯', '达拉斯FC': '达拉斯',
+    '圣路易城': '圣路易城', '圣路易斯城': '圣路易城',
+    '盐湖城': '盐湖城', '皇家盐湖城': '盐湖城',
+    '芝加哥': '芝加哥', '芝加哥火焰': '芝加哥',
+    '夏洛特FC': '夏洛特FC',
+    '温哥华': '温哥华', '温哥华白帽': '温哥华',
+    '洛杉矶FC': '洛杉矶FC',
+    '迈国际': '迈国际', '迈阿密国际': '迈国际',
+    '哥伦布': '哥伦布', '哥伦布机员': '哥伦布',
+    '赫尔火花': '赫尔辛基火花',
+    '库奥皮奥': '库奥皮奥',
+    '斯达': '斯达', '斯塔贝克': '斯达',
+    '维京': '维京',
+}
+
+
+def fetch_results(days_back=7):
+    """从体彩官网API获取赛果数据"""
+    from datetime import datetime, timedelta
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+
+    url = (
+        f'https://webapi.sporttery.cn/gateway/uniform/football/getUniformMatchResultV1.qry'
+        f'?matchBeginDate={start_date}&matchEndDate={end_date}'
+        f'&leagueId=&pageSize=50&pageNo=1&isFix=0&matchPage=1&pcOrWap=1'
+    )
+    try:
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': 'https://www.sporttery.cn/jc/zqsgkj/',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+        })
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            content = resp.read().decode('utf-8')
+        return content
+    except Exception as e:
+        print(f'[错误] 获取体彩赛果失败: {e}')
+        return ''
+
+
+def normalize_result_team(name):
+    """归一化体彩赛果API队名"""
+    return RESULT_TEAM_NAME_MAP.get(name, name)
+
+
+def parse_results_json(json_text):
+    """解析体彩赛果API返回的JSON数据，返回赛果字典 {key: result_data}"""
+    results = {}
+
+    try:
+        data = json.loads(json_text)
+    except json.JSONDecodeError as e:
+        print(f'[错误] 赛果JSON解析失败: {e}')
+        return results
+
+    if not data.get('success') or not data.get('value'):
+        print(f'[错误] 赛果API返回失败: {data.get("errorMessage", "未知错误")}')
+        return results
+
+    value = data['value']
+    matches = value.get('matchResult', [])
+    if not matches:
+        print('[警告] 赛果API返回0场比赛')
+        return results
+
+    for m in matches:
+        home_api = m.get('homeTeam', '')
+        home_full = m.get('allHomeTeam', '')
+        away_api = m.get('awayTeam', '')
+        away_full = m.get('allAwayTeam', '')
+
+        home = normalize_result_team(home_api)
+        away = normalize_result_team(away_api)
+        match_date = m.get('matchDate', '')
+
+        if not match_date or not home or not away:
+            continue
+
+        key = f'{match_date}_{home}_{away}'
+
+        handicap = m.get('goalLine', '0')
+        if handicap in ('0', '', None):
+            handicap = '0'
+
+        result_data = {
+            'halfScore': m.get('sectionsNo1', ''),
+            'fullScore': m.get('sectionsNo999', ''),
+            'winFlag': m.get('winFlag', ''),
+            'handicap': handicap,
+            'league': m.get('leagueName', ''),
+            'leagueAbbr': m.get('leagueNameAbbr', ''),
+            'home': home,
+            'away': away,
+            'matchId': m.get('matchId', ''),
+            'status': m.get('matchResultStatus', ''),
+        }
+
+        if m.get('h'):
+            result_data['胜'] = m['h']
+        if m.get('d'):
+            result_data['平'] = m['d']
+        if m.get('a'):
+            result_data['负'] = m['a']
+
+        if result_data['fullScore']:
+            results[key] = result_data
+
+    print(f'  解析完成，共 {len(results)} 场比赛有赛果')
+    return results
+
+
+def update_html_results(html_content, results_data):
+    """更新 index.html 中的 RESULTS 变量"""
+    results_pattern = r'const RESULTS = \{[\s\S]*?\n\};'
+
+    results_str = "const RESULTS = {\n"
+    keys = sorted(results_data.keys())
+
+    for i, key in enumerate(keys):
+        r = results_data[key]
+        val_parts = []
+        for field in ['halfScore', 'fullScore', 'winFlag', 'handicap', 'league', 'leagueAbbr', 'home', 'away', 'matchId', 'status', '胜', '平', '负']:
+            if field in r and r[field]:
+                val_parts.append("'{}': '{}'".format(field, str(r[field]).replace("'", "\\'")))
+        val_str = ', '.join(val_parts)
+
+        comma = ',' if i < len(keys) - 1 else ''
+        results_str += f"    '{key}': {{ {val_str} }}{comma}\n"
+
+    results_str += "};"
+
+    if re.search(results_pattern, html_content):
+        html_content = re.sub(results_pattern, results_str, html_content)
+    else:
+        html_content = re.sub(
+            r'(const ODDS = \{[\s\S]*?\n\};)',
+            r'\1\n\n' + results_str,
+            html_content
+        )
+
+    return html_content
+
+
+def save_results_json(results_data):
+    """保存赛果数据到 results_data.json"""
+    json_path = os.path.join(BASE_DIR, 'results_data.json')
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(results_data, f, ensure_ascii=False, indent=2)
+    print(f'  ✅ results_data.json 已更新 ({len(results_data)} 条)')
+
+
+def archive_results(results_data, days=30):
+    """归档超过指定天数的旧赛果"""
+    from datetime import datetime, timedelta
+    archive_dir = os.path.join(BASE_DIR, 'results_history')
+    os.makedirs(archive_dir, exist_ok=True)
+
+    cutoff = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+    archived_count = 0
+
+    for key in list(results_data.keys()):
+        date = key.split('_')[0]
+        if date < cutoff:
+            archive_file = os.path.join(archive_dir, f'{date}.json')
+            existing = {}
+            if os.path.exists(archive_file):
+                with open(archive_file, 'r', encoding='utf-8') as f:
+                    existing = json.load(f)
+            existing[key] = results_data[key]
+            with open(archive_file, 'w', encoding='utf-8') as f:
+                json.dump(existing, f, ensure_ascii=False, indent=2)
+            del results_data[key]
+            archived_count += 1
+
+    if archived_count:
+        print(f'  归档旧赛果: {archived_count} 条到 results_history/')
+
+    # 更新归档索引
+    index = {'dates': []}
+    for filename in sorted(os.listdir(archive_dir)):
+        if filename.endswith('.json') and filename != 'index.json':
+            date_str = filename.replace('.json', '')
+            filepath = os.path.join(archive_dir, filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            count = len(data)
+            from datetime import datetime as dt
+            weekday_cn = ['一', '二', '三', '四', '五', '六', '日']
+            try:
+                weekday = weekday_cn[dt.strptime(date_str, '%Y-%m-%d').weekday()]
+            except:
+                weekday = ''
+            index['dates'].append({'date': date_str, 'weekday': weekday, 'count': count})
+
+    with open(os.path.join(archive_dir, 'index.json'), 'w', encoding='utf-8') as f:
+        json.dump(index, f, ensure_ascii=False, indent=2)
+
+    return results_data
+
+
+def fetch_and_save_results():
+    """主函数：抓取赛果并保存"""
+    print('\n' + '=' * 60)
+    print('  从体彩官网获取赛果数据')
+    print('=' * 60)
+
+    with open(HTML_PATH, 'r', encoding='utf-8') as f:
+        html_content = f.read()
+
+    # 抓取赛果
+    print('\n[1/3] 获取体彩赛果数据...')
+    json_text = fetch_results(days_back=7)
+
+    if not json_text:
+        print('[错误] 无法获取赛果数据')
+        return False
+
+    print('  ✅ 赛果API获取成功')
+
+    # 解析赛果
+    print('\n[2/3] 解析赛果数据...')
+    new_results = parse_results_json(json_text)
+
+    # 读取已有RESULTS
+    results_pattern = r'const RESULTS = \{([\s\S]*?)\};'
+    match = re.search(results_pattern, html_content)
+    existing_results = {}
+    if match:
+        results_str = '{' + match.group(1) + '}'
+        try:
+            existing_results = json.loads(results_str)
+            print(f'  原有赛果: {len(existing_results)} 条')
+        except:
+            print('  读取历史赛果失败，将使用新数据')
+
+    # 合并
+    merged_results = dict(existing_results)
+    for key, val in new_results.items():
+        merged_results[key] = val
+    print(f'  合并后赛果: {len(merged_results)} 条')
+
+    # 归档旧赛果
+    merged_results = archive_results(merged_results, days=30)
+
+    # 更新HTML
+    print('\n[3/3] 更新 index.html 中的赛果数据...')
+    html_content = update_html_results(html_content, merged_results)
+
+    with open(HTML_PATH, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    print('  ✅ index.html 已更新')
+
+    # 保存JSON
+    save_results_json(merged_results)
+
+    print('\n' + '=' * 60)
+    print('  赛果更新完成！')
+    print('=' * 60)
+    return True
+
+
 if __name__ == '__main__':
-    main()
+    if '--results-only' in sys.argv:
+        fetch_and_save_results()
+    else:
+        main()

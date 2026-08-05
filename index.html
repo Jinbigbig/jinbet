@@ -1704,14 +1704,22 @@
             <div class="batch-toolbar">
                 <input type="date" id="batchScheduleDate" />
                 <button class="btn btn-cyan btn-sm" onclick="loadBatchSchedule()">📅 加载赛程</button>
-                <span style="font-size:12px;color:#6b7280;margin-left:4px;">自动填充主客队，比分需手动输入</span>
+                <button class="btn btn-outline btn-sm" onclick="loadResultsArchive()" style="font-size:11px;padding:2px 6px;">📚 归档</button>
             </div>
             <div id="batchResultRows"></div>
             <div class="batch-actions">
                 <button class="btn btn-outline btn-sm" onclick="addBatchRow()">＋ 添加比赛</button>
                 <button class="btn btn-success" onclick="applyBatchResults()">✅ 应用赛果</button>
                 <button class="btn btn-outline btn-sm" onclick="clearBatchRows()">🗑 清空全部</button>
-                <span style="font-size:12px;color:#6b7280;margin-left:8px;">匹配依据：主队 + 客队，仅更新待开奖记录</span>
+            </div>
+            <div id="resultsArchiveSection" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #e5e7eb;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                    <span style="font-size:12px;font-weight:600;color:#374151;">📚 历史赛果归档</span>
+                    <select id="resultsArchiveSelect" onchange="loadResultsArchiveDate(this.value)" style="flex:1;height:28px;padding:2px 6px;border:1px solid #d0d4dd;border-radius:4px;font-size:12px;background:#fff;">
+                        <option value="">选择日期...</option>
+                    </select>
+                </div>
+                <div id="resultsArchiveList" style="max-height:200px;overflow-y:auto;"></div>
             </div>
         </div>
 
@@ -2070,6 +2078,59 @@ const ODDS = {
     '2026-08-05_费内巴切_格风暴': { '胜': '1.27', '平': '5.05', '负': '6.95', '让球': [{"handicap": "-1", "胜": "1.88", "平": "3.72", "负": "3.04"}], '比分': {"1:0": "8", "2:0": "6.25", "2:1": "7.75", "3:0": "8.5", "3:1": "10", "3:2": "26", "4:0": "15", "4:1": "17", "4:2": "38", "5:0": "26", "5:1": "33", "5:2": "70", "胜其他": "19", "0:0": "19", "1:1": "10.5", "2:2": "19", "3:3": "70", "平其他": "300", "0:1": "25", "0:2": "55", "1:2": "21", "0:3": "125", "1:3": "65", "2:3": "65", "0:4": "400", "1:4": "250", "2:4": "250", "0:5": "800", "1:5": "700", "2:5": "700", "负其他": "250"}, '总进球': {"0": "19", "1": "6.4", "2": "4.1", "3": "3.5", "4": "4.6", "5": "8", "6": "14", "7+": "19"}, '半全场': {"胜胜": "1.77", "胜平": "22", "胜负": "70", "平胜": "4.15", "平平": "8.4", "平负": "17", "负胜": "23", "负平": "22", "负负": "14"} },
     '2026-08-05_弗鲁米嫩_达伽马': { '胜': '1.94', '平': '2.85', '负': '3.8', '让球': [{"handicap": "-1", "胜": "4.4", "平": "3.3", "负": "1.67"}], '比分': {"1:0": "5.5", "2:0": "8", "2:1": "8", "3:0": "20", "3:1": "21", "3:2": "37", "4:0": "60", "4:1": "60", "4:2": "110", "5:0": "150", "5:1": "150", "5:2": "300", "胜其他": "150", "0:0": "6.8", "1:1": "5.5", "2:2": "18", "3:3": "90", "平其他": "700", "0:1": "9.25", "0:2": "19", "1:2": "14", "0:3": "45", "1:3": "45", "2:3": "55", "0:4": "175", "1:4": "150", "2:4": "250", "0:5": "700", "1:5": "550", "2:5": "700", "负其他": "300"}, '总进球': {"0": "6.8", "1": "3.6", "2": "3.1", "3": "4.3", "4": "7.8", "5": "18", "6": "40", "7+": "70"}, '半全场': {"胜胜": "3.3", "胜平": "16", "胜负": "45", "平胜": "4.75", "平平": "4.2", "平负": "8", "负胜": "34", "负平": "16", "负负": "6.6"} },
     '2026-08-06_维多利亚_巴竞技': { '胜': '2.03', '平': '3.2', '负': '3.1', '让球': [{"handicap": "-1", "胜": "4.6", "平": "3.45", "负": "1.61"}], '比分': {"1:0": "6.8", "2:0": "10", "2:1": "7.75", "3:0": "22", "3:1": "19", "3:2": "29", "4:0": "50", "4:1": "45", "4:2": "80", "5:0": "150", "5:1": "150", "5:2": "300", "胜其他": "90", "0:0": "10", "1:1": "6.3", "2:2": "15", "3:3": "70", "平其他": "400", "0:1": "8.8", "0:2": "16", "1:2": "10", "0:3": "40", "1:3": "30", "2:3": "38", "0:4": "120", "1:4": "90", "2:4": "120", "0:5": "450", "1:5": "300", "2:5": "450", "负其他": "175"}, '总进球': {"0": "10", "1": "4.1", "2": "3.3", "3": "3.8", "4": "6.5", "5": "13", "6": "28", "7+": "40"}, '半全场': {"胜胜": "3.45", "胜平": "16", "胜负": "38", "平胜": "5.1", "平平": "4.75", "平负": "7.4", "负胜": "34", "负平": "16", "负负": "5.3"} }
+};
+
+const RESULTS = {
+    '2026-07-30_弗鲁米嫩塞_巴伊亚': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '-1', 'league': '巴西甲级联赛', 'leagueAbbr': '巴甲', 'home': '弗鲁米嫩塞', 'away': '巴伊亚', 'matchId': '2040649', 'status': '2', '胜': '1.63', '平': '3.40', '负': '4.50' },
+    '2026-07-30_维多利亚_帕梅拉斯': { 'halfScore': '0:2', 'fullScore': '0:4', 'winFlag': 'A', 'handicap': '+1', 'league': '巴西甲级联赛', 'leagueAbbr': '巴甲', 'home': '维多利亚', 'away': '帕梅拉斯', 'matchId': '2040650', 'status': '2', '胜': '4.30', '平': '3.30', '负': '1.69' },
+    '2026-07-31_中日德兰_贝西克塔': { 'halfScore': '0:0', 'fullScore': '0:2', 'winFlag': 'A', 'handicap': '-1', 'league': '欧罗巴联赛', 'leagueAbbr': '欧罗巴', 'home': '中日德兰', 'away': '贝西克塔', 'matchId': '2040651', 'status': '2', '胜': '1.73', '平': '3.75', '负': '3.52' },
+    '2026-07-31_安德莱_哈马比': { 'halfScore': '0:1', 'fullScore': '3:1', 'winFlag': 'H', 'handicap': '-1', 'league': '欧罗巴联赛', 'leagueAbbr': '欧罗巴', 'home': '安德莱', 'away': '哈马比', 'matchId': '2040653', 'status': '2', '胜': '2.11', '平': '3.25', '负': '2.88' },
+    '2026-07-31_帕福斯_斯海杜克': { 'halfScore': '1:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '欧罗巴联赛', 'leagueAbbr': '欧罗巴', 'home': '帕福斯', 'away': '斯海杜克', 'matchId': '2040652', 'status': '2', '胜': '1.71', '平': '3.65', '负': '3.69' },
+    '2026-07-31_本菲卡_圣加仑': { 'halfScore': '1:0', 'fullScore': '5:0', 'handicap': '-2', 'league': '欧罗巴联赛', 'leagueAbbr': '欧罗巴', 'home': '本菲卡', 'away': '圣加仑', 'matchId': '2040655', 'status': '2' },
+    '2026-07-31_科林蒂安_巴竞技': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '-1', 'league': '巴西甲级联赛', 'leagueAbbr': '巴甲', 'home': '科林蒂安', 'away': '巴竞技', 'matchId': '2040656', 'status': '2', '胜': '1.80', '平': '2.95', '负': '4.25' },
+    '2026-07-31_费伦茨_特温特': { 'halfScore': '1:0', 'fullScore': '2:2', 'winFlag': 'D', 'handicap': '+1', 'league': '欧罗巴联赛', 'leagueAbbr': '欧罗巴', 'home': '费伦茨', 'away': '特温特', 'matchId': '2040654', 'status': '2', '胜': '2.58', '平': '3.50', '负': '2.19' },
+    '2026-08-01_TPS图尔_玛丽港': { 'halfScore': '2:0', 'fullScore': '3:0', 'winFlag': 'H', 'handicap': '-1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': 'TPS图尔', 'away': '玛丽港', 'matchId': '2040676', 'status': '2', '胜': '1.39', '平': '4.30', '负': '5.70' },
+    '2026-08-01_全北现代_首尔FC': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '+1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '全北现代', 'away': '首尔FC', 'matchId': '2040674', 'status': '2', '胜': '2.62', '平': '2.90', '负': '2.48' },
+    '2026-08-01_博德闪耀_利勒斯特': { 'halfScore': '2:0', 'fullScore': '4:0', 'winFlag': 'H', 'handicap': '-2', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '博德闪耀', 'away': '利勒斯特', 'matchId': '2040668', 'status': '2', '胜': '1.15', '平': '6.40', '负': '9.70' },
+    '2026-08-01_拉赫蒂_雅罗': { 'halfScore': '1:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': '拉赫蒂', 'away': '雅罗', 'matchId': '2040679', 'status': '2', '胜': '1.39', '平': '4.35', '负': '5.55' },
+    '2026-08-01_江原FC_富川FC': { 'halfScore': '0:1', 'fullScore': '0:3', 'winFlag': 'A', 'handicap': '-1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '江原FC', 'away': '富川FC', 'matchId': '2040673', 'status': '2', '胜': '1.44', '平': '3.75', '负': '5.95' },
+    '2026-08-01_浦项_金泉尚武': { 'halfScore': '0:0', 'fullScore': '0:1', 'winFlag': 'A', 'handicap': '-1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '浦项', 'away': '金泉尚武', 'matchId': '2040675', 'status': '2', '胜': '2.29', '平': '2.98', '负': '2.80' },
+    '2026-08-01_瓦勒伦加_汉坎': { 'halfScore': '0:1', 'fullScore': '0:3', 'winFlag': 'A', 'handicap': '-1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '瓦勒伦加', 'away': '汉坎', 'matchId': '2040667', 'status': '2', '胜': '1.53', '平': '3.98', '负': '4.45' },
+    '2026-08-01_纽约城_多伦多': { 'halfScore': '1:1', 'fullScore': '1:1', 'winFlag': 'D', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '纽约城', 'away': '多伦多', 'matchId': '2040669', 'status': '2', '胜': '1.45', '平': '4.05', '负': '5.20' },
+    '2026-08-01_腓特烈斯塔_桑纳菲尤尔': { 'halfScore': '1:0', 'fullScore': '1:0', 'winFlag': 'H', 'handicap': '-1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '腓特烈斯塔', 'away': '桑纳菲尤尔', 'matchId': '2040678', 'status': '2', '胜': '2.11', '平': '3.24', '负': '2.88' },
+    '2026-08-01_赫根_卡尔马': { 'halfScore': '1:1', 'fullScore': '1:1', 'winFlag': 'D', 'handicap': '-1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '赫根', 'away': '卡尔马', 'matchId': '2040677', 'status': '2', '胜': '1.62', '平': '3.85', '负': '3.96' },
+    '2026-08-02_AC奥卢_坦山猫': { 'halfScore': '0:0', 'fullScore': '1:0', 'winFlag': 'H', 'handicap': '-1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': 'AC奥卢', 'away': '坦山猫', 'matchId': '2040694', 'status': '2', '胜': '2.35', '平': '3.40', '负': '2.44' },
+    '2026-08-02_哥德堡_代格福什': { 'halfScore': '1:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '哥德堡', 'away': '代格福什', 'matchId': '2040692', 'status': '2', '胜': '1.60', '平': '3.75', '负': '4.20' },
+    '2026-08-02_圣路易城_盐湖城': { 'halfScore': '0:0', 'fullScore': '1:1', 'winFlag': 'D', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '圣路易城', 'away': '盐湖城', 'matchId': '2040685', 'status': '2', '胜': '1.88', '平': '3.75', '负': '3.02' },
+    '2026-08-02_大田市民_光州FC': { 'halfScore': '0:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '大田市民', 'away': '光州FC', 'matchId': '2040690', 'status': '2', '胜': '1.44', '平': '3.85', '负': '5.70' },
+    '2026-08-02_奥勒松_特罗姆瑟': { 'halfScore': '1:1', 'fullScore': '2:6', 'winFlag': 'A', 'handicap': '+1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '奥勒松', 'away': '特罗姆瑟', 'matchId': '2040698', 'status': '2', '胜': '3.45', '平': '3.42', '负': '1.83' },
+    '2026-08-02_奥斯KFUM_克里斯蒂': { 'halfScore': '2:0', 'fullScore': '2:1', 'winFlag': 'H', 'handicap': '-1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '奥斯KFUM', 'away': '克里斯蒂', 'matchId': '2040696', 'status': '2', '胜': '1.60', '平': '3.70', '负': '4.28' },
+    '2026-08-02_布鲁马波_马尔默': { 'halfScore': '0:0', 'fullScore': '1:2', 'winFlag': 'A', 'handicap': '+1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '布鲁马波', 'away': '马尔默', 'matchId': '2040691', 'status': '2', '胜': '2.98', '平': '3.60', '负': '1.94' },
+    '2026-08-02_斯达_维京': { 'halfScore': '0:3', 'fullScore': '0:3', 'winFlag': 'A', 'handicap': '+1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '斯达', 'away': '维京', 'matchId': '2040680', 'status': '2', '胜': '5.65', '平': '4.62', '负': '1.36' },
+    '2026-08-02_桑托斯_里莫': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '-1', 'league': '巴西杯', 'leagueAbbr': '巴西杯', 'home': '桑托斯', 'away': '里莫', 'matchId': '2040705', 'status': '2', '胜': '1.42', '平': '3.82', '负': '6.10' },
+    '2026-08-02_波特兰_西雅图': { 'halfScore': '1:1', 'fullScore': '2:1', 'winFlag': 'H', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '波特兰', 'away': '西雅图', 'matchId': '2040687', 'status': '2', '胜': '1.91', '平': '3.70', '负': '2.98' },
+    '2026-08-02_洛城银河_达拉斯': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '洛城银河', 'away': '达拉斯', 'matchId': '2040686', 'status': '2', '胜': '2.21', '平': '3.35', '负': '2.64' },
+    '2026-08-02_济州SK_仁川联': { 'halfScore': '2:2', 'fullScore': '3:3', 'winFlag': 'D', 'handicap': '+1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '济州SK', 'away': '仁川联', 'matchId': '2040689', 'status': '2', '胜': '2.80', '平': '2.75', '负': '2.45' },
+    '2026-08-02_温哥华_洛杉矶FC': { 'halfScore': '0:1', 'fullScore': '1:1', 'winFlag': 'D', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '温哥华', 'away': '洛杉矶FC', 'matchId': '2040683', 'status': '2', '胜': '1.91', '平': '3.65', '负': '3.02' },
+    '2026-08-02_瓦萨_国际图尔': { 'halfScore': '0:1', 'fullScore': '0:1', 'winFlag': 'A', 'handicap': '-1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': '瓦萨', 'away': '国际图尔', 'matchId': '2040693', 'status': '2', '胜': '2.62', '平': '3.00', '负': '2.42' },
+    '2026-08-02_索尔纳_厄格里特': { 'halfScore': '0:2', 'fullScore': '0:3', 'winFlag': 'A', 'handicap': '-1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '索尔纳', 'away': '厄格里特', 'matchId': '2040695', 'status': '2', '胜': '1.40', '平': '4.20', '负': '5.65' },
+    '2026-08-02_芝加哥_夏洛特FC': { 'halfScore': '1:1', 'fullScore': '2:1', 'winFlag': 'H', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '芝加哥', 'away': '夏洛特FC', 'matchId': '2040684', 'status': '2', '胜': '1.37', '平': '4.50', '负': '5.65' },
+    '2026-08-02_莫尔德_萨普斯堡': { 'halfScore': '1:1', 'fullScore': '3:3', 'winFlag': 'D', 'handicap': '-1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '莫尔德', 'away': '萨普斯堡', 'matchId': '2040697', 'status': '2', '胜': '1.45', '平': '4.30', '负': '4.85' },
+    '2026-08-02_蔚山现代_安养FC': { 'halfScore': '0:0', 'fullScore': '3:1', 'winFlag': 'H', 'handicap': '-1', 'league': '韩国职业联赛', 'leagueAbbr': '韩职', 'home': '蔚山现代', 'away': '安养FC', 'matchId': '2040688', 'status': '2', '胜': '2.02', '平': '3.40', '负': '2.94' },
+    '2026-08-02_赫尔辛基火花_库奥皮奥': { 'halfScore': '0:1', 'fullScore': '0:1', 'winFlag': 'A', 'handicap': '+1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': '赫尔辛基火花', 'away': '库奥皮奥', 'matchId': '2040681', 'status': '2', '胜': '3.22', '平': '3.65', '负': '1.84' },
+    '2026-08-02_迈国际_哥伦布': { 'halfScore': '2:1', 'fullScore': '2:2', 'winFlag': 'D', 'handicap': '-1', 'league': '美国职业大联盟', 'leagueAbbr': '美职', 'home': '迈国际', 'away': '哥伦布', 'matchId': '2040682', 'status': '2', '胜': '1.38', '平': '4.65', '负': '5.30' },
+    '2026-08-03_巴西国际_科林蒂安': { 'halfScore': '0:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '巴西杯', 'leagueAbbr': '巴西杯', 'home': '巴西国际', 'away': '科林蒂安', 'matchId': '2040700', 'status': '2', '胜': '2.24', '平': '2.60', '负': '3.35' },
+    '2026-08-03_布兰_罗森博格': { 'halfScore': '1:0', 'fullScore': '3:2', 'winFlag': 'H', 'handicap': '-1', 'league': '挪威超级联赛', 'leagueAbbr': '挪超', 'home': '布兰', 'away': '罗森博格', 'matchId': '2040699', 'status': '2', '胜': '1.90', '平': '3.55', '负': '3.12' },
+    '2026-08-03_米拉索尔_格雷米奥': { 'halfScore': '1:0', 'fullScore': '1:1', 'winFlag': 'D', 'handicap': '-1', 'league': '巴西杯', 'leagueAbbr': '巴西杯', 'home': '米拉索尔', 'away': '格雷米奥', 'matchId': '2040706', 'status': '2', '胜': '1.83', '平': '2.90', '负': '4.20' },
+    '2026-08-04_佐加顿斯_韦斯特罗': { 'halfScore': '3:0', 'fullScore': '6:0', 'winFlag': 'H', 'handicap': '-1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '佐加顿斯', 'away': '韦斯特罗', 'matchId': '2040703', 'status': '2', '胜': '1.38', '平': '4.50', '负': '5.50' },
+    '2026-08-04_哈尔姆斯_天狼星': { 'halfScore': '0:2', 'fullScore': '0:2', 'winFlag': 'A', 'handicap': '+1', 'league': '瑞典超级联赛', 'leagueAbbr': '瑞超', 'home': '哈尔姆斯', 'away': '天狼星', 'matchId': '2040702', 'status': '2', '胜': '7.30', '平': '5.20', '负': '1.25' },
+    '2026-08-04_塞伊奈_赫尔辛基': { 'halfScore': '0:0', 'fullScore': '3:0', 'winFlag': 'H', 'handicap': '+1', 'league': '芬兰超级联赛', 'leagueAbbr': '芬超', 'home': '塞伊奈', 'away': '赫尔辛基', 'matchId': '2040701', 'status': '2', '胜': '3.30', '平': '3.87', '负': '1.76' },
+    '2026-08-04_巴竞技_维多利亚': { 'halfScore': '1:0', 'fullScore': '2:0', 'winFlag': 'H', 'handicap': '-1', 'league': '巴西杯', 'leagueAbbr': '巴西杯', 'home': '巴竞技', 'away': '维多利亚', 'matchId': '2040704', 'status': '2', '胜': '1.54', '平': '3.25', '负': '5.80' },
+    '2026-08-05_圣吉联合_博德闪耀': { 'halfScore': '2:2', 'fullScore': '3:3', 'winFlag': 'D', 'handicap': '-1', 'league': '欧洲冠军联赛', 'leagueAbbr': '欧冠', 'home': '圣吉联合', 'away': '博德闪耀', 'matchId': '2040720', 'status': '2', '胜': '2.25', '平': '3.60', '负': '2.46' },
+    '2026-08-05_奥林匹亚_奈梅亨': { 'halfScore': '0:0', 'fullScore': '0:0', 'winFlag': 'D', 'handicap': '-1', 'league': '欧洲冠军联赛', 'leagueAbbr': '欧冠', 'home': '奥林匹亚', 'away': '奈梅亨', 'matchId': '2040728', 'status': '2', '胜': '1.40', '平': '4.22', '负': '5.60' },
+    '2026-08-05_布斯巴达_里昂': { 'halfScore': '0:1', 'fullScore': '2:1', 'winFlag': 'H', 'handicap': '+1', 'league': '欧洲冠军联赛', 'leagueAbbr': '欧冠', 'home': '布斯巴达', 'away': '里昂', 'matchId': '2040721', 'status': '2', '胜': '3.45', '平': '3.48', '负': '1.81' },
+    '2026-08-05_米亚尔比_布拉迪斯': { 'halfScore': '0:0', 'fullScore': '1:2', 'winFlag': 'A', 'handicap': '-1', 'league': '欧洲冠军联赛', 'leagueAbbr': '欧冠', 'home': '米亚尔比', 'away': '布拉迪斯', 'matchId': '2040727', 'status': '2', '胜': '1.95', '平': '3.24', '负': '3.25' },
+    '2026-08-05_里莫_桑托斯': { 'halfScore': '0:0', 'fullScore': '0:1', 'winFlag': 'A', 'handicap': '+1', 'league': '巴西杯', 'leagueAbbr': '巴西杯', 'home': '里莫', 'away': '桑托斯', 'matchId': '2040716', 'status': '2', '胜': '3.38', '平': '2.95', '负': '2.02' }
 };
 
 // ================================================================
@@ -4339,13 +4400,77 @@ function loadBatchSchedule() {
     }
     const container = document.getElementById('batchResultRows');
     container.innerHTML = '';
+    let autoFilled = 0;
     games.forEach(g => {
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
-        addBatchRow(g.home, g.away, '', league);
+        // 尝试从 RESULTS 获取赛果（支持主客队顺序调换）
+        let score = '';
+        let handicap = '';
+        let resultKey = date + '_' + g.home + '_' + g.away;
+        if (RESULTS[resultKey]) {
+            const r = RESULTS[resultKey];
+            if (r.fullScore) { score = r.fullScore; autoFilled++; }
+            if (r.handicap && r.handicap !== '0') handicap = r.handicap;
+        } else {
+            // 尝试调换主客队
+            const altKey = date + '_' + g.away + '_' + g.home;
+            if (RESULTS[altKey]) {
+                const r = RESULTS[altKey];
+                if (r.fullScore) {
+                    // 调换比分（因为主客队顺序反了）
+                    const parts = r.fullScore.split(':');
+                    if (parts.length === 2) {
+                        score = parts[1] + ':' + parts[0];
+                    }
+                    autoFilled++;
+                }
+                if (r.handicap && r.handicap !== '0') {
+                    // 让球方向也要反转
+                    const h = r.handicap;
+                    if (h.startsWith('-')) handicap = '+' + h.substring(1);
+                    else if (h.startsWith('+')) handicap = '-' + h.substring(1);
+                    else handicap = h;
+                }
+            } else {
+                // 跨日期匹配：搜索所有 RESULTS 中包含这两个队的记录
+                const teamPair = g.home + '_' + g.away;
+                const altPair = g.away + '_' + g.home;
+                for (const rk in RESULTS) {
+                    if (rk.indexOf(teamPair) !== -1 || rk.indexOf(altPair) !== -1) {
+                        const r = RESULTS[rk];
+                        if (r.fullScore) {
+                            const parts = r.fullScore.split(':');
+                            if (rk.indexOf(altPair) !== -1 && parts.length === 2) {
+                                score = parts[1] + ':' + parts[0];
+                            } else {
+                                score = r.fullScore;
+                            }
+                            autoFilled++;
+                        }
+                        if (r.handicap && r.handicap !== '0') {
+                            const h = r.handicap;
+                            if (rk.indexOf(altPair) !== -1) {
+                                if (h.startsWith('-')) handicap = '+' + h.substring(1);
+                                else if (h.startsWith('+')) handicap = '-' + h.substring(1);
+                                else handicap = h;
+                            } else {
+                                handicap = h;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        addBatchRow(g.home, g.away, score, league, handicap);
     });
-    showToast('✅ 已加载 ' + games.length + ' 场比赛');
+    if (autoFilled > 0) {
+        showToast('✅ 已加载 ' + games.length + ' 场比赛，其中 ' + autoFilled + ' 场已自动填充赛果');
+    } else {
+        showToast('✅ 已加载 ' + games.length + ' 场比赛');
+    }
 }
-function addBatchRow(home = '', away = '', score = '', league = '') {
+function addBatchRow(home = '', away = '', score = '', league = '', handicap = '') {
     const container = document.getElementById('batchResultRows');
     const div = document.createElement('div');
     div.className = 'batch-row';
@@ -4354,6 +4479,7 @@ function addBatchRow(home = '', away = '', score = '', league = '') {
     const homeDatalist = getTeamDatalistHTML(homeId);
     const awayDatalist = getTeamDatalistHTML(awayId);
     const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
+    const handicapTag = handicap ? `<span style="font-size:11px;color:#6b7280;margin-left:4px;">让球${handicap}</span>` : '';
     // 使用赔率管理中的完整比分选项
     const scoreOptions = [
         { val:'', label:'— 选择 —' },
@@ -4400,7 +4526,7 @@ function addBatchRow(home = '', away = '', score = '', league = '') {
     ).join('');
     div.innerHTML = `
         <div class="team-pair">
-            ${leagueTag}
+            ${leagueTag}${handicapTag}
             <input type="text" class="batch-home" placeholder="主队" value="${home}" autocomplete="off" />
             <span style="font-weight:600;">vs</span>
             <input type="text" class="batch-away" placeholder="客队" value="${away}" autocomplete="off" />
@@ -4410,6 +4536,7 @@ function addBatchRow(home = '', away = '', score = '', league = '') {
                 ${optionHtml}
             </select>
             <input type="text" class="batch-score-custom" placeholder="如 6:3" value="" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:none;text-align:center;" />
+            ${score ? '<span style="font-size:10px;color:#10b981;margin-left:4px;">⚡自动</span>' : ''}
         </div>
         <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
     `;
@@ -4431,6 +4558,96 @@ function clearBatchRows() {
     document.getElementById('batchResultRows').innerHTML = '';
     addBatchRow();
     addBatchRow();
+}
+
+// === 赛果归档 ===
+let _resultsArchiveIndex = null;
+
+function loadResultsArchive() {
+    const section = document.getElementById('resultsArchiveSection');
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+        fetchResultsArchiveIndex();
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+function fetchResultsArchiveIndex() {
+    if (_resultsArchiveIndex) {
+        renderResultsArchiveIndex();
+        return;
+    }
+    fetch('results_history/index.json?t=' + Date.now(), { cache: 'no-cache' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('无归档数据');
+            return r.json();
+        })
+        .then(function(data) {
+            _resultsArchiveIndex = data.dates || [];
+            renderResultsArchiveIndex();
+        })
+        .catch(function() {
+            _resultsArchiveIndex = [];
+            renderResultsArchiveIndex();
+        });
+}
+
+function renderResultsArchiveIndex() {
+    const select = document.getElementById('resultsArchiveSelect');
+    if (!_resultsArchiveIndex || _resultsArchiveIndex.length === 0) {
+        select.innerHTML = '<option value="">暂无归档数据</option>';
+        document.getElementById('resultsArchiveList').innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">赛果归档在后端脚本运行时自动生成</div>';
+        return;
+    }
+    select.innerHTML = '<option value="">选择日期...</option>';
+    _resultsArchiveIndex.forEach(function(d) {
+        const opt = document.createElement('option');
+        opt.value = d.date;
+        opt.textContent = d.date + ' (周' + d.weekday + ', ' + d.count + '场)';
+        select.appendChild(opt);
+    });
+}
+
+function loadResultsArchiveDate(dateStr) {
+    if (!dateStr) return;
+    const listDiv = document.getElementById('resultsArchiveList');
+    listDiv.innerHTML = '<div style="font-size:12px;color:#6b7280;padding:10px;">加载中...</div>';
+    fetch('results_history/' + dateStr + '.json?t=' + Date.now(), { cache: 'no-cache' })
+        .then(function(r) {
+            if (!r.ok) throw new Error('归档文件不存在');
+            return r.json();
+        })
+        .then(function(data) {
+            listDiv.innerHTML = '';
+            const keys = Object.keys(data).sort();
+            if (keys.length === 0) {
+                listDiv.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">该日无赛果</div>';
+                return;
+            }
+            keys.forEach(function(key) {
+                const r = data[key];
+                const matchDiv = document.createElement('div');
+                matchDiv.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #f3f4f6;font-size:11px;cursor:pointer;';
+                const teams = (r.home || '') + ' vs ' + (r.away || '');
+                const score = r.fullScore || '-';
+                const league = r.leagueAbbr || r.league || '';
+                const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
+                matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:#111827;">' + score + handicap + '</span>';
+                matchDiv.onclick = function() {
+                    const dateInput = document.getElementById('batchScheduleDate');
+                    if (dateInput.value === key.split('_')[0]) {
+                        loadBatchSchedule();
+                    } else {
+                        showToast('请先在上方选择 ' + key.split('_')[0] + ' 日期');
+                    }
+                };
+                listDiv.appendChild(matchDiv);
+            });
+        })
+        .catch(function(err) {
+            listDiv.innerHTML = '<div style="font-size:12px;color:#ef4444;padding:10px;">加载失败: ' + err.message + '</div>';
+        });
 }
 function applyBatchResults() {
     const rows = document.querySelectorAll('#batchResultRows .batch-row');

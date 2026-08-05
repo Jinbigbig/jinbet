@@ -26,6 +26,11 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
 
+      - name: 抓取体彩赛果并更新
+        run: python update_odds_net.py --results-only
+        env:
+          PYTHONIOENCODING: utf-8
+
       - name: 生成版本号
         run: date '+%Y%m%d%H%M%S' > version.txt
 
@@ -70,10 +75,15 @@ jobs:
           cp version.txt /tmp/version.txt
           rm -rf /tmp/odds_history
           cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
+          cp results_data.json /tmp/results_data.json 2>/dev/null || true
+          rm -rf /tmp/results_history
+          cp -r results_history/ /tmp/results_history/ 2>/dev/null || true
 
           # 1. 推送到 master（保持同步，清理旧赛程避免重复归档）
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
+          git add results_data.json 2>/dev/null || true
+          git add results_history/ 2>/dev/null || true
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
           git pull origin master --rebase
           git push origin master
@@ -85,8 +95,13 @@ jobs:
           cp /tmp/version.txt version.txt
           mkdir -p odds_history
           cp -r /tmp/odds_history/* odds_history/ 2>/dev/null || true
+          cp /tmp/results_data.json results_data.json 2>/dev/null || true
+          mkdir -p results_history
+          cp -r /tmp/results_history/* results_history/ 2>/dev/null || true
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
+          git add results_data.json 2>/dev/null || true
+          git add results_history/ 2>/dev/null || true
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
           git pull origin gh-pages --rebase
           git push origin gh-pages
