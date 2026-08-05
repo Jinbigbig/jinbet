@@ -4558,6 +4558,20 @@ function clearBatchRows() {
     document.getElementById('batchResultRows').innerHTML = '';
     addBatchRow();
     addBatchRow();
+    // 同步清除归档查询状态
+    const archiveSection = document.getElementById('resultsArchiveSection');
+    if (archiveSection) {
+        archiveSection.style.display = 'none';
+    }
+    const archiveList = document.getElementById('resultsArchiveList');
+    if (archiveList) {
+        archiveList.innerHTML = '';
+    }
+    const archiveSelect = document.getElementById('resultsArchiveSelect');
+    if (archiveSelect) {
+        archiveSelect.value = '';
+    }
+    _resultsArchiveIndex = null;
 }
 
 // === 赛果归档 ===

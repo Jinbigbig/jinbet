@@ -1137,7 +1137,8 @@ def fetch_and_save_results():
     if match:
         results_str = '{' + match.group(1) + '}'
         try:
-            existing_results = json.loads(results_str)
+            results_json = parse_js_obj_to_json(results_str)
+            existing_results = json.loads(results_json)
             print(f'  原有赛果: {len(existing_results)} 条')
         except:
             print('  读取历史赛果失败，将使用新数据')
@@ -1170,6 +1171,15 @@ def fetch_and_save_results():
 
 if __name__ == '__main__':
     if '--results-only' in sys.argv:
+        fetch_and_save_results()
+    elif '--full' in sys.argv:
+        print('\n' + '#' * 60)
+        print('  完整模式: 赔率 + 赛果 一键更新')
+        print('#' * 60)
+        main()
+        print('\n' + '#' * 60)
+        print('  赔率更新完成，开始抓取赛果...')
+        print('#' * 60)
         fetch_and_save_results()
     else:
         main()
