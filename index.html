@@ -346,6 +346,7 @@
         }
         .batch-result-panel .batch-toolbar .btn {
             height: 36px;
+            font-size: 13px;
         }
         .batch-result-panel .batch-row {
             display: flex;
@@ -414,6 +415,7 @@
         }
         .batch-result-panel .batch-actions .btn {
             height: 36px;
+            font-size: 13px;
         }
         .batch-result-panel .batch-row .batch-score-select {
             text-align: center;
@@ -1704,14 +1706,12 @@
             <div class="batch-toolbar">
                 <input type="date" id="batchScheduleDate" />
                 <button class="btn btn-cyan btn-sm" onclick="loadBatchSchedule()">📅 加载赛程</button>
-                <button class="btn btn-outline btn-sm" onclick="loadResultsArchive()" style="font-size:11px;padding:2px 6px;">📚 归档</button>
+                <button class="btn btn-outline btn-sm" onclick="loadResultsArchive()">📚 归档</button>
+                <button class="btn btn-success btn-sm" onclick="applyBatchResults()">✅ 应用</button>
+                <button class="btn btn-outline btn-sm" onclick="clearBatchRows()">🗑 清空</button>
+                <button class="btn btn-outline btn-sm" onclick="addBatchRow()">＋ 添加比赛</button>
             </div>
             <div id="batchResultRows"></div>
-            <div class="batch-actions">
-                <button class="btn btn-outline btn-sm" onclick="addBatchRow()">＋ 添加比赛</button>
-                <button class="btn btn-success" onclick="applyBatchResults()">✅ 应用赛果</button>
-                <button class="btn btn-outline btn-sm" onclick="clearBatchRows()">🗑 清空全部</button>
-            </div>
             <div id="resultsArchiveSection" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed #e5e7eb;">
                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
                     <span style="font-size:12px;font-weight:600;color:#374151;">📚 历史赛果归档</span>
