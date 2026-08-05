@@ -2170,7 +2170,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.97.8';
+const APP_VERSION = '7.98.0';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -4391,6 +4391,8 @@ async function runAiPrediction() {
 //  批量赛果录入
 // ================================================================
 let batchRowCounter = 0;
+let _batchLoadedDates = []; // 追踪已加载的日期，用于追加排序
+
 function loadBatchSchedule() {
     const date = document.getElementById('batchScheduleDate').value;
     const games = SCHEDULE[date];
@@ -4399,11 +4401,39 @@ function loadBatchSchedule() {
         return;
     }
     const container = document.getElementById('batchResultRows');
-    container.innerHTML = '';
+
+    // 检查日期是否已加载
+    if (_batchLoadedDates.indexOf(date) !== -1) {
+        showToast('该日期比赛已加载，跳过重复');
+        return;
+    }
+
+    // 收集现有比赛的去重键
+    const existingKeys = new Set();
+    container.querySelectorAll('.batch-row').forEach(row => {
+        const h = (row.querySelector('.batch-home')?.value || '').trim();
+        const a = (row.querySelector('.batch-away')?.value || '').trim();
+        if (h && a) existingKeys.add(h + '\x01' + a);
+    });
+
+    // 收集现有日期分组
+    const existingGroups = [];
+    container.querySelectorAll('.batch-date-group').forEach(group => {
+        existingGroups.push({
+            date: group.dataset.date,
+            element: group
+        });
+    });
+
+    // 构建新日期的比赛行
+    const rowsHtml = [];
     let autoFilled = 0;
     games.forEach(g => {
+        const key = g.home + '\x01' + g.away;
+        if (existingKeys.has(key)) return; // 跳过已存在的比赛
+        existingKeys.add(key);
+
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
-        // 尝试从 RESULTS 获取赛果（支持主客队顺序调换）
         let score = '';
         let handicap = '';
         let resultKey = date + '_' + g.home + '_' + g.away;
@@ -4412,27 +4442,21 @@ function loadBatchSchedule() {
             if (r.fullScore) { score = r.fullScore; autoFilled++; }
             if (r.handicap && r.handicap !== '0') handicap = r.handicap;
         } else {
-            // 尝试调换主客队
             const altKey = date + '_' + g.away + '_' + g.home;
             if (RESULTS[altKey]) {
                 const r = RESULTS[altKey];
                 if (r.fullScore) {
-                    // 调换比分（因为主客队顺序反了）
                     const parts = r.fullScore.split(':');
-                    if (parts.length === 2) {
-                        score = parts[1] + ':' + parts[0];
-                    }
+                    if (parts.length === 2) score = parts[1] + ':' + parts[0];
                     autoFilled++;
                 }
                 if (r.handicap && r.handicap !== '0') {
-                    // 让球方向也要反转
                     const h = r.handicap;
                     if (h.startsWith('-')) handicap = '+' + h.substring(1);
                     else if (h.startsWith('+')) handicap = '-' + h.substring(1);
                     else handicap = h;
                 }
             } else {
-                // 跨日期匹配：搜索所有 RESULTS 中包含这两个队的记录
                 const teamPair = g.home + '_' + g.away;
                 const altPair = g.away + '_' + g.home;
                 for (const rk in RESULTS) {
@@ -4462,12 +4486,118 @@ function loadBatchSchedule() {
                 }
             }
         }
-        addBatchRow(g.home, g.away, score, league, handicap);
+        const id = 'batch_home_' + (batchRowCounter++);
+        const awayId = 'batch_away_' + (batchRowCounter++);
+        const homeDatalist = getTeamDatalistHTML(id);
+        const awayDatalist = getTeamDatalistHTML(awayId);
+        const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
+        const handicapTag = handicap ? `<span style="font-size:11px;color:#6b7280;margin-left:4px;">让球${handicap}</span>` : '';
+        const scoreOptions = [
+            { val:'', label:'— 选择 —' },
+            { val:'1:0', label:'1:0' },{ val:'2:0', label:'2:0' },{ val:'2:1', label:'2:1' },
+            { val:'3:0', label:'3:0' },{ val:'3:1', label:'3:1' },{ val:'3:2', label:'3:2' },
+            { val:'4:0', label:'4:0' },{ val:'4:1', label:'4:1' },{ val:'4:2', label:'4:2' },
+            { val:'5:0', label:'5:0' },{ val:'5:1', label:'5:1' },{ val:'5:2', label:'5:2' },
+            { val:'0:0', label:'0:0' },{ val:'1:1', label:'1:1' },{ val:'2:2', label:'2:2' },{ val:'3:3', label:'3:3' },
+            { val:'0:1', label:'0:1' },{ val:'0:2', label:'0:2' },{ val:'1:2', label:'1:2' },
+            { val:'0:3', label:'0:3' },{ val:'1:3', label:'1:3' },{ val:'2:3', label:'2:3' },
+            { val:'0:4', label:'0:4' },{ val:'1:4', label:'1:4' },{ val:'2:4', label:'2:4' },
+            { val:'0:5', label:'0:5' },{ val:'1:5', label:'1:5' },{ val:'2:5', label:'2:5' },
+            { val:'胜其他', label:'★ 胜其他' },{ val:'平其他', label:'★ 平其他' },{ val:'负其他', label:'★ 负其他' },
+            { val:'__custom__', label:'✎ 自定义' },
+        ];
+        const scoreInOptions = scoreOptions.some(opt => opt.val === score);
+        const optionHtml = scoreOptions.map(opt =>
+            `<option value="${opt.val}" ${(!scoreInOptions && opt.val === '__custom__') || (scoreInOptions && opt.val === score) ? 'selected' : ''}>${opt.label}</option>`
+        ).join('');
+        const scoreLabel = score ? '<span style="font-size:10px;color:#10b981;margin-left:4px;">⚡自动</span>' : '';
+        const customDisplay = (!scoreInOptions && score) ? 'inline-block' : 'none';
+
+        rowsHtml.push(`
+            <div class="batch-row">
+                <div class="team-pair">
+                    ${leagueTag}${handicapTag}
+                    <input type="text" class="batch-home" placeholder="主队" value="${g.home}" autocomplete="off" list="${id}" />
+                    ${homeDatalist}
+                    <span style="font-weight:600;">vs</span>
+                    <input type="text" class="batch-away" placeholder="客队" value="${g.away}" autocomplete="off" list="${awayId}" />
+                    ${awayDatalist}
+                </div>
+                <div style="display:flex;align-items:center;">
+                    <select class="batch-score-select" style="width:100px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
+                        ${optionHtml}
+                    </select>
+                    <input type="text" class="batch-score-custom" placeholder="如 6:3" value="${!scoreInOptions ? score : ''}" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:${customDisplay};text-align:center;" />
+                    ${scoreLabel}
+                </div>
+                <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
+            </div>
+        `);
     });
-    if (autoFilled > 0) {
-        showToast('✅ 已加载 ' + games.length + ' 场比赛，其中 ' + autoFilled + ' 场已自动填充赛果');
+
+    // 没有新比赛需要加载
+    if (rowsHtml.length === 0) {
+        showToast('该日期所有比赛已存在，无需追加');
+        return;
+    }
+
+    // 创建日期分组
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'batch-date-group';
+    groupDiv.dataset.date = date;
+    const weekdayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const dt = new Date(date + 'T00:00:00');
+    const weekday = weekdayNames[dt.getDay()];
+    groupDiv.innerHTML = `
+        <div style="display:flex;align-items:center;gap:6px;margin:8px 0 4px;padding:4px 8px;background:#f3f4f6;border-radius:6px;font-size:12px;font-weight:600;color:#374151;">
+            <span>📅 ${date}</span>
+            <span style="color:#6b7280;font-weight:400;">${weekday}</span>
+            <span style="margin-left:auto;color:#9ca3af;">${rowsHtml.length} 场</span>
+        </div>
+        ${rowsHtml.join('')}
+    `;
+
+    // 根据日期决定插入位置
+    if (_batchLoadedDates.length === 0) {
+        // 第一次加载，直接追加到末尾
+        container.appendChild(groupDiv);
     } else {
-        showToast('✅ 已加载 ' + games.length + ' 场比赛');
+        // 找到合适的插入位置
+        let inserted = false;
+        for (let i = 0; i < existingGroups.length; i++) {
+            if (date < existingGroups[i].date) {
+                // 新日期比现有日期早 → 在该分组之前插入
+                container.insertBefore(groupDiv, existingGroups[i].element);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) {
+            // 新日期比所有现有日期都晚 → 追加到末尾
+            container.appendChild(groupDiv);
+        }
+    }
+
+    _batchLoadedDates.push(date);
+    _batchLoadedDates.sort(); // 保持日期排序
+
+    // 绑定新行的 select 切换事件
+    groupDiv.querySelectorAll('.batch-score-select').forEach(select => {
+        const customInput = select.parentElement.querySelector('.batch-score-custom');
+        select.addEventListener('change', function() {
+            if (this.value === '__custom__') {
+                customInput.style.display = 'inline-block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        });
+    });
+
+    const existingCount = container.querySelectorAll('.batch-row').length;
+    if (autoFilled > 0) {
+        showToast(`✅ 追加 ${rowsHtml.length} 场比赛（${date}），其中 ${autoFilled} 场已自动填充，当前共 ${existingCount} 场`);
+    } else {
+        showToast(`✅ 追加 ${rowsHtml.length} 场比赛（${date}），当前共 ${existingCount} 场`);
     }
 }
 function addBatchRow(home = '', away = '', score = '', league = '', handicap = '') {
@@ -4556,6 +4686,7 @@ function addBatchRow(home = '', away = '', score = '', league = '', handicap = '
 }
 function clearBatchRows() {
     document.getElementById('batchResultRows').innerHTML = '';
+    _batchLoadedDates = [];
     addBatchRow();
     addBatchRow();
     // 同步清除归档查询状态
