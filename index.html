@@ -1929,9 +1929,9 @@
         <div class="batch-toolbar">
             <input type="date" id="oddsDate" />
             <button class="btn btn-cyan btn-sm" onclick="loadOddsSchedule()">📅 加载赛程</button>
-            <button class="btn btn-success btn-sm" onclick="saveOdds()">💾 保存赔率</button>
             <button class="btn btn-cyan btn-sm" id="btnRefreshOdds" onclick="openOddsUpdater()">🔄 更新赔率</button>
               <span id="onlineBadge" style="display:none;font-size:12px;color:#4caf50;margin-left:6px;"></span>
+            <button class="btn btn-outline btn-sm" onclick="saveOdds()">✏️ 修改保存</button>
             <button class="btn btn-outline btn-sm" onclick="clearOdds()">🗑 清空</button>
             <button class="btn btn-outline btn-sm" onclick="openOddsArchive()">📦 归档</button>
         </div>
@@ -2180,7 +2180,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.0';
+const APP_VERSION = '7.98.1';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2489,7 +2489,7 @@ function saveOdds() {
     });
     saveToStorage();
     syncOddsToBets();
-    showToast('✅ 赔率已保存，并同步更新了所有相关记录');
+    showToast('✅ 修改已保存，并同步更新了所有相关记录');
 }
 
 function clearOdds() {
