@@ -4547,29 +4547,38 @@ function loadBatchSchedule() {
             } else {
                 const teamPair = g.home + '_' + g.away;
                 const altPair = g.away + '_' + g.home;
+                let bestRk = null;
+                let bestDateDiff = Infinity;
                 for (const rk in RESULTS) {
                     if (rk.indexOf(teamPair) !== -1 || rk.indexOf(altPair) !== -1) {
-                        const r = RESULTS[rk];
-                        if (r.fullScore) {
-                            const parts = r.fullScore.split(':');
-                            if (rk.indexOf(altPair) !== -1 && parts.length === 2) {
-                                score = parts[1] + ':' + parts[0];
-                            } else {
-                                score = r.fullScore;
-                            }
-                            autoFilled++;
+                        const rkDate = rk.substring(0, 10);
+                        const diff = Math.abs(new Date(rkDate) - new Date(date));
+                        if (diff < bestDateDiff) {
+                            bestDateDiff = diff;
+                            bestRk = rk;
                         }
-                        if (r.handicap && r.handicap !== '0') {
-                            const h = r.handicap;
-                            if (rk.indexOf(altPair) !== -1) {
-                                if (h.startsWith('-')) handicap = '+' + h.substring(1);
-                                else if (h.startsWith('+')) handicap = '-' + h.substring(1);
-                                else handicap = h;
-                            } else {
-                                handicap = h;
-                            }
+                    }
+                }
+                if (bestRk) {
+                    const r = RESULTS[bestRk];
+                    if (r.fullScore) {
+                        const parts = r.fullScore.split(':');
+                        if (bestRk.indexOf(altPair) !== -1 && parts.length === 2) {
+                            score = parts[1] + ':' + parts[0];
+                        } else {
+                            score = r.fullScore;
                         }
-                        break;
+                        autoFilled++;
+                    }
+                    if (r.handicap && r.handicap !== '0') {
+                        const h = r.handicap;
+                        if (bestRk.indexOf(altPair) !== -1) {
+                            if (h.startsWith('-')) handicap = '+' + h.substring(1);
+                            else if (h.startsWith('+')) handicap = '-' + h.substring(1);
+                            else handicap = h;
+                        } else {
+                            handicap = h;
+                        }
                     }
                 }
             }
