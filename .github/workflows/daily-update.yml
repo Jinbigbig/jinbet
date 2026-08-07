@@ -2,7 +2,8 @@ name: 每日赛程赔率自动更新
 
 on:
   schedule:
-    - cron: '15 3 * * *'
+    - cron: '15 3 * * *'   # 北京时间 11:15 早间更新（赔率+早期赛果）
+    - cron: '15 12 * * *'  # 北京时间 20:15 晚间补抓（补全日间晚场赛果）
   workflow_dispatch:
 
 jobs:
@@ -25,6 +26,26 @@ jobs:
         run: python update_odds_net.py --no-push --full
         env:
           PYTHONIOENCODING: utf-8
+
+      - name: 验证赛果数据
+        run: |
+          python3 -c "
+          import json, sys
+          with open('results_data.json', 'r', encoding='utf-8') as f:
+              results = json.load(f)
+          total = len(results)
+          today = __import__('datetime').date.today().strftime('%Y-%m-%d')
+          yesterday = (__import__('datetime').date.today() - __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
+          today_count = sum(1 for k in results if k.startswith(today))
+          yest_count = sum(1 for k in results if k.startswith(yesterday))
+          print(f'赛果总计: {total} 条')
+          print(f'昨日({yesterday}): {yest_count} 条, 今日({today}): {today_count} 条')
+          if total == 0:
+              print('⚠️ 赛果数据为空，可能API抓取失败')
+          else:
+              print('✅ 赛果数据验证通过')
+          "
+        continue-on-error: true
 
       - name: 生成版本号
         run: date '+%Y%m%d%H%M%S' > version.txt

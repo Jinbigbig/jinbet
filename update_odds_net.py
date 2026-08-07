@@ -921,8 +921,9 @@ RESULT_TEAM_NAME_MAP = {
 }
 
 
-def fetch_results(days_back=7):
-    """从体彩官网API获取赛果数据"""
+def fetch_results(days_back=7, max_retries=3):
+    """从体彩官网API获取赛果数据，支持重试"""
+    import time
     from datetime import datetime, timedelta
     end_date = datetime.now().strftime('%Y-%m-%d')
     start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
@@ -932,19 +933,29 @@ def fetch_results(days_back=7):
         f'?matchBeginDate={start_date}&matchEndDate={end_date}'
         f'&leagueId=&pageSize=50&pageNo=1&isFix=0&matchPage=1&pcOrWap=1'
     )
-    try:
-        req = urllib.request.Request(url, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Referer': 'https://www.sporttery.cn/jc/zqsgkj/',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-        })
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            content = resp.read().decode('utf-8')
-        return content
-    except Exception as e:
-        print(f'[错误] 获取体彩赛果失败: {e}')
-        return ''
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.sporttery.cn/jc/zqsgkj/',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+    }
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                content = resp.read().decode('utf-8')
+            return content
+        except Exception as e:
+            if attempt < max_retries:
+                wait = attempt * 5
+                print(f'  [重试 {attempt}/{max_retries}] 赛果API请求失败: {e}，{wait}秒后重试...')
+                time.sleep(wait)
+            else:
+                print(f'  [错误] 赛果API请求失败（已重试{max_retries}次）: {e}')
+                print(f'  请求URL: {url[:120]}...')
+                return ''
+    return ''
 
 
 def normalize_result_team(name):
@@ -959,17 +970,20 @@ def parse_results_json(json_text):
     try:
         data = json.loads(json_text)
     except json.JSONDecodeError as e:
-        print(f'[错误] 赛果JSON解析失败: {e}')
+        print(f'  [错误] 赛果JSON解析失败: {e}')
+        print(f'  原始数据前200字符: {json_text[:200]}')
         return results
 
     if not data.get('success') or not data.get('value'):
-        print(f'[错误] 赛果API返回失败: {data.get("errorMessage", "未知错误")}')
+        print(f'  [错误] 赛果API返回失败: {data.get("errorMessage", "未知错误")}')
+        print(f'  API响应前300字符: {json_text[:300]}')
         return results
 
     value = data['value']
     matches = value.get('matchResult', [])
     if not matches:
-        print('[警告] 赛果API返回0场比赛')
+        print('  [警告] 赛果API返回0场比赛')
+        print(f'  API响应前300字符: {json_text[:300]}')
         return results
 
     for m in matches:
@@ -1108,7 +1122,7 @@ def archive_results(results_data, days=30):
 
 
 def fetch_and_save_results():
-    """主函数：抓取赛果并保存"""
+    """主函数：抓取赛果并保存，返回 (success, stats_dict)"""
     print('\n' + '=' * 60)
     print('  从体彩官网获取赛果数据')
     print('=' * 60)
@@ -1121,14 +1135,22 @@ def fetch_and_save_results():
     json_text = fetch_results(days_back=7)
 
     if not json_text:
-        print('[错误] 无法获取赛果数据')
-        return False
+        print('\n[错误] 无法获取赛果数据（API返回空响应）')
+        print('  可能原因：网络问题、API限流、体彩官网维护等')
+        return False, {'fetched': 0, 'parsed': 0, 'merged': 0}
 
-    print('  ✅ 赛果API获取成功')
+    print(f'  ✅ 赛果API获取成功 ({len(json_text)} 字节)')
 
     # 解析赛果
     print('\n[2/3] 解析赛果数据...')
     new_results = parse_results_json(json_text)
+
+    if not new_results:
+        print('\n[错误] 赛果API返回数据解析后为0条记录')
+        print('  可能原因：API返回失败状态、比赛尚未录入结果、日期范围无比赛等')
+        return False, {'fetched': len(json_text), 'parsed': 0, 'merged': 0}
+
+    print(f'  ✅ 解析成功: {len(new_results)} 场比赛')
 
     # 读取已有RESULTS
     results_pattern = r'const RESULTS = \{([\s\S]*?)\};'
@@ -1150,7 +1172,11 @@ def fetch_and_save_results():
     print(f'  合并后赛果: {len(merged_results)} 条')
 
     # 归档旧赛果
+    archived_count = len(merged_results)
     merged_results = archive_results(merged_results, days=30)
+    archived_count -= len(merged_results)
+    if archived_count > 0:
+        print(f'  归档旧赛果: {archived_count} 条')
 
     # 更新HTML
     print('\n[3/3] 更新 index.html 中的赛果数据...')
@@ -1164,14 +1190,18 @@ def fetch_and_save_results():
     save_results_json(merged_results)
 
     print('\n' + '=' * 60)
-    print('  赛果更新完成！')
+    print(f'  赛果更新完成！共 {len(merged_results)} 条')
     print('=' * 60)
-    return True
+    return True, {'fetched': len(json_text), 'parsed': len(new_results), 'merged': len(merged_results)}
 
 
 if __name__ == '__main__':
+    exit_code = 0
     if '--results-only' in sys.argv:
-        fetch_and_save_results()
+        success, stats = fetch_and_save_results()
+        if not success:
+            print('\n[致命错误] 赛果抓取失败，退出码1')
+            exit_code = 1
     elif '--full' in sys.argv:
         print('\n' + '#' * 60)
         print('  完整模式: 赔率 + 赛果 一键更新')
@@ -1180,6 +1210,14 @@ if __name__ == '__main__':
         print('\n' + '#' * 60)
         print('  赔率更新完成，开始抓取赛果...')
         print('#' * 60)
-        fetch_and_save_results()
+        success, stats = fetch_and_save_results()
+        if not success:
+            print('\n[警告] 赛果抓取失败，但赔率已更新完成')
+            print(f'  赛果统计: fetched={stats.get("fetched",0)}B, parsed={stats.get("parsed",0)}, merged={stats.get("merged",0)}')
+            if stats.get('parsed', 0) == 0:
+                print('  建议检查体彩官网API状态，或稍后重试')
     else:
         main()
+
+    if exit_code != 0:
+        sys.exit(exit_code)
