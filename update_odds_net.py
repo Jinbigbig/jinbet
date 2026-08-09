@@ -128,7 +128,7 @@ def parse_odds_from_html(html_content):
             key = f'{match_date}_{home}_{away}'
             
             if key not in odds_data:
-                odds_data[key] = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'league': league}
+                odds_data[key] = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'league': league, 'matchId': '', 'matchNumStr': '', 'matchNo': ''}
             else:
                 # 同步更新 league（防止旧数据中 league 为空）
                 if not odds_data[key].get('league'):
@@ -136,8 +136,9 @@ def parse_odds_from_html(html_content):
             
             if match_date not in schedule_data:
                 schedule_data[match_date] = []
-            if {'home': home, 'away': away, 'league': league} not in schedule_data[match_date]:
-                schedule_data[match_date].append({'home': home, 'away': away, 'league': league})
+            schedule_entry = {'home': home, 'away': away, 'league': league, 'matchId': '', 'matchNumStr': '', 'matchNo': ''}
+            if schedule_entry not in schedule_data[match_date]:
+                schedule_data[match_date].append(schedule_entry)
             
             hda_pattern = r'"HDA"\s*:\s*\[0,\s*\{[\s\S]*?playItemList"\s*:\s*\[1,\s*(\[\[0,\s*\{[\s\S]*?\}\]\])'
             hda_match = re.search(hda_pattern, game_block)
@@ -358,6 +359,10 @@ def parse_lottery_json(json_text):
             # 构建key
             key = f'{business_date}_{home}_{away}'
 
+            match_id = str(m.get('matchId', ''))
+            match_num_str = m.get('matchNumStr', '')
+            match_no = str(m.get('matchNum', ''))
+
             odds_data[key] = {
                 '胜': h,
                 '平': d,
@@ -367,6 +372,9 @@ def parse_lottery_json(json_text):
                 '总进球': zjq_odds,
                 '半全场': bqc_odds,
                 'league': league,
+                'matchId': match_id,
+                'matchNo': match_no,
+                'matchNumStr': match_num_str,
             }
 
             # 如果有让球数据
@@ -385,6 +393,9 @@ def parse_lottery_json(json_text):
                 'home': home,
                 'away': away,
                 'league': league,
+                'matchId': match_id,
+                'matchNo': match_no,
+                'matchNumStr': match_num_str,
             })
 
     return odds_data, schedule_data
@@ -398,7 +409,19 @@ def update_html_schedule(html_content, new_schedule):
     dates = sorted(new_schedule.keys())
     for i, date in enumerate(dates):
         games = new_schedule[date]
-        games_str = ',\n        '.join([f"{{ home: '{g['home']}', away: '{g['away']}', league: '{g.get('league', '')}' }}" for g in games])
+        games_parts = []
+        for g in games:
+            parts = [f"home: '{g['home']}'", f"away: '{g['away']}'"]
+            if g.get('league'):
+                parts.append(f"league: '{g['league']}'")
+            if g.get('matchId'):
+                parts.append(f"matchId: '{g['matchId']}'")
+            if g.get('matchNumStr'):
+                parts.append(f"matchNumStr: '{g['matchNumStr']}'")
+            if g.get('matchNo'):
+                parts.append(f"matchNo: '{g['matchNo']}'")
+            games_parts.append('{ ' + ', '.join(parts) + ' }')
+        games_str = ',\n        '.join(games_parts)
         comma = ',' if i < len(dates) - 1 else ''
         schedule_str += f"    '{date}': [\n        {games_str}\n      ]{comma}\n"
     
@@ -435,9 +458,18 @@ def update_html_odds(html_content, schedule, odds_data):
         zjq_str = json.dumps(odds['总进球'], ensure_ascii=False)
         bqc_str = json.dumps(odds['半全场'], ensure_ascii=False)
         
+        extra_parts = []
+        if odds.get('matchId'):
+            extra_parts.append(f"'matchId': '{odds['matchId']}'")
+        if odds.get('matchNumStr'):
+            extra_parts.append(f"'matchNumStr': '{odds['matchNumStr']}'")
+        if odds.get('matchNo'):
+            extra_parts.append(f"'matchNo': '{odds['matchNo']}'")
+        extra = ', ' + ', '.join(extra_parts) if extra_parts else ''
+        
         comma = ',' if i < len(all_keys) - 1 else ''
         
-        odds_str += f"    '{key}': {{ '胜': '{odds['胜']}', '平': '{odds['平']}', '负': '{odds['负']}', '让球': {let_str}, '比分': {score_str}, '总进球': {zjq_str}, '半全场': {bqc_str} }}{comma}\n"
+        odds_str += f"    '{key}': {{ '胜': '{odds['胜']}', '平': '{odds['平']}', '负': '{odds['负']}', '让球': {let_str}, '比分': {score_str}, '总进球': {zjq_str}, '半全场': {bqc_str}{extra} }}{comma}\n"
     
     odds_str += "};"
     
@@ -497,7 +529,7 @@ def update_odds_json(matched_odds):
     for key, odds in matched_odds.items():
         date, home, away = key.split('_', 2)
         vs_key = f'{home} vs {away}'
-        online_data[vs_key] = {
+        entry = {
             '胜': odds['胜'],
             '平': odds['平'],
             '负': odds['负'],
@@ -508,6 +540,14 @@ def update_odds_json(matched_odds):
             'league': odds.get('league', ''),
             'date_key': key
         }
+        # 保留编号信息
+        if odds.get('matchId'):
+            entry['matchId'] = odds['matchId']
+        if odds.get('matchNumStr'):
+            entry['matchNumStr'] = odds['matchNumStr']
+        if odds.get('matchNo'):
+            entry['matchNo'] = odds['matchNo']
+        online_data[vs_key] = entry
     
     json_data = {
         'updated': time.strftime('%Y-%m-%d %H:%M'),
@@ -606,10 +646,11 @@ def push_to_gh_pages():
     
     r = run_git('commit', '-m', '更新赔率数据（网易）')
     if r.returncode == 0:
-        r = run_git('push', '--force-with-lease', 'origin', 'gh-pages')
+        # 将当前分支(master)推送到远端gh-pages
+        r = run_git('push', '--force-with-lease', 'origin', 'HEAD:gh-pages')
         if r.returncode != 0:
             print('\n[警告] --force-with-lease 失败，尝试 --force 推送：')
-            r = run_git('push', '--force', 'origin', 'gh-pages')
+            r = run_git('push', '--force', 'origin', 'HEAD:gh-pages')
             if r.returncode != 0:
                 print('\n[错误] 推送失败')
                 return False
@@ -696,6 +737,43 @@ def main():
     
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
+    
+    # 从体彩API补充matchId等编号信息（如果网易没有的话）
+    if source == '网易体育':
+        print('\n[补充] 从体彩官网API获取比赛编号信息...')
+        try:
+            lottery_json = fetch_odds_from_lottery()
+            if lottery_json:
+                _, lottery_schedule = parse_lottery_json(lottery_json)
+                # 构建 matchId 映射
+                id_map = {}
+                for ldate, lgames in lottery_schedule.items():
+                    for lg in lgames:
+                        lkey = f'{ldate}_{lg["home"]}_{lg["away"]}'
+                        if lg.get('matchId'):
+                            id_map[lkey] = {
+                                'matchId': lg['matchId'],
+                                'matchNumStr': lg.get('matchNumStr', ''),
+                                'matchNo': lg.get('matchNo', ''),
+                            }
+                # 合并到 odds_data
+                matched = 0
+                for key, ids in id_map.items():
+                    if key in odds_data:
+                        odds_data[key].update(ids)
+                        matched += 1
+                # 合并到 schedule_data
+                for ldate, lgames in lottery_schedule.items():
+                    if ldate in schedule_data:
+                        for sg in schedule_data[ldate]:
+                            for lg in lgames:
+                                if sg['home'] == lg['home'] and sg['away'] == lg['away'] and lg.get('matchId'):
+                                    sg['matchId'] = lg['matchId']
+                                    sg['matchNumStr'] = lg.get('matchNumStr', '')
+                                    sg['matchNo'] = lg.get('matchNo', '')
+                print(f'  ✅ 已补充 {matched} 场比赛的编号信息')
+        except Exception as e:
+            print(f'  ⚠️ 获取编号信息失败: {e}')
     
     print('\n[2.5/3] 合并赛程与赔率数据...')
     print(f'    原有赛程: {len(schedule)} 个日期')
