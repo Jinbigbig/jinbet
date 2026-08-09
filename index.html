@@ -2437,7 +2437,30 @@ function loadFromStorage() {
 
     try {
         const rawOdds = localStorage.getItem(STORAGE_KEY_ODDS);
-        oddsData = rawOdds ? JSON.parse(rawOdds) : {};
+        // 先用硬编码 ODDS 作为基础数据（含 matchNumStr 等编号信息）
+        oddsData = {};
+        for (var k in ODDS) {
+            if (ODDS.hasOwnProperty(k)) oddsData[k] = ODDS[k];
+        }
+        // localStorage 数据覆盖硬编码（赔率数值以最新为准）
+        if (rawOdds) {
+            const stored = JSON.parse(rawOdds);
+            for (var sk in stored) {
+                if (stored.hasOwnProperty(sk)) {
+                    // 保留硬编码中的 matchNumStr/matchId 等编号字段
+                    if (oddsData[sk] && oddsData[sk].matchNumStr && !stored[sk].matchNumStr) {
+                        stored[sk].matchNumStr = oddsData[sk].matchNumStr;
+                    }
+                    if (oddsData[sk] && oddsData[sk].matchId && !stored[sk].matchId) {
+                        stored[sk].matchId = oddsData[sk].matchId;
+                    }
+                    if (oddsData[sk] && oddsData[sk].matchNo && !stored[sk].matchNo) {
+                        stored[sk].matchNo = oddsData[sk].matchNo;
+                    }
+                    oddsData[sk] = stored[sk];
+                }
+            }
+        }
         updateScheduleFromOdds();
     } catch { oddsData = {}; }
 }
@@ -7149,6 +7172,20 @@ function autoUpdateOdds() {
                                     league: matchData.league || (isNationalTeam(home) ? '国际赛' : '')
                                 });
                             }
+                        }
+                    }
+                }
+                // 保留已有 oddsData 中的 matchNumStr 等编号信息
+                for (var ek in oddsData) {
+                    if (oddsData.hasOwnProperty(ek) && converted[ek]) {
+                        if (oddsData[ek].matchNumStr && !converted[ek].matchNumStr) {
+                            converted[ek].matchNumStr = oddsData[ek].matchNumStr;
+                        }
+                        if (oddsData[ek].matchId && !converted[ek].matchId) {
+                            converted[ek].matchId = oddsData[ek].matchId;
+                        }
+                        if (oddsData[ek].matchNo && !converted[ek].matchNo) {
+                            converted[ek].matchNo = oddsData[ek].matchNo;
                         }
                     }
                 }
