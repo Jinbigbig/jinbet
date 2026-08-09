@@ -3634,6 +3634,18 @@ function restoreAiData() {
         const data = JSON.parse(raw);
         if (data && Array.isArray(data.matches)) {
             aiCurrentMatches = data.matches.slice();
+            // 从 oddsData 补充 matchNumStr 等编号信息
+            aiCurrentMatches.forEach(function(m) {
+                if (!m.matchNumStr && m.home && m.away) {
+                    const oddsKey = (m.date || '') + '_' + m.home + '_' + m.away;
+                    const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey];
+                    if (oddsInfo) {
+                        if (oddsInfo.matchNumStr) m.matchNumStr = oddsInfo.matchNumStr;
+                        if (oddsInfo.matchId) m.matchId = oddsInfo.matchId;
+                        if (oddsInfo.matchNo) m.matchNo = oddsInfo.matchNo;
+                    }
+                }
+            });
             aiLastPredictions = [];
             renderAiMatchList();
             return true;
@@ -7095,6 +7107,23 @@ function init() {
     }
 
     loadFromStorage();
+    
+    // oddsData 加载完成后，补充 aiCurrentMatches 中的 matchNumStr
+    if (aiCurrentMatches && aiCurrentMatches.length > 0) {
+        let _enriched = false;
+        aiCurrentMatches.forEach(function(m) {
+            if (!m.matchNumStr && m.home && m.away) {
+                const oddsKey = (m.date || '') + '_' + m.home + '_' + m.away;
+                const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey];
+                if (oddsInfo) {
+                    if (oddsInfo.matchNumStr) { m.matchNumStr = oddsInfo.matchNumStr; _enriched = true; }
+                    if (oddsInfo.matchId) m.matchId = oddsInfo.matchId;
+                    if (oddsInfo.matchNo) m.matchNo = oddsInfo.matchNo;
+                }
+            }
+        });
+        if (_enriched) { renderAiMatchList(); saveAiData(); }
+    }
     
     // 加载注入的投注记录（覆盖模式：强制使用注入的数据覆盖现有记录）
     if (typeof _injectedBets !== 'undefined' && _injectedBets.length > 0) {
