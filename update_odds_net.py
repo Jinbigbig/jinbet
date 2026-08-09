@@ -17,6 +17,15 @@ TEAM_NAME_MAP = {
     '安德莱赫特': '安德莱', '费伦茨瓦罗斯': '费伦茨',
     '巴拉纳竞技': '巴竞技', '多伦多FC': '多伦多',
     '利勒斯特罗姆': '利勒斯特',
+    # 更多队名映射
+    '葡萄牙国民': '葡国民', '布鲁马波卡纳': '布鲁马波',
+    '韦斯特罗斯': '韦斯特罗', '克里蒂安松': '克里斯蒂',
+    '圣克拉拉': '圣克拉拉', '莫雷伦斯': '摩雷伦斯',
+    '布拉加': '布拉加', '吉维森特': '吉维森特',
+    '里奥阿维': '里奥阿维', '本菲卡': '本菲卡',
+    '维塞乌': '维塞乌', '波尔图': '波尔图',
+    '阿尔维卡': '阿尔维卡', '桑托斯': '桑托斯',
+    '奥林匹亚科斯': '奥林匹亚', '布拉格斯巴达': '布斯巴达',
 }
 
 # 竞彩联赛名称映射（当网易抓取数据中 league 为空时的兜底）
@@ -738,42 +747,167 @@ def main():
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
     
-    # 从体彩API补充matchId等编号信息（如果网易没有的话）
-    if source == '网易体育':
-        print('\n[补充] 从体彩官网API获取比赛编号信息...')
+    # 从体彩赛果API补充完整的matchId等编号信息（获取所有联赛的完整编号）
+    print('\n[补充] 从体彩赛果API获取完整比赛编号信息...')
+    try:
+        # 计算日期范围：覆盖当前赛程的所有日期（往前推1天，往后推2天）
+        from datetime import datetime, timedelta
+        all_dates = set()
+        for date in schedule_data.keys():
+            all_dates.add(date)
+        for date in schedule.keys():
+            all_dates.add(date)
+        if not all_dates:
+            # 如果没有日期，使用最近7天
+            end_date = datetime.now().strftime('%Y-%m-%d')
+            start_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        else:
+            sorted_dates = sorted(all_dates)
+            start_date = sorted_dates[0]
+            end_date = sorted_dates[-1]
+            # 扩展范围
+            start_date = (datetime.strptime(start_date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
+            end_date = (datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=2)).strftime('%Y-%m-%d')
+        
+        print(f'  获取日期范围: {start_date} 至 {end_date}')
+        id_map = fetch_match_numbers(start_date, end_date)
+        print(f'  赛果API返回 {len(id_map)} 场比赛的编号信息')
+        
+        # 额外从赔率API获取即将进行比赛的编号（补充赛果API没有的未来比赛）
         try:
             lottery_json = fetch_odds_from_lottery()
             if lottery_json:
                 _, lottery_schedule = parse_lottery_json(lottery_json)
-                # 构建 matchId 映射
-                id_map = {}
+                lottery_count = 0
                 for ldate, lgames in lottery_schedule.items():
                     for lg in lgames:
                         lkey = f'{ldate}_{lg["home"]}_{lg["away"]}'
-                        if lg.get('matchId'):
+                        if lg.get('matchId') and lkey not in id_map:
                             id_map[lkey] = {
                                 'matchId': lg['matchId'],
                                 'matchNumStr': lg.get('matchNumStr', ''),
                                 'matchNo': lg.get('matchNo', ''),
+                                'home': lg['home'],
+                                'away': lg['away'],
+                                'league': lg.get('league', '')
                             }
-                # 合并到 odds_data
-                matched = 0
-                for key, ids in id_map.items():
-                    if key in odds_data:
-                        odds_data[key].update(ids)
-                        matched += 1
-                # 合并到 schedule_data
-                for ldate, lgames in lottery_schedule.items():
-                    if ldate in schedule_data:
-                        for sg in schedule_data[ldate]:
-                            for lg in lgames:
-                                if sg['home'] == lg['home'] and sg['away'] == lg['away'] and lg.get('matchId'):
-                                    sg['matchId'] = lg['matchId']
-                                    sg['matchNumStr'] = lg.get('matchNumStr', '')
-                                    sg['matchNo'] = lg.get('matchNo', '')
-                print(f'  ✅ 已补充 {matched} 场比赛的编号信息')
+                            lottery_count += 1
+                if lottery_count:
+                    print(f'  赔率API补充 {lottery_count} 场即将进行比赛的编号')
         except Exception as e:
-            print(f'  ⚠️ 获取编号信息失败: {e}')
+            print(f'  ⚠️ 赔率API获取编号失败: {e}')
+        
+        print(f'  合并后共 {len(id_map)} 场比赛的编号信息')
+        
+        # 调试：显示一些 id_map 和 odds_data 的 key
+        if id_map:
+            print(f'  id_map 示例 key: {list(id_map.keys())[:3]}')
+        if odds_data:
+            print(f'  odds_data 示例 key: {list(odds_data.keys())[:3]}')
+        
+        # 改进的匹配函数：使用多种策略匹配队名，支持日期约束
+        def find_best_match(home, away, id_map_dict, date=None):
+            """在 id_map 中查找最佳匹配，可选日期约束"""
+            # 策略1：精确匹配（带日期约束）
+            for key, ids in id_map_dict.items():
+                key_date = key[:10]
+                key_home = key[11:].rsplit('_', 1)[0]
+                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                if date and key_date != date:
+                    continue
+                if home == key_home and away == key_away:
+                    return key, ids
+            
+            # 策略2：子串包含匹配（带日期约束）
+            for key, ids in id_map_dict.items():
+                key_date = key[:10]
+                key_home = key[11:].rsplit('_', 1)[0]
+                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                if date and key_date != date:
+                    continue
+                if (home in key_home or key_home in home) and (away in key_away or key_away in away):
+                    return key, ids
+            
+            # 策略3：首词匹配（处理"布鲁马波卡纳"vs"布鲁马波"等情况，带日期约束）
+            for key, ids in id_map_dict.items():
+                key_date = key[:10]
+                key_home = key[11:].rsplit('_', 1)[0]
+                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                if date and key_date != date:
+                    continue
+                # 检查队名是否有相同的前缀（至少3个字符）
+                if len(home) >= 3 and len(key_home) >= 3:
+                    home_match = home[:3] == key_home[:3] or key_home.startswith(home[:3]) or home.startswith(key_home[:3])
+                else:
+                    home_match = home == key_home
+                if len(away) >= 3 and len(key_away) >= 3:
+                    away_match = away[:3] == key_away[:3] or key_away.startswith(away[:3]) or away.startswith(key_away[:3])
+                else:
+                    away_match = away == key_away
+                if home_match and away_match:
+                    return key, ids
+            
+            # 如果有日期约束但没找到，尝试不限制日期
+            if date:
+                for key, ids in id_map_dict.items():
+                    key_home = key[11:].rsplit('_', 1)[0]
+                    key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                    if home == key_home and away == key_away:
+                        return key, ids
+                for key, ids in id_map_dict.items():
+                    key_home = key[11:].rsplit('_', 1)[0]
+                    key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                    if (home in key_home or key_home in home) and (away in key_away or key_away in away):
+                        return key, ids
+            
+            return None, None
+        
+        # 合并到 odds_data
+        matched_odds = 0
+        for key, ids in id_map.items():
+            if key in odds_data:
+                odds_data[key]['matchId'] = ids.get('matchId', '')
+                odds_data[key]['matchNumStr'] = ids.get('matchNumStr', '')
+                odds_data[key]['matchNo'] = ids.get('matchNo', '')
+                if ids.get('league') and not odds_data[key].get('league'):
+                    odds_data[key]['league'] = ids['league']
+                matched_odds += 1
+        
+        # 如果精确匹配的少，尝试用模糊匹配
+        if matched_odds < len(odds_data) * 0.5:
+            for okey in odds_data:
+                if not odds_data[okey].get('matchId'):
+                    parts = okey.split('_', 2)
+                    if len(parts) == 3:
+                        o_home, o_away = parts[1], parts[2]
+                        mkey, mids = find_best_match(o_home, o_away, id_map)
+                        if mkey and mids:
+                            odds_data[okey]['matchId'] = mids.get('matchId', '')
+                            odds_data[okey]['matchNumStr'] = mids.get('matchNumStr', '')
+                            odds_data[okey]['matchNo'] = mids.get('matchNo', '')
+                            if mids.get('league') and not odds_data[okey].get('league'):
+                                odds_data[okey]['league'] = mids['league']
+                            matched_odds += 1
+        
+        # 合并到 schedule_data
+        matched_schedule = 0
+        for sdate, games in schedule_data.items():
+            for sg in games:
+                # 尝试用模糊匹配查找编号
+                mkey, mids = find_best_match(sg['home'], sg['away'], id_map)
+                if mkey and mids:
+                    sg['matchId'] = mids.get('matchId', '')
+                    sg['matchNumStr'] = mids.get('matchNumStr', '')
+                    sg['matchNo'] = mids.get('matchNo', '')
+                    if mids.get('league') and not sg.get('league'):
+                        sg['league'] = mids['league']
+                    matched_schedule += 1
+        
+        print(f'  ✅ 已补充 {matched_odds} 场赔率、{matched_schedule} 场赛程的编号信息')
+    except Exception as e:
+        import traceback
+        print(f'  ⚠️ 获取编号信息失败: {e}')
+        traceback.print_exc()
     
     print('\n[2.5/3] 合并赛程与赔率数据...')
     print(f'    原有赛程: {len(schedule)} 个日期')
@@ -909,6 +1043,86 @@ def main():
                     '让球': [], '比分': {}, '总进球': {}, '半全场': {}
                 }
 
+    # 对 matched_odds 中的所有条目补充编号信息（从 id_map）
+    print('\n[补充] 为所有赔率补充编号信息...')
+    id_added = 0
+    for key in matched_odds:
+        if not matched_odds[key].get('matchId'):
+            parts = key.split('_', 2)
+            if len(parts) == 3:
+                mdate, mhome, maway = parts[0], parts[1], parts[2]
+                mkey, mids = find_best_match(mhome, maway, id_map, date=mdate)
+                if mkey and mids:
+                    matched_odds[key]['matchId'] = mids.get('matchId', '')
+                    matched_odds[key]['matchNumStr'] = mids.get('matchNumStr', '')
+                    matched_odds[key]['matchNo'] = mids.get('matchNo', '')
+                    if mids.get('league') and not matched_odds[key].get('league'):
+                        matched_odds[key]['league'] = mids['league']
+                    id_added += 1
+    print(f'  ✅ 为 {id_added} 场赔率补充了编号信息')
+
+    # 对 schedule 中的所有条目补充编号信息
+    print('\n[补充] 为所有赛程补充编号信息...')
+    s_id_added = 0
+    for sdate, games in schedule.items():
+        for game in games:
+            if not game.get('matchId'):
+                mkey, mids = find_best_match(game['home'], game['away'], id_map, date=sdate)
+                if mkey and mids:
+                    game['matchId'] = mids.get('matchId', '')
+                    game['matchNumStr'] = mids.get('matchNumStr', '')
+                    game['matchNo'] = mids.get('matchNo', '')
+                    if mids.get('league') and not game.get('league'):
+                        game['league'] = mids['league']
+                    s_id_added += 1
+    print(f'  ✅ 为 {s_id_added} 场赛程补充了编号信息')
+
+    # 用 id_map 数据补充 schedule 中缺失的历史比赛条目
+    print('\n[补充] 从赛果API补充缺失的赛程条目...')
+    new_added = 0
+    for key, ids in id_map.items():
+        id_date = key[:10]
+        id_home = key[11:].rsplit('_', 1)[0]
+        id_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+        
+        # 检查是否已在 schedule 中
+        exists = False
+        if id_date in schedule:
+            for g in schedule[id_date]:
+                if (g['home'] == id_home and g['away'] == id_away) or \
+                   (id_home in g['home'] or g['home'] in id_home) and \
+                   (id_away in g['away'] or g['away'] in id_away):
+                    exists = True
+                    break
+        
+        if not exists:
+            # 添加到 schedule
+            if id_date not in schedule:
+                schedule[id_date] = []
+            schedule[id_date].append({
+                'home': id_home,
+                'away': id_away,
+                'league': ids.get('league', ''),
+                'matchId': ids.get('matchId', ''),
+                'matchNumStr': ids.get('matchNumStr', ''),
+                'matchNo': ids.get('matchNo', ''),
+            })
+            new_added += 1
+            # 同步添加到 matched_odds
+            if key not in matched_odds:
+                matched_odds[key] = {
+                    '胜': '', '平': '', '负': '',
+                    '让球': [], '比分': {}, '总进球': {}, '半全场': {},
+                    'matchId': ids.get('matchId', ''),
+                    'matchNumStr': ids.get('matchNumStr', ''),
+                    'matchNo': ids.get('matchNo', ''),
+                    'league': ids.get('league', ''),
+                }
+    if new_added:
+        print(f'  ✅ 新增 {new_added} 场比赛到赛程')
+    else:
+        print(f'  所有比赛已在赛程中，无需新增')
+
     # 显示匹配结果
     for date, games in schedule.items():
         for game in games:
@@ -940,6 +1154,96 @@ def main():
 
 
 # === 赛果抓取 ===
+
+def fetch_match_numbers(start_date, end_date):
+    """从体彩赛果API获取完整的比赛编号信息（含所有联赛），返回 {key: {matchId, matchNumStr, matchNo, home, away, league}}"""
+    import time
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://www.sporttery.cn/jc/zqsgkj/',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+    }
+    
+    id_map = {}
+    page = 1
+    total = None
+    
+    while True:
+        url = (
+            f'https://webapi.sporttery.cn/gateway/uniform/football/getUniformMatchResultV1.qry'
+            f'?matchBeginDate={start_date}&matchEndDate={end_date}'
+            f'&leagueId=&pageSize=50&pageNo={page}&isFix=0&matchPage=1&pcOrWap=1'
+        )
+        
+        page_data = None
+        for attempt in range(1, 4):
+            try:
+                req = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    page_data = json.loads(resp.read().decode('utf-8'))
+                break
+            except Exception as e:
+                if attempt < 3:
+                    time.sleep(attempt * 3)
+                else:
+                    print(f'  [警告] 获取编号第{page}页失败: {e}')
+                    return id_map
+        
+        if not page_data or not page_data.get('success'):
+            break
+        
+        value = page_data.get('value', {})
+        matches = value.get('matchResult', [])
+        if not matches:
+            break
+        
+        for m in matches:
+            home = m.get('homeTeam', '')
+            away = m.get('awayTeam', '')
+            if not home or not away:
+                continue
+            
+            # 清理队名中的联赛排名标记
+            home = re.sub(r'\[[^\]]+\]', '', home).strip()
+            away = re.sub(r'\[[^\]]+\]', '', away).strip()
+            
+            match_date = m.get('matchDate', '')[:10]
+            match_id = str(m.get('matchId', ''))
+            match_num_str = m.get('matchNumStr', '') or m.get('matchNum', '')
+            match_no = str(m.get('matchNo', ''))
+            league = m.get('leagueNameAbbr', '') or m.get('leagueName', '')
+            
+            # 标准化队名
+            for map_name, standard_name in RESULT_TEAM_NAME_MAP.items():
+                if map_name in home:
+                    home = standard_name
+                    break
+            for map_name, standard_name in RESULT_TEAM_NAME_MAP.items():
+                if map_name in away:
+                    away = standard_name
+                    break
+            
+            key = f'{match_date}_{home}_{away}'
+            if key not in id_map:
+                id_map[key] = {
+                    'matchId': match_id,
+                    'matchNumStr': match_num_str,
+                    'matchNo': match_no,
+                    'home': home,
+                    'away': away,
+                    'league': league
+                }
+        
+        # 检查是否还有更多页
+        if total is None:
+            total = value.get('total', 0)
+        if page * 50 >= total:
+            break
+        page += 1
+    
+    return id_map
 
 # 体彩赛果API队名 → 网易队名 映射（用于key统一）
 RESULT_TEAM_NAME_MAP = {
@@ -1183,7 +1487,7 @@ def update_html_results(html_content, results_data):
     for i, key in enumerate(keys):
         r = results_data[key]
         val_parts = []
-        for field in ['halfScore', 'fullScore', 'winFlag', 'handicap', 'league', 'leagueAbbr', 'home', 'away', 'matchId', 'status', '胜', '平', '负']:
+        for field in ['halfScore', 'fullScore', 'winFlag', 'handicap', 'league', 'leagueAbbr', 'home', 'away', 'matchId', 'matchNumStr', 'matchNo', 'status', '胜', '平', '负']:
             if field in r and r[field]:
                 val_parts.append("'{}': '{}'".format(field, str(r[field]).replace("'", "\\'")))
         val_str = ', '.join(val_parts)
@@ -1292,6 +1596,29 @@ def fetch_and_save_results():
         return False, {'fetched': len(json_text), 'parsed': 0, 'merged': 0}
 
     print(f'  ✅ 解析成功: {len(new_results)} 场比赛')
+
+    # 获取完整编号信息并合并到赛果
+    print('\n  [补充] 获取完整比赛编号信息...')
+    try:
+        from datetime import datetime, timedelta
+        end_date = datetime.now().strftime('%Y-%m-%d')
+        start_date = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+        id_map = fetch_match_numbers(start_date, end_date)
+        print(f'  赛果API返回 {len(id_map)} 场比赛的编号信息')
+        
+        # 将编号信息合并到赛果数据
+        id_matched = 0
+        for key, ids in id_map.items():
+            if key in new_results:
+                new_results[key]['matchId'] = ids.get('matchId', '')
+                new_results[key]['matchNumStr'] = ids.get('matchNumStr', '')
+                new_results[key]['matchNo'] = ids.get('matchNo', '')
+                if ids.get('league') and not new_results[key].get('league'):
+                    new_results[key]['league'] = ids['league']
+                id_matched += 1
+        print(f'  ✅ 已补充 {id_matched} 场比赛的编号信息到赛果')
+    except Exception as e:
+        print(f'  ⚠️ 获取编号信息失败: {e}')
 
     # 读取已有RESULTS
     results_pattern = r'const RESULTS = \{([\s\S]*?)\};'
