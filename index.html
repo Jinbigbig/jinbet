@@ -404,6 +404,13 @@
             text-align: center;
             line-height: 18px;
         }
+        .batch-result-panel .batch-row .team-pair .league-tag.match-num-tag {
+            background: #6366f1;
+            width: auto;
+            padding: 1px 5px;
+            margin-left: 4px;
+            font-weight: 500;
+        }
         .batch-result-panel .batch-row .batch-score {
             flex: 0 0 120px;
         }
@@ -3640,7 +3647,9 @@ function renderAiMatchList() {
         const sp = document.createElement('span');
         sp.className = 'ai-match-tag';
         const dateTag = g.date ? `<span style="color:#6366f1;font-weight:500;margin-right:6px;">${g.date}</span>` : '';
-        sp.innerHTML = `${dateTag}${i + 1}. ${g.home} vs ${g.away}`;
+        const leagueTag = g.league ? `<span style="color:#f59e0b;font-weight:500;margin-right:4px;">${g.league}</span>` : '';
+        const numTag = g.matchNumStr ? `<span style="color:#6366f1;font-weight:500;margin-right:4px;">${g.matchNumStr}</span>` : '';
+        sp.innerHTML = `${dateTag}${leagueTag}${numTag}${i + 1}. ${g.home} vs ${g.away}`;
         listEl.appendChild(sp);
     });
     if (tipEl) tipEl.style.display = 'none';
@@ -3684,7 +3693,11 @@ function loadAiSchedule(overwrite) {
         });
     }
     // 给每场补日期字段方便去重/区分（用排序后的数组）
-    const stamped = sortedGames.map(function(g) { return { date: date, home: g.home, away: g.away, league: g.league || '' }; });
+    const stamped = sortedGames.map(function(g) {
+        const oddsKey = date + '_' + g.home + '_' + g.away;
+        const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey] || {};
+        return { date: date, home: g.home, away: g.away, league: g.league || '', matchNumStr: g.matchNumStr || oddsInfo.matchNumStr || '' };
+    });
     if (overwrite === true) {
         aiCurrentMatches = stamped.slice();  // 覆盖模式
         // ③ 和模态框一致：格式「🔄 覆盖加载 N 场比赛（YYYY-MM-DD）（按网易顺序？）」
@@ -4642,6 +4655,10 @@ function loadBatchSchedule() {
         existingKeys.add(key);
 
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
+        // 查找赔率中的编号
+        const oddsKey = date + '_' + g.home + '_' + g.away;
+        const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey] || {};
+        const matchNumStr = g.matchNumStr || oddsInfo.matchNumStr || '';
         let score = '';
         let handicap = '';
         let resultKey = date + '_' + g.home + '_' + g.away;
@@ -4708,6 +4725,7 @@ function loadBatchSchedule() {
         const homeDatalist = getTeamDatalistHTML(id);
         const awayDatalist = getTeamDatalistHTML(awayId);
         const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
+        const numTag = matchNumStr ? `<span class="league-tag match-num-tag" style="background:#6366f1;margin-left:4px;">${matchNumStr}</span>` : '';
         const handicapTag = handicap ? `<span style="font-size:11px;color:#6b7280;margin-left:4px;">让球${handicap}</span>` : '';
         const scoreOptions = [
             { val:'', label:'— 选择 —' },
@@ -4733,7 +4751,7 @@ function loadBatchSchedule() {
         rowsHtml.push(`
             <div class="batch-row">
                 <div class="team-pair">
-                    ${leagueTag}${handicapTag}
+                    ${leagueTag}${numTag}${handicapTag}
                     <input type="text" class="batch-home" placeholder="主队" value="${g.home}" autocomplete="off" list="${id}" />
                     ${homeDatalist}
                     <span style="font-weight:600;">vs</span>
