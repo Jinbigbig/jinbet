@@ -922,17 +922,13 @@ RESULT_TEAM_NAME_MAP = {
 
 
 def fetch_results(days_back=7, max_retries=3):
-    """从体彩官网API获取赛果数据，支持重试"""
+    """从体彩官网API获取赛果数据，支持分页和重试，返回合并后的JSON字符串"""
     import time
     from datetime import datetime, timedelta
+
     end_date = datetime.now().strftime('%Y-%m-%d')
     start_date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
 
-    url = (
-        f'https://webapi.sporttery.cn/gateway/uniform/football/getUniformMatchResultV1.qry'
-        f'?matchBeginDate={start_date}&matchEndDate={end_date}'
-        f'&leagueId=&pageSize=50&pageNo=1&isFix=0&matchPage=1&pcOrWap=1'
-    )
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Referer': 'https://www.sporttery.cn/jc/zqsgkj/',
@@ -940,22 +936,70 @@ def fetch_results(days_back=7, max_retries=3):
         'Accept-Language': 'zh-CN,zh;q=0.9',
     }
 
-    for attempt in range(1, max_retries + 1):
-        try:
-            req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                content = resp.read().decode('utf-8')
-            return content
-        except Exception as e:
-            if attempt < max_retries:
-                wait = attempt * 5
-                print(f'  [重试 {attempt}/{max_retries}] 赛果API请求失败: {e}，{wait}秒后重试...')
-                time.sleep(wait)
-            else:
-                print(f'  [错误] 赛果API请求失败（已重试{max_retries}次）: {e}')
-                print(f'  请求URL: {url[:120]}...')
-                return ''
-    return ''
+    all_matches = []
+    page = 1
+    total = None
+
+    while True:
+        url = (
+            f'https://webapi.sporttery.cn/gateway/uniform/football/getUniformMatchResultV1.qry'
+            f'?matchBeginDate={start_date}&matchEndDate={end_date}'
+            f'&leagueId=&pageSize=50&pageNo={page}&isFix=0&matchPage=1&pcOrWap=1'
+        )
+
+        page_data = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                req = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    page_data = json.loads(resp.read().decode('utf-8'))
+                break
+            except Exception as e:
+                if attempt < max_retries:
+                    wait = attempt * 5
+                    print(f'  [重试 {attempt}/{max_retries}] 第{page}页请求失败: {e}，{wait}秒后重试...')
+                    time.sleep(wait)
+                else:
+                    print(f'  [错误] 第{page}页请求失败（已重试{max_retries}次）: {e}')
+                    print(f'  请求URL: {url[:120]}...')
+                    if page == 1:
+                        return ''
+                    # 如果不是第一页失败，返回已获取的数据
+                    break
+
+        if not page_data:
+            break
+
+        matches = page_data.get('value', {}).get('matchResult', [])
+        all_matches.extend(matches)
+
+        if total is None:
+            total = page_data.get('value', {}).get('total', 0)
+            if total:
+                print(f'  API共 {total} 场比赛，开始分页获取...')
+
+        print(f'  第{page}页: 获取 {len(matches)} 场 (累计 {len(all_matches)}/{total})')
+
+        if len(matches) < 50:
+            break
+        if total and len(all_matches) >= total:
+            break
+
+        page += 1
+        time.sleep(0.5)  # 礼貌性延迟
+
+    if not all_matches:
+        return ''
+
+    # 构造合并后的JSON
+    merged = {
+        'success': True,
+        'value': {
+            'matchResult': all_matches,
+            'total': len(all_matches)
+        }
+    }
+    return json.dumps(merged, ensure_ascii=False)
 
 
 def normalize_result_team(name):
@@ -966,6 +1010,12 @@ def normalize_result_team(name):
 def parse_results_json(json_text):
     """解析体彩赛果API返回的JSON数据，返回赛果字典 {key: result_data}"""
     results = {}
+
+    # 构建反向映射：API队名 → SCHEDULE队名
+    reverse_team_map = {}
+    for k, v in RESULT_TEAM_NAME_MAP.items():
+        if v not in reverse_team_map:
+            reverse_team_map[v] = k
 
     try:
         data = json.loads(json_text)
@@ -999,8 +1049,6 @@ def parse_results_json(json_text):
         if not match_date or not home or not away:
             continue
 
-        key = f'{match_date}_{home}_{away}'
-
         handicap = m.get('goalLine', '0')
         if handicap in ('0', '', None):
             handicap = '0'
@@ -1026,7 +1074,22 @@ def parse_results_json(json_text):
             result_data['负'] = m['a']
 
         if result_data['fullScore']:
+            # 主key: 使用归一化后的队名
+            key = f'{match_date}_{home}_{away}'
             results[key] = result_data
+
+            # 附加key: 使用API原始队名（短名）
+            if home_api != home or away_api != away:
+                orig_key = f'{match_date}_{home_api}_{away_api}'
+                results[orig_key] = result_data
+
+            # 附加key: 使用SCHEDULE风格的短名（反向映射）
+            home_short = reverse_team_map.get(home, home)
+            away_short = reverse_team_map.get(away, away)
+            if home_short != home or away_short != away:
+                short_key = f'{match_date}_{home_short}_{away_short}'
+                if short_key not in results:
+                    results[short_key] = result_data
 
     print(f'  解析完成，共 {len(results)} 场比赛有赛果')
     return results
