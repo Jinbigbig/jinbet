@@ -3135,6 +3135,39 @@ function loadArchiveDate(dateStr) {
             return r.json();
         })
         .then(function(data) {
+            // 合并数据：归档文件 + SCHEDULE
+            if (SCHEDULE[dateStr]) {
+                var archiveSchedule = data.schedule || [];
+                var scheduleKeys = {};
+                archiveSchedule.forEach(function(g) {
+                    var key = (g.home || '') + '|' + (g.away || '');
+                    scheduleKeys[key] = true;
+                });
+                // 添加SCHEDULE中有但归档中没有的比赛
+                SCHEDULE[dateStr].forEach(function(g) {
+                    var key = (g.home || '') + '|' + (g.away || '');
+                    if (!scheduleKeys[key]) {
+                        archiveSchedule.push({
+                            home: g.home,
+                            away: g.away,
+                            league: g.league || '',
+                            matchId: g.matchId || '',
+                            matchNumStr: g.matchNumStr || ''
+                        });
+                    }
+                });
+                data.schedule = archiveSchedule;
+                
+                // 补充SCHEDULE中有但ODDS中没有的赔率数据
+                var archiveOdds = data.odds || {};
+                SCHEDULE[dateStr].forEach(function(g) {
+                    var oddsKey = dateStr + '_' + g.home + '_' + g.away;
+                    if (!archiveOdds[oddsKey] && ODDS[oddsKey]) {
+                        archiveOdds[oddsKey] = ODDS[oddsKey];
+                    }
+                });
+                data.odds = archiveOdds;
+            }
             renderArchiveData(data);
         })
         .catch(function(err) {
@@ -4990,6 +5023,26 @@ async function runAiPrediction() {
 let batchRowCounter = 0;
 let _batchLoadedDates = []; // 追踪已加载的日期，用于追加排序
 
+// 判断比分属于胜/平/负哪个组
+function getBatchScoreGroup(score) {
+    if (!score) return null;
+    const parts = score.split(':');
+    if (parts.length !== 2) return null;
+    const home = parseInt(parts[0], 10);
+    const away = parseInt(parts[1], 10);
+    if (isNaN(home) || isNaN(away)) return null;
+    if (home > away) return 'win';
+    if (home < away) return 'lose';
+    return 'draw';
+}
+
+// 预设比分列表
+const BATCH_PRESET_SCORES = {
+    win: ['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','5:0','5:1','5:2'],
+    draw: ['0:0','1:1','2:2','3:3'],
+    lose: ['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','0:5','1:5','2:5']
+};
+
 function loadBatchSchedule() {
     const date = document.getElementById('batchScheduleDate').value;
     const games = SCHEDULE[date];
@@ -5118,11 +5171,28 @@ function loadBatchSchedule() {
             { val:'__custom__', label:'✎ 自定义' },
         ];
         const scoreInOptions = scoreOptions.some(opt => opt.val === score);
-        const optionHtml = scoreOptions.map(opt =>
-            `<option value="${opt.val}" ${(!scoreInOptions && opt.val === '__custom__') || (scoreInOptions && opt.val === score) ? 'selected' : ''}>${opt.label}</option>`
+        
+        // 对于非预设比分，动态生成"胜其他(6:0)"样式的选项
+        let dynamicOption = null;
+        if (score && !scoreInOptions) {
+            const scoreGroup = getBatchScoreGroup(score);
+            if (scoreGroup) {
+                const otherMap = { win: '胜其他', draw: '平其他', lose: '负其他' };
+                const label = otherMap[scoreGroup] + '(' + score + ')';
+                dynamicOption = { val: score, label: label };
+            }
+        }
+        
+        const allOptions = dynamicOption ? 
+            [scoreOptions[0], dynamicOption, ...scoreOptions.slice(1)] : 
+            scoreOptions;
+        
+        const optionHtml = allOptions.map(opt =>
+            `<option value="${opt.val}" ${opt.val === score ? 'selected' : ''}>${opt.label}</option>`
         ).join('');
         const scoreLabel = score ? '<span style="font-size:10px;color:#10b981;margin-left:4px;">⚡自动</span>' : '';
-        const customDisplay = (!scoreInOptions && score) ? 'inline-block' : 'none';
+        // 非预设比分且有动态选项时，隐藏自定义输入框
+        const customDisplay = (!scoreInOptions && !dynamicOption && score) ? 'inline-block' : 'none';
 
         rowsHtml.push(`
             <div class="batch-row">
@@ -5367,73 +5437,100 @@ function loadResultsArchiveDate(dateStr) {
     if (!dateStr) return;
     const listDiv = document.getElementById('resultsArchiveList');
     listDiv.innerHTML = '<div style="font-size:12px;color:#6b7280;padding:10px;">加载中...</div>';
+    
+    // 收集SCHEDULE中该日期的比赛
+    const scheduleGames = SCHEDULE[dateStr] || [];
+    
+    // 加载results_history文件
     fetch('results_history/' + dateStr + '.json?t=' + Date.now(), { cache: 'no-cache' })
         .then(function(r) {
             if (!r.ok) throw new Error('归档文件不存在');
             return r.json();
         })
         .then(function(data) {
-            listDiv.innerHTML = '';
-            const keys = Object.keys(data).sort();
-            if (keys.length === 0) {
-                listDiv.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">该日无赛果</div>';
-                return;
-            }
-            keys.forEach(function(key) {
-                const r = data[key];
-                const matchDiv = document.createElement('div');
-                matchDiv.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #f3f4f6;font-size:11px;cursor:pointer;';
-                const teams = (r.home || '') + ' vs ' + (r.away || '');
-                const score = r.fullScore || '-';
-                const league = r.leagueAbbr || r.league || '';
-                const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
-                matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:#111827;">' + score + handicap + '</span>';
-                matchDiv.onclick = function() {
-                    const dateInput = document.getElementById('batchScheduleDate');
-                    if (dateInput.value === key.split('_')[0]) {
-                        loadBatchSchedule();
-                    } else {
-                        showToast('请先在上方选择 ' + key.split('_')[0] + ' 日期');
-                    }
-                };
-                listDiv.appendChild(matchDiv);
-            });
+            // 合并数据：results_history + SCHEDULE
+            const mergedData = mergeResultsWithSchedule(dateStr, data, scheduleGames);
+            renderResultsArchiveList(listDiv, mergedData, dateStr);
         })
         .catch(function(err) {
-            // 归档文件不存在时，回退使用内联的RESULTS数据
-            listDiv.innerHTML = '';
+            // 归档文件不存在时，使用SCHEDULE + RESULTS数据
             const datePrefix = dateStr + '_';
-            const matchingResults = {};
-            Object.keys(RESULTS).forEach(function(key) {
-                if (key.startsWith(datePrefix)) {
-                    matchingResults[key] = RESULTS[key];
+            const fallbackData = {};
+            scheduleGames.forEach(function(g) {
+                const key = dateStr + '_' + g.home + '_' + g.away;
+                if (RESULTS[key]) {
+                    fallbackData[key] = RESULTS[key];
+                } else {
+                    fallbackData[key] = { home: g.home, away: g.away, league: g.league || '', fullScore: '', handicap: '' };
                 }
             });
-            const keys = Object.keys(matchingResults).sort();
-            if (keys.length === 0) {
-                listDiv.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">该日无赛果</div>';
-                return;
-            }
-            keys.forEach(function(key) {
-                const r = matchingResults[key];
-                const matchDiv = document.createElement('div');
-                matchDiv.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #f3f4f6;font-size:11px;cursor:pointer;';
-                const teams = (r.home || '') + ' vs ' + (r.away || '');
-                const score = r.fullScore || '-';
-                const league = r.leagueAbbr || r.league || '';
-                const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
-                matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:#111827;">' + score + handicap + '</span>';
-                matchDiv.onclick = function() {
-                    const dateInput = document.getElementById('batchScheduleDate');
-                    if (dateInput.value === dateStr) {
-                        loadBatchSchedule();
-                    } else {
-                        showToast('请先在上方选择 ' + dateStr + ' 日期');
+            // 也收集RESULTS中其他可能的匹配
+            Object.keys(RESULTS).forEach(function(key) {
+                if (key.startsWith(datePrefix)) {
+                    const r = RESULTS[key];
+                    // 检查是否已在schedule中
+                    const exists = scheduleGames.some(function(g) {
+                        return g.home === r.home && g.away === r.away;
+                    });
+                    if (!exists) {
+                        fallbackData[key] = r;
                     }
-                };
-                listDiv.appendChild(matchDiv);
+                }
             });
+            renderResultsArchiveList(listDiv, fallbackData, dateStr);
         });
+}
+
+function mergeResultsWithSchedule(dateStr, resultsData, scheduleGames) {
+    const merged = {};
+    const datePrefix = dateStr + '_';
+    
+    // 1. 先放SCHEDULE中的比赛（如果results中有就用results的赛果）
+    scheduleGames.forEach(function(g) {
+        const key = dateStr + '_' + g.home + '_' + g.away;
+        if (resultsData[key]) {
+            merged[key] = resultsData[key];
+        } else {
+            merged[key] = { home: g.home, away: g.away, league: g.league || '', fullScore: '', handicap: '' };
+        }
+    });
+    
+    // 2. 放results中额外的比赛（不在schedule中的）
+    Object.keys(resultsData).forEach(function(key) {
+        if (!(key in merged)) {
+            merged[key] = resultsData[key];
+        }
+    });
+    
+    return merged;
+}
+
+function renderResultsArchiveList(listDiv, data, dateStr) {
+    listDiv.innerHTML = '';
+    const keys = Object.keys(data).sort();
+    if (keys.length === 0) {
+        listDiv.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">该日无赛果</div>';
+        return;
+    }
+    keys.forEach(function(key) {
+        const r = data[key];
+        const matchDiv = document.createElement('div');
+        matchDiv.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #f3f4f6;font-size:11px;cursor:pointer;';
+        const teams = (r.home || '') + ' vs ' + (r.away || '');
+        const score = r.fullScore || '-';
+        const league = r.leagueAbbr || r.league || '';
+        const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
+        matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:' + (score && score !== '-' ? '#111827' : '#9ca3af') + ';">' + score + handicap + '</span>';
+        matchDiv.onclick = function() {
+            const dateInput = document.getElementById('batchScheduleDate');
+            if (dateInput.value === dateStr) {
+                loadBatchSchedule();
+            } else {
+                showToast('请先在上方选择 ' + dateStr + ' 日期');
+            }
+        };
+        listDiv.appendChild(matchDiv);
+    });
 }
 function applyBatchResults() {
     const rows = document.querySelectorAll('#batchResultRows .batch-row');
