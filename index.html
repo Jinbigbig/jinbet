@@ -412,7 +412,12 @@
             font-weight: 500;
         }
         .batch-result-panel .batch-row .batch-score {
-            flex: 0 0 120px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            min-width: 180px;
         }
         .batch-result-panel .batch-actions {
             display: flex;
@@ -1678,6 +1683,9 @@
             .batch-result-panel .batch-row .team-pair .batch-away { height:32px; font-size:12px; min-width:55px; max-width:90px; }
             .batch-result-panel .batch-row .team-pair .league-tag { font-size:10px; padding:1px 4px; width:42px; line-height:16px; }
             .batch-result-panel .batch-row .team-pair .league-tag.match-num-tag { font-size:10px; padding:1px 4px; line-height:16px; }
+            .batch-result-panel .batch-row .batch-score { min-width:160px; gap:3px; }
+            .batch-result-panel .batch-row .batch-score .batch-score-select { width:85px; font-size:11px; }
+            .batch-result-panel .batch-row .batch-score .batch-score-custom { width:60px; font-size:11px; }
             .ai-predict-panel { padding:16px 18px; }
             .odds-manager .odds-row .match-info { font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
             .odds-manager .odds-row .match-info .league-tag { width:45px; font-size:10px; padding:1px 4px; line-height:16px; }
@@ -4967,11 +4975,11 @@ function loadBatchSchedule() {
                     <input type="text" class="batch-away" placeholder="客队" value="${g.away}" autocomplete="off" list="${awayId}" />
                     ${awayDatalist}
                 </div>
-                <div style="display:flex;align-items:center;">
-                    <select class="batch-score-select" style="width:100px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
+                <div class="batch-score">
+                    <select class="batch-score-select" style="width:90px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
                         ${optionHtml}
                     </select>
-                    <input type="text" class="batch-score-custom" placeholder="如 6:3" value="${!scoreInOptions ? score : ''}" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:${customDisplay};text-align:center;" />
+                    <input type="text" class="batch-score-custom" placeholder="如 6:3" value="${!scoreInOptions ? score : ''}" style="width:65px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;display:${customDisplay};text-align:center;" />
                     ${scoreLabel}
                 </div>
                 <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
@@ -5105,12 +5113,12 @@ function addBatchRow(home = '', away = '', score = '', league = '', handicap = '
             <span style="font-weight:600;">vs</span>
             <input type="text" class="batch-away" placeholder="客队" value="${away}" autocomplete="off" />
         </div>
-        <div style="display:flex;align-items:center;">
-            <select class="batch-score-select" style="width:100px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
+        <div class="batch-score">
+            <select class="batch-score-select" style="width:90px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
                 ${optionHtml}
             </select>
-            <input type="text" class="batch-score-custom" placeholder="如 6:3" value="" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:none;text-align:center;" />
-            ${score ? '<span style="font-size:10px;color:#10b981;margin-left:4px;">⚡自动</span>' : ''}
+            <input type="text" class="batch-score-custom" placeholder="如 6:3" value="" style="width:65px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;display:none;text-align:center;" />
+            ${score ? '<span style="font-size:10px;color:#10b981;">⚡自动</span>' : ''}
         </div>
         <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
     `;
