@@ -5475,74 +5475,49 @@ function loadResultsArchiveDate(dateStr) {
         });
 }
 
-// 构建归档数据：从results_history和RESULTS中收集有赛果的比赛
+// 构建归档数据：只包含SCHEDULE中的比赛，赛果通过跨日期查找
 function buildArchiveData(dateStr, resultsHistoryData, scheduleGames) {
     const merged = {};
     
-    // 1. 先处理SCHEDULE中的比赛，用findResultForGame跨日期查找赛果
+    // 只处理SCHEDULE中的比赛
     scheduleGames.forEach(function(g) {
+        const key = dateStr + '_' + g.home + '_' + g.away;
         const matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
-        if (matchResult && matchResult.result && matchResult.result.fullScore) {
-            const key = dateStr + '_' + g.home + '_' + g.away;
-            const r = matchResult.result;
-            merged[key] = {
-                home: g.home,
-                away: g.away,
-                league: g.league || r.league || '',
-                leagueAbbr: g.league || r.leagueAbbr || '',
-                fullScore: r.fullScore,
-                halfScore: r.halfScore || '',
-                handicap: r.handicap || '',
-                matchId: r.matchId || g.matchId
-            };
-        }
-    });
-    
-    // 2. 添加results_history中有但SCHEDULE中没有的比赛
-    Object.keys(resultsHistoryData || {}).forEach(function(key) {
-        if (!(key in merged)) {
-            const r = resultsHistoryData[key];
-            if (r.fullScore) {  // 只添加有赛果的
-                merged[key] = r;
-            }
-        }
+        const r = matchResult ? matchResult.result : null;
+        merged[key] = {
+            home: g.home,
+            away: g.away,
+            league: g.league || (r && r.league) || '',
+            leagueAbbr: g.league || (r && r.leagueAbbr) || '',
+            fullScore: r ? (r.fullScore || '') : '',
+            halfScore: r ? (r.halfScore || '') : '',
+            handicap: r ? (r.handicap || '') : '',
+            matchId: g.matchId || (r && r.matchId) || ''
+        };
     });
     
     return merged;
 }
 
-// 从RESULTS直接构建归档数据
+// 从RESULTS直接构建归档数据（归档文件不存在时的回退）
 function buildArchiveDataFromResults(dateStr, scheduleGames) {
     const merged = {};
-    const datePrefix = dateStr + '_';
     
-    // 1. 处理SCHEDULE中的比赛
+    // 只处理SCHEDULE中的比赛
     scheduleGames.forEach(function(g) {
+        const key = dateStr + '_' + g.home + '_' + g.away;
         const matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
-        if (matchResult && matchResult.result && matchResult.result.fullScore) {
-            const key = dateStr + '_' + g.home + '_' + g.away;
-            const r = matchResult.result;
-            merged[key] = {
-                home: g.home,
-                away: g.away,
-                league: g.league || r.league || '',
-                leagueAbbr: g.league || r.leagueAbbr || '',
-                fullScore: r.fullScore,
-                halfScore: r.halfScore || '',
-                handicap: r.handicap || '',
-                matchId: r.matchId || g.matchId
-            };
-        }
-    });
-    
-    // 2. 收集RESULTS中该日期的其他赛果
-    Object.keys(RESULTS).forEach(function(key) {
-        if (key.startsWith(datePrefix) && !(key in merged)) {
-            const r = RESULTS[key];
-            if (r.fullScore) {
-                merged[key] = r;
-            }
-        }
+        const r = matchResult ? matchResult.result : null;
+        merged[key] = {
+            home: g.home,
+            away: g.away,
+            league: g.league || (r && r.league) || '',
+            leagueAbbr: g.league || (r && r.leagueAbbr) || '',
+            fullScore: r ? (r.fullScore || '') : '',
+            halfScore: r ? (r.halfScore || '') : '',
+            handicap: r ? (r.handicap || '') : '',
+            matchId: g.matchId || (r && r.matchId) || ''
+        };
     });
     
     return merged;
