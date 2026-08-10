@@ -1660,6 +1660,35 @@
             color: #9ca3af;
         }
 
+        @media (max-width:1200px) {
+            /* 中间屏幕优化：防止紧凑区域换行 */
+            .app-container { padding:24px 24px 36px; }
+            .modal { padding:28px 32px; max-width:95vw; }
+            .modal h3 { font-size:18px; }
+            .header-actions { gap:6px; }
+            .header-actions .btn { padding:7px 14px; font-size:13px; }
+            .batch-result-panel { padding:16px 18px; }
+            .batch-result-panel .batch-toolbar { gap:6px; }
+            .batch-result-panel .batch-toolbar .btn { height:32px; font-size:12px; padding:5px 12px; }
+            .batch-result-panel .batch-toolbar input[type="date"] { height:32px; padding:5px 10px; font-size:12px; }
+            .batch-result-panel .batch-row { padding:6px 10px; }
+            .batch-result-panel .batch-row input { height:32px; font-size:12px; min-width:70px; }
+            .batch-result-panel .batch-row .team-pair { gap:4px; flex:2 1 180px; min-width:150px; }
+            .batch-result-panel .batch-row .team-pair .batch-home,
+            .batch-result-panel .batch-row .team-pair .batch-away { height:32px; font-size:12px; min-width:55px; max-width:90px; }
+            .batch-result-panel .batch-row .team-pair .league-tag { font-size:10px; padding:1px 4px; width:42px; line-height:16px; }
+            .batch-result-panel .batch-row .team-pair .league-tag.match-num-tag { font-size:10px; padding:1px 4px; line-height:16px; }
+            .ai-predict-panel { padding:16px 18px; }
+            .odds-manager .odds-row .match-info { font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+            .odds-manager .odds-row .match-info .league-tag { width:45px; font-size:10px; padding:1px 4px; line-height:16px; }
+            .odds-manager .odds-row .match-info .match-num-tag { font-size:10px; padding:1px 4px; line-height:16px; }
+            .odds-manager .odds-row .odds-item input { width:60px; height:28px; font-size:12px; }
+            .odds-manager .odds-row .odds-item .odds-label { font-size:11px; }
+            .odds-manager .odds-row .spf-inputs .spf-row .spf-handicap-label { font-size:11px; min-width:48px; }
+            .odds-manager .odds-row .spf-inputs .spf-row .spf-handicap-input { width:50px; height:28px; font-size:12px; }
+            .odds-manager .odds-row .spf-inputs .spf-row input[type="number"] { width:55px; height:28px; font-size:12px; }
+        }
+
         @media (max-width:768px) {
             .app-container { padding:18px 16px 30px; }
             .modal { padding:24px 20px; }
