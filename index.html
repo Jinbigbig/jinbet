@@ -4842,12 +4842,12 @@ function findResultForGame(home, away, matchId, preferredDate) {
 
 // 跨日期查找赔率：优先用matchId，其次用队名
 function findOddsForGame(home, away, matchId, preferredDate) {
-    const oddsData = (typeof oddsData !== 'undefined' ? oddsData : {});
+    const allOdds = (typeof oddsData !== 'undefined' ? oddsData : {});
     
     // 1. 优先用matchId精确匹配
     if (matchId) {
-        for (const ok in oddsData) {
-            const o = oddsData[ok];
+        for (const ok in allOdds) {
+            const o = allOdds[ok];
             if (String(o.matchId) === String(matchId)) {
                 return { odds: o, oddsKey: ok, isHome: true };
             }
@@ -4860,7 +4860,7 @@ function findOddsForGame(home, away, matchId, preferredDate) {
     let bestOk = null;
     let bestDateDiff = Infinity;
     
-    for (const ok in oddsData) {
+    for (const ok in allOdds) {
         const okLower = ok.toLowerCase();
         if (okLower.indexOf(teamPair.toLowerCase()) !== -1 || okLower.indexOf(altPair.toLowerCase()) !== -1) {
             const okDate = ok.substring(0, 10);
@@ -4873,7 +4873,7 @@ function findOddsForGame(home, away, matchId, preferredDate) {
     }
     
     if (bestOk) {
-        const o = oddsData[bestOk];
+        const o = allOdds[bestOk];
         const isHomeOrder = bestOk.indexOf(teamPair) !== -1;
         return { odds: o, oddsKey: bestOk, isHome: isHomeOrder };
     }
