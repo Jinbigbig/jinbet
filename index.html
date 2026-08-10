@@ -1,4 +1,4 @@
-<!-- v7.98.9-20260810150300 -->
+<!-- v7.98.10-20260810151500 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2365,7 +2365,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.9';
+const APP_VERSION = '7.98.10';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5303,7 +5303,8 @@ function buildArchiveData(dateStr, resultsHistoryData, scheduleGames) {
             fullScore: r ? (r.fullScore || '') : '',
             halfScore: r ? (r.halfScore || '') : '',
             handicap: r ? (r.handicap || '') : '',
-            matchId: g.matchId || (r && r.matchId) || ''
+            matchId: g.matchId || (r && r.matchId) || '',
+            matchNumStr: g.matchNumStr || (r && r.matchNumStr) || ''
         };
     });
     
@@ -5327,7 +5328,8 @@ function buildArchiveDataFromResults(dateStr, scheduleGames) {
             fullScore: r ? (r.fullScore || '') : '',
             halfScore: r ? (r.halfScore || '') : '',
             handicap: r ? (r.handicap || '') : '',
-            matchId: g.matchId || (r && r.matchId) || ''
+            matchId: g.matchId || (r && r.matchId) || '',
+            matchNumStr: g.matchNumStr || (r && r.matchNumStr) || ''
         };
     });
     
@@ -5336,7 +5338,23 @@ function buildArchiveDataFromResults(dateStr, scheduleGames) {
 
 function renderResultsArchiveList(listDiv, data, dateStr) {
     listDiv.innerHTML = '';
-    const keys = Object.keys(data).sort();
+    
+    // 按编号排序的函数
+    function getMatchNumOrder(matchNumStr) {
+        if (!matchNumStr) return 9999;
+        const match = matchNumStr.match(/(\d+)/);
+        if (match) return parseInt(match[1]);
+        return 9999;
+    }
+    
+    // 先按编号排序，无编号的排最后
+    const keys = Object.keys(data).sort(function(a, b) {
+        const orderA = getMatchNumOrder(data[a].matchNumStr);
+        const orderB = getMatchNumOrder(data[b].matchNumStr);
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b);
+    });
+    
     const count = keys.length;
     
     // 更新下拉框显示的数量
@@ -5367,7 +5385,8 @@ function renderResultsArchiveList(listDiv, data, dateStr) {
         const score = r.fullScore || '-';
         const league = r.leagueAbbr || r.league || '';
         const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
-        matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:' + (score && score !== '-' ? '#111827' : '#9ca3af') + ';">' + score + handicap + '</span>';
+        const matchNum = r.matchNumStr ? '<span style="color:#10b981;font-weight:600;margin-right:4px;">' + r.matchNumStr + '</span>' : '';
+        matchDiv.innerHTML = '<span style="color:#6b7280;">' + matchNum + league + ' ' + teams + '</span><span style="font-weight:600;color:' + (score && score !== '-' ? '#111827' : '#9ca3af') + ';">' + score + handicap + '</span>';
         matchDiv.onclick = function() {
             const dateInput = document.getElementById('batchScheduleDate');
             if (dateInput.value === dateStr) {
