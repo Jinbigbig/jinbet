@@ -1,4 +1,4 @@
-<!-- v7.98.13-20260810153000 -->
+<!-- v7.98.14-20260810153500 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2364,7 +2364,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.13';
+const APP_VERSION = '7.98.14';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -4813,18 +4813,19 @@ function findResultForGame(home, away, matchId, preferredDate) {
                 }
             }
         }
-        // 如果没有有赛果的matchId匹配，返回回退（可能没有赛果）
+        // 如果没有matchId匹配，直接返回null，不再用队名匹配历史比赛
         if (matchIdMatch) {
             return matchIdMatch;
         }
+        return null;
     }
     
-    // 2. 用队名匹配（查找所有日期中有fullScore的、最近的）
+    // 2. 没有matchId时，用队名匹配
     const teamPair = home + '_' + away;
     const altPair = away + '_' + home;
     let bestRk = null;
     let bestDateDiff = Infinity;
-    let bestNoScoreRk = null;  // 没有fullScore的最佳匹配
+    let bestNoScoreRk = null;
     
     for (const rk in allResults) {
         const rkLower = rk.toLowerCase();
@@ -4834,7 +4835,6 @@ function findResultForGame(home, away, matchId, preferredDate) {
             const diff = preferredDate ? Math.abs(new Date(rkDate) - new Date(preferredDate)) : 0;
             
             if (r.fullScore) {
-                // 优先选择有赛果的
                 if (diff < bestDateDiff) {
                     bestDateDiff = diff;
                     bestRk = rk;
