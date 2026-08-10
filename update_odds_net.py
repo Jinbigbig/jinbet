@@ -41,6 +41,69 @@ LEAGUE_MAP = {
     '格风暴': '欧冠', '哈茨': '欧冠', '奥莫尼亚': '欧冠', '阿拉木图': '欧冠',
 }
 
+# 体彩赛果API队名 → SCHEDULE队名 映射（用于key统一）
+# 映射方向：API可能返回的变体名称 → SCHEDULE中使用的标准名称
+RESULT_TEAM_NAME_MAP = {
+    '布斯巴达': '布斯巴达', '布拉格斯巴达': '布斯巴达',
+    '圣吉联合': '圣吉联合', '圣吉尔联合': '圣吉联合',
+    '奥林匹亚': '奥林匹亚', '奥林匹亚科斯': '奥林匹亚',
+    '米亚尔比': '米亚尔比',
+    '布拉迪斯': '布拉迪斯', '布拉加': '布拉迪斯',
+    '奈梅亨': '奈梅亨', 'NEC奈梅亨': '奈梅亨',
+    '里昂': '里昂',
+    '博德闪耀': '博德闪耀',
+    '塞伊奈': '塞伊奈', '塞伊奈约基': '塞伊奈',
+    '哈尔姆斯': '哈尔姆斯', '哈尔姆斯塔德': '哈尔姆斯',
+    '天狼星': '天狼星',
+    '佐加顿斯': '佐加顿斯',
+    '韦斯特罗': '韦斯特罗', '韦斯特罗斯': '韦斯特罗',
+    '巴竞技': '巴竞技', '巴拉纳竞技': '巴竞技',
+    '维多利亚': '维多利亚',
+    '里莫': '里莫', '里奥阿维': '里莫',
+    '桑托斯': '桑托斯',
+    '奥胡斯': '奥胡斯',
+    '费内巴切': '费内巴切',
+    '格风暴': '格风暴', '格拉茨风暴': '格风暴',
+    '弗鲁米嫩': '弗鲁米嫩', '弗鲁米嫩塞': '弗鲁米嫩',
+    '达伽马': '达伽马', '瓦斯科达伽马': '达伽马',
+    '赫尔辛基': '赫尔辛基',
+    'TPS图尔': 'TPS图尔', 'TPS图尔库': 'TPS图尔',
+    '玛丽港': '玛丽港',
+    '拉赫蒂': '拉赫蒂',
+    '雅罗': '雅罗', '雅罗足球': '雅罗',
+    '腓特烈': '腓特烈', '腓特烈斯塔': '腓特烈',
+    '桑纳菲': '桑纳菲', '桑纳菲尤尔': '桑纳菲',
+    '赫根': '赫根',
+    '卡尔马': '卡尔马',
+    '浦项制铁': '浦项',
+    '金泉尚武': '金泉尚武',
+    '全北现代': '全北现代',
+    '首尔FC': '首尔FC',
+    '江原FC': '江原FC',
+    '富川FC': '富川FC',
+    '波特兰': '波特兰', '波特兰伐木工': '波特兰',
+    '西雅图': '西雅图', '西雅图海湾人': '西雅图',
+    '洛城银河': '洛城银河', '洛杉矶银河': '洛城银河',
+    '达拉斯': '达拉斯', '达拉斯FC': '达拉斯',
+    '圣路易城': '圣路易城', '圣路易斯城': '圣路易城',
+    '盐湖城': '盐湖城', '皇家盐湖城': '盐湖城',
+    '芝加哥': '芝加哥', '芝加哥火焰': '芝加哥',
+    '夏洛特FC': '夏洛特FC',
+    '温哥华': '温哥华', '温哥华白帽': '温哥华',
+    '洛杉矶FC': '洛杉矶FC',
+    '迈国际': '迈国际', '迈阿密国际': '迈国际',
+    '哥伦布': '哥伦布', '哥伦布机员': '哥伦布',
+    '赫尔火花': '赫尔火花', '赫尔辛基火花': '赫尔火花',
+    '库奥皮奥': '库奥皮奥',
+    '斯达': '斯达', '斯塔贝克': '斯达',
+    '维京': '维京',
+}
+
+
+def _get_sorted_team_mapping():
+    """返回按模式长度从长到短排序的队名映射列表，确保更具体的模式先匹配"""
+    return sorted(RESULT_TEAM_NAME_MAP.items(), key=lambda x: len(x[0]), reverse=True)
+
 
 def decode_netease_value(s):
     s = re.sub(r'\[0,\s*"([^"]+)"\]', r'"\1"', s)
@@ -413,13 +476,40 @@ def parse_lottery_json(json_text):
 def update_html_schedule(html_content, new_schedule):
     schedule_pattern = r'const SCHEDULE = \{([\s\S]*?)\};'
     
+    def sort_key(g):
+        """按 matchNumStr 完整编号排序（周几+数字），其次用 matchNo"""
+        num_str = g.get('matchNumStr', '')
+        if num_str:
+            # 提取"周几"前缀和数字部分
+            # 例如：周日018 -> ('周日', 18), 周六015 -> ('周六', 15)
+            import re as _re
+            match = _re.match(r'^(周[一二三四五六日]|周五|周六|周日|周一|周二|周三|周四|周五|周六|周日)(\d+)$', num_str)
+            if match:
+                prefix = match.group(1)
+                num = int(match.group(2))
+                # 周几的顺序映射
+                weekday_order = {'周五': 0, '周六': 1, '周日': 2, '周一': 3, '周二': 4, '周三': 5, '周四': 6}
+                prefix_order = weekday_order.get(prefix, 99)
+                return (prefix_order, num)
+            # 其他格式，提取所有数字
+            digits = _re.findall(r'\d+', num_str)
+            if digits:
+                return (99, int(digits[0]))
+        # 如果有 matchNo，用它
+        match_no = g.get('matchNo', '')
+        if match_no and match_no.isdigit():
+            return (50, int(match_no))
+        return (999, 999999)  # 没有编号的排最后
+    
     schedule_str = "const SCHEDULE = {\n"
     
     dates = sorted(new_schedule.keys())
     for i, date in enumerate(dates):
         games = new_schedule[date]
+        # 按编号排序
+        games_sorted = sorted(games, key=sort_key)
         games_parts = []
-        for g in games:
+        for g in games_sorted:
             parts = [f"home: '{g['home']}'", f"away: '{g['away']}'"]
             if g.get('league'):
                 parts.append(f"league: '{g['league']}'")
@@ -697,6 +787,23 @@ def main():
     schedule_str = parse_js_obj_to_json(schedule_str)
     schedule = json.loads(schedule_str)
 
+    # 去重：清理 SCHEDULE 中可能存在的重复比赛
+    dedup_total = 0
+    for date in schedule:
+        games = schedule[date]
+        seen = {}
+        deduped = []
+        for g in games:
+            key = g.get('matchId', '') or f"{g.get('home', '')}_{g.get('away', '')}"
+            if key not in seen:
+                seen[key] = g
+                deduped.append(g)
+            else:
+                dedup_total += 1
+        schedule[date] = deduped
+    if dedup_total > 0:
+        print(f'  ⚠️ 清理了 {dedup_total} 场重复比赛')
+
     print(f'\n当前赛程包含 {len(schedule)} 个日期')
 
     # 尝试从网易获取数据
@@ -747,8 +854,89 @@ def main():
     for key, odds in odds_data.items():
         print(f'    {key}: 胜={odds["胜"]}, 平={odds["平"]}, 负={odds["负"]}')
     
+    # 改进的匹配函数：使用多种策略匹配队名，支持日期约束（在 try 块前定义，确保全局可访问）
+    def find_best_match(home, away, id_map_dict, date=None):
+        """在 id_map 中查找最佳匹配，可选日期约束"""
+        
+        # 先标准化输入的队名（使用 RESULT_TEAM_NAME_MAP，按长度从长到短匹配）
+        def normalize_team_name(name):
+            """标准化队名（按长度从长到短匹配，确保更具体的模式先匹配）"""
+            for map_name, standard_name in _get_sorted_team_mapping():
+                if map_name in name:
+                    return standard_name
+            return name
+        
+        home = normalize_team_name(home)
+        away = normalize_team_name(away)
+        
+        # 策略1：精确匹配（带日期约束）
+        for key, ids in id_map_dict.items():
+            key_date = key[:10]
+            key_home = key[11:].rsplit('_', 1)[0]
+            key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+            # 标准化 key 中的队名
+            key_home = normalize_team_name(key_home)
+            key_away = normalize_team_name(key_away)
+            if date and key_date != date:
+                continue
+            if home == key_home and away == key_away:
+                return key, ids
+        
+        # 策略2：子串包含匹配（带日期约束）
+        for key, ids in id_map_dict.items():
+            key_date = key[:10]
+            key_home = key[11:].rsplit('_', 1)[0]
+            key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+            key_home = normalize_team_name(key_home)
+            key_away = normalize_team_name(key_away)
+            if date and key_date != date:
+                continue
+            if (home in key_home or key_home in home) and (away in key_away or key_away in away):
+                return key, ids
+        
+        # 策略3：首词匹配（处理"布鲁马波卡纳"vs"布鲁马波"等情况，带日期约束）
+        for key, ids in id_map_dict.items():
+            key_date = key[:10]
+            key_home = key[11:].rsplit('_', 1)[0]
+            key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+            key_home = normalize_team_name(key_home)
+            key_away = normalize_team_name(key_away)
+            if date and key_date != date:
+                continue
+            # 检查队名是否有相同的前缀（至少2个字符）
+            if len(home) >= 2 and len(key_home) >= 2:
+                home_match = home[:2] == key_home[:2] or key_home.startswith(home[:2]) or home.startswith(key_home[:2])
+            else:
+                home_match = home == key_home
+            if len(away) >= 2 and len(key_away) >= 2:
+                away_match = away[:2] == key_away[:2] or key_away.startswith(away[:2]) or away.startswith(key_away[:2])
+            else:
+                away_match = away == key_away
+            if home_match and away_match:
+                return key, ids
+        
+        # 如果有日期约束但没找到，尝试不限制日期
+        if date:
+            for key, ids in id_map_dict.items():
+                key_home = key[11:].rsplit('_', 1)[0]
+                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                key_home = normalize_team_name(key_home)
+                key_away = normalize_team_name(key_away)
+                if home == key_home and away == key_away:
+                    return key, ids
+            for key, ids in id_map_dict.items():
+                key_home = key[11:].rsplit('_', 1)[0]
+                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+                key_home = normalize_team_name(key_home)
+                key_away = normalize_team_name(key_away)
+                if (home in key_home or key_home in home) and (away in key_away or key_away in away):
+                    return key, ids
+        
+        return None, None
+    
     # 从体彩赛果API补充完整的matchId等编号信息（获取所有联赛的完整编号）
     print('\n[补充] 从体彩赛果API获取完整比赛编号信息...')
+    id_map = {}  # 在 try 块前初始化，确保 try 块外可访问
     try:
         # 计算日期范围：覆盖当前赛程的所有日期（往前推1天，往后推2天）
         from datetime import datetime, timedelta
@@ -804,63 +992,6 @@ def main():
             print(f'  id_map 示例 key: {list(id_map.keys())[:3]}')
         if odds_data:
             print(f'  odds_data 示例 key: {list(odds_data.keys())[:3]}')
-        
-        # 改进的匹配函数：使用多种策略匹配队名，支持日期约束
-        def find_best_match(home, away, id_map_dict, date=None):
-            """在 id_map 中查找最佳匹配，可选日期约束"""
-            # 策略1：精确匹配（带日期约束）
-            for key, ids in id_map_dict.items():
-                key_date = key[:10]
-                key_home = key[11:].rsplit('_', 1)[0]
-                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
-                if date and key_date != date:
-                    continue
-                if home == key_home and away == key_away:
-                    return key, ids
-            
-            # 策略2：子串包含匹配（带日期约束）
-            for key, ids in id_map_dict.items():
-                key_date = key[:10]
-                key_home = key[11:].rsplit('_', 1)[0]
-                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
-                if date and key_date != date:
-                    continue
-                if (home in key_home or key_home in home) and (away in key_away or key_away in away):
-                    return key, ids
-            
-            # 策略3：首词匹配（处理"布鲁马波卡纳"vs"布鲁马波"等情况，带日期约束）
-            for key, ids in id_map_dict.items():
-                key_date = key[:10]
-                key_home = key[11:].rsplit('_', 1)[0]
-                key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
-                if date and key_date != date:
-                    continue
-                # 检查队名是否有相同的前缀（至少3个字符）
-                if len(home) >= 3 and len(key_home) >= 3:
-                    home_match = home[:3] == key_home[:3] or key_home.startswith(home[:3]) or home.startswith(key_home[:3])
-                else:
-                    home_match = home == key_home
-                if len(away) >= 3 and len(key_away) >= 3:
-                    away_match = away[:3] == key_away[:3] or key_away.startswith(away[:3]) or away.startswith(key_away[:3])
-                else:
-                    away_match = away == key_away
-                if home_match and away_match:
-                    return key, ids
-            
-            # 如果有日期约束但没找到，尝试不限制日期
-            if date:
-                for key, ids in id_map_dict.items():
-                    key_home = key[11:].rsplit('_', 1)[0]
-                    key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
-                    if home == key_home and away == key_away:
-                        return key, ids
-                for key, ids in id_map_dict.items():
-                    key_home = key[11:].rsplit('_', 1)[0]
-                    key_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
-                    if (home in key_home or key_home in home) and (away in key_away or key_away in away):
-                        return key, ids
-            
-            return None, None
         
         # 合并到 odds_data
         matched_odds = 0
@@ -918,10 +1049,48 @@ def main():
         if date not in schedule:
             schedule[date] = games
         else:
-            existing_keys = set((g['home'], g['away']) for g in schedule[date])
+            # 用 matchId 优先去重，其次用 (home, away)
+            existing_match_ids = set(g.get('matchId', '') for g in schedule[date] if g.get('matchId'))
+            existing_pairs = set((g['home'], g['away']) for g in schedule[date])
             for g in games:
-                if (g['home'], g['away']) not in existing_keys:
-                    schedule[date].append(g)
+                pair = (g['home'], g['away'])
+                g_match_id = g.get('matchId', '')
+                # 如果有 matchId，用它去重；否则用 (home, away) 去重
+                if g_match_id and g_match_id in existing_match_ids:
+                    continue
+                if pair in existing_pairs:
+                    continue
+                schedule[date].append(g)
+                existing_pairs.add(pair)
+                if g_match_id:
+                    existing_match_ids.add(g_match_id)
+    
+    # 合并后去重（清理可能存在的重复）
+    dedup_total = 0
+    for date in schedule:
+        games = schedule[date]
+        seen_ids = set()
+        seen_pairs = set()
+        deduped = []
+        for g in games:
+            g_match_id = g.get('matchId', '')
+            pair = (g['home'], g['away'])
+            # 优先用 matchId 去重
+            if g_match_id and g_match_id in seen_ids:
+                dedup_total += 1
+                continue
+            # 其次用 (home, away) 去重
+            if pair in seen_pairs:
+                dedup_total += 1
+                continue
+            if g_match_id:
+                seen_ids.add(g_match_id)
+            seen_pairs.add(pair)
+            deduped.append(g)
+        schedule[date] = deduped
+    if dedup_total > 0:
+        print(f'    ⚠️ 合并后清理了 {dedup_total} 场重复比赛')
+    
     # 补全旧日期赛程中缺失的 league（从 schedule_data 中查找 + 映射表兜底）
     for date in schedule:
         for g in schedule[date]:
@@ -1064,8 +1233,14 @@ def main():
     # 对 schedule 中的所有条目补充编号信息
     print('\n[补充] 为所有赛程补充编号信息...')
     s_id_added = 0
+    s_date_fixed = 0
+    weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+    
+    dates_to_remove = {}  # 记录需要移动的比赛
+    
     for sdate, games in schedule.items():
         for game in games:
+            # 补充编号信息（如果没有 matchId）
             if not game.get('matchId'):
                 mkey, mids = find_best_match(game['home'], game['away'], id_map, date=sdate)
                 if mkey and mids:
@@ -1075,24 +1250,99 @@ def main():
                     if mids.get('league') and not game.get('league'):
                         game['league'] = mids['league']
                     s_id_added += 1
+            
+            # 根据 matchNumStr 修正日期（无论是否已有 matchId）
+            match_num_str = game.get('matchNumStr', '')
+            if match_num_str:
+                match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
+                if match:
+                    target_weekday = weekday_map.get(match.group(1))
+                    if target_weekday is not None and sdate:
+                        try:
+                            dt = datetime.strptime(sdate, '%Y-%m-%d')
+                            current_weekday = dt.weekday()
+                            # 计算需要向前移动的天数
+                            # 如果目标星期几 < 当前星期几（例如 周日 < 周一），需要向前移动 current - target 天
+                            # 如果目标星期几 >= 当前星期几，需要向前移动 target - current 天
+                            if target_weekday < current_weekday:
+                                diff = current_weekday - target_weekday
+                            else:
+                                diff = target_weekday - current_weekday
+                            if diff > 0:
+                                from datetime import timedelta
+                                new_date = (dt - timedelta(days=diff)).strftime('%Y-%m-%d')
+                                if new_date != sdate:
+                                    dates_to_remove.setdefault(sdate, []).append((game, new_date))
+                                    s_date_fixed += 1
+                        except ValueError:
+                            pass
+    
+    # 执行日期修正（移动比赛到正确的日期）
+    for old_date, moves in dates_to_remove.items():
+        if old_date in schedule:
+            new_date_games = {}
+            games = schedule[old_date]
+            new_games = []
+            for g in games:
+                moved = False
+                for game, new_date in moves:
+                    if g is game:
+                        if new_date not in new_date_games:
+                            new_date_games[new_date] = []
+                        new_date_games[new_date].append(g)
+                        moved = True
+                        break
+                if not moved:
+                    new_games.append(g)
+            schedule[old_date] = new_games
+            for new_date, new_games_list in new_date_games.items():
+                if new_date not in schedule:
+                    schedule[new_date] = []
+                schedule[new_date].extend(new_games_list)
+    
     print(f'  ✅ 为 {s_id_added} 场赛程补充了编号信息')
+    if s_date_fixed > 0:
+        print(f'  ✅ 修正了 {s_date_fixed} 场比赛的日期')
 
     # 用 id_map 数据补充 schedule 中缺失的历史比赛条目
     print('\n[补充] 从赛果API补充缺失的赛程条目...')
     new_added = 0
+    dup_by_id = 0
+    dup_by_name = 0
+    dup_by_substr = 0
     for key, ids in id_map.items():
         id_date = key[:10]
-        id_home = key[11:].rsplit('_', 1)[0]
-        id_away = key[11:].rsplit('_', 1)[1] if '_' in key[11:] else ''
+        rest = key[11:]
+        # 找到第一个下划线（第一个下划线分隔主队和客队）
+        idx = rest.find('_')
+        if idx > 0:
+            id_home = rest[:idx]
+            id_away = rest[idx+1:]
+        else:
+            id_home = rest
+            id_away = ''
+        id_match_id = ids.get('matchId', '')
         
-        # 检查是否已在 schedule 中
+        # 检查是否已在 schedule 中（优先用 matchId 去重，其次用队名）
         exists = False
         if id_date in schedule:
             for g in schedule[id_date]:
-                if (g['home'] == id_home and g['away'] == id_away) or \
-                   (id_home in g['home'] or g['home'] in id_home) and \
+                g_match_id = g.get('matchId', '')
+                # 优先用 matchId 去重（两者都有 matchId 时）
+                if id_match_id and g_match_id and id_match_id == g_match_id:
+                    exists = True
+                    dup_by_id += 1
+                    break
+                # 其次用队名精确匹配
+                if g['home'] == id_home and g['away'] == id_away:
+                    exists = True
+                    dup_by_name += 1
+                    break
+                # 最后用子串匹配
+                if (id_home in g['home'] or g['home'] in id_home) and \
                    (id_away in g['away'] or g['away'] in id_away):
                     exists = True
+                    dup_by_substr += 1
                     break
         
         if not exists:
@@ -1103,7 +1353,7 @@ def main():
                 'home': id_home,
                 'away': id_away,
                 'league': ids.get('league', ''),
-                'matchId': ids.get('matchId', ''),
+                'matchId': id_match_id,
                 'matchNumStr': ids.get('matchNumStr', ''),
                 'matchNo': ids.get('matchNo', ''),
             })
@@ -1120,8 +1370,50 @@ def main():
                 }
     if new_added:
         print(f'  ✅ 新增 {new_added} 场比赛到赛程')
+        print(f'     去重: matchId={dup_by_id}, 队名={dup_by_name}, 子串={dup_by_substr}')
     else:
         print(f'  所有比赛已在赛程中，无需新增')
+
+    # 最终去重：清理所有重复的比赛
+    final_dedup = 0
+    for date in schedule:
+        games = schedule[date]
+        seen_ids = set()
+        seen_pairs = set()
+        deduped = []
+        has_dup_in_date = False
+        
+        # 调试：检查是否有比赛有 matchId
+        has_match_id = sum(1 for g in games if g.get('matchId', ''))
+        if date == '2026-08-09':
+            print(f'    [DEBUG] {date}: {len(games)} 场比赛, {has_match_id} 场有 matchId')
+        
+        for g in games:
+            g_match_id = g.get('matchId', '')
+            pair = (g['home'], g['away'])
+            # 优先用 matchId 去重
+            if g_match_id and g_match_id in seen_ids:
+                final_dedup += 1
+                has_dup_in_date = True
+                if date == '2026-08-09':
+                    print(f'    [DEBUG] 发现重复: matchId={g_match_id}, {g["home"]} vs {g["away"]}')
+                continue
+            # 其次用 (home, away) 去重
+            if pair in seen_pairs:
+                final_dedup += 1
+                has_dup_in_date = True
+                if date == '2026-08-09':
+                    print(f'    [DEBUG] 发现重复: pair={pair}')
+                continue
+            if g_match_id:
+                seen_ids.add(g_match_id)
+            seen_pairs.add(pair)
+            deduped.append(g)
+        if has_dup_in_date:
+            print(f'    {date}: {len(games)} -> {len(deduped)} 场 (移除 {len(games) - len(deduped)} 场重复)')
+        schedule[date] = deduped
+    if final_dedup > 0:
+        print(f'\n[最终去重] 清理了 {final_dedup} 场重复比赛')
 
     # 显示匹配结果
     for date, games in schedule.items():
@@ -1158,6 +1450,7 @@ def main():
 def fetch_match_numbers(start_date, end_date):
     """从体彩赛果API获取完整的比赛编号信息（含所有联赛），返回 {key: {matchId, matchNumStr, matchNo, home, away, league}}"""
     import time
+    from datetime import datetime, timedelta
     
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -1215,12 +1508,36 @@ def fetch_match_numbers(start_date, end_date):
             match_no = str(m.get('matchNo', ''))
             league = m.get('leagueNameAbbr', '') or m.get('leagueName', '')
             
-            # 标准化队名
-            for map_name, standard_name in RESULT_TEAM_NAME_MAP.items():
+            # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
+            if match_num_str:
+                # matchNumStr 格式: 周几+数字, 例如: 周日017
+                weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+                match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
+                if match:
+                    target_weekday = weekday_map.get(match.group(1))
+                    if target_weekday is not None and match_date:
+                        try:
+                            dt = datetime.strptime(match_date, '%Y-%m-%d')
+                            current_weekday = dt.weekday()
+                            # 计算需要向前移动的天数
+                            # 如果目标星期几 < 当前星期几（例如 周五 < 周六），需要向前移动 current - target 天
+                            # 如果目标星期几 >= 当前星期几，需要向前移动 target - current 天
+                            if target_weekday < current_weekday:
+                                diff = current_weekday - target_weekday
+                            else:
+                                diff = target_weekday - current_weekday
+                            if diff > 0:
+                                dt = dt - timedelta(days=diff)
+                                match_date = dt.strftime('%Y-%m-%d')
+                        except ValueError:
+                            pass
+            
+            # 标准化队名（按长度从长到短匹配，确保更具体的模式先匹配）
+            for map_name, standard_name in _get_sorted_team_mapping():
                 if map_name in home:
                     home = standard_name
                     break
-            for map_name, standard_name in RESULT_TEAM_NAME_MAP.items():
+            for map_name, standard_name in _get_sorted_team_mapping():
                 if map_name in away:
                     away = standard_name
                     break
@@ -1244,63 +1561,6 @@ def fetch_match_numbers(start_date, end_date):
         page += 1
     
     return id_map
-
-# 体彩赛果API队名 → 网易队名 映射（用于key统一）
-RESULT_TEAM_NAME_MAP = {
-    '布斯巴达': '布斯巴达', '布拉格斯巴达': '布斯巴达',
-    '圣吉联合': '圣吉联合', '圣吉尔联合': '圣吉联合',
-    '奥林匹亚': '奥林匹亚', '奥林匹亚科斯': '奥林匹亚',
-    '米亚尔比': '米亚尔比',
-    '布拉迪斯': '布拉迪斯', '布拉加': '布拉迪斯',
-    '奈梅亨': '奈梅亨', 'NEC奈梅亨': '奈梅亨',
-    '里昂': '里昂',
-    '博德闪耀': '博德闪耀',
-    '塞伊奈': '塞伊奈', '塞伊奈约基': '塞伊奈',
-    '哈尔姆斯': '哈尔姆斯', '哈尔姆斯塔德': '哈尔姆斯',
-    '天狼星': '天狼星',
-    '佐加顿斯': '佐加顿斯',
-    '韦斯特罗': '韦斯特罗', '韦斯特罗斯': '韦斯特罗',
-    '巴竞技': '巴竞技', '巴拉纳竞技': '巴竞技',
-    '维多利亚': '维多利亚',
-    '里莫': '里莫', '里奥阿维': '里莫',
-    '桑托斯': '桑托斯',
-    '奥胡斯': '奥胡斯',
-    '费内巴切': '费内巴切',
-    '格风暴': '格风暴', '格拉茨风暴': '格风暴',
-    '弗鲁米嫩': '弗鲁米嫩塞',
-    '达伽马': '达伽马', '瓦斯科达伽马': '达伽马',
-    '赫尔辛基': '赫尔辛基',
-    'TPS图尔': 'TPS图尔', 'TPS图尔库': 'TPS图尔',
-    '玛丽港': '玛丽港',
-    '拉赫蒂': '拉赫蒂',
-    '雅罗': '雅罗', '雅罗足球': '雅罗',
-    '腓特烈': '腓特烈斯塔',
-    '桑纳菲': '桑纳菲尤尔',
-    '赫根': '赫根',
-    '卡尔马': '卡尔马',
-    '浦项制铁': '浦项',
-    '金泉尚武': '金泉尚武',
-    '全北现代': '全北现代',
-    '首尔FC': '首尔FC',
-    '江原FC': '江原FC',
-    '富川FC': '富川FC',
-    '波特兰': '波特兰', '波特兰伐木工': '波特兰',
-    '西雅图': '西雅图', '西雅图海湾人': '西雅图',
-    '洛城银河': '洛城银河', '洛杉矶银河': '洛城银河',
-    '达拉斯': '达拉斯', '达拉斯FC': '达拉斯',
-    '圣路易城': '圣路易城', '圣路易斯城': '圣路易城',
-    '盐湖城': '盐湖城', '皇家盐湖城': '盐湖城',
-    '芝加哥': '芝加哥', '芝加哥火焰': '芝加哥',
-    '夏洛特FC': '夏洛特FC',
-    '温哥华': '温哥华', '温哥华白帽': '温哥华',
-    '洛杉矶FC': '洛杉矶FC',
-    '迈国际': '迈国际', '迈阿密国际': '迈国际',
-    '哥伦布': '哥伦布', '哥伦布机员': '哥伦布',
-    '赫尔火花': '赫尔辛基火花',
-    '库奥皮奥': '库奥皮奥',
-    '斯达': '斯达', '斯塔贝克': '斯达',
-    '维京': '维京',
-}
 
 
 def fetch_results(days_back=7, max_retries=3):
@@ -1385,8 +1645,11 @@ def fetch_results(days_back=7, max_retries=3):
 
 
 def normalize_result_team(name):
-    """归一化体彩赛果API队名"""
-    return RESULT_TEAM_NAME_MAP.get(name, name)
+    """归一化体彩赛果API队名（按长度从长到短匹配）"""
+    for map_name, standard_name in _get_sorted_team_mapping():
+        if map_name in name:
+            return standard_name
+    return name
 
 
 def parse_results_json(json_text):
