@@ -5120,6 +5120,47 @@ function findResultForGame(home, away, matchId, preferredDate) {
     return null;
 }
 
+// 跨日期查找赔率：优先用matchId，其次用队名
+function findOddsForGame(home, away, matchId, preferredDate) {
+    const oddsData = (typeof oddsData !== 'undefined' ? oddsData : {});
+    
+    // 1. 优先用matchId精确匹配
+    if (matchId) {
+        for (const ok in oddsData) {
+            const o = oddsData[ok];
+            if (String(o.matchId) === String(matchId)) {
+                return { odds: o, oddsKey: ok, isHome: true };
+            }
+        }
+    }
+    
+    // 2. 用队名匹配
+    const teamPair = home + '_' + away;
+    const altPair = away + '_' + home;
+    let bestOk = null;
+    let bestDateDiff = Infinity;
+    
+    for (const ok in oddsData) {
+        const okLower = ok.toLowerCase();
+        if (okLower.indexOf(teamPair.toLowerCase()) !== -1 || okLower.indexOf(altPair.toLowerCase()) !== -1) {
+            const okDate = ok.substring(0, 10);
+            const diff = preferredDate ? Math.abs(new Date(okDate) - new Date(preferredDate)) : 0;
+            if (diff < bestDateDiff) {
+                bestDateDiff = diff;
+                bestOk = ok;
+            }
+        }
+    }
+    
+    if (bestOk) {
+        const o = oddsData[bestOk];
+        const isHomeOrder = bestOk.indexOf(teamPair) !== -1;
+        return { odds: o, oddsKey: bestOk, isHome: isHomeOrder };
+    }
+    
+    return null;
+}
+
 function loadBatchSchedule() {
     const date = document.getElementById('batchScheduleDate').value;
     const games = SCHEDULE[date];
@@ -5161,9 +5202,9 @@ function loadBatchSchedule() {
         existingKeys.add(key);
 
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
-        // 查找赔率中的编号
-        const oddsKey = date + '_' + g.home + '_' + g.away;
-        const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey] || {};
+        // 使用跨日期查找函数来查找赔率
+        const oddsResult = findOddsForGame(g.home, g.away, g.matchId, date);
+        const oddsInfo = oddsResult ? oddsResult.odds : {};
         const matchNumStr = g.matchNumStr || oddsInfo.matchNumStr || '';
         let score = '';
         let handicap = '';
