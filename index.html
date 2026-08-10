@@ -5055,39 +5055,66 @@ const BATCH_PRESET_SCORES = {
 };
 
 // 跨日期查找赛果：优先用matchId，其次用队名
+// 优先返回有fullScore的记录，没有赛果的记录只作为回退
 function findResultForGame(home, away, matchId, preferredDate) {
-    // 1. 优先用matchId精确匹配
+    // 1. 优先用matchId精确匹配有fullScore的记录
     if (matchId) {
+        let matchIdMatch = null;  // 存储没有fullScore的匹配
         for (const rk in RESULTS) {
             const r = RESULTS[rk];
             if (String(r.matchId) === String(matchId)) {
-                return { result: r, resultKey: rk, isHome: true };
+                if (r.fullScore) {
+                    // 优先返回有赛果的
+                    return { result: r, resultKey: rk, isHome: true };
+                }
+                // 保存没有赛果的匹配作为回退
+                if (!matchIdMatch) {
+                    matchIdMatch = { result: r, resultKey: rk, isHome: true };
+                }
             }
+        }
+        // 如果没有有赛果的matchId匹配，返回回退（可能没有赛果）
+        if (matchIdMatch) {
+            return matchIdMatch;
         }
     }
     
-    // 2. 用队名匹配（查找所有日期中最近的）
+    // 2. 用队名匹配（查找所有日期中有fullScore的、最近的）
     const teamPair = home + '_' + away;
     const altPair = away + '_' + home;
     let bestRk = null;
     let bestDateDiff = Infinity;
+    let bestNoScoreRk = null;  // 没有fullScore的最佳匹配
+    
     for (const rk in RESULTS) {
         const rkLower = rk.toLowerCase();
         if (rkLower.indexOf(teamPair.toLowerCase()) !== -1 || rkLower.indexOf(altPair.toLowerCase()) !== -1) {
+            const r = RESULTS[rk];
             const rkDate = rk.substring(0, 10);
             const diff = preferredDate ? Math.abs(new Date(rkDate) - new Date(preferredDate)) : 0;
-            if (diff < bestDateDiff) {
-                bestDateDiff = diff;
-                bestRk = rk;
+            
+            if (r.fullScore) {
+                // 优先选择有赛果的
+                if (diff < bestDateDiff) {
+                    bestDateDiff = diff;
+                    bestRk = rk;
+                }
+            } else if (!bestNoScoreRk) {
+                bestNoScoreRk = rk;
             }
         }
     }
     
     if (bestRk) {
         const r = RESULTS[bestRk];
-        // 判断主客队顺序
         const isHomeOrder = bestRk.indexOf(teamPair) !== -1;
         return { result: r, resultKey: bestRk, isHome: isHomeOrder };
+    }
+    
+    if (bestNoScoreRk) {
+        const r = RESULTS[bestNoScoreRk];
+        const isHomeOrder = bestNoScoreRk.indexOf(teamPair) !== -1;
+        return { result: r, resultKey: bestNoScoreRk, isHome: isHomeOrder };
     }
     
     return null;
