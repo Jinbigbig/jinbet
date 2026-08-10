@@ -3138,7 +3138,33 @@ function loadArchiveDate(dateStr) {
             renderArchiveData(data);
         })
         .catch(function(err) {
-            infoDiv.textContent = '❌ 加载失败: ' + err.message;
+            // 归档文件不存在时，回退使用内联的SCHEDULE和ODDS数据
+            if (SCHEDULE[dateStr]) {
+                var fallbackSchedule = SCHEDULE[dateStr].map(function(g) {
+                    return {
+                        home: g.home,
+                        away: g.away,
+                        league: g.league || '',
+                        matchId: g.matchId || '',
+                        matchNumStr: g.matchNumStr || ''
+                    };
+                });
+                var fallbackOdds = {};
+                fallbackSchedule.forEach(function(g) {
+                    var key = dateStr + '_' + g.home + '_' + g.away;
+                    if (ODDS[key]) {
+                        fallbackOdds[key] = ODDS[key];
+                    }
+                });
+                var fallbackData = {
+                    date: dateStr,
+                    schedule: fallbackSchedule,
+                    odds: fallbackOdds
+                };
+                renderArchiveData(fallbackData);
+            } else {
+                infoDiv.textContent = '❌ 加载失败: ' + err.message;
+            }
         });
 }
 
@@ -5374,7 +5400,39 @@ function loadResultsArchiveDate(dateStr) {
             });
         })
         .catch(function(err) {
-            listDiv.innerHTML = '<div style="font-size:12px;color:#ef4444;padding:10px;">加载失败: ' + err.message + '</div>';
+            // 归档文件不存在时，回退使用内联的RESULTS数据
+            listDiv.innerHTML = '';
+            const datePrefix = dateStr + '_';
+            const matchingResults = {};
+            Object.keys(RESULTS).forEach(function(key) {
+                if (key.startsWith(datePrefix)) {
+                    matchingResults[key] = RESULTS[key];
+                }
+            });
+            const keys = Object.keys(matchingResults).sort();
+            if (keys.length === 0) {
+                listDiv.innerHTML = '<div style="font-size:12px;color:#9ca3af;padding:10px;text-align:center;">该日无赛果</div>';
+                return;
+            }
+            keys.forEach(function(key) {
+                const r = matchingResults[key];
+                const matchDiv = document.createElement('div');
+                matchDiv.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #f3f4f6;font-size:11px;cursor:pointer;';
+                const teams = (r.home || '') + ' vs ' + (r.away || '');
+                const score = r.fullScore || '-';
+                const league = r.leagueAbbr || r.league || '';
+                const handicap = r.handicap && r.handicap !== '0' ? '(' + r.handicap + ')' : '';
+                matchDiv.innerHTML = '<span style="color:#6b7280;">' + league + ' ' + teams + '</span><span style="font-weight:600;color:#111827;">' + score + handicap + '</span>';
+                matchDiv.onclick = function() {
+                    const dateInput = document.getElementById('batchScheduleDate');
+                    if (dateInput.value === dateStr) {
+                        loadBatchSchedule();
+                    } else {
+                        showToast('请先在上方选择 ' + dateStr + ' 日期');
+                    }
+                };
+                listDiv.appendChild(matchDiv);
+            });
         });
 }
 function applyBatchResults() {
