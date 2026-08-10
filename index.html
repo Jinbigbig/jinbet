@@ -3170,12 +3170,44 @@ function renderArchiveData(data) {
         return '<span class="archive-odds-val"' + (d === '-' ? ' data-val="-"' : '') + '>' + d + '</span>';
     }
 
+    // 判断比分属于哪个组（胜/平/负）
+    function getScoreGroup(fullScore) {
+        if (!fullScore || !fullScore.includes(':')) return null;
+        var parts = fullScore.split(':');
+        var home = parseInt(parts[0], 10);
+        var away = parseInt(parts[1], 10);
+        if (isNaN(home) || isNaN(away)) return null;
+        if (home > away) return 'win';
+        if (home < away) return 'lose';
+        return 'draw';
+    }
+
+    // 获取预设比分列表
+    var PRESET_SCORES = {
+        win: ['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','5:0','5:1','5:2'],
+        draw: ['0:0','1:1','2:2','3:3'],
+        lose: ['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','0:5','1:5','2:5']
+    };
+
+    // 检查实际比分是否在预设列表中
+    function isInPreset(fullScore, group) {
+        if (!fullScore || !group) return false;
+        return PRESET_SCORES[group].indexOf(fullScore) !== -1;
+    }
+
     schedule.forEach(function(g) {
         var key = dateStr + '_' + g.home + '_' + g.away;
         var gameOdds = odds[key] || null;
         var div = document.createElement('div');
         div.className = 'odds-row';
         div.style.opacity = '0.85';
+
+        // 获取实际比分（从RESULTS中查找）
+        var actualFullScore = null;
+        var resultKey = key;
+        if (RESULTS[resultKey] && RESULTS[resultKey].fullScore) {
+            actualFullScore = RESULTS[resultKey].fullScore;
+        }
 
         var html = '<div class="match-info"><span class="league-tag">' + (g.league || '') + '</span>' + g.home + ' vs ' + g.away + '</div>';
 
@@ -3208,20 +3240,30 @@ function renderArchiveData(data) {
         html += '</div></div>';
 
         // 2. 比分（按胜/平/负分组）
-        if (gameOdds && gameOdds['比分'] && Object.keys(gameOdds['比分']).length > 0) {
-            var bfOdds = gameOdds['比分'];
+        {
+            var bfOdds = (gameOdds && gameOdds['比分']) || {};
             var scoreGroups = [
-                { scores: ['1:0','2:0','2:1','3:0','3:1','3:2','4:0','4:1','4:2','5:0','5:1','5:2'], other: '胜其他', group: 'win' },
-                { scores: ['0:0','1:1','2:2','3:3'], other: '平其他', group: 'draw' },
-                { scores: ['0:1','0:2','1:2','0:3','1:3','2:3','0:4','1:4','2:4','0:5','1:5','2:5'], other: '负其他', group: 'lose' }
+                { scores: PRESET_SCORES.win, other: '胜其他', group: 'win' },
+                { scores: PRESET_SCORES.draw, other: '平其他', group: 'draw' },
+                { scores: PRESET_SCORES.lose, other: '负其他', group: 'lose' }
             ];
+            
+            // 判断实际比分属于哪个组
+            var actualGroup = actualFullScore ? getScoreGroup(actualFullScore) : null;
+            var actualInPreset = actualFullScore && actualGroup ? isInPreset(actualFullScore, actualGroup) : false;
+            
             html += '<div class="odds-section"><label>比分：</label><div class="bf-inputs">';
             scoreGroups.forEach(function(group, gi) {
                 if (gi > 0) html += '<div class="bf-group-sep"></div>';
                 group.scores.forEach(function(score) {
                     html += '<div class="bf-item" data-group="' + group.group + '"><span class="bf-score-label">' + score + '</span>' + valTag(bfOdds[score]) + '</div>';
                 });
-                html += '<div class="bf-item" data-group="' + group.group + '"><span class="bf-other-label">' + group.other + '</span>' + valTag(bfOdds[group.other]) + '</div>';
+                // 根据实际比分动态显示"其他"标签
+                var otherLabel = group.other;
+                if (actualGroup === group.group && actualFullScore && !actualInPreset) {
+                    otherLabel = group.other + '(' + actualFullScore + ')';
+                }
+                html += '<div class="bf-item" data-group="' + group.group + '"><span class="bf-other-label">' + otherLabel + '</span>' + valTag(bfOdds[group.other]) + '</div>';
             });
             html += '</div></div>';
         }
