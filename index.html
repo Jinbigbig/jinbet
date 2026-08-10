@@ -1,4 +1,4 @@
-<!-- v7.98.12-20260810152500 -->
+<!-- v7.98.13-20260810153000 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -2364,7 +2364,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.12';
+const APP_VERSION = '7.98.13';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -4949,7 +4949,7 @@ function loadBatchSchedule() {
         let score = '';
         let handicap = '';
         
-        // 使用跨日期查找函数
+        // 使用跨日期查找函数获取赛果
         const matchResult = findResultForGame(g.home, g.away, g.matchId, date);
         if (matchResult && matchResult.result) {
             const r = matchResult.result;
@@ -4971,6 +4971,14 @@ function loadBatchSchedule() {
                     else if (h.startsWith('+')) handicap = '-' + h.substring(1);
                     else handicap = h;
                 }
+            }
+        }
+        
+        // 如果赛果没有让球信息，从赔率数据中获取
+        if (!handicap && oddsInfo && oddsInfo['让球'] && oddsInfo['让球'].length > 0) {
+            const rq = oddsInfo['让球'][0];
+            if (rq.handicap && rq.handicap !== '0') {
+                handicap = String(rq.handicap);
             }
         }
         const id = 'batch_home_' + (batchRowCounter++);
