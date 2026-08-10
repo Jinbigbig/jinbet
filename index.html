@@ -4777,11 +4777,13 @@ const BATCH_PRESET_SCORES = {
 // 跨日期查找赛果：优先用matchId，其次用队名
 // 优先返回有fullScore的记录，没有赛果的记录只作为回退
 function findResultForGame(home, away, matchId, preferredDate) {
+    const allResults = window.RESULTS || {};
+    
     // 1. 优先用matchId精确匹配有fullScore的记录
     if (matchId) {
         let matchIdMatch = null;  // 存储没有fullScore的匹配
-        for (const rk in RESULTS) {
-            const r = RESULTS[rk];
+        for (const rk in allResults) {
+            const r = allResults[rk];
             if (String(r.matchId) === String(matchId)) {
                 if (r.fullScore) {
                     // 优先返回有赛果的
@@ -4806,10 +4808,10 @@ function findResultForGame(home, away, matchId, preferredDate) {
     let bestDateDiff = Infinity;
     let bestNoScoreRk = null;  // 没有fullScore的最佳匹配
     
-    for (const rk in RESULTS) {
+    for (const rk in allResults) {
         const rkLower = rk.toLowerCase();
         if (rkLower.indexOf(teamPair.toLowerCase()) !== -1 || rkLower.indexOf(altPair.toLowerCase()) !== -1) {
-            const r = RESULTS[rk];
+            const r = allResults[rk];
             const rkDate = rk.substring(0, 10);
             const diff = preferredDate ? Math.abs(new Date(rkDate) - new Date(preferredDate)) : 0;
             
@@ -4826,13 +4828,13 @@ function findResultForGame(home, away, matchId, preferredDate) {
     }
     
     if (bestRk) {
-        const r = RESULTS[bestRk];
+        const r = allResults[bestRk];
         const isHomeOrder = bestRk.indexOf(teamPair) !== -1;
         return { result: r, resultKey: bestRk, isHome: isHomeOrder };
     }
     
     if (bestNoScoreRk) {
-        const r = RESULTS[bestNoScoreRk];
+        const r = allResults[bestNoScoreRk];
         const isHomeOrder = bestNoScoreRk.indexOf(teamPair) !== -1;
         return { result: r, resultKey: bestNoScoreRk, isHome: isHomeOrder };
     }
@@ -4842,7 +4844,7 @@ function findResultForGame(home, away, matchId, preferredDate) {
 
 // 跨日期查找赔率：优先用matchId，其次用队名
 function findOddsForGame(home, away, matchId, preferredDate) {
-    const allOdds = (typeof oddsData !== 'undefined' ? oddsData : {});
+    const allOdds = window.oddsData || {};
     
     // 1. 优先用matchId精确匹配
     if (matchId) {
