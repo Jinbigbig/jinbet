@@ -1,4 +1,4 @@
-<!-- v7.98.10-20260810151500 -->
+<!-- v7.98.11-20260810152000 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -1803,7 +1803,6 @@
                 <button class="btn btn-outline btn-sm" onclick="loadAiFromBetRecords()">📋 投注导入</button>
                 <button class="btn btn-primary btn-sm" id="aiRunBtn" onclick="runAiPrediction()" disabled>🚀 开始预测</button>
                 <button class="btn btn-outline btn-sm" onclick="clearAiData(true)">🗑 清空</button>
-                <span class="ai-date-label" id="aiDateLabel">次日</span>
             </div>
             <div class="ai-match-list" id="aiMatchList"></div>
             <div class="ai-empty-tip" id="aiEmptyTip">请先选择日期并「加载赛程」</div>
@@ -2365,7 +2364,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.10';
+const APP_VERSION = '7.98.11';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -3589,9 +3588,7 @@ function _friendlyDateLabel(val) {
     return val;
 }
 function updateAiDateLabel() {
-    const el = document.getElementById('aiDateLabel');
-    const d = document.getElementById('aiScheduleDate').value;
-    if (el) el.textContent = _friendlyDateLabel(d) || '—';
+    // 已移除 aiDateLabel 显示，保留函数以兼容调用
 }
 function onAiDateChange() {
     updateAiDateLabel();
