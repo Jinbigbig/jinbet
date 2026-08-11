@@ -392,6 +392,10 @@
             line-height: 18px;
             box-sizing: border-box;
         }
+        /* 隐藏datalist下拉箭头，避免占用右侧空间导致文字视觉偏左不居中 */
+        .batch-result-panel .batch-row input[list]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
         .batch-result-panel .batch-row .team-pair .league-tag {
             display: inline-block;
             background: #f59e0b;
@@ -2739,7 +2743,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.19';
+const APP_VERSION = '7.98.20';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
