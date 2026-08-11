@@ -26,6 +26,10 @@ TEAM_NAME_MAP = {
     '维塞乌': '维塞乌', '波尔图': '波尔图',
     '阿尔维卡': '阿尔维卡', '桑托斯': '桑托斯',
     '奥林匹亚科斯': '奥林匹亚', '布拉格斯巴达': '布斯巴达',
+    # 新增缺失的队名映射
+    '阿拉木图凯拉特': '阿拉木图', '索菲亚列夫斯基': '索列夫',
+    '里瓦达维亚独立': '里独立', '巴黎圣日尔曼': '巴黎圣曼',
+    '帕尔梅拉斯': '帕梅拉斯', '波特诺山丘': '波特诺',
 }
 
 # 竞彩联赛名称映射（当网易抓取数据中 league 为空时的兜底）
@@ -97,6 +101,13 @@ RESULT_TEAM_NAME_MAP = {
     '库奥皮奥': '库奥皮奥',
     '斯达': '斯达', '斯塔贝克': '斯达',
     '维京': '维京',
+    # 新增缺失的队名映射
+    '阿拉木图': '阿拉木图', '阿拉木图凯拉特': '阿拉木图',
+    '索列夫': '索列夫', '索菲亚列夫斯基': '索列夫',
+    '里独立': '里独立', '里瓦达维亚独立': '里独立',
+    '巴黎圣曼': '巴黎圣曼', '巴黎圣日尔曼': '巴黎圣曼',
+    '帕梅拉斯': '帕梅拉斯', '帕尔梅拉斯': '帕梅拉斯',
+    '波特诺': '波特诺', '波特诺山丘': '波特诺',
 }
 
 
@@ -187,12 +198,13 @@ def parse_odds_from_html(html_content):
             league_match = re.search(r'leagueMatchName"\s*:\s*\[0,\s*"([^"]+)"', game_block)
             league = league_match.group(1) if league_match else ''
             
-            for map_home, standard_home in TEAM_NAME_MAP.items():
+            # 标准化队名，使用 RESULT_TEAM_NAME_MAP 按长度从长到短匹配
+            for map_home, standard_home in _get_sorted_team_mapping():
                 if map_home in home:
                     home = standard_home
                     break
             
-            for map_away, standard_away in TEAM_NAME_MAP.items():
+            for map_away, standard_away in _get_sorted_team_mapping():
                 if map_away in away:
                     away = standard_away
                     break
@@ -377,12 +389,12 @@ def parse_lottery_json(json_text):
             home = re.sub(r'\[[^\]]+\]', '', home).strip()
             away = re.sub(r'\[[^\]]+\]', '', away).strip()
 
-            # 标准化队名（体彩API → 网易）
-            for map_name, standard_name in TEAM_NAME_MAP.items():
+            # 标准化队名（体彩API → 网易），使用 RESULT_TEAM_NAME_MAP 按长度从长到短匹配
+            for map_name, standard_name in _get_sorted_team_mapping():
                 if map_name in home:
                     home = standard_name
                     break
-            for map_name, standard_name in TEAM_NAME_MAP.items():
+            for map_name, standard_name in _get_sorted_team_mapping():
                 if map_name in away:
                     away = standard_name
                     break
@@ -1044,6 +1056,28 @@ def main():
     print(f'    原有赛程: {len(schedule)} 个日期')
     print(f'    新增赛程: {len(schedule_data)} 个日期')
 
+    # 标准化现有赛程中的队名（确保所有队名使用统一格式）
+    def normalize_team_name(name):
+        """标准化队名（按长度从长到短匹配，确保更具体的模式先匹配）"""
+        for map_name, standard_name in _get_sorted_team_mapping():
+            if map_name in name:
+                return standard_name
+        return name
+    
+    # 标准化现有 schedule 中的队名
+    for date in schedule:
+        for g in schedule[date]:
+            g['home'] = normalize_team_name(g['home'])
+            g['away'] = normalize_team_name(g['away'])
+    
+    # 标准化 schedule_data 中的队名
+    for date in schedule_data:
+        for g in schedule_data[date]:
+            g['home'] = normalize_team_name(g['home'])
+            g['away'] = normalize_team_name(g['away'])
+    
+    print('    已标准化所有队名')
+    
     # 合并新旧赛程（追加新比赛，保留已有比赛，避免覆盖丢失）
     for date, games in schedule_data.items():
         if date not in schedule:
