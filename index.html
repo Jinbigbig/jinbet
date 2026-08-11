@@ -414,6 +414,15 @@
             margin-left: 4px;
             font-weight: 500;
         }
+        .batch-result-panel .batch-row .team-pair .handicap-tag {
+            display: inline-block;
+            font-size: 11px;
+            color: #6b7280;
+            margin-left: 4px;
+            min-width: 38px;
+            text-align: center;
+            white-space: nowrap;
+        }
         .batch-result-panel .batch-row .batch-score {
             flex: 0 0 120px;
         }
@@ -2721,7 +2730,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.16';
+const APP_VERSION = '7.98.17';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5341,7 +5350,7 @@ function loadBatchSchedule() {
         const awayDatalist = getTeamDatalistHTML(awayId);
         const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
         const numTag = matchNumStr ? `<span class="league-tag match-num-tag" style="background:#10b981;margin-left:4px;">${matchNumStr}</span>` : '';
-        const handicapTag = handicap ? `<span style="font-size:11px;color:#6b7280;margin-left:4px;">让球${handicap}</span>` : '';
+        const handicapTag = handicap ? `<span class="handicap-tag">让球${handicap}</span>` : '';
         const scoreOptions = [
             { val:'', label:'— 选择 —' },
             { val:'1:0', label:'1:0' },{ val:'2:0', label:'2:0' },{ val:'2:1', label:'2:1' },
