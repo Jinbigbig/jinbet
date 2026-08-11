@@ -379,21 +379,18 @@
         }
         .batch-result-panel .batch-row .team-pair .batch-home,
         .batch-result-panel .batch-row .team-pair .batch-away {
-            flex: 0 0 auto;
-            width: 80px;
+            flex: 1;
+            min-width: 0;
+            max-width: 90px;
             height: 36px;
             padding: 9px 4px;
             border: 1.5px solid #e2e5ec;
             border-radius: 8px;
             font-size: 13px;
             background: #fff;
-            text-align: center !important;
+            text-align: center;
             line-height: 18px;
             box-sizing: border-box;
-        }
-        /* 隐藏datalist下拉箭头，避免占用右侧空间导致文字视觉偏左不居中 */
-        .batch-result-panel .batch-row input[list]::-webkit-calendar-picker-indicator {
-            display: none;
         }
         .batch-result-panel .batch-row .team-pair .league-tag {
             display: inline-block;
@@ -2464,14 +2461,6 @@ const ALL_TEAMS_FLAT = [];
 for (const group of Object.values(TEAMS_BY_GROUP)) {
     ALL_TEAMS_FLAT.push(...group);
 }
-function getTeamDatalistHTML(id) {
-    let html = `<datalist id="${id}">`;
-    ALL_TEAMS_FLAT.forEach(team => {
-        html += `<option value="${team}">`;
-    });
-    html += '</datalist>';
-    return html;
-}
 const NATIONAL_TEAMS = ['葡萄牙','西班牙','美国','比利时','阿根廷','埃及','瑞士','哥伦比亚','巴西','挪威','墨西哥','英格兰','加拿大','摩洛哥','巴拉圭','法国','德国','日本','荷兰','科特迪瓦','瑞典','厄瓜多尔','克罗地亚','加纳','巴拿马','乌兹别克斯坦'];
 function isNationalTeam(team) {
     return NATIONAL_TEAMS.includes(team);
@@ -2480,7 +2469,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.21';
+const APP_VERSION = '7.98.22';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -4885,7 +4874,6 @@ async function runAiPrediction() {
 // ================================================================
 //  批量赛果录入
 // ================================================================
-let batchRowCounter = 0;
 let _batchLoadedDates = []; // 追踪已加载的日期，用于追加排序
 
 // 判断比分属于胜/平/负哪个组
@@ -5094,10 +5082,6 @@ function loadBatchSchedule() {
                 handicap = String(rq.handicap);
             }
         }
-        const id = 'batch_home_' + (batchRowCounter++);
-        const awayId = 'batch_away_' + (batchRowCounter++);
-        const homeDatalist = getTeamDatalistHTML(id);
-        const awayDatalist = getTeamDatalistHTML(awayId);
         const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
         const numTag = matchNumStr ? `<span class="league-tag match-num-tag" style="background:#10b981;margin-left:4px;">${matchNumStr}</span>` : '';
         const handicapTag = handicap ? `<span class="handicap-tag">让球${handicap}</span>` : '';
@@ -5143,11 +5127,9 @@ function loadBatchSchedule() {
             <div class="batch-row">
                 <div class="team-pair">
                     ${leagueTag}${numTag}${handicapTag}
-                    <input type="text" class="batch-home" placeholder="主队" value="${g.home}" autocomplete="off" list="${id}" />
-                    ${homeDatalist}
+                    <input type="text" class="batch-home" placeholder="主队" value="${g.home}" autocomplete="off" />
                     <span style="font-weight:600;">vs</span>
-                    <input type="text" class="batch-away" placeholder="客队" value="${g.away}" autocomplete="off" list="${awayId}" />
-                    ${awayDatalist}
+                    <input type="text" class="batch-away" placeholder="客队" value="${g.away}" autocomplete="off" />
                 </div>
                 <div style="display:flex;align-items:center;">
                     <select class="batch-score-select" style="width:100px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;text-align:center;text-align-last:center;">
@@ -5230,10 +5212,6 @@ function addBatchRow(home = '', away = '', score = '', league = '', handicap = '
     const container = document.getElementById('batchResultRows');
     const div = document.createElement('div');
     div.className = 'batch-row';
-    const homeId = 'batch_home_' + (batchRowCounter++);
-    const awayId = 'batch_away_' + (batchRowCounter++);
-    const homeDatalist = getTeamDatalistHTML(homeId);
-    const awayDatalist = getTeamDatalistHTML(awayId);
     const leagueTag = league ? `<span class="league-tag">${league}</span>` : '';
     const handicapTag = handicap ? `<span style="font-size:11px;color:#6b7280;margin-left:4px;">让球${handicap}</span>` : '';
     // 使用赔率管理中的完整比分选项
