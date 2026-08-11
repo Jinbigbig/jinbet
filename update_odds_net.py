@@ -1287,29 +1287,11 @@ def main():
             
             # 根据 matchNumStr 修正日期（无论是否已有 matchId）
             match_num_str = game.get('matchNumStr', '')
-            if match_num_str:
-                match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
-                if match:
-                    target_weekday = weekday_map.get(match.group(1))
-                    if target_weekday is not None and sdate:
-                        try:
-                            dt = datetime.strptime(sdate, '%Y-%m-%d')
-                            current_weekday = dt.weekday()
-                            # 计算需要向前移动的天数
-                            # 如果目标星期几 < 当前星期几（例如 周日 < 周一），需要向前移动 current - target 天
-                            # 如果目标星期几 >= 当前星期几，需要向前移动 target - current 天
-                            if target_weekday < current_weekday:
-                                diff = current_weekday - target_weekday
-                            else:
-                                diff = target_weekday - current_weekday
-                            if diff > 0:
-                                from datetime import timedelta
-                                new_date = (dt - timedelta(days=diff)).strftime('%Y-%m-%d')
-                                if new_date != sdate:
-                                    dates_to_remove.setdefault(sdate, []).append((game, new_date))
-                                    s_date_fixed += 1
-                        except ValueError:
-                            pass
+            if match_num_str and sdate:
+                new_date = get_label_date_from_match_num(sdate, match_num_str)
+                if new_date != sdate:
+                    dates_to_remove.setdefault(sdate, []).append((game, new_date))
+                    s_date_fixed += 1
     
     # 执行日期修正（移动比赛到正确的日期）
     for old_date, moves in dates_to_remove.items():
@@ -1544,27 +1526,7 @@ def fetch_match_numbers(start_date, end_date):
             
             # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
             # 比赛可能跨天（深夜→凌晨），matchDate 可能比编号日期晚一天，需往前修正
-            if match_num_str:
-                weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
-                match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
-                if match:
-                    target_weekday = weekday_map.get(match.group(1))
-                    if target_weekday is not None and match_date:
-                        try:
-                            dt = datetime.strptime(match_date, '%Y-%m-%d')
-                            current_weekday = dt.weekday()
-                            # 往前修正到编号对应的星期几
-                            if target_weekday < current_weekday:
-                                diff = current_weekday - target_weekday
-                            elif target_weekday > current_weekday:
-                                diff = current_weekday + 7 - target_weekday
-                            else:
-                                diff = 0
-                            if diff > 0:
-                                dt = dt - timedelta(days=diff)
-                                match_date = dt.strftime('%Y-%m-%d')
-                        except ValueError:
-                            pass
+            match_date = get_label_date_from_match_num(match_date, match_num_str)
             
             # 标准化队名（按长度从长到短匹配，确保更具体的模式先匹配）
             for map_name, standard_name in _get_sorted_team_mapping():
@@ -1685,6 +1647,41 @@ def normalize_result_team(name):
             return standard_name
     return name
 
+_LABEL_WEEKDAY_MAP = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+
+def get_label_date_from_match_num(match_date, match_num_str):
+    """
+    根据 matchNumStr（体彩编号，如"周六001"）计算该比赛所属的标签日期。
+    分类标准：同一编号前缀"周X"的比赛归入同一天；matchDate 只能比标签日期相同或晚1-2天（跨天凌晨）。
+    若 match_num_str 缺失则直接返回 match_date。
+    """
+    from datetime import datetime, timedelta
+    import re
+    if not match_num_str or not match_date:
+        return match_date
+    md = re.match(r'(周[一二三四五六日])\d+', str(match_num_str))
+    if not md:
+        return match_date
+    target_weekday = _LABEL_WEEKDAY_MAP.get(md.group(1))
+    if target_weekday is None:
+        return match_date
+    try:
+        dt = datetime.strptime(match_date, '%Y-%m-%d')
+    except ValueError:
+        return match_date
+    current_weekday = dt.weekday()
+    # 向前修正到编号的"周X"：比赛可能跨天（深夜→凌晨），matchDate最多比编号日期晚2天
+    if target_weekday < current_weekday:
+        diff = current_weekday - target_weekday
+    elif target_weekday > current_weekday:
+        # 例如：matchDate=周一(0)，编号是"周日017"(6) → 往前 0+7-6=1 天到上一个周日
+        diff = current_weekday + 7 - target_weekday
+    else:
+        diff = 0
+    if diff > 0:
+        dt = dt - timedelta(days=diff)
+    return dt.strftime('%Y-%m-%d')
+
 
 def parse_results_json(json_text):
     """解析体彩赛果API返回的JSON数据，返回赛果字典 {key: result_data}"""
@@ -1733,27 +1730,7 @@ def parse_results_json(json_text):
 
         # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
         # 比赛可能跨天（深夜→凌晨），matchDate 可能比编号日期晚一天，需往前修正
-        if match_num_str:
-            weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
-            match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
-            if match:
-                target_weekday = weekday_map.get(match.group(1))
-                if target_weekday is not None:
-                    try:
-                        dt = datetime.strptime(match_date, '%Y-%m-%d')
-                        current_weekday = dt.weekday()
-                        # 往前修正到编号对应的星期几
-                        if target_weekday < current_weekday:
-                            diff = current_weekday - target_weekday
-                        elif target_weekday > current_weekday:
-                            diff = current_weekday + 7 - target_weekday
-                        else:
-                            diff = 0
-                        if diff > 0:
-                            dt = dt - timedelta(days=diff)
-                            match_date = dt.strftime('%Y-%m-%d')
-                    except ValueError:
-                        pass
+        match_date = get_label_date_from_match_num(match_date, match_num_str)
 
         handicap = m.get('goalLine', '0')
         if handicap in ('0', '', None):
@@ -1842,17 +1819,19 @@ def save_results_json(results_data):
     print(f'  ✅ results_data.json 已更新 ({len(results_data)} 条)')
 
 
-def archive_results(results_data, days=30):
-    """归档超过指定天数的旧赛果"""
+def archive_results(results_data, days=7):
+    """归档超过指定天数的旧赛果（days=7 表示近7天保留，更早归档）"""
     from datetime import datetime, timedelta
     archive_dir = os.path.join(BASE_DIR, 'results_history')
     os.makedirs(archive_dir, exist_ok=True)
 
-    cutoff = (datetime.now() - timedelta(days=days)).strftime('%Y-%m-%d')
+    # days=7: 今天 + 6 天前 = 7天窗口，窗口之前的日期归档
+    cutoff = (datetime.now() - timedelta(days=days - 1)).strftime('%Y-%m-%d')
     archived_count = 0
 
     for key in list(results_data.keys()):
         date = key.split('_')[0]
+        # 归档日期严格早于 cutoff
         if date < cutoff:
             archive_file = os.path.join(archive_dir, f'{date}.json')
             existing = {}
