@@ -1543,8 +1543,8 @@ def fetch_match_numbers(start_date, end_date):
             league = m.get('leagueNameAbbr', '') or m.get('leagueName', '')
             
             # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
+            # 比赛可能跨天（深夜→凌晨），matchDate 可能比编号日期晚一天，需往前修正
             if match_num_str:
-                # matchNumStr 格式: 周几+数字, 例如: 周日017
                 weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
                 match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
                 if match:
@@ -1553,13 +1553,13 @@ def fetch_match_numbers(start_date, end_date):
                         try:
                             dt = datetime.strptime(match_date, '%Y-%m-%d')
                             current_weekday = dt.weekday()
-                            # 计算需要向前移动的天数
-                            # 如果目标星期几 < 当前星期几（例如 周五 < 周六），需要向前移动 current - target 天
-                            # 如果目标星期几 >= 当前星期几，需要向前移动 target - current 天
+                            # 往前修正到编号对应的星期几
                             if target_weekday < current_weekday:
                                 diff = current_weekday - target_weekday
+                            elif target_weekday > current_weekday:
+                                diff = current_weekday + 7 - target_weekday
                             else:
-                                diff = target_weekday - current_weekday
+                                diff = 0
                             if diff > 0:
                                 dt = dt - timedelta(days=diff)
                                 match_date = dt.strftime('%Y-%m-%d')
@@ -1732,6 +1732,7 @@ def parse_results_json(json_text):
             continue
 
         # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
+        # 比赛可能跨天（深夜→凌晨），matchDate 可能比编号日期晚一天，需往前修正
         if match_num_str:
             weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
             match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
@@ -1741,7 +1742,13 @@ def parse_results_json(json_text):
                     try:
                         dt = datetime.strptime(match_date, '%Y-%m-%d')
                         current_weekday = dt.weekday()
-                        diff = current_weekday - target_weekday
+                        # 往前修正到编号对应的星期几
+                        if target_weekday < current_weekday:
+                            diff = current_weekday - target_weekday
+                        elif target_weekday > current_weekday:
+                            diff = current_weekday + 7 - target_weekday
+                        else:
+                            diff = 0
                         if diff > 0:
                             dt = dt - timedelta(days=diff)
                             match_date = dt.strftime('%Y-%m-%d')
