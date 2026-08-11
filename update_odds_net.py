@@ -1715,6 +1715,8 @@ def parse_results_json(json_text):
         print(f'  API响应前300字符: {json_text[:300]}')
         return results
 
+    from datetime import datetime, timedelta
+
     for m in matches:
         home_api = m.get('homeTeam', '')
         home_full = m.get('allHomeTeam', '')
@@ -1723,10 +1725,28 @@ def parse_results_json(json_text):
 
         home = normalize_result_team(home_api)
         away = normalize_result_team(away_api)
-        match_date = m.get('matchDate', '')
+        match_date = m.get('matchDate', '')[:10]  # 只取日期部分
+        match_num_str = m.get('matchNumStr', '') or m.get('matchNum', '')
 
         if not match_date or not home or not away:
             continue
+
+        # 根据 matchNumStr 修正日期（体彩编号中的"周几"表示比赛所属日期）
+        if match_num_str:
+            weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+            match = re.match(r'(周[一二三四五六日])\d+', match_num_str)
+            if match:
+                target_weekday = weekday_map.get(match.group(1))
+                if target_weekday is not None:
+                    try:
+                        dt = datetime.strptime(match_date, '%Y-%m-%d')
+                        current_weekday = dt.weekday()
+                        diff = current_weekday - target_weekday
+                        if diff > 0:
+                            dt = dt - timedelta(days=diff)
+                            match_date = dt.strftime('%Y-%m-%d')
+                    except ValueError:
+                        pass
 
         handicap = m.get('goalLine', '0')
         if handicap in ('0', '', None):
@@ -1742,6 +1762,7 @@ def parse_results_json(json_text):
             'home': home,
             'away': away,
             'matchId': m.get('matchId', ''),
+            'matchNumStr': match_num_str,
             'status': m.get('matchResultStatus', ''),
         }
 
