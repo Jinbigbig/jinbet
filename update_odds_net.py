@@ -1820,7 +1820,7 @@ def save_results_json(results_data):
 
 
 def archive_results(results_data, days=7):
-    """归档超过指定天数的旧赛果（days=7 表示近7天保留，更早归档）"""
+    """归档超过指定天数的旧赛果（days=7 表示近7天保留，更早归档；只归档有有效matchNumStr的比赛）"""
     from datetime import datetime, timedelta
     archive_dir = os.path.join(BASE_DIR, 'results_history')
     os.makedirs(archive_dir, exist_ok=True)
@@ -1829,10 +1829,14 @@ def archive_results(results_data, days=7):
     cutoff = (datetime.now() - timedelta(days=days - 1)).strftime('%Y-%m-%d')
     archived_count = 0
 
+    def _has_valid_match_num(r):
+        sn = r.get('matchNumStr', '')
+        return bool(re.match(r'^周[一二三四五六日]\d+$', str(sn)))
+
     for key in list(results_data.keys()):
         date = key.split('_')[0]
-        # 归档日期严格早于 cutoff
-        if date < cutoff:
+        # 归档日期严格早于 cutoff，且比赛必须有有效matchNumStr
+        if date < cutoff and _has_valid_match_num(results_data[key]):
             archive_file = os.path.join(archive_dir, f'{date}.json')
             existing = {}
             if os.path.exists(archive_file):
