@@ -1949,7 +1949,7 @@ def fetch_and_save_results():
 
     # 归档旧赛果
     archived_count = len(merged_results)
-    merged_results = archive_results(merged_results, days=30)
+    merged_results = archive_results(merged_results, days=7)
     archived_count -= len(merged_results)
     if archived_count > 0:
         print(f'  归档旧赛果: {archived_count} 条')
