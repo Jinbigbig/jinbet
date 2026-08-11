@@ -1943,6 +1943,56 @@ def fetch_and_save_results():
     if archived_count > 0:
         print(f'  归档旧赛果: {archived_count} 条')
 
+    # 将赛果中的比赛补充到SCHEDULE（确保前端能显示所有有赛果的比赛）
+    print('\n  [补充] 将赛果中的比赛补充到SCHEDULE...')
+    schedule_pattern = r'const SCHEDULE = \{([\s\S]*?)\};'
+    schedule_match = re.search(schedule_pattern, html_content)
+    existing_schedule = {}
+    if schedule_match:
+        schedule_str = '{' + schedule_match.group(1) + '}'
+        try:
+            schedule_json = parse_js_obj_to_json(schedule_str)
+            existing_schedule = json.loads(schedule_json)
+        except:
+            print('  ⚠️ 读取SCHEDULE失败，将创建新的SCHEDULE')
+    
+    # 从RESULTS中提取比赛信息，补充到SCHEDULE
+    added_to_schedule = 0
+    for key, result in merged_results.items():
+        # key格式: date_home_away
+        parts = key.split('_', 2)
+        if len(parts) < 3:
+            continue
+        date = parts[0]
+        home = parts[1]
+        away = parts[2]
+        
+        if date not in existing_schedule:
+            existing_schedule[date] = []
+        
+        # 检查是否已存在（用队名匹配）
+        exists = any(g['home'] == home and g['away'] == away for g in existing_schedule[date])
+        if not exists:
+            # 添加到SCHEDULE
+            game_entry = {
+                'home': home,
+                'away': away,
+                'league': result.get('league', ''),
+                'matchId': result.get('matchId', '')
+            }
+            if result.get('matchNumStr'):
+                game_entry['matchNumStr'] = result['matchNumStr']
+            if result.get('matchNo'):
+                game_entry['matchNo'] = result['matchNo']
+            existing_schedule[date].append(game_entry)
+            added_to_schedule += 1
+    
+    if added_to_schedule > 0:
+        print(f'  ✅ 已将 {added_to_schedule} 场比赛补充到SCHEDULE')
+        html_content = update_html_schedule(html_content, existing_schedule)
+    else:
+        print(f'  ℹ️ SCHEDULE已是最新，无需补充')
+
     # 更新HTML
     print('\n[3/3] 更新 index.html 中的赛果数据...')
     html_content = update_html_results(html_content, merged_results)
