@@ -374,16 +374,16 @@
         .batch-result-panel .batch-row .team-pair {
             display: flex;
             align-items: center;
-            gap: 6px;
-            flex: 2 1 200px;
+            gap: 4px;
+            flex: 1 1 180px;
         }
         .batch-result-panel .batch-row .team-pair .batch-home,
         .batch-result-panel .batch-row .team-pair .batch-away {
             flex: 1;
-            min-width: 60px;
-            max-width: 100px;
+            min-width: 55px;
+            max-width: 90px;
             height: 36px;
-            padding: 9px 6px;
+            padding: 9px 4px;
             border: 1.5px solid #e2e5ec;
             border-radius: 8px;
             font-size: 13px;
@@ -422,6 +422,15 @@
             min-width: 38px;
             text-align: center;
             white-space: nowrap;
+        }
+        .batch-result-panel .batch-row .batch-delete-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
         .batch-result-panel .batch-row .batch-score {
             flex: 0 0 120px;
@@ -2730,7 +2739,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.98.17';
+const APP_VERSION = '7.98.18';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5406,7 +5415,7 @@ function loadBatchSchedule() {
                     <input type="text" class="batch-score-custom" placeholder="如 6:3" value="${!scoreInOptions ? score : ''}" style="width:70px;padding:4px 6px;border:1.5px solid #e5e7eb;border-radius:6px;font-size:12px;height:32px;margin-left:2px;display:${customDisplay};text-align:center;" />
                     ${scoreLabel}
                 </div>
-                <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
+                <button type="button" class="btn btn-danger btn-sm batch-delete-btn" onclick="this.closest('.batch-row').remove()" style="flex:0;">✕</button>
             </div>
         `);
     });
