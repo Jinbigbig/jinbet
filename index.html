@@ -2246,15 +2246,7 @@ const ODDS = {
     '2026-07-30_吉维森特_里莫': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} },
     '2026-07-30_摩雷伦斯_布拉迪斯': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} },
     '2026-07-30_桑托斯_巴竞技': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} },
-    '2026-07-30_弗拉门戈_维多利亚': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} },
-    '2026-08-04_AC奥卢_赫尔辛基': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040787', 'matchNumStr': '周日017' },
-    '2026-08-04_波尔图_阿尔维卡': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040788', 'matchNumStr': '周日018' },
-    '2026-08-04_克里斯蒂_莫尔德': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040789', 'matchNumStr': '周日019' },
-    '2026-08-04_本菲卡_维塞乌': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040801', 'matchNumStr': '周日020' },
-    '2026-08-04_吉维森特_里莫': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040790', 'matchNumStr': '周日021' },
-    '2026-08-04_摩雷伦斯_布拉迪斯': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040791', 'matchNumStr': '周日022' },
-    '2026-08-04_桑托斯_巴竞技': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040792', 'matchNumStr': '周日023' },
-    '2026-08-04_弗拉门戈_维多利亚': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}, 'matchId': '2040793', 'matchNumStr': '周日024' }
+    '2026-07-30_弗拉门戈_维多利亚': { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} }
 };
 
 const RESULTS = {
@@ -2372,7 +2364,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.100.3';
+const APP_VERSION = '7.100.4';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -2464,6 +2456,7 @@ function loadFromStorage() {
 }
 
 function updateScheduleFromOdds() {
+    var weekdayMap = { '日': 0, '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6 };
     for (var key in oddsData) {
         if (key.startsWith('2026-')) {
             var parts = key.split('_');
@@ -2471,13 +2464,19 @@ function updateScheduleFromOdds() {
                 var date = parts[0];
                 var home = parts.slice(1, -1).join('_');
                 var away = parts[parts.length - 1];
+                var matchData = oddsData[key];
+                if (matchData.matchNumStr) {
+                    var dayOfWeek = new Date(date + 'T00:00:00').getDay();
+                    var cnWeekday = matchData.matchNumStr.match(/周([日一二三四五六])/);
+                    if (cnWeekday && weekdayMap[cnWeekday[1]] !== dayOfWeek) {
+                        continue;
+                    }
+                }
                 if (!SCHEDULE[date]) SCHEDULE[date] = [];
                 var existingGame = SCHEDULE[date].find(function(g) {
                     return g.home === home && g.away === away;
                 });
-                var matchData = oddsData[key];
                 if (existingGame) {
-                    // 更新已有比赛的编号信息
                     if (matchData.matchNumStr && !existingGame.matchNumStr) {
                         existingGame.matchNumStr = matchData.matchNumStr;
                     }
@@ -2491,7 +2490,6 @@ function updateScheduleFromOdds() {
                         existingGame.league = matchData.league;
                     }
                 } else {
-                    // 添加新比赛，包含编号信息
                     var league = matchData.league || (isNationalTeam(home) ? '国际赛' : '');
                     SCHEDULE[date].push({
                         home: home,
