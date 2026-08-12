@@ -389,15 +389,9 @@ def parse_lottery_json(json_text):
             home = re.sub(r'\[[^\]]+\]', '', home).strip()
             away = re.sub(r'\[[^\]]+\]', '', away).strip()
 
-            # 标准化队名（体彩API → 网易），使用 RESULT_TEAM_NAME_MAP 按长度从长到短匹配
-            for map_name, standard_name in _get_sorted_team_mapping():
-                if map_name in home:
-                    home = standard_name
-                    break
-            for map_name, standard_name in _get_sorted_team_mapping():
-                if map_name in away:
-                    away = standard_name
-                    break
+            # 标准化队名（体彩API → 网易），调用全局统一 canonical_team_name
+            home = canonical_team_name(home)
+            away = canonical_team_name(away)
 
             # 获取联赛名
             league_id = str(m.get('leagueId', ''))
@@ -1056,46 +1050,47 @@ def main():
     print(f'    原有赛程: {len(schedule)} 个日期')
     print(f'    新增赛程: {len(schedule_data)} 个日期')
 
-    # 标准化现有赛程中的队名（确保所有队名使用统一格式）
-    def normalize_team_name(name):
-        """标准化队名（按长度从长到短匹配，确保更具体的模式先匹配）"""
-        for map_name, standard_name in _get_sorted_team_mapping():
-            if map_name in name:
-                return standard_name
-        return name
-    
+    # 标准化现有赛程中的队名（所有路径统一使用全局 canonical_team_name）
     # 标准化现有 schedule 中的队名
     for date in schedule:
         for g in schedule[date]:
-            g['home'] = normalize_team_name(g['home'])
-            g['away'] = normalize_team_name(g['away'])
+            g['home'] = canonical_team_name(g['home'])
+            g['away'] = canonical_team_name(g['away'])
     
     # 标准化 schedule_data 中的队名
     for date in schedule_data:
         for g in schedule_data[date]:
-            g['home'] = normalize_team_name(g['home'])
-            g['away'] = normalize_team_name(g['away'])
+            g['home'] = canonical_team_name(g['home'])
+            g['away'] = canonical_team_name(g['away'])
     
-    print('    已标准化所有队名')
+    print('    已标准化所有队名 (canonical_team_name 全局统一)')
     
     # 合并新旧赛程（追加新比赛，保留已有比赛，避免覆盖丢失）
     for date, games in schedule_data.items():
         if date not in schedule:
             schedule[date] = games
         else:
-            # 用 matchId 优先去重，其次用 (home, away)
+            # 去重：matchId 优先，其次使用 canonical pair（归一化队名的无序对），避免别名漏网
             existing_match_ids = set(g.get('matchId', '') for g in schedule[date] if g.get('matchId'))
-            existing_pairs = set((g['home'], g['away']) for g in schedule[date])
+            existing_canonical_pairs = set()
+            for g in schedule[date]:
+                c_home = canonical_team_name(g['home'])
+                c_away = canonical_team_name(g['away'])
+                existing_canonical_pairs.add((c_home, c_away))
+                existing_canonical_pairs.add((c_away, c_home))  # 无序对，兼容主客写反情况
             for g in games:
-                pair = (g['home'], g['away'])
                 g_match_id = g.get('matchId', '')
-                # 如果有 matchId，用它去重；否则用 (home, away) 去重
+                c_home = canonical_team_name(g['home'])
+                c_away = canonical_team_name(g['away'])
+                canon_pair = (c_home, c_away)
+                canon_pair_rev = (c_away, c_home)
                 if g_match_id and g_match_id in existing_match_ids:
                     continue
-                if pair in existing_pairs:
+                if canon_pair in existing_canonical_pairs or canon_pair_rev in existing_canonical_pairs:
                     continue
                 schedule[date].append(g)
-                existing_pairs.add(pair)
+                existing_canonical_pairs.add(canon_pair)
+                existing_canonical_pairs.add(canon_pair_rev)
                 if g_match_id:
                     existing_match_ids.add(g_match_id)
     
@@ -1104,26 +1099,28 @@ def main():
     for date in schedule:
         games = schedule[date]
         seen_ids = set()
-        seen_pairs = set()
+        seen_canonical_pairs = set()
         deduped = []
         for g in games:
             g_match_id = g.get('matchId', '')
-            pair = (g['home'], g['away'])
+            c_home = canonical_team_name(g['home'])
+            c_away = canonical_team_name(g['away'])
+            canon_pair = (c_home, c_away) if c_home <= c_away else (c_away, c_home)
             # 优先用 matchId 去重
             if g_match_id and g_match_id in seen_ids:
                 dedup_total += 1
                 continue
-            # 其次用 (home, away) 去重
-            if pair in seen_pairs:
+            # 其次用 canonical 无序 pair 去重（消除队名别名/写法差异造成的重复）
+            if canon_pair in seen_canonical_pairs:
                 dedup_total += 1
                 continue
             if g_match_id:
                 seen_ids.add(g_match_id)
-            seen_pairs.add(pair)
+            seen_canonical_pairs.add(canon_pair)
             deduped.append(g)
         schedule[date] = deduped
     if dedup_total > 0:
-        print(f'    ⚠️ 合并后清理了 {dedup_total} 场重复比赛')
+        print(f'    ⚠️ 合并后清理了 {dedup_total} 场重复比赛 (canonical pair 去重)')
     
     # 补全旧日期赛程中缺失的 league（从 schedule_data 中查找 + 映射表兜底）
     for date in schedule:
@@ -1159,7 +1156,25 @@ def main():
     merged_odds = dict(existing_odds)
     for key, odds in odds_data.items():
         merged_odds[key] = odds
-    print(f'    合并后赔率: {len(merged_odds)} 条')
+
+    # P0-1：过滤 matchNumStr 星期与 key 中 date 实际星期不一致的残留错日期条目
+    # 对应前端 v7.100.4 的 updateScheduleFromOdds 星期校验，双端一致避免脏数据累积
+    bad_keys = []
+    for key in list(merged_odds.keys()):
+        match_odds = merged_odds[key]
+        match_num_str = match_odds.get('matchNumStr') if isinstance(match_odds, dict) else None
+        if not match_num_str:
+            continue
+        key_date = key.split('_', 1)[0]
+        if not is_weekday_match(key_date, match_num_str):
+            bad_keys.append((key, match_num_str))
+    if bad_keys:
+        for k, mn in bad_keys:
+            print(f'    [CLEAN] 丢弃错日期赔率 key: {k} (matchNumStr={mn})')
+            merged_odds.pop(k, None)
+        print(f'    [CLEAN] 合计丢弃错日期残留: {len(bad_keys)} 条')
+
+    print(f'    合并后赔率（已过滤错日期）: {len(merged_odds)} 条')
 
     # 补全旧赔率中缺失的 league（从 schedule 和 schedule_data 中查找，最后用映射表兜底）
     league_filled = 0
@@ -1338,8 +1353,12 @@ def main():
             id_home = rest
             id_away = ''
         id_match_id = ids.get('matchId', '')
-        
-        # 检查是否已在 schedule 中（优先用 matchId 去重，其次用队名）
+        # id_map 中的队名同样走 canonical 归一化，避免与 schedule 中别名无法对上
+        c_id_home = canonical_team_name(id_home)
+        c_id_away = canonical_team_name(id_away)
+        id_canon_pair = (c_id_home, c_id_away) if c_id_home <= c_id_away else (c_id_away, c_id_home)
+
+        # 检查是否已在 schedule 中（matchId 优先，其次 canonical pair，最后精确匹配+子串）
         exists = False
         if id_date in schedule:
             for g in schedule[id_date]:
@@ -1349,13 +1368,22 @@ def main():
                     exists = True
                     dup_by_id += 1
                     break
-                # 其次用队名精确匹配
+                # 其次用 canonical pair（无序）匹配，彻底消除别名差异
+                c_g_home = canonical_team_name(g['home'])
+                c_g_away = canonical_team_name(g['away'])
+                g_canon_pair = (c_g_home, c_g_away) if c_g_home <= c_g_away else (c_g_away, c_g_home)
+                if g_canon_pair == id_canon_pair and c_id_home and c_id_away:
+                    exists = True
+                    dup_by_name += 1
+                    break
+                # 再用精确匹配（原文相同的快速路径，已被 canonical 覆盖但保留用于统计）
                 if g['home'] == id_home and g['away'] == id_away:
                     exists = True
                     dup_by_name += 1
                     break
                 # 最后用子串匹配
-                if (id_home in g['home'] or g['home'] in id_home) and \
+                if (id_home and id_away) and \
+                   (id_home in g['home'] or g['home'] in id_home) and \
                    (id_away in g['away'] or g['away'] in id_away):
                     exists = True
                     dup_by_substr += 1
@@ -1390,23 +1418,25 @@ def main():
     else:
         print(f'  所有比赛已在赛程中，无需新增')
 
-    # 最终去重：清理所有重复的比赛
+    # 最终去重：清理所有重复的比赛（canonical pair + matchId 双层去重）
     final_dedup = 0
     for date in schedule:
         games = schedule[date]
         seen_ids = set()
-        seen_pairs = set()
+        seen_canonical_pairs = set()
         deduped = []
         has_dup_in_date = False
-        
+
         # 调试：检查是否有比赛有 matchId
         has_match_id = sum(1 for g in games if g.get('matchId', ''))
         if date == '2026-08-09':
             print(f'    [DEBUG] {date}: {len(games)} 场比赛, {has_match_id} 场有 matchId')
-        
+
         for g in games:
             g_match_id = g.get('matchId', '')
-            pair = (g['home'], g['away'])
+            c_home = canonical_team_name(g['home'])
+            c_away = canonical_team_name(g['away'])
+            canon_pair = (c_home, c_away) if c_home <= c_away else (c_away, c_home)
             # 优先用 matchId 去重
             if g_match_id and g_match_id in seen_ids:
                 final_dedup += 1
@@ -1414,22 +1444,24 @@ def main():
                 if date == '2026-08-09':
                     print(f'    [DEBUG] 发现重复: matchId={g_match_id}, {g["home"]} vs {g["away"]}')
                 continue
-            # 其次用 (home, away) 去重
-            if pair in seen_pairs:
+            # 其次用 canonical 无序 pair 去重（消除别名差异）
+            if canon_pair in seen_canonical_pairs:
                 final_dedup += 1
                 has_dup_in_date = True
                 if date == '2026-08-09':
-                    print(f'    [DEBUG] 发现重复: pair={pair}')
+                    print(f'    [DEBUG] 发现重复: canon_pair={canon_pair} (原文 {g["home"]} vs {g["away"]})')
                 continue
             if g_match_id:
                 seen_ids.add(g_match_id)
-            seen_pairs.add(pair)
+            seen_canonical_pairs.add(canon_pair)
             deduped.append(g)
         if has_dup_in_date:
-            print(f'    {date}: {len(games)} -> {len(deduped)} 场 (移除 {len(games) - len(deduped)} 场重复)')
+            print(f'    {date}: {len(games)} -> {len(deduped)} 场 (移除 {len(games) - len(deduped)} 场重复, canonical 去重)')
         schedule[date] = deduped
     if final_dedup > 0:
-        print(f'\n[最终去重] 清理了 {final_dedup} 场重复比赛')
+        print(f'\n[最终去重] 清理了 {final_dedup} 场重复比赛 (canonical pair)')
+    else:
+        print(f'\n[最终去重] 未发现重复比赛')
 
     # 显示匹配结果
     for date, games in schedule.items():
@@ -1641,13 +1673,46 @@ def fetch_results(days_back=7, max_retries=3):
 
 
 def normalize_result_team(name):
-    """归一化体彩赛果API队名（按长度从长到短匹配）"""
+    """归一化体彩赛果API队名 - 统一调用全局 canonical_team_name"""
+    return canonical_team_name(name)
+
+_LABEL_WEEKDAY_MAP = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+# 中国体彩 "周X" 编号星期 → Python datetime.weekday()（周一=0...周日=6），与 _LABEL_WEEKDAY_MAP 一致
+# JS Date.getDay() 不同（周日=0...周六=6），前端自行适配，Python 端这里只按 Python 语义校验
+
+_WEEKDAY_PREFIX_RE = re.compile(r'^周([一二三四五六日])\d+$')
+
+
+def canonical_team_name(name):
+    """全局唯一的队名标准化函数（按 key 长度从长到短匹配 RESULT_TEAM_NAME_MAP）。
+    所有路径：parse_lottery_json / main 归一化 / id_map 去重 / 最终去重 必须统一调用此处。"""
+    if not name:
+        return ''
+    name = str(name).strip()
     for map_name, standard_name in _get_sorted_team_mapping():
         if map_name in name:
             return standard_name
     return name
 
-_LABEL_WEEKDAY_MAP = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+
+def is_weekday_match(match_date, match_num_str):
+    """校验 match_date 的实际星期与 matchNumStr 的"周X"前缀是否一致。
+    match_numStr 缺失时视为通过；无法解析 match_date 时视为通过。
+    返回 True = 通过，False = 不一致（应丢弃）。"""
+    from datetime import datetime
+    if not match_num_str or not match_date:
+        return True
+    md = _WEEKDAY_PREFIX_RE.match(str(match_num_str))
+    if not md:
+        return True
+    target_weekday = _LABEL_WEEKDAY_MAP.get(md.group(1))
+    if target_weekday is None:
+        return True
+    try:
+        actual_weekday = datetime.strptime(match_date, '%Y-%m-%d').weekday()
+    except ValueError:
+        return True
+    return target_weekday == actual_weekday
 
 def get_label_date_from_match_num(match_date, match_num_str):
     """
@@ -1757,25 +1822,37 @@ def parse_results_json(json_text):
         if m.get('a'):
             result_data['负'] = m['a']
 
-        if result_data['fullScore']:
+        # P2-1：有完整比分 → 写入主/别名 key；无完整比分但有 matchId / matchNumStr → 保留占位 key，供下一次 CI 回填比分
+        # 这样不会因体彩 API 延迟丢场次，占位 entry 含完整身份元数据便于下次匹配
+        has_score = bool(result_data['fullScore'])
+        has_identity = bool(result_data.get('matchId') or result_data.get('matchNumStr'))
+        if has_score or has_identity:
             # 主key: 使用归一化后的队名
             key = f'{match_date}_{home}_{away}'
-            results[key] = result_data
+            # 若已有相同 key 且旧值带 fullScore 而新值不带，则不覆盖（避免回填时清掉已存比分）
+            if key in results and results[key].get('fullScore') and not result_data['fullScore']:
+                pass
+            else:
+                results[key] = result_data
 
-            # 附加key: 使用API原始队名（短名）
-            if home_api != home or away_api != away:
-                orig_key = f'{match_date}_{home_api}_{away_api}'
-                results[orig_key] = result_data
+            if has_score:
+                # 附加 key 仅对有比分的情况生成（别名 key 用于查找，无需占位占用）
+                # 附加key: 使用API原始队名（短名）
+                if home_api != home or away_api != away:
+                    orig_key = f'{match_date}_{home_api}_{away_api}'
+                    results[orig_key] = result_data
 
-            # 附加key: 使用SCHEDULE风格的短名（反向映射）
-            home_short = reverse_team_map.get(home, home)
-            away_short = reverse_team_map.get(away, away)
-            if home_short != home or away_short != away:
-                short_key = f'{match_date}_{home_short}_{away_short}'
-                if short_key not in results:
-                    results[short_key] = result_data
+                # 附加key: 使用SCHEDULE风格的短名（反向映射）
+                home_short = reverse_team_map.get(home, home)
+                away_short = reverse_team_map.get(away, away)
+                if home_short != home or away_short != away:
+                    short_key = f'{match_date}_{home_short}_{away_short}'
+                    if short_key not in results:
+                        results[short_key] = result_data
 
-    print(f'  解析完成，共 {len(results)} 场比赛有赛果')
+    placeholders = sum(1 for v in results.values() if not v.get('fullScore') and (v.get('matchId') or v.get('matchNumStr')))
+    scored = sum(1 for v in results.values() if v.get('fullScore'))
+    print(f'  解析完成，共 {len(results)} 条：有比分 {scored} 场，占位（等下次回填） {placeholders} 场')
     return results
 
 
@@ -1836,13 +1913,23 @@ def archive_results(results_data, days=7):
     for key in list(results_data.keys()):
         date = key.split('_')[0]
         # 归档日期严格早于 cutoff，且比赛必须有有效matchNumStr
-        if date < cutoff and _has_valid_match_num(results_data[key]):
+        r = results_data[key]
+        if date < cutoff and _has_valid_match_num(r):
+            # P2-2：日期编号一致性审计 —— 发现错日期立即告警，拒绝写入错误归档
+            match_num = r.get('matchNumStr', '')
+            if not is_weekday_match(date, match_num):
+                print(f'    [AUDIT][SKIP] 归档发现日期/编号不一致，拒绝写入: key={key} matchNumStr={match_num}')
+                continue
             archive_file = os.path.join(archive_dir, f'{date}.json')
             existing = {}
             if os.path.exists(archive_file):
                 with open(archive_file, 'r', encoding='utf-8') as f:
                     existing = json.load(f)
-            existing[key] = results_data[key]
+            # 写归档文件前同样复核该 key 的日期一致性
+            if key in existing and not is_weekday_match(date, existing[key].get('matchNumStr', '')):
+                print(f'    [AUDIT][FIX] 归档文件内旧条目同样冲突，剔除后再写: key={key}')
+                existing.pop(key, None)
+            existing[key] = r
             with open(archive_file, 'w', encoding='utf-8') as f:
                 json.dump(existing, f, ensure_ascii=False, indent=2)
             del results_data[key]
@@ -1850,6 +1937,27 @@ def archive_results(results_data, days=7):
 
     if archived_count:
         print(f'  归档旧赛果: {archived_count} 条到 results_history/')
+    else:
+        print(f'  本次无新增归档（截止日期 {cutoff} 之前）')
+
+    # P2-2 全量审计归档目录：扫描所有已归档 JSON，标记任何"日期与matchNumStr星期不一致"的脏数据
+    audit_bad = 0
+    for filename in sorted(os.listdir(archive_dir)):
+        if not filename.endswith('.json') or filename == 'index.json':
+            continue
+        filepath = os.path.join(archive_dir, filename)
+        file_date = filename.replace('.json', '')
+        with open(filepath, 'r', encoding='utf-8') as f:
+            entries = json.load(f)
+        bad_in_file = [k for k, v in entries.items()
+                       if v.get('matchNumStr') and not is_weekday_match(file_date, v.get('matchNumStr', ''))]
+        if bad_in_file:
+            audit_bad += len(bad_in_file)
+            print(f'    [AUDIT][脏数据] {filename} 含 {len(bad_in_file)} 条错日期条目: {bad_in_file}')
+    if audit_bad:
+        print(f'  ⚠️ [AUDIT] 全量归档审计发现 {audit_bad} 条脏数据，建议人工复核 results_history/')
+    else:
+        print(f'  ✅ [AUDIT] 全量归档审计通过，无错日期条目')
 
     # 更新归档索引
     index = {'dates': []}
@@ -1988,10 +2096,11 @@ if __name__ == '__main__':
         print('#' * 60)
         success, stats = fetch_and_save_results()
         if not success:
-            print('\n[警告] 赛果抓取失败，但赔率已更新完成')
+            print('\n[致命错误] 完整模式赛果抓取失败，未通过提交门槛。退出码1')
             print(f'  赛果统计: fetched={stats.get("fetched",0)}B, parsed={stats.get("parsed",0)}, merged={stats.get("merged",0)}')
             if stats.get('parsed', 0) == 0:
-                print('  建议检查体彩官网API状态，或稍后重试')
+                print('  请检查体彩官网API状态，稍后重试')
+            exit_code = 1
     else:
         main()
 
