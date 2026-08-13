@@ -539,6 +539,31 @@
             color: #3730a3;
             font-weight: 500;
         }
+        .ai-match-tag > .ai-date-tag {
+            display: inline-block;
+            color: #6366f1;
+            font-weight: 500;
+            margin-right: 6px;
+            min-width: 74px;
+            text-align: center;
+        }
+        .ai-match-tag > .ai-league-tag {
+            display: inline-block;
+            color: #f59e0b;
+            font-weight: 500;
+            margin-right: 4px;
+            min-width: 50px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .ai-match-tag > .ai-num-tag {
+            display: inline-block;
+            color: #10b981;
+            font-weight: 600;
+            margin-right: 4px;
+            min-width: 52px;
+            text-align: center;
+        }
         .ai-empty-tip {
             font-size: 12px;
             color: #6b7280;
@@ -2385,7 +2410,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.1';
+const APP_VERSION = '7.101.2';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -3832,9 +3857,9 @@ function renderAiMatchList() {
     aiCurrentMatches.forEach(function(g, i) {
         const sp = document.createElement('span');
         sp.className = 'ai-match-tag';
-        const dateTag = g.date ? `<span style="color:#6366f1;font-weight:500;margin-right:6px;">${g.date}</span>` : '';
-        const leagueTag = g.league ? `<span style="color:#f59e0b;font-weight:500;margin-right:4px;">${g.league}</span>` : '';
-        const numTag = g.matchNumStr ? `<span style="color:#10b981;font-weight:600;margin-right:4px;">${g.matchNumStr}</span>` : '';
+        const dateTag = g.date ? `<span class="ai-date-tag">${g.date}</span>` : '';
+        const leagueTag = g.league ? `<span class="ai-league-tag">${g.league}</span>` : '';
+        const numTag = g.matchNumStr ? `<span class="ai-num-tag">${g.matchNumStr}</span>` : '';
         sp.innerHTML = `${dateTag}${leagueTag}${numTag}${i + 1}. ${g.home} vs ${g.away}`;
         listEl.appendChild(sp);
     });
