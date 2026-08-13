@@ -1427,9 +1427,8 @@
             font-size: 13px;
             padding: 4px 6px;
             margin-right: 6px;
-            display: none;
+            display: inline-block;
         }
-        .score-other-select.is-visible { display: inline-block; }
         /* 透明隐藏的 option-bet 存储真实比分值"X:Y"，兼容保存/读取/赔率填充等既有逻辑 */
         .option-bet.is-hidden-storage {
             position: absolute !important;
@@ -2508,7 +2507,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.4';
+const APP_VERSION = '7.101.5';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6305,7 +6304,6 @@ function buildScoreSpinnerHtml(initValue) {
         away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
     }
     const spinnerHidden = isOther ? ' is-hidden-other' : '';
-    const otherVisible = isOther ? ' is-visible' : '';
     const otherSel = isOther ? val : '';
     return `
         <div class="score-spinner${spinnerHidden}" data-score-spinner="1">
@@ -6323,7 +6321,7 @@ function buildScoreSpinnerHtml(initValue) {
                 <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
             </div>
         </div>
-        <select class="score-other-select${otherVisible}" onchange="window._onScoreOtherChange(this)">
+        <select class="score-other-select" onchange="window._onScoreOtherChange(this)">
             <option value="">比分</option>
             <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
             <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
@@ -6339,7 +6337,6 @@ window._onScoreOtherChange = function(sel) {
     if (val) {
         // 选中"其他"：隐藏步进器，storage 存"胜其他"等
         if (spinner) spinner.classList.add('is-hidden-other');
-        sel.classList.add('is-visible');
         if (storage) {
             storage.value = val;
             storage.dispatchEvent(new Event('input', { bubbles: true }));
@@ -6348,7 +6345,6 @@ window._onScoreOtherChange = function(sel) {
     } else {
         // 切回"比分"：显示步进器，storage 恢复为步进器当前值
         if (spinner) spinner.classList.remove('is-hidden-other');
-        sel.classList.remove('is-visible');
         if (spinner) {
             const nums = spinner.querySelectorAll('input.spinner-input');
             if (nums.length >= 2) {
