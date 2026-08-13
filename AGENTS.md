@@ -70,6 +70,10 @@
 ## 踩坑经验
 
 - force push 会导致分支内容重复，保持分支独立
+- 绝对禁止 `git push --force origin HEAD:gh-pages`；gh-pages 必须通过白名单静态文件（index.html / odds_data.json / results_data.json / 预测与归档目录 / favicon / .nojekyll / version.txt）从 master `git checkout master -- <白名单>` 后独立 commit + 普通 push，否则开发文件会暴露给用户访问、赛果修改只停留在本地文件不被 commit
+- `--full` 模式分两个阶段：`main()` 更新赔率 + `fetch_and_save_results()` 更新赛果；每个阶段都要**分别** commit+push 两个分支，否则第二阶段写进 index.html 的赛果/归档"看起来抓到了但实际上没上线"
+- `--results-only` 模式不能只调用 `fetch_and_save_results()` 就结束，必须在之后再执行一次 push_to_gh_pages（results-only 不走 main()，内部无自动 commit）
+- 两个分支都用 `pull --rebase` 再普通 `push`，任何分支都不能 `--force`，rebase 冲突立即 abort 并交给人工，避免历史被覆盖破坏
 - gh-pages 包含开发文件会暴露源码给用户
 - 未暂存的修改切换分支会导致 CI 失败
 - Safari 对 favicon 缓存极强，需提示用户手动清缓存

@@ -735,8 +735,20 @@ def update_archive_index(archive_dir):
     print(f'    📋 归档索引已更新（{len(dates)} 个日期）')
 
 
-def push_to_gh_pages():
-    def run_git(*args):
+def push_to_gh_pages(commit_message='更新赔率数据（网易）', extra_files=None,
+                     sync_master_first=True, skip_ghpages=False):
+    """
+    统一的 master 提交 + gh-pages 静态文件同步工具函数。
+
+    args:
+      commit_message: master 分支 commit 信息
+      extra_files: 除 index.html / odds_data.json 外，还要 add 的文件列表（比如
+                   results_data.json / results_history/* / odds_history/* 等）
+      sync_master_first: True=先把本地 master push 到 origin/master（拉取 rebase），
+                         False=只 gh-pages 同步（results-only 模式下不做 master commit）
+      skip_ghpages: True=只提交/push master，不切 gh-pages（适用于纯 CI 配置或脚本代码改动场景）
+    """
+    def run_git(*args, _check=False, _allow_nonzero=False):
         cmd = ['git', '--no-pager'] + list(args)
         print(f'\n> git {" ".join(args)}')
         env = os.environ.copy()
@@ -745,22 +757,116 @@ def push_to_gh_pages():
             print(res.stdout.rstrip())
         if res.stderr.strip():
             print(res.stderr.rstrip(), file=sys.stderr)
+        if _check and res.returncode != 0 and not _allow_nonzero:
+            raise RuntimeError(f'git {" ".join(args)} failed ({res.returncode})')
         return res
-    
-    run_git('add', 'index.html', 'odds_data.json')
-    
-    r = run_git('commit', '-m', '更新赔率数据（网易）')
-    if r.returncode == 0:
-        # 将当前分支(master)推送到远端gh-pages
-        r = run_git('push', '--force-with-lease', 'origin', 'HEAD:gh-pages')
-        if r.returncode != 0:
-            print('\n[警告] --force-with-lease 失败，尝试 --force 推送：')
-            r = run_git('push', '--force', 'origin', 'HEAD:gh-pages')
-            if r.returncode != 0:
-                print('\n[错误] 推送失败')
-                return False
-    
-    print(f'\n✅ 已推送更新')
+
+    # 当前分支必须是 master
+    branch_res = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+                                cwd=BASE_DIR, capture_output=True, encoding='utf-8')
+    current_branch = branch_res.stdout.strip()
+    if current_branch != 'master':
+        print(f'\n[错误] push_to_gh_pages 必须在 master 分支运行，当前：{current_branch}')
+        return False
+
+    # --- 第一部分：master 提交 + push ---
+    if sync_master_first:
+        files = ['index.html', 'odds_data.json']
+        if extra_files:
+            files.extend(extra_files)
+        # 过滤不存在的文件，避免 add 报错
+        files = [f for f in files if os.path.exists(os.path.join(BASE_DIR, f))]
+        run_git('add', *files)
+        r = run_git('commit', '-m', commit_message)
+        # "nothing to commit" 不算失败（commit ret 1），继续后面的 push
+        if r.returncode == 0:
+            print(f'    ✅ 已提交 master commit (msg: {commit_message})')
+        else:
+            print(f'    ℹ️  无需要提交的改动，或提交失败 (rc={r.returncode})，继续 push master')
+
+        # 普通 push：先 pull --rebase，避免分支分叉；禁止 --force 推 master
+        pull = run_git('pull', '--rebase', 'origin', 'master')
+        if pull.returncode != 0:
+            # rebase 冲突：终止，不要做任何 push，把冲突留给人工
+            print('\n[致命错误] master pull --rebase 失败，存在冲突。请人工处理后再同步。')
+            # 尝试 abort rebase 让工作区回到可操作状态
+            run_git('rebase', '--abort', _allow_nonzero=True)
+            return False
+        push_master = run_git('push', 'origin', 'master')
+        if push_master.returncode != 0:
+            print('\n[致命错误] push origin master 失败')
+            return False
+        print('    ✅ master 已推送到远端')
+
+    if skip_ghpages:
+        return True
+
+    # --- 第二部分：gh-pages 静态文件同步（从 master 拷贝文件到 gh-pages 再 commit + push）---
+    # 原则：master 改源码 / 配置 / 脚本；gh-pages 只保留可访问静态文件。
+    # 绝对禁止把 master 的 HEAD 直接 --force 推到 gh-pages，否则会把脚本/测试/文档暴露给用户访问。
+    print('\n--- 同步 gh-pages 生产静态文件 ---')
+
+    # stash 防止切换分支时未暂存改动报错（master 上可能有 odds_history/results_history 新文件）
+    stash = run_git('stash', '--include-untracked', _allow_nonzero=True)
+    stashed = stash.returncode == 0 and 'No local changes' not in (stash.stdout + stash.stderr)
+
+    switched = run_git('checkout', 'gh-pages')
+    if switched.returncode != 0:
+        print('\n[致命错误] 切换到 gh-pages 失败')
+        if stashed:
+            run_git('stash', 'pop', _allow_nonzero=True)
+        return False
+
+    # 先 pull --rebase gh-pages
+    pull_gh = run_git('pull', '--rebase', 'origin', 'gh-pages')
+    if pull_gh.returncode != 0:
+        print('\n[致命错误] gh-pages pull --rebase 失败')
+        run_git('rebase', '--abort', _allow_nonzero=True)
+        run_git('checkout', 'master', _allow_nonzero=True)
+        if stashed:
+            run_git('stash', 'pop', _allow_nonzero=True)
+        return False
+
+    # 从 master 取出允许出现在 gh-pages 的静态文件
+    static_assets = [
+        'index.html',
+        'odds_data.json',
+        'results_data.json',
+        'favicon.ico', 'favicon.png', 'favicon.svg',
+        '.nojekyll',
+        'version.txt',
+    ]
+    # 目录整体复制
+    static_dirs = ['predictions/', 'results_history/', 'odds_history/']
+    checkout_args = static_assets + static_dirs
+    run_git('checkout', 'master', '--', *checkout_args, _allow_nonzero=True)
+
+    # 只 add 上述白名单路径 + 目录内改动，避免 master 中开发文件意外泄露到 gh-pages
+    run_git('add', *static_assets)
+    for d in static_dirs:
+        run_git('add', d.rstrip('/'), _allow_nonzero=True)
+
+    r_commit_gh = run_git('commit', '-m', commit_message)
+    if r_commit_gh.returncode == 0:
+        print('    ✅ gh-pages commit 完成')
+    else:
+        print('    ℹ️  gh-pages 无需要提交的改动')
+
+    push_gh = run_git('push', 'origin', 'gh-pages')
+    if push_gh.returncode != 0:
+        # gh-pages 也禁止 --force；如果 push 失败，让人工介入判断
+        print('\n[致命错误] push origin gh-pages 失败')
+        run_git('checkout', 'master', _allow_nonzero=True)
+        if stashed:
+            run_git('stash', 'pop', _allow_nonzero=True)
+        return False
+
+    # 回到 master，恢复 stash
+    run_git('checkout', 'master')
+    if stashed:
+        run_git('stash', 'pop', _allow_nonzero=True)
+
+    print(f'\n✅ 已推送更新（master + gh-pages）')
     return True
 
 
@@ -1486,7 +1592,13 @@ def main():
     print('  ✅ odds_data.json 已更新')
     
     if not no_push:
-        push_to_gh_pages()
+        # 赔率阶段只推 master commit + gh-pages 静态文件拷贝
+        push_to_gh_pages(
+            commit_message='更新赔率数据（网易）',
+            extra_files=['results_data.json', 'results_history/', 'odds_history/'],
+            sync_master_first=True,
+            skip_ghpages=False,
+        )
     
     print('\n' + '=' * 60)
     print('  赔率更新完成！')
@@ -2081,16 +2193,36 @@ def fetch_and_save_results():
 
 if __name__ == '__main__':
     exit_code = 0
+    results_files = [
+        'index.html',
+        'results_data.json',
+        'results_history/',
+        'odds_history/',
+    ]
+    results_msg = '更新赛果数据（体彩）'
+    no_push = '--no-push' in sys.argv
+
     if '--results-only' in sys.argv:
         success, stats = fetch_and_save_results()
         if not success:
             print('\n[致命错误] 赛果抓取失败，退出码1')
             exit_code = 1
+        elif not no_push:
+            # results-only 模式：赛果修改必须单独 commit+push，否则就像"抓了白抓"
+            pushed = push_to_gh_pages(
+                commit_message=results_msg,
+                extra_files=results_files,
+                sync_master_first=True,
+                skip_ghpages=False,
+            )
+            if not pushed:
+                print('\n[致命错误] 赛果抓取成功但推送失败，退出码1')
+                exit_code = 1
     elif '--full' in sys.argv:
         print('\n' + '#' * 60)
         print('  完整模式: 赔率 + 赛果 一键更新')
         print('#' * 60)
-        main()
+        main()  # main 内部已做赔率 commit + 双分支推送
         print('\n' + '#' * 60)
         print('  赔率更新完成，开始抓取赛果...')
         print('#' * 60)
@@ -2101,6 +2233,19 @@ if __name__ == '__main__':
             if stats.get('parsed', 0) == 0:
                 print('  请检查体彩官网API状态，稍后重试')
             exit_code = 1
+        elif not no_push:
+            # 关键修复：fetch_and_save_results 修改了 index.html / results_data.json / 归档目录后
+            # 必须再次 commit+push 到 master 和 gh-pages，否则赛果只存在本地文件不会上线。
+            # 这是今天 8-12 三场赛果"看起来没录上"的直接根因。
+            pushed = push_to_gh_pages(
+                commit_message=results_msg,
+                extra_files=results_files,
+                sync_master_first=True,
+                skip_ghpages=False,
+            )
+            if not pushed:
+                print('\n[致命错误] 赛果抓取成功但推送失败，退出码1')
+                exit_code = 1
     else:
         main()
 
