@@ -1404,15 +1404,32 @@
             flex-shrink: 0;
             margin: 0 2px;
         }
-        /* 总进球下拉：8种选项足够短 */
+        /* 总进球下拉：8种选项足够短，宽度与胜平负一致 */
         .option-bet-select.zjq-select {
-            width: auto;
+            width: 80px;
             min-width: 80px;
+            flex: 0 0 80px;
             height: 36px;
             border-radius: 8px;
             padding: 4px 6px;
             font-size: 13px;
+            margin-right: 8px;
         }
+        /* 比分"其他"模式下隐藏步进器，只显示下拉 */
+        .score-spinner.is-hidden-other { display: none !important; }
+        .score-other-select {
+            width: 80px;
+            min-width: 80px;
+            flex: 0 0 80px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e5ec;
+            font-size: 13px;
+            padding: 4px 6px;
+            margin-right: 6px;
+            display: none;
+        }
+        .score-other-select.is-visible { display: inline-block; }
         /* 透明隐藏的 option-bet 存储真实比分值"X:Y"，兼容保存/读取/赔率填充等既有逻辑 */
         .option-bet.is-hidden-storage {
             position: absolute !important;
@@ -2491,7 +2508,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.3';
+const APP_VERSION = '7.101.4';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5862,9 +5879,10 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
             item.className = 'option-item';
             
             if (scoreMulti) {
-                // 比分：双步进器（主队 ▲▼/N : ▲▼/N 客队） + 隐藏 input 存 "X:Y" 兼容保存/读取
+                // 比分：双步进器 + "其他"下拉 + 隐藏 input 存 "X:Y"/"胜其他"等 兼容保存/读取
                 const spinnerHtml = buildScoreSpinnerHtml(opt.betOption || '0:0');
-                const storageValue = (opt.betOption && /^\d+:\d+$/.test(opt.betOption)) ? opt.betOption : '0:0';
+                const rawVal = String(opt.betOption || '').trim();
+                const storageValue = rawVal || '0:0';
                 item.innerHTML = `
                     ${spinnerHtml}
                     <input type="text" class="option-bet is-hidden-storage" placeholder="比分" value="${storageValue}" data-idx="${idx}" />
@@ -6276,16 +6294,21 @@ function removeOption(btn) {
 }
 
 // ---------- 比分双步进器工具：构建 UI、取值、反向回填 ----------
-// 比分值统一以 "X:Y" 字符串存在隐藏的 input.option-bet 中，兼容保存/读取/赔率填充
+// 比分值统一以 "X:Y" 或 "胜其他"/"平其他"/"负其他" 字符串存在隐藏的 input.option-bet 中
 function buildScoreSpinnerHtml(initValue) {
+    const val = String(initValue || '').trim();
+    const isOther = (val === '胜其他' || val === '平其他' || val === '负其他');
     let home = '0', away = '0';
-    const m = /^\s*(\d+)\s*:\s*(\d+)\s*$/.exec(String(initValue || ''));
+    const m = /^\s*(\d+)\s*:\s*(\d+)\s*$/.exec(val);
     if (m) {
         home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
         away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
     }
+    const spinnerHidden = isOther ? ' is-hidden-other' : '';
+    const otherVisible = isOther ? ' is-visible' : '';
+    const otherSel = isOther ? val : '';
     return `
-        <div class="score-spinner" data-score-spinner="1">
+        <div class="score-spinner${spinnerHidden}" data-score-spinner="1">
             <div class="spinner-col">
                 <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
                 <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${home}"
@@ -6299,8 +6322,47 @@ function buildScoreSpinnerHtml(initValue) {
                     onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
                 <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
             </div>
-        </div>`;
+        </div>
+        <select class="score-other-select${otherVisible}" onchange="window._onScoreOtherChange(this)">
+            <option value="">比分</option>
+            <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
+            <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
+            <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
+        </select>`;
 }
+window._onScoreOtherChange = function(sel) {
+    const item = sel.closest('.option-item');
+    if (!item) return;
+    const spinner = item.querySelector('.score-spinner');
+    const storage = item.querySelector('input.option-bet.is-hidden-storage');
+    const val = sel.value;
+    if (val) {
+        // 选中"其他"：隐藏步进器，storage 存"胜其他"等
+        if (spinner) spinner.classList.add('is-hidden-other');
+        sel.classList.add('is-visible');
+        if (storage) {
+            storage.value = val;
+            storage.dispatchEvent(new Event('input', { bubbles: true }));
+            storage.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    } else {
+        // 切回"比分"：显示步进器，storage 恢复为步进器当前值
+        if (spinner) spinner.classList.remove('is-hidden-other');
+        sel.classList.remove('is-visible');
+        if (spinner) {
+            const nums = spinner.querySelectorAll('input.spinner-input');
+            if (nums.length >= 2) {
+                const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
+                const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
+                if (storage) {
+                    storage.value = `${h}:${a}`;
+                    storage.dispatchEvent(new Event('input', { bubbles: true }));
+                    storage.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        }
+    }
+};
 window._spinScore = function(btn, delta) {
     const col = btn.closest('.spinner-col');
     if (!col) return;
