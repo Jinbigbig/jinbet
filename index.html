@@ -1343,109 +1343,82 @@
             text-align: center;
         }
         .option-item input[type="number"] { width: 70px; flex: 0 0 70px; }
-        /* === 比分控件组（双步进器 + 其他模式链接） === */
-        .score-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-        .score-controls.is-other-mode .score-dual-wrap { display: none; }
-        .score-controls.is-not-other .score-other-mode-row { display: none; }
-        .score-dual-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .score-dual-row {
+        /* === 比分双步进器（▲▼上下调节，80px与胜平负一致） === */
+        .score-spinner {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-        }
-        /* 步进器：80px 宽，与胜平负下拉一致 */
-        .score-stepper {
-            display: inline-flex;
-            align-items: center;
+            gap: 2px;
             width: 80px;
             min-width: 80px;
             flex: 0 0 80px;
             height: 36px;
+            padding: 0 4px;
             border: 1.5px solid #e2e5ec;
             border-radius: 8px;
-            overflow: hidden;
             background: #fff;
+            margin-right: 8px;
         }
-        .score-stepper .step-btn {
-            width: 24px;
-            min-width: 24px;
-            height: 100%;
-            border: none;
-            background: #f8f9fb;
-            color: #6b7280;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
+        .score-spinner .spinner-col {
+            display: inline-flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: background 0.15s;
-        }
-        .score-stepper .step-btn:hover { background: #e8eaef; color: #374151; }
-        .score-stepper .step-btn:active { background: #d1d5db; }
-        .score-stepper .step-val {
-            flex: 1;
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f2937;
+            gap: 0;
+            flex: 1 1 0;
             min-width: 0;
         }
-        .score-dual-row .score-sep {
+        .score-spinner .spinner-btn {
+            width: 100%;
+            height: 14px;
+            line-height: 14px;
+            font-size: 10px;
+            font-weight: 700;
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 0;
+        }
+        .score-spinner .spinner-btn:hover { background: #e2e8f0; }
+        .score-spinner .spinner-input {
+            width: 100% !important;
+            height: 22px !important;
+            line-height: 22px;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            text-align: center !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+            flex: none !important;
+        }
+        .score-spinner .spinner-input::-webkit-outer-spin-button,
+        .score-spinner .spinner-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .score-spinner .spinner-input { -moz-appearance: textfield; }
+        .score-spinner .score-sep {
             font-size: 16px;
             font-weight: 800;
             color: #94a3b8;
+            width: 8px;
+            text-align: center;
             flex-shrink: 0;
         }
-        .score-other-links {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-        .score-other-links .other-link {
-            cursor: pointer;
-            color: #2563eb;
-            text-decoration: none;
-            padding: 0 2px;
-        }
-        .score-other-links .other-link:hover { text-decoration: underline; }
-        .score-other-links .sep-dot { color: #d1d5db; }
-        .score-other-mode-row {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .score-other-mode-row .mode-select {
+        /* 比分"其他"模式下隐藏步进器，只显示下拉 */
+        .score-spinner.is-hidden-other { display: none !important; }
+        .score-other-select {
             width: 80px;
             min-width: 80px;
+            flex: 0 0 80px;
             height: 36px;
             border-radius: 8px;
             border: 1.5px solid #e2e5ec;
             font-size: 13px;
             padding: 4px 6px;
-            margin-right: 0;
+            margin-right: 8px;
+            display: inline-block;
         }
-        .score-other-mode-row .back-link {
-            font-size: 12px;
-            color: #2563eb;
-            cursor: pointer;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-        .score-other-mode-row .back-link:hover { text-decoration: underline; }
         /* 总进球下拉：8种选项足够短，宽度与胜平负一致 */
         .option-bet-select.zjq-select {
             width: 80px;
@@ -2534,7 +2507,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.11';
+const APP_VERSION = '7.101.12';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6319,126 +6292,99 @@ function removeOption(btn) {
     calculateAll();
 }
 
-// ---------- 比分控件：双步进器(0-5) + 其他模式链接 ----------
+// ---------- 比分双步进器（▲▼上下调节） + "其他"下拉切换 ----------
 function buildScoreSelectHtml(initValue) {
     const val = String(initValue || '').trim();
     const isOther = (val === '胜其他' || val === '平其他' || val === '负其他');
-    let home = 0, away = 0;
+    let home = '0', away = '0';
     const m = /^\s*(\d+)\s*:\s*(\d+)\s*$/.exec(val);
     if (m) {
-        home = Math.max(0, Math.min(5, parseInt(m[1], 10) || 0));
-        away = Math.max(0, Math.min(5, parseInt(m[2], 10) || 0));
+        home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
+        away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
     }
-    const modeClass = isOther ? ' is-other-mode' : ' is-not-other';
-    const otherSel = isOther ? val : '胜其他';
+    const spinnerHidden = isOther ? ' is-hidden-other' : '';
+    const otherSel = isOther ? val : '';
     return `
-        <div class="score-controls${modeClass}" data-score-controls="1">
-            <div class="score-dual-wrap">
-                <div class="score-dual-row" data-score-dual="1">
-                    <div class="score-stepper" data-stepper="home">
-                        <button type="button" class="step-btn step-minus" onclick="window._stepScore(this,-1)">−</button>
-                        <span class="step-val">${home}</span>
-                        <button type="button" class="step-btn step-plus" onclick="window._stepScore(this,1)">+</button>
-                    </div>
-                    <span class="score-sep">:</span>
-                    <div class="score-stepper" data-stepper="away">
-                        <button type="button" class="step-btn step-minus" onclick="window._stepScore(this,-1)">−</button>
-                        <span class="step-val">${away}</span>
-                        <button type="button" class="step-btn step-plus" onclick="window._stepScore(this,1)">+</button>
-                    </div>
-                </div>
-                <span class="score-other-links">
-                    <span class="other-link" onclick="window._setOtherMode(this,'胜其他')">胜其他</span>
-                    <span class="sep-dot">·</span>
-                    <span class="other-link" onclick="window._setOtherMode(this,'平其他')">平其他</span>
-                    <span class="sep-dot">·</span>
-                    <span class="other-link" onclick="window._setOtherMode(this,'负其他')">负其他</span>
-                </span>
+        <div class="score-spinner${spinnerHidden}" data-score-spinner="1">
+            <div class="spinner-col">
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
+                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${home}"
+                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
             </div>
-            <div class="score-other-mode-row">
-                <select class="mode-select" onchange="window._onOtherModeSelect(this)">
-                    <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
-                    <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
-                    <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
-                </select>
-                <span class="back-link" onclick="window._backToScoreMode(this)">← 返回比分</span>
+            <span class="score-sep">:</span>
+            <div class="spinner-col">
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
+                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${away}"
+                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
             </div>
-        </div>`;
+        </div>
+        <select class="score-other-select" onchange="window._onScoreOtherChange(this)">
+            <option value="">比分</option>
+            <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
+            <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
+            <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
+        </select>`;
 }
-window._stepScore = function(btn, delta) {
-    const stepper = btn.closest('.score-stepper');
-    if (!stepper) return;
-    const valEl = stepper.querySelector('.step-val');
-    if (!valEl) return;
-    let v = parseInt(valEl.textContent, 10) || 0;
-    v = Math.max(0, Math.min(5, v + delta));
-    valEl.textContent = String(v);
-    window._writeScoreDualStorage(stepper);
+window._onScoreOtherChange = function(sel) {
+    const item = sel.closest('.option-item');
+    if (!item) return;
+    const spinner = item.querySelector('.score-spinner');
+    const storage = item.querySelector('input.option-bet.is-hidden-storage');
+    const val = sel.value;
+    if (val) {
+        if (spinner) spinner.classList.add('is-hidden-other');
+        if (storage) {
+            storage.value = val;
+            storage.dispatchEvent(new Event('input', { bubbles: true }));
+            storage.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    } else {
+        if (spinner) spinner.classList.remove('is-hidden-other');
+        if (spinner) {
+            const nums = spinner.querySelectorAll('input.spinner-input');
+            if (nums.length >= 2) {
+                const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
+                const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
+                if (storage) {
+                    storage.value = `${h}:${a}`;
+                    storage.dispatchEvent(new Event('input', { bubbles: true }));
+                    storage.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        }
+    }
 };
-window._writeScoreDualStorage = function(el) {
-    const wrap = el.closest('[data-score-dual]');
-    if (!wrap) return;
-    const steppers = wrap.querySelectorAll('.score-stepper');
-    if (steppers.length < 2) return;
-    const h = steppers[0].querySelector('.step-val').textContent;
-    const a = steppers[1].querySelector('.step-val').textContent;
+window._spinScore = function(btn, delta) {
+    const col = btn.closest('.spinner-col');
+    if (!col) return;
+    const input = col.querySelector('input.spinner-input');
+    if (!input) return;
+    const cur = Math.max(0, Math.min(9, parseInt(input.value || '0', 10) || 0));
+    const next = Math.max(0, Math.min(9, cur + delta));
+    input.value = String(next);
+    window._writeScoreStorage(input);
+    const item = btn.closest('.option-item');
+    if (item) {
+        const storage = item.querySelector('input.option-bet.is-hidden-storage');
+        if (storage) { storage.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+};
+window._writeScoreStorage = function(inputEl) {
+    const spinner = inputEl.closest('[data-score-spinner]');
+    if (!spinner) return;
+    const nums = spinner.querySelectorAll('input.spinner-input');
+    if (!nums || nums.length < 2) return;
+    const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
+    const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
     const score = `${h}:${a}`;
-    const item = wrap.closest('.option-item');
+    const item = spinner.closest('.option-item');
     if (item) {
         const storage = item.querySelector('input.option-bet.is-hidden-storage');
         if (storage) {
             storage.value = score;
             storage.dispatchEvent(new Event('input', { bubbles: true }));
-            storage.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-    }
-};
-window._setOtherMode = function(link, mode) {
-    const item = link.closest('.option-item');
-    if (!item) return;
-    const controls = item.querySelector('[data-score-controls]');
-    if (controls) {
-        controls.classList.remove('is-not-other');
-        controls.classList.add('is-other-mode');
-    }
-    const storage = item.querySelector('input.option-bet.is-hidden-storage');
-    if (storage) {
-        storage.value = mode;
-        storage.dispatchEvent(new Event('input', { bubbles: true }));
-        storage.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-};
-window._onOtherModeSelect = function(sel) {
-    const item = sel.closest('.option-item');
-    if (!item) return;
-    const storage = item.querySelector('input.option-bet.is-hidden-storage');
-    if (storage) {
-        storage.value = sel.value;
-        storage.dispatchEvent(new Event('input', { bubbles: true }));
-        storage.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-};
-window._backToScoreMode = function(link) {
-    const item = link.closest('.option-item');
-    if (!item) return;
-    const controls = item.querySelector('[data-score-controls]');
-    if (controls) {
-        controls.classList.remove('is-other-mode');
-        controls.classList.add('is-not-other');
-    }
-    const dual = item.querySelector('[data-score-dual]');
-    if (dual) {
-        const steppers = dual.querySelectorAll('.score-stepper');
-        if (steppers.length >= 2) {
-            const h = steppers[0].querySelector('.step-val').textContent;
-            const a = steppers[1].querySelector('.step-val').textContent;
-            const score = `${h}:${a}`;
-            const storage = item.querySelector('input.option-bet.is-hidden-storage');
-            if (storage) {
-                storage.value = score;
-                storage.dispatchEvent(new Event('input', { bubbles: true }));
-                storage.dispatchEvent(new Event('change', { bubbles: true }));
-            }
         }
     }
 };
