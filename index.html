@@ -1343,7 +1343,20 @@
             text-align: center;
         }
         .option-item input[type="number"] { width: 70px; flex: 0 0 70px; }
-        /* === 比分双下拉（主队 : 客队，各 0-5） === */
+        /* === 比分控件组（双下拉 + 其他模式链接） === */
+        .score-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .score-controls.is-other-mode .score-dual-select-wrap { display: none; }
+        .score-controls.is-not-other .score-other-mode-row { display: none; }
+        .score-dual-select-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
         .score-dual-select {
             display: inline-flex;
             align-items: center;
@@ -1355,7 +1368,45 @@
             color: #94a3b8;
             flex-shrink: 0;
         }
-        .score-dual-select.is-hidden-other { display: none !important; }
+        .score-other-links {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .score-other-links .other-link {
+            cursor: pointer;
+            color: #2563eb;
+            text-decoration: none;
+            padding: 0 2px;
+        }
+        .score-other-links .other-link:hover { text-decoration: underline; }
+        .score-other-links .sep-dot { color: #d1d5db; }
+        .score-other-mode-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .score-other-mode-row .mode-select {
+            width: 80px;
+            min-width: 80px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e5ec;
+            font-size: 13px;
+            padding: 4px 6px;
+            margin-right: 0;
+        }
+        .score-other-mode-row .back-link {
+            font-size: 12px;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .score-other-mode-row .back-link:hover { text-decoration: underline; }
         /* 总进球下拉：8种选项足够短，宽度与胜平负一致 */
         .option-bet-select.zjq-select {
             width: 80px;
@@ -1366,19 +1417,6 @@
             padding: 4px 6px;
             font-size: 13px;
             margin-right: 8px;
-        }
-        /* 比分"其他"切换下拉 */
-        .score-other-select {
-            width: 80px;
-            min-width: 80px;
-            flex: 0 0 80px;
-            height: 36px;
-            border-radius: 8px;
-            border: 1.5px solid #e2e5ec;
-            font-size: 13px;
-            padding: 4px 6px;
-            margin-right: 6px;
-            display: inline-block;
         }
         /* 透明隐藏的 option-bet 存储真实比分值"X:Y"，兼容保存/读取/赔率填充等既有逻辑 */
         .option-bet.is-hidden-storage {
@@ -2457,7 +2495,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.9';
+const APP_VERSION = '7.101.10';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6242,8 +6280,7 @@ function removeOption(btn) {
     calculateAll();
 }
 
-// ---------- 比分双下拉工具：构建 UI、取值、反向回填 ----------
-// 比分值统一以 "X:Y" 或 "胜其他"/"平其他"/"负其他" 字符串存在隐藏的 input.option-bet 中
+// ---------- 比分控件：双下拉(0-5) + 其他模式链接 ----------
 function buildScoreSelectHtml(initValue) {
     const val = String(initValue || '').trim();
     const isOther = (val === '胜其他' || val === '平其他' || val === '负其他');
@@ -6253,24 +6290,36 @@ function buildScoreSelectHtml(initValue) {
         home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
         away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
     }
-    const wrapHidden = isOther ? ' is-hidden-other' : '';
-    const otherSel = isOther ? val : '';
-    // 主队/客队各 0-5（6个选项，足够短）
+    const modeClass = isOther ? ' is-other-mode' : ' is-not-other';
+    const otherSel = isOther ? val : '胜其他';
     const nums = ['0','1','2','3','4','5'];
     const homeOpts = nums.map(n => `<option value="${n}" ${n===home?'selected':''}>${n}</option>`).join('');
     const awayOpts = nums.map(n => `<option value="${n}" ${n===away?'selected':''}>${n}</option>`).join('');
     return `
-        <div class="score-dual-select${wrapHidden}" data-score-dual="1">
-            <select class="option-bet-select" style="width:50px;margin-right:4px;" onchange="window._writeScoreDualStorage(this)">${homeOpts}</select>
-            <span class="score-sep">:</span>
-            <select class="option-bet-select" style="width:50px;margin-right:8px;" onchange="window._writeScoreDualStorage(this)">${awayOpts}</select>
-        </div>
-        <select class="score-other-select" onchange="window._onScoreOtherChange(this)">
-            <option value="">比分</option>
-            <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
-            <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
-            <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
-        </select>`;
+        <div class="score-controls${modeClass}" data-score-controls="1">
+            <div class="score-dual-select-wrap">
+                <div class="score-dual-select" data-score-dual="1">
+                    <select class="option-bet-select" style="width:50px;" onchange="window._writeScoreDualStorage(this)">${homeOpts}</select>
+                    <span class="score-sep">:</span>
+                    <select class="option-bet-select" style="width:50px;" onchange="window._writeScoreDualStorage(this)">${awayOpts}</select>
+                </div>
+                <span class="score-other-links">
+                    <span class="other-link" onclick="window._setOtherMode(this,'胜其他')">胜其他</span>
+                    <span class="sep-dot">·</span>
+                    <span class="other-link" onclick="window._setOtherMode(this,'平其他')">平其他</span>
+                    <span class="sep-dot">·</span>
+                    <span class="other-link" onclick="window._setOtherMode(this,'负其他')">负其他</span>
+                </span>
+            </div>
+            <div class="score-other-mode-row">
+                <select class="mode-select" onchange="window._onOtherModeSelect(this)">
+                    <option value="胜其他" ${otherSel==='胜其他'?'selected':''}>胜其他</option>
+                    <option value="平其他" ${otherSel==='平其他'?'selected':''}>平其他</option>
+                    <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
+                </select>
+                <span class="back-link" onclick="window._backToScoreMode(this)">← 返回比分</span>
+            </div>
+        </div>`;
 }
 window._writeScoreDualStorage = function(selEl) {
     const wrap = selEl.closest('[data-score-dual]');
@@ -6290,32 +6339,49 @@ window._writeScoreDualStorage = function(selEl) {
         }
     }
 };
-window._onScoreOtherChange = function(sel) {
+window._setOtherMode = function(link, mode) {
+    const item = link.closest('.option-item');
+    if (!item) return;
+    const controls = item.querySelector('[data-score-controls]');
+    if (controls) {
+        controls.classList.remove('is-not-other');
+        controls.classList.add('is-other-mode');
+    }
+    const storage = item.querySelector('input.option-bet.is-hidden-storage');
+    if (storage) {
+        storage.value = mode;
+        storage.dispatchEvent(new Event('input', { bubbles: true }));
+        storage.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+};
+window._onOtherModeSelect = function(sel) {
     const item = sel.closest('.option-item');
     if (!item) return;
-    const dual = item.querySelector('.score-dual-select');
     const storage = item.querySelector('input.option-bet.is-hidden-storage');
-    const val = sel.value;
-    if (val) {
-        // 选中"其他"：隐藏双下拉，storage 存"胜其他"等
-        if (dual) dual.classList.add('is-hidden-other');
-        if (storage) {
-            storage.value = val;
-            storage.dispatchEvent(new Event('input', { bubbles: true }));
-            storage.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-    } else {
-        // 切回"比分"：显示双下拉，storage 恢复为当前 X:Y
-        if (dual) dual.classList.remove('is-hidden-other');
-        if (dual) {
-            const selects = dual.querySelectorAll('select.option-bet-select');
-            if (selects.length >= 2) {
-                const score = `${selects[0].value}:${selects[1].value}`;
-                if (storage) {
-                    storage.value = score;
-                    storage.dispatchEvent(new Event('input', { bubbles: true }));
-                    storage.dispatchEvent(new Event('change', { bubbles: true }));
-                }
+    if (storage) {
+        storage.value = sel.value;
+        storage.dispatchEvent(new Event('input', { bubbles: true }));
+        storage.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+};
+window._backToScoreMode = function(link) {
+    const item = link.closest('.option-item');
+    if (!item) return;
+    const controls = item.querySelector('[data-score-controls]');
+    if (controls) {
+        controls.classList.remove('is-other-mode');
+        controls.classList.add('is-not-other');
+    }
+    const dual = item.querySelector('[data-score-dual]');
+    if (dual) {
+        const selects = dual.querySelectorAll('select.option-bet-select');
+        if (selects.length >= 2) {
+            const score = `${selects[0].value}:${selects[1].value}`;
+            const storage = item.querySelector('input.option-bet.is-hidden-storage');
+            if (storage) {
+                storage.value = score;
+                storage.dispatchEvent(new Event('input', { bubbles: true }));
+                storage.dispatchEvent(new Event('change', { bubbles: true }));
             }
         }
     }
