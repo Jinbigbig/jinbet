@@ -1343,6 +1343,87 @@
             text-align: center;
         }
         .option-item input[type="number"] { width: 70px; flex: 0 0 70px; }
+        /* === 比分双步进器（主队进球 : 客队进球） === */
+        .score-spinner {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 36px;
+            padding: 0 6px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 8px;
+            background: #fff;
+            flex: 1;
+            min-width: 0;
+        }
+        .score-spinner .spinner-col {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .score-spinner .spinner-btn {
+            width: 100%;
+            height: 14px;
+            line-height: 14px;
+            font-size: 10px;
+            font-weight: 700;
+            border: none;
+            background: #f1f5f9;
+            color: #475569;
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 0;
+        }
+        .score-spinner .spinner-btn:hover { background: #e2e8f0; }
+        .score-spinner .spinner-input {
+            width: 100% !important;
+            height: 22px !important;
+            line-height: 22px;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            text-align: center !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #1e293b !important;
+            flex: none !important;
+        }
+        .score-spinner .spinner-input::-webkit-outer-spin-button,
+        .score-spinner .spinner-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .score-spinner .spinner-input { -moz-appearance: textfield; }
+        .score-spinner .score-sep {
+            font-size: 16px;
+            font-weight: 800;
+            color: #94a3b8;
+            width: 10px;
+            text-align: center;
+            flex-shrink: 0;
+            margin: 0 2px;
+        }
+        /* 总进球下拉：8种选项足够短 */
+        .option-bet-select.zjq-select {
+            width: auto;
+            min-width: 80px;
+            height: 36px;
+            border-radius: 8px;
+            padding: 4px 6px;
+            font-size: 13px;
+        }
+        /* 透明隐藏的 option-bet 存储真实比分值"X:Y"，兼容保存/读取/赔率填充等既有逻辑 */
+        .option-bet.is-hidden-storage {
+            position: absolute !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            pointer-events: none !important;
+            clip: rect(0 0 0 0);
+        }
         .option-item .remove-option {
             background: none;
             border: none;
@@ -2410,7 +2491,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.2';
+const APP_VERSION = '7.101.3';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5764,8 +5845,10 @@ function removeTempImage(idx) {
 // ================================================================
 function createBetOptionControl(playType, options, container, matchHome, matchAway) {
     container.innerHTML = '';
-    // 比分/总进球用文本输入+添加按钮；胜平负/让球胜平负/半全场用下拉选择+添加按钮
-    const textInputMulti = (playType === '比分' || playType === '总进球');
+    // 比分/总进球用自定义控件；胜平负/让球胜平负/半全场用下拉选择+添加按钮
+    const scoreMulti = (playType === '比分');
+    const zjqMulti = (playType === '总进球');
+    const textInputMulti = scoreMulti || zjqMulti;
     const selectMulti = (playType === '胜平负' || playType === '让球胜平负' || playType === '半全场');
     const hqTypes = ['胜胜','胜平','胜负','平胜','平平','平负','负胜','负平','负负'];
     
@@ -5778,11 +5861,21 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
             const item = document.createElement('div');
             item.className = 'option-item';
             
-            if (textInputMulti) {
-                // 比分/总进球：文本输入
-                const placeholder = playType === '比分' ? '比分' : '总进球数';
+            if (scoreMulti) {
+                // 比分：双步进器（主队 ▲▼/N : ▲▼/N 客队） + 隐藏 input 存 "X:Y" 兼容保存/读取
+                const spinnerHtml = buildScoreSpinnerHtml(opt.betOption || '0:0');
+                const storageValue = (opt.betOption && /^\d+:\d+$/.test(opt.betOption)) ? opt.betOption : '0:0';
                 item.innerHTML = `
-                    <input type="text" class="option-bet" placeholder="${placeholder}" value="${opt.betOption || ''}" data-idx="${idx}" />
+                    ${spinnerHtml}
+                    <input type="text" class="option-bet is-hidden-storage" placeholder="比分" value="${storageValue}" data-idx="${idx}" />
+                    <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
+                    <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
+                `;
+            } else if (zjqMulti) {
+                // 总进球：原生 select 下拉（0~7+ 共 8 种，足够短）
+                const zjqHtml = buildZjqSelectHtml(opt.betOption || '');
+                item.innerHTML = `
+                    ${zjqHtml}
                     <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
                     <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
                 `;
@@ -5831,10 +5924,10 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
         const home = matchHome || '';
         const away = matchAway || '';
         list.querySelectorAll('.option-item').forEach(item => {
-            const betInput = textInputMulti ? item.querySelector('.option-bet') : item.querySelector('.option-bet-select');
+            const betInput = getBetOptionListenTarget(item, playType);
             const oddsInput = item.querySelector('.option-odds');
             const fillOdds = function() {
-                const val = textInputMulti ? betInput.value.trim() : betInput.value;
+                const val = getBetOptionValue(item, playType);
                 if (val && home && away) {
                     const odds = getOddsForMatch(date, home, away);
                     if (!odds) return;
@@ -6058,8 +6151,25 @@ function addOptionToList(btn, playTypeOverride) {
             <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" style="width:70px;" />
             <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
         `;
+    } else if (playType === '比分') {
+        // 比分：双步进器 + 隐藏 storage input 存 "X:Y"
+        const spinnerHtml = buildScoreSpinnerHtml('0:0');
+        item.innerHTML = `
+            ${spinnerHtml}
+            <input type="text" class="option-bet is-hidden-storage" placeholder="比分" value="0:0" />
+            <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" />
+            <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
+        `;
+    } else if (playType === '总进球') {
+        // 总进球：下拉 0~7+
+        const zjqHtml = buildZjqSelectHtml('');
+        item.innerHTML = `
+            ${zjqHtml}
+            <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="" />
+            <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
+        `;
     } else {
-        // 比分/总进球：文本输入
+        // 兜底：比分/总进球文本输入（极端分支，一般不会走到）
         const placeholder = playType === '比分' ? '比分' : '总进球数';
         item.innerHTML = `
             <input type="text" class="option-bet" placeholder="${placeholder}" value="" />
@@ -6070,9 +6180,7 @@ function addOptionToList(btn, playTypeOverride) {
     list.appendChild(item);
 
     // 根据类型获取输入元素
-    const betInput = (playType === '胜平负' || playType === '让球胜平负' || playType === '半全场')
-        ? item.querySelector('.option-bet-select')
-        : item.querySelector('.option-bet');
+    const betInput = getBetOptionListenTarget(item, playType);
     const oddsInput = item.querySelector('.option-odds');
     const gameItem = item.closest('.game-item');
     const home = gameItem ? gameItem.querySelector('.game-home').value.trim() : '';
@@ -6080,9 +6188,7 @@ function addOptionToList(btn, playTypeOverride) {
     const date = document.getElementById('scheduleDate').value;
     
     const fillOdds = function() {
-        const val = (playType === '胜平负' || playType === '让球胜平负' || playType === '半全场') 
-            ? betInput.value 
-            : betInput.value.trim();
+        const val = getBetOptionValue(item, playType);
         if (val && home && away) {
             const odds = getOddsForMatch(date, home, away);
             if (!odds) return;
@@ -6167,6 +6273,98 @@ function removeOption(btn) {
     }
     item.remove();
     calculateAll();
+}
+
+// ---------- 比分双步进器工具：构建 UI、取值、反向回填 ----------
+// 比分值统一以 "X:Y" 字符串存在隐藏的 input.option-bet 中，兼容保存/读取/赔率填充
+function buildScoreSpinnerHtml(initValue) {
+    let home = '0', away = '0';
+    const m = /^\s*(\d+)\s*:\s*(\d+)\s*$/.exec(String(initValue || ''));
+    if (m) {
+        home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
+        away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
+    }
+    return `
+        <div class="score-spinner" data-score-spinner="1">
+            <div class="spinner-col">
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
+                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${home}"
+                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
+            </div>
+            <span class="score-sep">:</span>
+            <div class="spinner-col">
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
+                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${away}"
+                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
+                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
+            </div>
+        </div>`;
+}
+window._spinScore = function(btn, delta) {
+    const col = btn.closest('.spinner-col');
+    if (!col) return;
+    const input = col.querySelector('input.spinner-input');
+    if (!input) return;
+    const cur = Math.max(0, Math.min(9, parseInt(input.value || '0', 10) || 0));
+    const next = Math.max(0, Math.min(9, cur + delta));
+    input.value = String(next);
+    window._writeScoreStorage(input);
+    const item = btn.closest('.option-item');
+    if (item) {
+        const storage = item.querySelector('input.option-bet.is-hidden-storage');
+        if (storage) { storage.dispatchEvent(new Event('change', { bubbles: true })); }
+    }
+};
+window._writeScoreStorage = function(inputEl) {
+    const spinner = inputEl.closest('[data-score-spinner]');
+    if (!spinner) return;
+    const nums = spinner.querySelectorAll('input.spinner-input');
+    if (!nums || nums.length < 2) return;
+    const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
+    const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
+    const score = `${h}:${a}`;
+    const item = spinner.closest('.option-item');
+    if (item) {
+        const storage = item.querySelector('input.option-bet.is-hidden-storage');
+        if (storage) {
+            storage.value = score;
+            storage.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }
+};
+function buildZjqSelectHtml(selectedVal) {
+    const options = ['0', '1', '2', '3', '4', '5', '6', '7+'];
+    let html = '<select class="option-bet-select zjq-select">';
+    options.forEach(v => {
+        const sel = String(selectedVal ?? '') === v ? 'selected' : '';
+        html += `<option value="${v}" ${sel}>${v}球</option>`;
+    });
+    html += '</select>';
+    return html;
+}
+function getBetOptionValue(item, playType) {
+    if (playType === '比分') {
+        const storage = item.querySelector('input.option-bet.is-hidden-storage');
+        return storage ? storage.value.trim() : '';
+    }
+    if (playType === '总进球') {
+        const sel = item.querySelector('select.option-bet-select.zjq-select') || item.querySelector('.option-bet');
+        return sel ? sel.value.trim() : '';
+    }
+    const select = item.querySelector('.option-bet-select');
+    if (select) return select.value;
+    const txt = item.querySelector('.option-bet');
+    return txt ? txt.value.trim() : '';
+}
+function getBetOptionListenTarget(item, playType) {
+    if (playType === '比分') {
+        return item.querySelector('input.option-bet.is-hidden-storage') || item.querySelector('.option-bet');
+    }
+    if (playType === '总进球') {
+        return item.querySelector('select.option-bet-select.zjq-select') || item.querySelector('.option-bet');
+    }
+    return item.querySelector('.option-bet-select') || item.querySelector('.option-bet');
 }
 
 // ================================================================
@@ -6436,7 +6634,13 @@ function getGameDataFromUI() {
                     const betText = el.querySelector('.option-bet');
                     const oddsInput = el.querySelector('.option-odds');
                     if (oddsInput) {
-                        const bet = betSelect ? betSelect.value : (betText ? betText.value.trim() : '');
+                        // 比分/总进球使用统一读取函数（比分从隐藏 storage input 拿到 "X:Y"）
+                        let bet = '';
+                        if (playType === '比分' || playType === '总进球') {
+                            bet = getBetOptionValue(el, playType);
+                        } else {
+                            bet = betSelect ? betSelect.value : (betText ? betText.value.trim() : '');
+                        }
                         const odds = parseFloat(oddsInput.value) || 0;
                         if (bet && odds > 0) {
                             options.push({ betOption: bet, odds: odds });
