@@ -1343,26 +1343,65 @@
             text-align: center;
         }
         .option-item input[type="number"] { width: 70px; flex: 0 0 70px; }
-        /* === 比分控件组（双下拉 + 其他模式链接） === */
+        /* === 比分控件组（双步进器 + 其他模式链接） === */
         .score-controls {
             display: flex;
             flex-direction: column;
             align-items: flex-start;
             gap: 4px;
         }
-        .score-controls.is-other-mode .score-dual-select-wrap { display: none; }
+        .score-controls.is-other-mode .score-dual-wrap { display: none; }
         .score-controls.is-not-other .score-other-mode-row { display: none; }
-        .score-dual-select-wrap {
+        .score-dual-wrap {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
-        .score-dual-select {
+        .score-dual-row {
             display: inline-flex;
             align-items: center;
             gap: 4px;
         }
-        .score-dual-select .score-sep {
+        /* 步进器：80px 宽，与胜平负下拉一致 */
+        .score-stepper {
+            display: inline-flex;
+            align-items: center;
+            width: 80px;
+            min-width: 80px;
+            flex: 0 0 80px;
+            height: 36px;
+            border: 1.5px solid #e2e5ec;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .score-stepper .step-btn {
+            width: 24px;
+            min-width: 24px;
+            height: 100%;
+            border: none;
+            background: #f8f9fb;
+            color: #6b7280;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .score-stepper .step-btn:hover { background: #e8eaef; color: #374151; }
+        .score-stepper .step-btn:active { background: #d1d5db; }
+        .score-stepper .step-val {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            min-width: 0;
+        }
+        .score-dual-row .score-sep {
             font-size: 16px;
             font-weight: 800;
             color: #94a3b8;
@@ -2495,7 +2534,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.10';
+const APP_VERSION = '7.101.11';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6158,7 +6197,7 @@ function addOptionToList(btn, playTypeOverride) {
         `;
     } else if (playType === '比分') {
         // 比分：双步进器 + 隐藏 storage input 存 "X:Y"
-        const spinnerHtml = buildScoreSpinnerHtml('0:0');
+        const spinnerHtml = buildScoreSelectHtml('0:0');
         item.innerHTML = `
             ${spinnerHtml}
             <input type="text" class="option-bet is-hidden-storage" placeholder="比分" value="0:0" />
@@ -6280,28 +6319,33 @@ function removeOption(btn) {
     calculateAll();
 }
 
-// ---------- 比分控件：双下拉(0-5) + 其他模式链接 ----------
+// ---------- 比分控件：双步进器(0-5) + 其他模式链接 ----------
 function buildScoreSelectHtml(initValue) {
     const val = String(initValue || '').trim();
     const isOther = (val === '胜其他' || val === '平其他' || val === '负其他');
-    let home = '0', away = '0';
+    let home = 0, away = 0;
     const m = /^\s*(\d+)\s*:\s*(\d+)\s*$/.exec(val);
     if (m) {
-        home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
-        away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
+        home = Math.max(0, Math.min(5, parseInt(m[1], 10) || 0));
+        away = Math.max(0, Math.min(5, parseInt(m[2], 10) || 0));
     }
     const modeClass = isOther ? ' is-other-mode' : ' is-not-other';
     const otherSel = isOther ? val : '胜其他';
-    const nums = ['0','1','2','3','4','5'];
-    const homeOpts = nums.map(n => `<option value="${n}" ${n===home?'selected':''}>${n}</option>`).join('');
-    const awayOpts = nums.map(n => `<option value="${n}" ${n===away?'selected':''}>${n}</option>`).join('');
     return `
         <div class="score-controls${modeClass}" data-score-controls="1">
-            <div class="score-dual-select-wrap">
-                <div class="score-dual-select" data-score-dual="1">
-                    <select class="option-bet-select" style="width:50px;" onchange="window._writeScoreDualStorage(this)">${homeOpts}</select>
+            <div class="score-dual-wrap">
+                <div class="score-dual-row" data-score-dual="1">
+                    <div class="score-stepper" data-stepper="home">
+                        <button type="button" class="step-btn step-minus" onclick="window._stepScore(this,-1)">−</button>
+                        <span class="step-val">${home}</span>
+                        <button type="button" class="step-btn step-plus" onclick="window._stepScore(this,1)">+</button>
+                    </div>
                     <span class="score-sep">:</span>
-                    <select class="option-bet-select" style="width:50px;" onchange="window._writeScoreDualStorage(this)">${awayOpts}</select>
+                    <div class="score-stepper" data-stepper="away">
+                        <button type="button" class="step-btn step-minus" onclick="window._stepScore(this,-1)">−</button>
+                        <span class="step-val">${away}</span>
+                        <button type="button" class="step-btn step-plus" onclick="window._stepScore(this,1)">+</button>
+                    </div>
                 </div>
                 <span class="score-other-links">
                     <span class="other-link" onclick="window._setOtherMode(this,'胜其他')">胜其他</span>
@@ -6321,13 +6365,23 @@ function buildScoreSelectHtml(initValue) {
             </div>
         </div>`;
 }
-window._writeScoreDualStorage = function(selEl) {
-    const wrap = selEl.closest('[data-score-dual]');
+window._stepScore = function(btn, delta) {
+    const stepper = btn.closest('.score-stepper');
+    if (!stepper) return;
+    const valEl = stepper.querySelector('.step-val');
+    if (!valEl) return;
+    let v = parseInt(valEl.textContent, 10) || 0;
+    v = Math.max(0, Math.min(5, v + delta));
+    valEl.textContent = String(v);
+    window._writeScoreDualStorage(stepper);
+};
+window._writeScoreDualStorage = function(el) {
+    const wrap = el.closest('[data-score-dual]');
     if (!wrap) return;
-    const selects = wrap.querySelectorAll('select.option-bet-select');
-    if (selects.length < 2) return;
-    const h = selects[0].value;
-    const a = selects[1].value;
+    const steppers = wrap.querySelectorAll('.score-stepper');
+    if (steppers.length < 2) return;
+    const h = steppers[0].querySelector('.step-val').textContent;
+    const a = steppers[1].querySelector('.step-val').textContent;
     const score = `${h}:${a}`;
     const item = wrap.closest('.option-item');
     if (item) {
@@ -6374,9 +6428,11 @@ window._backToScoreMode = function(link) {
     }
     const dual = item.querySelector('[data-score-dual]');
     if (dual) {
-        const selects = dual.querySelectorAll('select.option-bet-select');
-        if (selects.length >= 2) {
-            const score = `${selects[0].value}:${selects[1].value}`;
+        const steppers = dual.querySelectorAll('.score-stepper');
+        if (steppers.length >= 2) {
+            const h = steppers[0].querySelector('.step-val').textContent;
+            const a = steppers[1].querySelector('.step-val').textContent;
+            const score = `${h}:${a}`;
             const storage = item.querySelector('input.option-bet.is-hidden-storage');
             if (storage) {
                 storage.value = score;
