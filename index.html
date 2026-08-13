@@ -2055,8 +2055,8 @@
                 <label>场次列表 <span style="font-weight:400;color:#6b7280;">(比分、总进球可添加多个选项)</span></label>
                 <div class="schedule-loader">
                     <input type="date" id="scheduleDate" />
-                    <button type="button" class="btn btn-outline btn-sm" style="background:#fff7ed;border-color:#fdba74;color:#ea580c;" onclick="loadSchedule(true)">🔄 覆盖加载</button>
-                    <button type="button" class="btn btn-cyan btn-sm" onclick="loadSchedule(false)">📅 追加加载</button>
+                    <button type="button" class="btn btn-cyan btn-sm" onclick="loadSchedule(false)">📅 加载比赛</button>
+                    <button type="button" class="btn btn-outline btn-sm" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626;" onclick="clearAllGames()">🗑 清空</button>
                 </div>
                 <div id="gameListContainer" class="game-list"></div>
                 <button type="button" class="btn btn-outline btn-sm" onclick="addGameRow()">＋ 添加场次</button>
@@ -2507,7 +2507,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.14';
+const APP_VERSION = '7.102.0';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6649,6 +6649,17 @@ function removeGameRow(btn) {
     updatePassCheckboxes();
     calculateAll();
 }
+function clearAllGames() {
+    const container = document.getElementById('gameListContainer');
+    if (container.children.length === 0) {
+        showToast('没有可清空的场次');
+        return;
+    }
+    container.innerHTML = '';
+    updatePassCheckboxes();
+    calculateAll();
+    showToast('已清空全部场次');
+}
 function getGameDataFromUI() {
     const items = document.querySelectorAll('#gameListContainer .game-item');
     const games = [];
@@ -7879,8 +7890,9 @@ function init() {
     renderAll();
     const verEl = document.getElementById('appVersion');
     if (verEl) verEl.textContent = APP_VERSION;
+    // 默认加载当天赛程，不显示空示例
     if (document.getElementById('gameListContainer').children.length === 0) {
-        addGameRow();
+        try { loadSchedule(false); } catch(e) { addGameRow(); }
     }
     updatePassCheckboxes();
     document.getElementById('personSelect').addEventListener('change', function() {
