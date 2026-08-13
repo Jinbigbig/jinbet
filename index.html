@@ -2507,7 +2507,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.102.0';
+const APP_VERSION = '7.102.1';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -6484,7 +6484,11 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
         <button type="button" class="remove-game" onclick="removeGameRow(this)" title="移除">✕</button>
     `;
     div.innerHTML = html;
-    container.appendChild(div);
+    const gameListContainer = document.getElementById('gameListContainer');
+    // 如果容器里有分组，找到最后一个分组作为目标；否则直接加在容器里
+    const groups = gameListContainer.querySelectorAll('.bet-date-group');
+    const appendTarget = groups.length > 0 ? groups[groups.length - 1] : gameListContainer;
+    appendTarget.appendChild(div);
 
     const betContainer = div.querySelector('.bet-option-container');
     const matchHome = home;
@@ -6640,12 +6644,27 @@ function addGameRow(home='', away='', playType='胜平负', handicapSign='0', ha
     calculateAll();
 }
 function removeGameRow(btn) {
+    const gameItem = btn.closest('.game-item');
+    if (!gameItem) return;
     const container = document.getElementById('gameListContainer');
-    if (container.children.length <= 1) {
+    const totalItems = container.querySelectorAll('.game-item').length;
+    if (totalItems <= 1) {
         showToast('至少保留一个场次');
         return;
     }
-    btn.closest('.game-item').remove();
+    const parentGroup = gameItem.closest('.bet-date-group');
+    gameItem.remove();
+    // 如果分组内没有比赛了，也移除分组并更新日期追踪
+    if (parentGroup) {
+        const remainingInGroup = parentGroup.querySelectorAll('.game-item').length;
+        if (remainingInGroup === 0) {
+            const removedDate = parentGroup.dataset.date;
+            if (removedDate) {
+                _betLoadedDates = _betLoadedDates.filter(d => d !== removedDate);
+            }
+            parentGroup.remove();
+        }
+    }
     updatePassCheckboxes();
     calculateAll();
 }
@@ -6656,6 +6675,7 @@ function clearAllGames() {
         return;
     }
     container.innerHTML = '';
+    _betLoadedDates = [];
     updatePassCheckboxes();
     calculateAll();
     showToast('已清空全部场次');
@@ -7028,6 +7048,8 @@ function renderComboDetails(comboDetails) {
 //  日期加载赛程（添加记录用 · 支持追加/覆盖双模式）
 //  参数 overwrite : true=覆盖旧模式（替换当前）；false=追加模式（默认，更换日期顺序拼接，去重）
 // ================================================================
+let _betLoadedDates = []; // 投注记录已加载日期追踪
+
 function loadSchedule(overwrite) {
     const dateEl = document.getElementById('scheduleDate');
     if (!dateEl) { showToast('未找到日期选择器'); return; }
@@ -7037,59 +7059,115 @@ function loadSchedule(overwrite) {
         showToast('该日期暂无比赛');
         return;
     }
-    // 克隆后排序，避免修改 SCHEDULE 原数组
-    const sortedGames = games.slice();
-    // 按网易顺序排序（从 localStorage 读取）
-    let order = [];
-    try {
-        const saved = localStorage.getItem('jinbet_odds_v737_order');
-        if (saved) order = JSON.parse(saved);
-    } catch(e) {}
-    if (order.length > 0) {
-        const orderMap = {};
-        order.forEach((key, idx) => { orderMap[key] = idx; });
-        sortedGames.sort((a, b) => {
-            const ka = (a.home + ' vs ' + a.away);
-            const kb = (b.home + ' vs ' + b.away);
-            const ia = orderMap[ka] !== undefined ? orderMap[ka] : 99999;
-            const ib = orderMap[kb] !== undefined ? orderMap[kb] : 99999;
-            return ia - ib;
-        });
-    }
     const container = document.getElementById('gameListContainer');
-    // ---- 条件清空：覆盖模式才清空，追加模式保留 ----
-    if (overwrite === true) {
+
+    // 覆盖模式或首次加载时清空
+    if (overwrite === true || container.children.length === 0) {
         container.innerHTML = '';
+        _betLoadedDates = [];
     }
-    // ---- 从当前 UI 收集已有的（主队+客队）去重键 ----
-    const existing = new Set();
-    const rows = container ? container.querySelectorAll('.game-item, .game-row, .game-list > div') : [];
-    rows.forEach(function(row) {
+
+    // 检查日期是否已加载
+    if (_betLoadedDates.indexOf(date) !== -1) {
+        showToast('该日期比赛已加载，跳过重复');
+        return;
+    }
+
+    // 收集现有比赛去重键（兼容旧的 game-item 和新分组结构）
+    const existingKeys = new Set();
+    container.querySelectorAll('.game-item').forEach(row => {
         const h = (row.querySelector('.game-home')?.value || '').trim();
         const a = (row.querySelector('.game-away')?.value || '').trim();
-        if (h && a) existing.add(`${h}${String.fromCharCode(1)}${a}`);
+        if (h && a) existingKeys.add(h + '\x01' + a);
     });
+
+    // 收集现有日期分组元素
+    const existingGroups = [];
+    container.querySelectorAll('.bet-date-group').forEach(group => {
+        existingGroups.push({ date: group.dataset.date, element: group });
+    });
+
+    // 克隆比赛并按 matchNumStr 排序
+    const sortedGames = games.slice().sort((a, b) => {
+        const ma = a.matchNumStr || '';
+        const mb = b.matchNumStr || '';
+        if (ma === '' && mb === '') return 0;
+        if (ma === '') return 1;
+        if (mb === '') return -1;
+        // 提取数字部分比较
+        const na = parseInt(ma.replace(/\D/g, ''), 10) || 999;
+        const nb = parseInt(mb.replace(/\D/g, ''), 10) || 999;
+        if (na !== nb) return na - nb;
+        return ma.localeCompare(mb);
+    });
+
+    // 构建日期分组
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'bet-date-group';
+    groupDiv.dataset.date = date;
+    const weekdayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const dt = new Date(date + 'T00:00:00');
+    const weekday = weekdayNames[dt.getDay()];
+
+    // 先在正确位置插入空分组，然后 addGameRow 会自动追加到最后一个分组
+    if (_betLoadedDates.length === 0) {
+        container.appendChild(groupDiv);
+    } else {
+        let inserted = false;
+        for (let i = 0; i < existingGroups.length; i++) {
+            if (date < existingGroups[i].date) {
+                container.insertBefore(groupDiv, existingGroups[i].element);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) container.appendChild(groupDiv);
+    }
+    // 强制让 addGameRow 把新比赛加到当前分组：把 groupDiv 移到末尾
+    container.appendChild(groupDiv);
+
     let added = 0;
     sortedGames.forEach(function(g) {
-        const key = `${g.home}${String.fromCharCode(1)}${g.away}`;
-        if (existing.has(key)) return;  // 已存在 → 跳过（去重）
-        existing.add(key);
+        const key = g.home + '\x01' + g.away;
+        if (existingKeys.has(key)) return;
+        existingKeys.add(key);
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
-        // 从赔率数据中查找编号
         const oddsKey = date + '_' + g.home + '_' + g.away;
         const oddsInfo = (typeof oddsData !== 'undefined' ? oddsData : {})[oddsKey] || {};
         const matchNumStr = g.matchNumStr || oddsInfo.matchNumStr || '';
         addGameRow(g.home, g.away, '胜平负', '0', '', [], '', league, matchNumStr);
         added++;
     });
+
+    if (added === 0) {
+        // 没有添加比赛，清理空分组
+        groupDiv.remove();
+        showToast('该日期所有比赛已存在，无需追加');
+        return;
+    }
+
+    // 创建分组标题并插入到分组第一个子元素之前
+    const headerDiv = document.createElement('div');
+    headerDiv.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px;padding:4px 8px;background:#f3f4f6;border-radius:6px;font-size:12px;font-weight:600;color:#374151;';
+    headerDiv.innerHTML = `
+        <span>📅 ${date}</span>
+        <span style="color:#6b7280;font-weight:400;">${weekday}</span>
+        <span style="margin-left:auto;color:#9ca3af;">${added} 场</span>
+    `;
+    groupDiv.insertBefore(headerDiv, groupDiv.firstChild);
+
+    // 把 groupDiv 放回正确位置（按日期排序）
+    const allGroups = Array.from(container.querySelectorAll('.bet-date-group'));
+    allGroups.sort((a, b) => (a.dataset.date || '').localeCompare(b.dataset.date || ''));
+    allGroups.forEach(g => container.appendChild(g));
+
+    _betLoadedDates.push(date);
+    _betLoadedDates.sort();
+
     updatePassCheckboxes();
     calculateAll();
-    if (overwrite === true) {
-        showToast(`🔄 覆盖加载 ${sortedGames.length} 场比赛（${date}）${order.length > 0 ? '（按网易顺序）' : ''}`);
-    } else {
-        const total = (container ? container.querySelectorAll('.game-item, .game-row, .game-list > div').length : 0);
-        showToast(`📅 追加 ${added} 场新比赛（去重后，当前共 ${total} 场）${order.length > 0 ? '（按网易顺序）' : ''}`);
-    }
+    const total = container.querySelectorAll('.game-item').length;
+    showToast(`📅 加载 ${added} 场新比赛（当前共 ${total} 场，按时间排序）`);
 }
 
 // ================================================================
@@ -7102,7 +7180,7 @@ function openAddModal() {
     document.getElementById('editId').value = '';
     document.getElementById('betForm').reset();
     document.getElementById('gameListContainer').innerHTML = '';
-    addGameRow();
+    _betLoadedDates = [];
     document.getElementById('personTableBody').innerHTML = '';
     tempImages = [];
     renderImagePreviews();
@@ -7118,9 +7196,15 @@ function openAddModal() {
         scheduleDateInput.value = todayStr;
     }
 
+    // 默认自动加载当天赛程，失败再添加空行
     setTimeout(() => {
+        try {
+            loadSchedule(false);
+        } catch(e) {
+            addGameRow();
+        }
         calculateAll();
-    }, 50);
+    }, 30);
     openModal('betModal');
 }
 function editBet(id) {
