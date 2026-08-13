@@ -1343,67 +1343,32 @@
             text-align: center;
         }
         .option-item input[type="number"] { width: 70px; flex: 0 0 70px; }
-        /* === 比分双步进器（主队进球 : 客队进球） === */
-        .score-spinner {
+        /* === 比分双下拉（主队 : 客队，各 0-5） === */
+        .score-dual-select {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            height: 36px;
-            padding: 0 6px;
-            border: 1.5px solid #e2e5ec;
-            border-radius: 8px;
-            background: #fff;
             flex: 1;
             min-width: 0;
         }
-        .score-spinner .spinner-col {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            flex: 1 1 0;
-            min-width: 0;
+        .score-dual-select .score-select {
+            width: 80px;
+            min-width: 80px;
+            flex: 0 0 80px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1.5px solid #e2e5ec;
+            font-size: 13px;
+            padding: 4px 6px;
+            text-align: center;
         }
-        .score-spinner .spinner-btn {
-            width: 100%;
-            height: 14px;
-            line-height: 14px;
-            font-size: 10px;
-            font-weight: 700;
-            border: none;
-            background: #f1f5f9;
-            color: #475569;
-            cursor: pointer;
-            border-radius: 3px;
-            padding: 0;
-        }
-        .score-spinner .spinner-btn:hover { background: #e2e8f0; }
-        .score-spinner .spinner-input {
-            width: 100% !important;
-            height: 22px !important;
-            line-height: 22px;
-            padding: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            text-align: center !important;
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            color: #1e293b !important;
-            flex: none !important;
-        }
-        .score-spinner .spinner-input::-webkit-outer-spin-button,
-        .score-spinner .spinner-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .score-spinner .spinner-input { -moz-appearance: textfield; }
-        .score-spinner .score-sep {
+        .score-dual-select .score-sep {
             font-size: 16px;
             font-weight: 800;
             color: #94a3b8;
-            width: 10px;
-            text-align: center;
             flex-shrink: 0;
-            margin: 0 2px;
         }
+        .score-dual-select.is-hidden-other { display: none !important; }
         /* 总进球下拉：8种选项足够短，宽度与胜平负一致 */
         .option-bet-select.zjq-select {
             width: 80px;
@@ -1415,8 +1380,7 @@
             font-size: 13px;
             margin-right: 8px;
         }
-        /* 比分"其他"模式下隐藏步进器，只显示下拉 */
-        .score-spinner.is-hidden-other { display: none !important; }
+        /* 比分"其他"切换下拉 */
         .score-other-select {
             width: 80px;
             min-width: 80px;
@@ -2507,7 +2471,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.5';
+const APP_VERSION = '7.101.6';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -5878,12 +5842,12 @@ function createBetOptionControl(playType, options, container, matchHome, matchAw
             item.className = 'option-item';
             
             if (scoreMulti) {
-                // 比分：双步进器 + "其他"下拉 + 隐藏 input 存 "X:Y"/"胜其他"等 兼容保存/读取
-                const spinnerHtml = buildScoreSpinnerHtml(opt.betOption || '0:0');
+                // 比分：双下拉（0-5 : 0-5）+ "其他"切换 + 隐藏 input 存 "X:Y"/"胜其他"等
+                const selectHtml = buildScoreSelectHtml(opt.betOption || '0:0');
                 const rawVal = String(opt.betOption || '').trim();
                 const storageValue = rawVal || '0:0';
                 item.innerHTML = `
-                    ${spinnerHtml}
+                    ${selectHtml}
                     <input type="text" class="option-bet is-hidden-storage" placeholder="比分" value="${storageValue}" data-idx="${idx}" />
                     <input type="number" class="option-odds" placeholder="赔率" step="0.01" min="0.01" value="${opt.odds || ''}" />
                     <button type="button" class="remove-option" onclick="removeOption(this)">✕</button>
@@ -6292,9 +6256,9 @@ function removeOption(btn) {
     calculateAll();
 }
 
-// ---------- 比分双步进器工具：构建 UI、取值、反向回填 ----------
+// ---------- 比分双下拉工具：构建 UI、取值、反向回填 ----------
 // 比分值统一以 "X:Y" 或 "胜其他"/"平其他"/"负其他" 字符串存在隐藏的 input.option-bet 中
-function buildScoreSpinnerHtml(initValue) {
+function buildScoreSelectHtml(initValue) {
     const val = String(initValue || '').trim();
     const isOther = (val === '胜其他' || val === '平其他' || val === '负其他');
     let home = '0', away = '0';
@@ -6303,23 +6267,17 @@ function buildScoreSpinnerHtml(initValue) {
         home = String(Math.max(0, Math.min(9, parseInt(m[1], 10) || 0)));
         away = String(Math.max(0, Math.min(9, parseInt(m[2], 10) || 0)));
     }
-    const spinnerHidden = isOther ? ' is-hidden-other' : '';
+    const wrapHidden = isOther ? ' is-hidden-other' : '';
     const otherSel = isOther ? val : '';
+    // 主队/客队各 0-5（6个选项，足够短）
+    const nums = ['0','1','2','3','4','5'];
+    const homeOpts = nums.map(n => `<option value="${n}" ${n===home?'selected':''}>${n}</option>`).join('');
+    const awayOpts = nums.map(n => `<option value="${n}" ${n===away?'selected':''}>${n}</option>`).join('');
     return `
-        <div class="score-spinner${spinnerHidden}" data-score-spinner="1">
-            <div class="spinner-col">
-                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
-                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${home}"
-                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
-                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
-            </div>
+        <div class="score-dual-select${wrapHidden}" data-score-dual="1">
+            <select class="score-select" onchange="window._writeScoreDualStorage(this)">${homeOpts}</select>
             <span class="score-sep">:</span>
-            <div class="spinner-col">
-                <button type="button" class="spinner-btn" onclick="window._spinScore(this, +1)">▲</button>
-                <input type="number" class="spinner-input" inputmode="numeric" min="0" max="9" value="${away}"
-                    onchange="window._writeScoreStorage(this)" oninput="window._writeScoreStorage(this)" />
-                <button type="button" class="spinner-btn" onclick="window._spinScore(this, -1)">▼</button>
-            </div>
+            <select class="score-select" onchange="window._writeScoreDualStorage(this)">${awayOpts}</select>
         </div>
         <select class="score-other-select" onchange="window._onScoreOtherChange(this)">
             <option value="">比分</option>
@@ -6328,66 +6286,51 @@ function buildScoreSpinnerHtml(initValue) {
             <option value="负其他" ${otherSel==='负其他'?'selected':''}>负其他</option>
         </select>`;
 }
+window._writeScoreDualStorage = function(selEl) {
+    const wrap = selEl.closest('[data-score-dual]');
+    if (!wrap) return;
+    const selects = wrap.querySelectorAll('select.score-select');
+    if (selects.length < 2) return;
+    const h = selects[0].value;
+    const a = selects[1].value;
+    const score = `${h}:${a}`;
+    const item = wrap.closest('.option-item');
+    if (item) {
+        const storage = item.querySelector('input.option-bet.is-hidden-storage');
+        if (storage) {
+            storage.value = score;
+            storage.dispatchEvent(new Event('input', { bubbles: true }));
+            storage.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+};
 window._onScoreOtherChange = function(sel) {
     const item = sel.closest('.option-item');
     if (!item) return;
-    const spinner = item.querySelector('.score-spinner');
+    const dual = item.querySelector('.score-dual-select');
     const storage = item.querySelector('input.option-bet.is-hidden-storage');
     const val = sel.value;
     if (val) {
-        // 选中"其他"：隐藏步进器，storage 存"胜其他"等
-        if (spinner) spinner.classList.add('is-hidden-other');
+        // 选中"其他"：隐藏双下拉，storage 存"胜其他"等
+        if (dual) dual.classList.add('is-hidden-other');
         if (storage) {
             storage.value = val;
             storage.dispatchEvent(new Event('input', { bubbles: true }));
             storage.dispatchEvent(new Event('change', { bubbles: true }));
         }
     } else {
-        // 切回"比分"：显示步进器，storage 恢复为步进器当前值
-        if (spinner) spinner.classList.remove('is-hidden-other');
-        if (spinner) {
-            const nums = spinner.querySelectorAll('input.spinner-input');
-            if (nums.length >= 2) {
-                const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
-                const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
+        // 切回"比分"：显示双下拉，storage 恢复为当前 X:Y
+        if (dual) dual.classList.remove('is-hidden-other');
+        if (dual) {
+            const selects = dual.querySelectorAll('select.score-select');
+            if (selects.length >= 2) {
+                const score = `${selects[0].value}:${selects[1].value}`;
                 if (storage) {
-                    storage.value = `${h}:${a}`;
+                    storage.value = score;
                     storage.dispatchEvent(new Event('input', { bubbles: true }));
                     storage.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             }
-        }
-    }
-};
-window._spinScore = function(btn, delta) {
-    const col = btn.closest('.spinner-col');
-    if (!col) return;
-    const input = col.querySelector('input.spinner-input');
-    if (!input) return;
-    const cur = Math.max(0, Math.min(9, parseInt(input.value || '0', 10) || 0));
-    const next = Math.max(0, Math.min(9, cur + delta));
-    input.value = String(next);
-    window._writeScoreStorage(input);
-    const item = btn.closest('.option-item');
-    if (item) {
-        const storage = item.querySelector('input.option-bet.is-hidden-storage');
-        if (storage) { storage.dispatchEvent(new Event('change', { bubbles: true })); }
-    }
-};
-window._writeScoreStorage = function(inputEl) {
-    const spinner = inputEl.closest('[data-score-spinner]');
-    if (!spinner) return;
-    const nums = spinner.querySelectorAll('input.spinner-input');
-    if (!nums || nums.length < 2) return;
-    const h = Math.max(0, Math.min(9, parseInt(nums[0].value || '0', 10) || 0));
-    const a = Math.max(0, Math.min(9, parseInt(nums[1].value || '0', 10) || 0));
-    const score = `${h}:${a}`;
-    const item = spinner.closest('.option-item');
-    if (item) {
-        const storage = item.querySelector('input.option-bet.is-hidden-storage');
-        if (storage) {
-            storage.value = score;
-            storage.dispatchEvent(new Event('input', { bubbles: true }));
         }
     }
 };
