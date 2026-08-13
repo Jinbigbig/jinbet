@@ -1351,11 +1351,13 @@
             gap: 2px;
             flex: 1;
             min-width: 0;
-            height: 36px;
-            padding: 0 4px;
+            height: auto;
+            min-height: 42px;
+            padding: 2px 4px;
             border: 1.5px solid #e2e5ec;
             border-radius: 8px;
             background: #fff;
+            box-sizing: border-box;
         }
         .score-spinner .spinner-col {
             display: inline-flex;
@@ -1367,9 +1369,9 @@
         }
         .score-spinner .spinner-btn {
             width: 100%;
-            height: 14px;
-            line-height: 14px;
-            font-size: 10px;
+            height: 12px;
+            line-height: 12px;
+            font-size: 9px;
             font-weight: 700;
             border: none;
             background: #f1f5f9;
@@ -1381,14 +1383,14 @@
         .score-spinner .spinner-btn:hover { background: #e2e8f0; }
         .score-spinner .spinner-input {
             width: 100% !important;
-            height: 22px !important;
-            line-height: 22px;
+            height: 18px !important;
+            line-height: 18px;
             padding: 0 !important;
             border: none !important;
             border-radius: 0 !important;
             background: transparent !important;
             text-align: center !important;
-            font-size: 14px !important;
+            font-size: 13px !important;
             font-weight: 700 !important;
             color: #1e293b !important;
             flex: none !important;
@@ -2053,7 +2055,7 @@
                 <label>场次列表 <span style="font-weight:400;color:#6b7280;">(比分、总进球可添加多个选项)</span></label>
                 <div class="schedule-loader">
                     <input type="date" id="scheduleDate" />
-                    <button type="button" class="btn btn-outline btn-sm" onclick="loadSchedule(true)">🔄 覆盖加载</button>
+                    <button type="button" class="btn btn-outline btn-sm" style="background:#fff7ed;border-color:#fdba74;color:#ea580c;" onclick="loadSchedule(true)">🔄 覆盖加载</button>
                     <button type="button" class="btn btn-cyan btn-sm" onclick="loadSchedule(false)">📅 追加加载</button>
                 </div>
                 <div id="gameListContainer" class="game-list"></div>
@@ -2505,7 +2507,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.101.13';
+const APP_VERSION = '7.101.14';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
