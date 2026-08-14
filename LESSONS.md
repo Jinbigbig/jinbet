@@ -6,6 +6,8 @@
 
 - Python 端所有队名标准化必须调用全局 `canonical_team_name(name)`，禁止在 `parse_lottery_json` / `main` 合并 / `id_map` 去重 / `normalize_result_team` 等任何位置自行实现归一化逻辑
 - 新增队名映射只改 `RESULT_TEAM_NAME_MAP` 一处，`canonical_team_name` 会通过 `_get_sorted_team_mapping()` 自动按 key 长度从长到短匹配
+- **禁止保留未使用的映射表死代码**（v7.102.3 确立）：`TEAM_NAME_MAP` 曾与 `RESULT_TEAM_NAME_MAP` 并存但从未被 `_get_sorted_team_mapping()` 调用，导致补充到 `TEAM_NAME_MAP` 的变体映射全部失效。归一化映射表只能保留一个，所有变体必须写入 `RESULT_TEAM_NAME_MAP`
+- **变体映射方向必须与已完赛赛果 key 一致**（v7.102.3 确立）：归一化目标名应统一到赛果 key 已使用的短名（如 `埃夫斯堡`/`狼队`/`曼城`），避免历史赛果 key 与 SCHEDULE key 错位导致赛果匹配失败
 
 ## 去重规则（v7.101.0 确立）
 
@@ -34,3 +36,4 @@
 - 体彩赛果 API 有入库延迟，深夜比赛比分可能次日中午前仍未录入；占位 key 机制保证不丢场次，下次 CI 自动回填
 - 三处队名归一化各自实现会导致 (home,away) pair 去重失败，产生重复比赛；必须统一走 `canonical_team_name()`
 - 脚本 `main()` 先 commit 赔率再抓赛果但不再 commit，`--force push HEAD:gh-pages` 会把无赛果版本推上线，导致"赛果抓到了但没上线"
+- **[v7.102.3] 队名映射表死代码导致重复比赛**：`TEAM_NAME_MAP` 与 `RESULT_TEAM_NAME_MAP` 并存，但 `canonical_team_name` 只调用后者，前者是死代码。补充到 `TEAM_NAME_MAP` 的 6 组变体映射（埃夫斯堡/狼队/曼城等）全部失效，`canonical` 无法归一，去重逻辑失效，SCHEDULE 同一场比赛的长名（带 matchId）和短名（无 matchId）两份记录共存，前端用变体名查赔率查不到→赔率为空。根因隐蔽在于两个表名相似、代码分散。修复：合并为 `RESULT_TEAM_NAME_MAP` 一个表，删除死代码，变体统一到短名（与赛果 key 一致）
