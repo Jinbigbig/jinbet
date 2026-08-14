@@ -23,10 +23,23 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: 抓取赔率+赛果并更新
-        run: python update_odds_net.py --no-push --full
+      - name: 抓取赔率并更新
+        run: python update_odds_net.py --no-push
         env:
           PYTHONIOENCODING: utf-8
+
+      - name: 抓取赛果（允许偶发失败）
+        run: |
+          set +e
+          python update_odds_net.py --no-push --results-only
+          rc=$?
+          if [ $rc -ne 0 ]; then
+            echo "⚠️ 赛果抓取失败（退出码 $rc），降级为仅更新赔率，后续手动重试即可"
+          fi
+          exit 0
+        env:
+          PYTHONIOENCODING: utf-8
+        continue-on-error: true
 
       - name: 验证赛果数据
         run: |
