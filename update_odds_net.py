@@ -2128,6 +2128,7 @@ def fetch_and_save_results():
     print(f'  ✅ 解析成功: {len(new_results)} 场比赛')
 
     # 获取完整编号信息并合并到赛果
+    id_map = {}
     print('\n  [补充] 获取完整比赛编号信息...')
     try:
         from datetime import datetime, timedelta
@@ -2176,7 +2177,62 @@ def fetch_and_save_results():
     if archived_count > 0:
         print(f'  归档旧赛果: {archived_count} 条')
 
-    # 更新HTML
+    # 更新HTML：先回填赛果API拿到的完整编号到SCHEDULE，再写回赛果
+    # 解决问题：抓赔率步骤时体彩API可能还没全部入库，导致SCHEDULE缺编号；
+    # 抓赛果步骤时fetch_match_numbers通常能拿到完整编号，此时补写SCHEDULE即可修复编号缺失。
+    if id_map:
+        id_count_before = 0
+        id_count_after = 0
+        schedule_before_pattern = r'const SCHEDULE = \{([\s\S]*?)\};'
+        sm = re.search(schedule_before_pattern, html_content)
+        if sm:
+            sched_str = '{' + sm.group(1) + '}'
+            sched_json_str = parse_js_obj_to_json(sched_str)
+            try:
+                schedule = json.loads(sched_json_str)
+            except Exception:
+                schedule = {}
+            # 构建 id_map 的 canonical 无序对索引（方便 SCHEDULE 球队匹配）
+            canon_id_map = {}
+            for raw_key, ids in id_map.items():
+                parts = raw_key.split('_', 2)
+                if len(parts) != 3:
+                    continue
+                _, h, a = parts
+                ch = canonical_team_name(h)
+                ca = canonical_team_name(a)
+                if ch <= ca:
+                    ckey = (ch, ca)
+                else:
+                    ckey = (ca, ch)
+                canon_id_map[ckey] = ids
+            for date in schedule:
+                for g in schedule[date]:
+                    had = bool(g.get('matchNumStr'))
+                    if had:
+                        id_count_before += 1
+                        continue
+                    gh = canonical_team_name(g.get('home', ''))
+                    ga = canonical_team_name(g.get('away', ''))
+                    if gh <= ga:
+                        ckey = (gh, ga)
+                    else:
+                        ckey = (ga, gh)
+                    if ckey in canon_id_map:
+                        ids = canon_id_map[ckey]
+                        if ids.get('matchNumStr'):
+                            g['matchNumStr'] = ids['matchNumStr']
+                        if ids.get('matchNo') and not g.get('matchNo'):
+                            g['matchNo'] = ids['matchNo']
+                        if ids.get('matchId') and not g.get('matchId'):
+                            g['matchId'] = ids['matchId']
+                    if g.get('matchNumStr'):
+                        id_count_after += 1
+            if id_count_after > 0:
+                schedule_js = schedule_to_js(schedule)
+                full_schedule_decl = f'const SCHEDULE = {schedule_js};'
+                html_content = re.sub(schedule_before_pattern, lambda _: full_schedule_decl, html_content, count=1)
+                print(f'  ✅ 编号回填：补了 {id_count_after} 场缺失matchNumStr（之前SCHEDULE有编号共 {id_count_before} 场）')
     print('\n[3/3] 更新 index.html 中的赛果数据...')
     html_content = update_html_results(html_content, merged_results)
 
