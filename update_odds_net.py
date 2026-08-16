@@ -2335,7 +2335,23 @@ def fetch_and_save_results():
     print('\n' + '=' * 60)
     print(f'  赛果更新完成！共 {len(merged_results)} 条')
     print('=' * 60)
-    return True, {'fetched': len(json_text), 'parsed': len(new_results), 'merged': len(merged_results)}
+
+    # === 关键防护：若"前一天"的赛果在API有但本地写入后为0条，说明赛果同步链路断裂 ===
+    # 必须直接返回失败（退出码1），让CI fail而不是静默吞错，否则会出现"当天跑完比赛但线上永远无赛果"
+    from datetime import datetime, timedelta
+    yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    yesterday_api = sum(1 for k in new_results if k.startswith(yesterday))
+    yesterday_local = sum(1 for k in merged_results if k.startswith(yesterday))
+    stats = {'fetched': len(json_text), 'parsed': len(new_results), 'merged': len(merged_results),
+             'yesterday_api': yesterday_api, 'yesterday_local': yesterday_local}
+    if yesterday_api > 0 and yesterday_local == 0:
+        print(f'\n[致命错误] 赛果同步断裂：API拿到{yesterday}共{yesterday_api}场赛果，但写入本地后为0条')
+        print('  可能根因：队名映射缺失导致key对不上、合并逻辑丢数据、归档逻辑误删。CI已阻断，请人工介入')
+        return False, stats
+    if yesterday_local == 0 and datetime.now().hour >= 12:
+        # 过了中午12点前一天赛果还没出现，大概率API或赛果抓取出问题（极少数比赛当日凌晨踢完后下午才录）
+        print(f'\n[警告] {yesterday} 赛果写入为0条（当前时间已过12点）')
+    return True, stats
 
 
 if __name__ == '__main__':

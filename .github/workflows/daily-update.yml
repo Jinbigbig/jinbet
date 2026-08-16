@@ -28,38 +28,50 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
 
-      - name: 抓取赛果（允许偶发失败）
-        run: |
-          set +e
-          python update_odds_net.py --no-push --results-only
-          rc=$?
-          if [ $rc -ne 0 ]; then
-            echo "⚠️ 赛果抓取失败（退出码 $rc），降级为仅更新赔率，后续手动重试即可"
-          fi
-          exit 0
+      # === 赛果抓取：失败则retry，重试耗尽后真正阻断CI（禁止静默吞错）===
+      # 历史问题：2026-08-16工作流赛果步骤失败，被 set+e + continue-on-error 双保险吞掉，
+      # 导致 8-15 的 30 场赛果"API有数据但线上永远为空"。
+      - name: 抓取赛果（失败阻断+自动重试）
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 8
+          max_attempts: 3
+          retry_wait_seconds: 30
+          shell: bash
+          command: |
+            set -euo pipefail
+            echo "== 第${RETRY_ATTEMPT_NUMBER:-1}次尝试抓取赛果 =="
+            python update_odds_net.py --no-push --results-only
         env:
           PYTHONIOENCODING: utf-8
-        continue-on-error: true
 
-      - name: 验证赛果数据
+      - name: 强制校验赛果完整性（前一天必须至少1条，否则阻断CI）
         run: |
+          set -euo pipefail
           python3 -c "
           import json, sys
+          from datetime import date, timedelta
           with open('results_data.json', 'r', encoding='utf-8') as f:
               results = json.load(f)
-          total = len(results)
-          today = __import__('datetime').date.today().strftime('%Y-%m-%d')
-          yesterday = (__import__('datetime').date.today() - __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
+          today = date.today().strftime('%Y-%m-%d')
+          yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
           today_count = sum(1 for k in results if k.startswith(today))
           yest_count = sum(1 for k in results if k.startswith(yesterday))
+          total = len(results)
           print(f'赛果总计: {total} 条')
           print(f'昨日({yesterday}): {yest_count} 条, 今日({today}): {today_count} 条')
           if total == 0:
-              print('⚠️ 赛果数据为空，可能API抓取失败')
-          else:
-              print('✅ 赛果数据验证通过')
+              print('❌ 赛果数据完全为空，CI阻断')
+              sys.exit(1)
+          # 关键校验：过了 UTC+8 12点(=UTC 04点)后，前一天赛果必须≥1条
+          from datetime import datetime
+          h = datetime.utcnow().hour
+          require_yesterday = (h >= 4)
+          if require_yesterday and yest_count == 0:
+              print(f'❌ 已过12点(北京时间)，{yesterday}赛果仍为0条。赛果同步链路异常，CI阻断')
+              sys.exit(1)
+          print('✅ 赛果数据校验通过')
           "
-        continue-on-error: true
 
       - name: 生成版本号
         run: date '+%Y%m%d%H%M%S' > version.txt
@@ -96,6 +108,7 @@ jobs:
       - name: 推送更新到 master 和 gh-pages
         if: steps.check_changes.outputs.changed == 'true'
         run: |
+          set -euo pipefail
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -105,33 +118,35 @@ jobs:
           cp version.txt /tmp/version.txt
           rm -rf /tmp/odds_history
           cp -r odds_history/ /tmp/odds_history/ 2>/dev/null || true
-          cp results_data.json /tmp/results_data.json 2>/dev/null || true
+          cp results_data.json /tmp/results_data.json
           rm -rf /tmp/results_history
           cp -r results_history/ /tmp/results_history/ 2>/dev/null || true
 
-          # 1. 推送到 master（保持同步，清理旧赛程避免重复归档）
+          # 1. 推送到 master
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
           git add results_data.json 2>/dev/null || true
           git add results_history/ 2>/dev/null || true
+          git diff --cached --stat
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
           git pull origin master --rebase
           git push origin master
 
-          # 2. 推送到 gh-pages（master 已提交，工作区干净不会冲突）
+          # 2. 推送到 gh-pages（保持分支独立，仅同步静态文件）
           git checkout gh-pages
           cp /tmp/odds_data.json odds_data.json
           cp /tmp/index.html index.html
           cp /tmp/version.txt version.txt
           mkdir -p odds_history
           cp -r /tmp/odds_history/* odds_history/ 2>/dev/null || true
-          cp /tmp/results_data.json results_data.json 2>/dev/null || true
+          cp /tmp/results_data.json results_data.json
           mkdir -p results_history
           cp -r /tmp/results_history/* results_history/ 2>/dev/null || true
           git add index.html odds_data.json version.txt
           git add odds_history/ 2>/dev/null || true
           git add results_data.json 2>/dev/null || true
           git add results_history/ 2>/dev/null || true
+          git diff --cached --stat
           git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
           git pull origin gh-pages --rebase
           git push origin gh-pages
