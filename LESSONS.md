@@ -37,3 +37,30 @@
 - 三处队名归一化各自实现会导致 (home,away) pair 去重失败，产生重复比赛；必须统一走 `canonical_team_name()`
 - 脚本 `main()` 先 commit 赔率再抓赛果但不再 commit，`--force push HEAD:gh-pages` 会把无赛果版本推上线，导致"赛果抓到了但没上线"
 - **[v7.102.3] 队名映射表死代码导致重复比赛**：`TEAM_NAME_MAP` 与 `RESULT_TEAM_NAME_MAP` 并存，但 `canonical_team_name` 只调用后者，前者是死代码。补充到 `TEAM_NAME_MAP` 的 6 组变体映射（埃夫斯堡/狼队/曼城等）全部失效，`canonical` 无法归一，去重逻辑失效，SCHEDULE 同一场比赛的长名（带 matchId）和短名（无 matchId）两份记录共存，前端用变体名查赔率查不到→赔率为空。根因隐蔽在于两个表名相似、代码分散。修复：合并为 `RESULT_TEAM_NAME_MAP` 一个表，删除死代码，变体统一到短名（与赛果 key 一致）
+
+## 赛果同步链路与CI防护（v7.104.0 确立）
+
+### 问题现象
+2026-08-16 早间CI跑完后，体彩API已经有 8-15 的 30 场赛果数据，但线上 `results_data.json` 中 8-15 赛果始终为 0 条，用户看不到 8-15 任何比赛的比分与赔率回填。
+
+### 根因
+CI工作流 **双保险静默吞错**：
+1. 赛果抓取步骤用了 `set +e` 取消 errexit，随后无论脚本退出码是什么都 `exit 0`
+2. 外层又加了 `continue-on-error: true`，即使步骤失败也标绿通过
+3. 赛果抓取因为API偶尔超时/限流失败时，既不会重试，也不会阻断后续推送步骤，工作流仍然只推送赔率更新到双分支上线
+4. 后续3次 cron 定时任务（11:15 / 15:00 / 20:15）都因为体彩分页API同样的原因重复失败，静默吞掉后，8-15 的赛果就永远缺席
+
+### 修复方案
+1. **[脚本层硬校验]** [fetch_and_save_results](file:///Users/jin/Library/Mobile%20Documents/com~apple~CloudDocs/Jin/jinbet/update_odds_net.py#L2339-L2354) 返回前做对比：
+   - 如果 API 抓到的昨日赛果 `yesterday_api > 0`，但本地写入 `merged_results` 中昨日为 0 → **直接 return False**（退出码 1）
+   - 如果已过北京时间中午 12 点、昨日写入仍为 0 → 打印高危警告（多数情况 API 此时早已录完）
+2. **[工作流重试+阻断]** [daily-update.yml](file:///Users/jin/Library/Mobile%20Documents/com~apple~CloudDocs/Jin/jinbet/.github/workflows/daily-update.yml#L34-L74)：
+   - 删掉 `continue-on-error: true`，删掉 `set +e / exit 0` 的吞错组合
+   - 改用 `nick-fields/retry@v3` 最多 3 次尝试，间隔 30 秒，超时 8 分钟；3 次都失败则 **真正阻断CI，不进入推送步骤**
+   - 再加一道独立的 "强制校验赛果完整性" 步骤：北京时间过 12 点时昨日赛果必须 ≥ 1 条，否则 `sys.exit(1)` 阻断
+3. **[推送步骤set -euo pipefail]** 双分支推送全程严格 errexit，rebase/push 任一步失败就中止，不再吞错
+
+### 防复发
+- 赛果抓取结果是用户侧核心数据，任何步骤失败都不允许降级为"只更赔率"，只能重试 / 阻断，防止静默退化
+- CI 出问题时 GitHub 会发失败邮件通知，管理员看到邮件即可手动 `workflow_dispatch` 重试，避免 3 次静默都漏掉
+- `fetch_and_save_results` 里 yesterday 双计数（API拿到 vs 写入本地）是最低成本的"链路端到端自检"，保留不得删除
