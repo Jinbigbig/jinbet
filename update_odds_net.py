@@ -2678,6 +2678,11 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     # canonical 清洗 merged_results 的 key（队名变体归一化 + 同方向去重）
     # 旧 RESULTS 可能残留 "国际图尔" / "IFK哥德堡" / "布鲁马波卡纳" 等非标准队名 key，
     # 需重算 canonical key 并合并到标准 key，避免前端展示赛果时出现重复/缺失。
+    def _is_real_score(s):
+        # 真实数字比分 N:M / M:N；占位"胜其他/平其他/负其他"不算有效score，允许被API真实比分覆盖
+        if not s:
+            return False
+        return s not in ('胜其他', '平其他', '负其他')
     canon_dedup_count = 0
     canon_merged = {}
     for old_key, rec in merged_results.items():
@@ -2692,17 +2697,22 @@ def fetch_and_save_results(days_back=7, archive_days=7):
         if new_key == old_key:
             canon_merged.setdefault(new_key, rec)
             continue
-        # key 发生变化 → 合并到 canonical key（优先保留有 fullScore 的条目）
+        # key 发生变化 → 合并到 canonical key（优先保留真实数字比分的条目；
+        # "胜其他/平其他/负其他" 视为占位无效score，新rec有真实比分直接覆盖）
         if new_key in canon_merged:
             existing = canon_merged[new_key]
-            existing_has_score = bool(existing.get('fullScore'))
-            new_has_score = bool(rec.get('fullScore'))
+            existing_has_score = _is_real_score(existing.get('fullScore') or existing.get('score'))
+            new_has_score = _is_real_score(rec.get('fullScore') or rec.get('score'))
             if new_has_score and not existing_has_score:
                 canon_merged[new_key] = {**existing, **rec}
             else:
-                # 字段级补全
+                # 字段级补全：score 字段特殊处理 — 旧是占位且新是真比分则覆盖
                 for k, v in rec.items():
                     if k not in existing or not existing[k]:
+                        existing[k] = v
+                    elif k in ('score', 'fullScore') and not _is_real_score(existing[k]) and _is_real_score(v):
+                        existing[k] = v
+                    elif k in ('winFlag',) and not existing_has_score and new_has_score:
                         existing[k] = v
         else:
             canon_merged[new_key] = rec
