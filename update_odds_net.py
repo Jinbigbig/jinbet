@@ -2720,7 +2720,41 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     if canon_dedup_count:
         print(f'  [CLEAN] canonical 归一化 {canon_dedup_count} 条队名变体 key')
     merged_results = canon_merged
-    print(f'  合并后赛果（canonical 归一化）: {len(merged_results)} 条')
+
+    # === matchId 去重：同一比赛(相同matchId)只保留一条，消除正反序双 key ===
+    # 根因：fetch_163_results 主动写正序 + 反序两条 key(同 matchId)，
+    # 导致 RESULTS / 赛果录入 / 赛果归档 / 赔率管理页面出现重复比赛。
+    # 修复：按 matchId 分组，同 matchId 只保留一条(优先有真实数字比分且赔率完整的)。
+    by_match_id = {}
+    no_id_keys = []
+    for k, rec in merged_results.items():
+        mid = str(rec.get('matchId') or '')
+        if mid:
+            by_match_id.setdefault(mid, []).append(k)
+        else:
+            no_id_keys.append(k)
+    rev_dedup_count = 0
+    deduped = {}
+    for mid, keys in by_match_id.items():
+        if len(keys) == 1:
+            deduped[keys[0]] = merged_results[keys[0]]
+        else:
+            # 多条同 matchId → 选最佳：优先有真实数字比分 + 有赔率字段
+            def _score_rank(k):
+                rec = merged_results[k]
+                s = rec.get('score') or rec.get('fullScore') or ''
+                has_real = s not in ('', '胜其他', '平其他', '负其他')
+                odds_rich = sum(1 for f in ('胜','平','负','让球','比分','总进球','半全场') if rec.get(f))
+                return (has_real, odds_rich)
+            best_key = max(keys, key=_score_rank)
+            deduped[best_key] = merged_results[best_key]
+            rev_dedup_count += len(keys) - 1
+    for k in no_id_keys:
+        deduped[k] = merged_results[k]
+    if rev_dedup_count:
+        print(f'  [DEDUP] matchId 去重: 消除 {rev_dedup_count} 条正反序重复 key')
+    merged_results = deduped
+    print(f'  合并后赛果（canonical + matchId 去重）: {len(merged_results)} 条')
 
     # 归档旧赛果
     archived_count = len(merged_results)
