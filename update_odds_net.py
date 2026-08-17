@@ -107,7 +107,7 @@ RESULT_TEAM_NAME_MAP = {
     '赫尔辛基火花': '赫尔火花', '赫火花': '赫尔火花',
     '赫尔辛基': '赫尔辛基', '赫尔辛': '赫尔辛基',
     '坦佩雷山猫': '坦佩雷山猫', '坦山猫': '坦佩雷山猫',
-    '国际图尔库': '国际图', '国际图': '国际图',
+    '国际图尔库': '国际图', '国际图尔': '国际图', '国际图': '国际图',
     '库奥皮奥': '库奥皮奥', '库奥皮': '库奥皮奥',
     '塞伊奈约基': '塞伊奈', '塞伊奈': '塞伊奈',
     'TPS图尔库': 'TPS图尔', 'TP图尔': 'TPS图尔',
@@ -1814,22 +1814,26 @@ def fetch_match_numbers(start_date, end_date):
     return id_map
 
 
-def fetch_163_results():
+def fetch_163_results(days_back=7):
     """
     网易竞彩足球赛果主源：通过 jczq 页日期筛选 input 触发的 API 接口抓取多日历史赛果。
     API: https://sports.163.com/caipiao/api/web/match/list/jingcai/matchList/1?days=YYYY-MM-DD HH:MM:SS
     days 参数对应 jczq 页日期筛选 input，按"投注周期日"返回该日及次日在售/已售场次，
-    包含全部已完赛场次的 jcNum / league / matchId / score / halfScore，自包含全部字段。
+    包含全部已完赛场次的 jcNum / league / matchId / score / halfScore / playMap 赔率。
 
     周日 001-0** 编号比赛可能部分周日完赛、部分周一凌晨完赛（matchTime 落在周一），
-    但 jcNum 前缀仍为"周日"，投注周期日仍为周日。本函数遍历过去 7 天逐日调用 API
+    但 jcNum 前缀仍为"周日"，投注周期日仍为周日。本函数遍历过去 days_back 天逐日调用 API
     并按 jcNum 去重，确保跨天完赛的周日比赛也能被完整捕获。
     key 日期推算：优先用 matchTime（开赛时间，Unix 毫秒，北京时间），
       - 若 matchTime 的 weekday == jcNum 前缀的 weekday → key 日期 = matchTime 日期
       - 否则（matchTime 落在次日凌晨，如周日022 实际 8-17 01:00 开赛）→ key 日期 = matchTime 日期 - 1 天
     matchTime 缺失时用 jcNum 前缀推算最近过去的同周X日期作兜底。
 
-    返回格式与 parse_results_json 一致: {key: {'home','away','score','halfScore','league','matchNumStr','matchId','matchNo'}}
+    参数:
+      days_back: 回溯天数，默认 7（CI 日常使用）。传入 228+ 可回填 2026 全年历史数据。
+
+    每条结果自包含：score/halfScore/fullScore/handicap/胜/平/负/hda胜/hda平/hda负/winFlag
+    返回格式与 parse_results_json 一致: {key: result_entry}
     """
     import urllib.request, urllib.parse, json
     from datetime import datetime, timedelta, timezone
@@ -1846,9 +1850,9 @@ def fetch_163_results():
         'Referer': 'https://sports.163.com/caipiao/match/football/jczq',
     }
 
-    # 遍历过去 7 天（含今日），逐日调用 API；按 jcNum 去重（同一比赛可能在多日响应中重复出现）
+    # 遍历过去 days_back 天（含今日），逐日调用 API；按 jcNum 去重（同一比赛可能在多日响应中重复出现）
     all_matches = {}
-    for d_back in range(7):
+    for d_back in range(days_back):
         day_dt = today - timedelta(days=d_back)
         days_val = day_dt.strftime('%Y-%m-%d') + ' 12:00:00'
         url = 'https://sports.163.com/caipiao/api/web/match/list/jingcai/matchList/1?days=' + urllib.parse.quote(days_val)
@@ -1868,7 +1872,7 @@ def fetch_163_results():
             if jcNum not in all_matches:
                 all_matches[jcNum] = m
 
-    print(f'  🎯 网易API赛果: 累计解析到 {len(all_matches)} 场唯一比赛 (jcNum 去重，过去7日)')
+    print(f'  🎯 网易API赛果: 累计解析到 {len(all_matches)} 场唯一比赛 (jcNum 去重，过去{days_back}日)')
 
     # 周几汉字 -> weekday int (0=周一 ... 6=周日)
     weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
@@ -1882,9 +1886,9 @@ def fetch_163_results():
         if not (matchStatus == 3 and live_status == '完'):
             continue
 
-        # 队名
-        home = (m.get('homeTeam') or {}).get('teamName', '') or ''
-        away = (m.get('guestTeam') or {}).get('teamName', '') or ''
+        # 队名（统一走 canonical_team_name 归一化，确保 key 与 SCHEDULE/历史赛果一致）
+        home = canonical_team_name((m.get('homeTeam') or {}).get('teamName', '') or '')
+        away = canonical_team_name((m.get('guestTeam') or {}).get('teamName', '') or '')
         if not home or not away:
             continue
 
@@ -1894,9 +1898,50 @@ def fetch_163_results():
         homeHalf = live_score.get('homeHalfScore', 0) or 0
         guestHalf = live_score.get('guestHalfScore', 0) or 0
         half_score = f"{homeHalf}:{guestHalf}"
+        full_score = f"{homeScore}:{guestScore}"
+        # 胜负标志：H=主胜 D=平 A=客胜（与历史 sporttery 格式一致）
+        if homeScore > guestScore:
+            win_flag = 'H'
+        elif homeScore < guestScore:
+            win_flag = 'A'
+        else:
+            win_flag = 'D'
 
         # 联赛与比赛ID
         league = (m.get('leagueMatch') or {}).get('leagueName', '') or ''
+
+        # 让球赔率：从 playMap 提取 HHDA（让球胜平负）+ HDA（不让球胜平负）
+        # playMap.HHDA: {concede: "+1"/"-1"/"0", playItemList: [{W:主胜}, {D:平}, {L:客胜}]}
+        # playMap.HDA: 同结构但 concede 固定为 "0"
+        play_map = m.get('playMap') or {}
+        handicap = ''
+        rq_win = rq_draw = rq_loss = ''
+        hda_win = hda_draw = hda_loss = ''
+        hhda = play_map.get('HHDA') or {}
+        if hhda:
+            handicap = str(hhda.get('concede', '') or '')
+            items = hhda.get('playItemList') or []
+            for it in items:
+                code = it.get('playItemCode', '')
+                odds_val = it.get('odds', 0)
+                if code == 'W':
+                    rq_win = odds_val
+                elif code == 'D':
+                    rq_draw = odds_val
+                elif code == 'L':
+                    rq_loss = odds_val
+        hda = play_map.get('HDA') or {}
+        if hda:
+            items = hda.get('playItemList') or []
+            for it in items:
+                code = it.get('playItemCode', '')
+                odds_val = it.get('odds', 0)
+                if code == 'W':
+                    hda_win = odds_val
+                elif code == 'D':
+                    hda_draw = odds_val
+                elif code == 'L':
+                    hda_loss = odds_val
         matchId = str(m.get('matchInfoId') or m.get('matchCode') or '')
 
         # key 日期推算（投注周期日）：
@@ -1935,29 +1980,68 @@ def fetch_163_results():
         key = f"{date_str}_{home}_{away}"
         if key in matches:
             continue
-        score = f"{homeScore}:{guestScore}"
-        matches[key] = {
+        score = full_score
+        # 完整赛果条目：兼容新格式（score/halfScore）与历史 sporttery 格式（fullScore/handicap/胜/平/负/winFlag/leagueAbbr）
+        result_entry = {
             'home': home,
             'away': away,
             'score': score,
             'halfScore': half_score,
+            'fullScore': score,
+            'winFlag': win_flag,
+            'handicap': handicap,
             'league': league,
+            'leagueAbbr': league,
             'matchId': matchId,
             'matchNumStr': jcNum,
             'matchNo': matchNo_int,
+            'status': '2',
+            '胜': rq_win,
+            '平': rq_draw,
+            '负': rq_loss,
+            'hda胜': hda_win,
+            'hda平': hda_draw,
+            'hda负': hda_loss,
         }
+        matches[key] = result_entry
         # 主客场反序双写（SCHEDULE 的主客场顺序可能和网易页面相反）
         rev_key = f"{date_str}_{away}_{home}"
         if rev_key not in matches and rev_key != key:
+            # 反序：比分对调，让球符号取反，胜负标志对调
+            rev_handicap = handicap
+            if handicap:
+                try:
+                    h_int = int(handicap)
+                    if h_int > 0:
+                        rev_handicap = str(-h_int)         # +1 → -1
+                    elif h_int < 0:
+                        rev_handicap = '+' + str(-h_int)   # -1 → +1
+                    else:
+                        rev_handicap = '0'
+                except Exception:
+                    rev_handicap = handicap
+            # 胜负标志 H/A 对调，D 不变
+            rev_win_flag = 'A' if win_flag == 'H' else ('H' if win_flag == 'A' else 'D')
             matches[rev_key] = {
                 'home': away,
                 'away': home,
                 'score': f"{guestScore}:{homeScore}",
                 'halfScore': half_score,
+                'fullScore': f"{guestScore}:{homeScore}",
+                'winFlag': rev_win_flag,
+                'handicap': rev_handicap,
                 'league': league,
+                'leagueAbbr': league,
                 'matchId': matchId,
                 'matchNumStr': jcNum,
                 'matchNo': matchNo_int,
+                'status': '2',
+                '胜': rq_loss,    # 反序后主胜=原客胜
+                '平': rq_draw,
+                '负': rq_win,    # 反序后主负=原主胜
+                'hda胜': hda_loss,
+                'hda平': hda_draw,
+                'hda负': hda_win,
             }
 
     uniq_pairs = set()
@@ -2383,14 +2467,17 @@ def archive_results(results_data, days=7):
     return results_data
 
 
-def fetch_and_save_results():
+def fetch_and_save_results(days_back=7, archive_days=7):
     """主函数：抓取赛果并保存，返回 (success, stats_dict)。
 
     网易为主源（fetch_163_results），体彩为备用（fetch_results + parse_results_json）。
-    网易主源自带 jcNum/league/matchId，无需再调体彩编号接口；仅当降级到体彩时才补充编号。
+    网易主源自带 jcNum/league/matchId/playMap赔率，无需再调体彩编号接口；仅当降级到体彩时才补充编号。
+    参数:
+      days_back: 回溯天数，默认 7（CI 日常）。传入 228+ 可回填 2026 全年历史数据。
+      archive_days: 归档阈值天数，默认 7。backfill 模式应设为 365 以保留全年历史数据在 results_data.json。
     """
     print('\n' + '=' * 60)
-    print('  获取赛果数据（网易主源 / 体彩备用）')
+    print(f'  获取赛果数据（网易主源 / 体彩备用，回溯 {days_back} 天）')
     print('=' * 60)
 
     with open(HTML_PATH, 'r', encoding='utf-8') as f:
@@ -2398,13 +2485,13 @@ def fetch_and_save_results():
 
     # 抓取赛果：网易为主源，体彩为备用
     print('\n[1/3] 获取赛果数据（网易主源）...')
-    new_results = fetch_163_results()
+    new_results = fetch_163_results(days_back=days_back)
     source = '163'
     fetched_bytes = 0
 
     if not new_results:
         print('  ⚠️ 网易赛果为空，降级到体彩赛果API...')
-        json_text = fetch_results(days_back=7)
+        json_text = fetch_results(days_back=days_back)
         if json_text:
             fetched_bytes = len(json_text)
             print(f'  ✅ 体彩赛果API获取成功 ({fetched_bytes} 字节)')
@@ -2462,7 +2549,7 @@ def fetch_and_save_results():
 
     # 归档旧赛果
     archived_count = len(merged_results)
-    merged_results = archive_results(merged_results, days=7)
+    merged_results = archive_results(merged_results, days=archive_days)
     archived_count -= len(merged_results)
     if archived_count > 0:
         print(f'  归档旧赛果: {archived_count} 条')
@@ -2566,7 +2653,39 @@ if __name__ == '__main__':
     results_msg = '更新赛果数据（网易主源/体彩备用）'
     no_push = '--no-push' in sys.argv
 
-    if '--results-only' in sys.argv:
+    # --backfill 模式：回填历史赛果（默认从 2026-01-01 至今，可用 --backfill-days N 自定义天数）
+    if '--backfill' in sys.argv:
+        # 计算从 2026-01-01 至今的天数
+        from datetime import datetime
+        try:
+            start_date = datetime(2026, 1, 1)
+            today_dt = datetime.now()
+            backfill_days = max(1, (today_dt - start_date).days + 1)
+        except Exception:
+            backfill_days = 228
+        # 允许 --backfill-days N 覆盖默认值
+        for i, arg in enumerate(sys.argv):
+            if arg == '--backfill-days' and i + 1 < len(sys.argv):
+                try:
+                    backfill_days = int(sys.argv[i + 1])
+                except ValueError:
+                    pass
+        print(f'\n[BACKFILL] 回填 {backfill_days} 天历史赛果（含赔率/让球/赛果）')
+        success, stats = fetch_and_save_results(days_back=backfill_days, archive_days=365)
+        if not success:
+            print('\n[致命错误] 回填赛果失败，退出码1')
+            exit_code = 1
+        elif not no_push:
+            pushed = push_to_gh_pages(
+                commit_message=f'data: 回填{backfill_days}天历史赛果+赔率(网易jczq API)',
+                extra_files=results_files,
+                sync_master_first=True,
+                skip_ghpages=False,
+            )
+            if not pushed:
+                print('\n[致命错误] 回填赛果推送失败，退出码1')
+                exit_code = 1
+    elif '--results-only' in sys.argv:
         success, stats = fetch_and_save_results()
         if not success:
             print('\n[致命错误] 赛果抓取失败，退出码1')
