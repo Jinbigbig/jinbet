@@ -36,6 +36,7 @@ jobs:
       - name: 抓取赛果（失败降级+自动重试）
         id: results_step
         uses: nick-fields/retry@v3
+        continue-on-error: true
         with:
           timeout_minutes: 8
           max_attempts: 3
