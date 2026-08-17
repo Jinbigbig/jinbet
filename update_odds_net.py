@@ -1961,6 +1961,9 @@ def fetch_163_results(days_back=7):
         handicap = ''
         rq_win = rq_draw = rq_loss = ''
         hda_win = hda_draw = hda_loss = ''
+        bf_odds = {}   # 比分: { "1:0": 21, "胜其他": 80, ... }
+        zjq_odds = {}  # 总进球: { "0": 25, "1": 7.8, ..., "7+": 14 }
+        bqc_odds = {}  # 半全场: { "胜胜": 8.25, "平平": 8.1, ... }
         hhda = play_map.get('HHDA') or {}
         if hhda:
             handicap = str(hhda.get('concede', '') or '')
@@ -1986,6 +1989,30 @@ def fetch_163_results(days_back=7):
                     hda_draw = odds_val
                 elif code == 'L':
                     hda_loss = odds_val
+        # 比分 FBF：playItemName = "1:0" / "胜其他" 等体彩标准命名
+        fbf = play_map.get('FBF') or {}
+        if fbf:
+            for it in fbf.get('playItemList') or []:
+                name = it.get('playItemName', '')
+                odds_val = it.get('odds', 0)
+                if name and odds_val and isinstance(odds_val, (int, float)) and odds_val > 0:
+                    bf_odds[name] = float(odds_val)
+        # 总进球 FJQ：playItemName = "0"~"7+"
+        fjq = play_map.get('FJQ') or {}
+        if fjq:
+            for it in fjq.get('playItemList') or []:
+                name = it.get('playItemName', '')
+                odds_val = it.get('odds', 0)
+                if name and odds_val and isinstance(odds_val, (int, float)) and odds_val > 0:
+                    zjq_odds[name] = float(odds_val)
+        # 半全场 FBQC：playItemName = "胜胜" / "胜平" 等
+        fbqc = play_map.get('FBQC') or {}
+        if fbqc:
+            for it in fbqc.get('playItemList') or []:
+                name = it.get('playItemName', '')
+                odds_val = it.get('odds', 0)
+                if name and odds_val and isinstance(odds_val, (int, float)) and odds_val > 0:
+                    bqc_odds[name] = float(odds_val)
         matchId = str(m.get('matchInfoId') or m.get('matchCode') or '')
 
         # key 日期推算（投注周期日）：
@@ -2025,7 +2052,66 @@ def fetch_163_results(days_back=7):
         if key in matches:
             continue
         score = full_score
+
+        # 反序：让球符号取反（提前计算，rev_key 分支及 rev_rq_list 均用到）
+        rev_handicap = handicap
+        if handicap:
+            try:
+                h_int = int(handicap)
+                if h_int > 0:
+                    rev_handicap = str(-h_int)         # +1 → -1
+                elif h_int < 0:
+                    rev_handicap = '+' + str(-h_int)   # -1 → +1
+                else:
+                    rev_handicap = '0'
+            except Exception:
+                rev_handicap = handicap
+        # 胜负标志 H/A 对调，D 不变（提前计算）
+        rev_win_flag = 'A' if win_flag == 'H' else ('H' if win_flag == 'A' else 'D')
+
+        # 让球数组结构（正序）：若 handicap 非 0 且有 rq 三项则生成单元素数组
+        rq_list = []
+        if handicap and str(handicap) != '0' and rq_win and rq_draw and rq_loss:
+            rq_list = [{
+                'handicap': str(handicap),
+                '胜': float(rq_win) if isinstance(rq_win, (int, float)) and rq_win > 0 else rq_win,
+                '平': float(rq_draw) if isinstance(rq_draw, (int, float)) and rq_draw > 0 else rq_draw,
+                '负': float(rq_loss) if isinstance(rq_loss, (int, float)) and rq_loss > 0 else rq_loss,
+            }]
+        # 反序让球数组：让球符号取反，胜/负赔率对调
+        rev_rq_list = []
+        if rev_handicap and str(rev_handicap) != '0' and rq_win and rq_draw and rq_loss:
+            rev_rq_list = [{
+                'handicap': str(rev_handicap),
+                '胜': float(rq_loss) if isinstance(rq_loss, (int, float)) and rq_loss > 0 else rq_loss,
+                '平': float(rq_draw) if isinstance(rq_draw, (int, float)) and rq_draw > 0 else rq_draw,
+                '负': float(rq_win) if isinstance(rq_win, (int, float)) and rq_win > 0 else rq_win,
+            }]
+        # 反序比分、总进球、半全场：比分对调（W↔L，"胜其他"↔"负其他"）
+        rev_bf_odds = {}
+        for score, v in bf_odds.items():
+            if score in ('胜其他', '平其他', '负其他'):
+                rev_score = '负其他' if score == '胜其他' else ('胜其他' if score == '负其他' else '平其他')
+            elif ':' in score:
+                try:
+                    a, b = score.split(':')
+                    rev_score = f"{b}:{a}"
+                except Exception:
+                    rev_score = score
+            else:
+                rev_score = score
+            rev_bf_odds[rev_score] = v
+        # 反序半全场：首位对调（胜胜→负负，胜平→负平，胜负→负胜，平胜→平负，平平→平平，平负→平胜，负胜→胜负，负平→胜平，负负→胜胜）
+        rev_bqc_odds = {}
+        _bqc_map = {'胜胜':'负负','胜平':'负平','胜负':'负胜','平胜':'平负','平平':'平平','平负':'平胜','负胜':'胜负','负平':'胜平','负负':'胜胜'}
+        for k, v in bqc_odds.items():
+            rev_bqc_odds[_bqc_map.get(k, k)] = v
+        # 总进球不涉及主客，rev=直接复制
+        rev_zjq_odds = dict(zjq_odds)
+
         # 完整赛果条目：兼容新格式（score/halfScore）与历史 sporttery 格式（fullScore/handicap/胜/平/负/winFlag/leagueAbbr）
+        # 注意：顶层「胜/平/负」 = 体彩标准"胜平负(让球0)"赔率 = HDA，前端 SPF 0行使用；
+        #       让球胜平负应放在「让球: [{handicap,胜,平,负}, ...]」数组中，对应 HHDA。
         result_entry = {
             'home': home,
             'away': away,
@@ -2040,32 +2126,24 @@ def fetch_163_results(days_back=7):
             'matchNumStr': jcNum,
             'matchNo': matchNo_int,
             'status': '2',
-            '胜': rq_win,
-            '平': rq_draw,
-            '负': rq_loss,
+            '胜': hda_win,  # 普通胜平负 = HDA (让球0)
+            '平': hda_draw,
+            '负': hda_loss,
             'hda胜': hda_win,
             'hda平': hda_draw,
             'hda负': hda_loss,
+            'hhda胜': rq_win,  # 让球胜平负 = HHDA (具体 handicap 数字)
+            'hhda平': rq_draw,
+            'hhda负': rq_loss,
+            '让球': rq_list,
+            '比分': bf_odds,
+            '总进球': zjq_odds,
+            '半全场': bqc_odds,
         }
         matches[key] = result_entry
         # 主客场反序双写（SCHEDULE 的主客场顺序可能和网易页面相反）
         rev_key = f"{date_str}_{away}_{home}"
         if rev_key not in matches and rev_key != key:
-            # 反序：比分对调，让球符号取反，胜负标志对调
-            rev_handicap = handicap
-            if handicap:
-                try:
-                    h_int = int(handicap)
-                    if h_int > 0:
-                        rev_handicap = str(-h_int)         # +1 → -1
-                    elif h_int < 0:
-                        rev_handicap = '+' + str(-h_int)   # -1 → +1
-                    else:
-                        rev_handicap = '0'
-                except Exception:
-                    rev_handicap = handicap
-            # 胜负标志 H/A 对调，D 不变
-            rev_win_flag = 'A' if win_flag == 'H' else ('H' if win_flag == 'A' else 'D')
             matches[rev_key] = {
                 'home': away,
                 'away': home,
@@ -2080,12 +2158,19 @@ def fetch_163_results(days_back=7):
                 'matchNumStr': jcNum,
                 'matchNo': matchNo_int,
                 'status': '2',
-                '胜': rq_loss,    # 反序后主胜=原客胜
-                '平': rq_draw,
-                '负': rq_win,    # 反序后主负=原主胜
+                '胜': hda_loss,  # 反序后主胜 = 原普通客胜 (HDA)
+                '平': hda_draw,
+                '负': hda_win,   # 反序后主负 = 原普通主胜 (HDA)
                 'hda胜': hda_loss,
                 'hda平': hda_draw,
                 'hda负': hda_win,
+                'hhda胜': rq_loss,   # 反序后让球主胜 = 原让球客胜
+                'hhda平': rq_draw,
+                'hhda负': rq_win,
+                '让球': rev_rq_list,
+                '比分': rev_bf_odds,
+                '总进球': rev_zjq_odds,
+                '半全场': rev_bqc_odds,
             }
 
     uniq_pairs = set()
@@ -2690,7 +2775,157 @@ def fetch_and_save_results(days_back=7, archive_days=7):
                 full_schedule_decl = f'const SCHEDULE = {schedule_js};'
                 html_content = re.sub(schedule_before_pattern, lambda _: full_schedule_decl, html_content, count=1)
                 print(f'  ✅ 编号回填：补了 {id_count_after} 场缺失matchNumStr（之前SCHEDULE有编号共 {id_count_before} 场）')
-    print('\n[3/3] 更新 index.html 中的赛果数据...')
+
+    # === 从 merged_results 中提取赔率同步写入 ODDS（index.html 内联 + odds_data.json） ===
+    # 赛果API已经通过 playMap 拿到了 2026 全年的 HDA / HHDA / 比分 / 总进球 / 半全场 赔率，
+    # 需要同步到 ODDS 让「赔率管理」页面能直接展示（而不只是 RESULTS 里有）
+    print('\n[3/4] 从赛果提取历史赔率并同步到 ODDS...')
+    odds_pattern = r'const ODDS = \{([\s\S]*?)\};'
+    odds_match = re.search(odds_pattern, html_content)
+    existing_odds = {}
+    if odds_match:
+        existing_odds_str = '{' + odds_match.group(1) + '}'
+        try:
+            existing_odds = json.loads(parse_js_obj_to_json(existing_odds_str))
+            print(f'  原有ODDS: {len(existing_odds)} 条')
+        except Exception:
+            existing_odds = {}
+    added_from_results = 0
+    updated_from_results = 0
+    for res_key, rec in merged_results.items():
+        parts = res_key.split('_', 2)
+        if len(parts) < 3:
+            continue
+        date, home, away = parts
+        # 只合并有可用赔率字段的记录
+        has_odds = (rec.get('胜') or rec.get('让球') or rec.get('比分') or
+                    rec.get('总进球') or rec.get('半全场'))
+        if not has_odds:
+            continue
+        existing = existing_odds.get(res_key, {})
+        # 若现有记录已有完整胜/平/负，不覆盖（用户手工录入 / 赔率API更优），只补缺失字段
+        existing_has_core = bool(existing.get('胜') and existing.get('平') and existing.get('负'))
+        new_entry = dict(existing) if existing else {}
+        new_entry['home'] = new_entry.get('home', home)
+        new_entry['away'] = new_entry.get('away', away)
+        if rec.get('league') and not new_entry.get('league'):
+            new_entry['league'] = rec['league']
+        if rec.get('matchId') and not new_entry.get('matchId'):
+            new_entry['matchId'] = rec['matchId']
+        if rec.get('matchNumStr') and not new_entry.get('matchNumStr'):
+            new_entry['matchNumStr'] = rec['matchNumStr']
+        if rec.get('matchNo') and not new_entry.get('matchNo'):
+            new_entry['matchNo'] = rec['matchNo']
+        # 胜/平/负（HDA 让球0）：现有无核心赔率才整体替换
+        if not existing_has_core:
+            if rec.get('胜'): new_entry['胜'] = rec['胜']
+            if rec.get('平'): new_entry['平'] = rec['平']
+            if rec.get('负'): new_entry['负'] = rec['负']
+        # 让球数组：合并（按 handicap 去重），优先保留现有
+        rq_new = list(new_entry.get('让球') or [])
+        existing_hcps = set()
+        for item in rq_new:
+            if isinstance(item, dict):
+                existing_hcps.add(str(item.get('handicap', '')))
+        for rq in rec.get('让球') or []:
+            if not isinstance(rq, dict):
+                continue
+            hcp = str(rq.get('handicap', ''))
+            if hcp and hcp not in existing_hcps:
+                rq_new.append(rq)
+                existing_hcps.add(hcp)
+        if rq_new:
+            new_entry['让球'] = rq_new
+        # 比分 / 总进球 / 半全场：只补缺失项
+        for field, src_field in [('比分', '比分'), ('总进球', '总进球'), ('半全场', '半全场')]:
+            src = rec.get(src_field) or {}
+            if not isinstance(src, dict):
+                continue
+            cur = new_entry.get(field) or {}
+            if not isinstance(cur, dict):
+                cur = {}
+            changed = False
+            for k, v in src.items():
+                if k not in cur and v:
+                    cur[k] = v
+                    changed = True
+            if cur and (changed or not new_entry.get(field)):
+                new_entry[field] = cur
+        if res_key not in existing_odds:
+            existing_odds[res_key] = new_entry
+            added_from_results += 1
+        elif new_entry != existing:
+            existing_odds[res_key] = new_entry
+            updated_from_results += 1
+    # canonical 清洗 existing_odds 的 key 与上面 update_html_odds 中保持一致
+    canon_dedup_count_odds = 0
+    canon_odds = {}
+    for old_key, odds in existing_odds.items():
+        parts = old_key.split('_', 2)
+        if len(parts) < 3:
+            canon_odds.setdefault(old_key, odds)
+            continue
+        date2, h2, a2 = parts
+        c_home2 = canonical_team_name(h2)
+        c_away2 = canonical_team_name(a2)
+        new_key2 = f'{date2}_{c_home2}_{c_away2}'
+        if new_key2 == old_key:
+            canon_odds.setdefault(new_key2, odds)
+            continue
+        if new_key2 in canon_odds:
+            e = canon_odds[new_key2]
+            has_core_e = bool(e.get('胜') or e.get('比分') or e.get('让球'))
+            has_core_n = bool(odds.get('胜') or odds.get('比分') or odds.get('让球'))
+            if has_core_n and not has_core_e:
+                canon_odds[new_key2] = {**e, **odds}
+            else:
+                for k2, v2 in odds.items():
+                    if k2 not in e or not e[k2]:
+                        e[k2] = v2
+            canon_dedup_count_odds += 1
+        else:
+            canon_odds[new_key2] = odds
+    existing_odds = canon_odds
+    print(f'  ✅ 从赛果回填 ODDS：新增 {added_from_results} 条, 更新 {updated_from_results} 条 (canonical归一化 {canon_dedup_count_odds} 条, 共 {len(existing_odds)} 条)')
+
+    # 写回 index.html 的 ODDS 内联常量
+    odds_js = json.dumps(existing_odds, ensure_ascii=False, indent=2)
+    html_content = re.sub(odds_pattern, f'const ODDS = {odds_js};', html_content, count=1)
+
+    # 同步写入 odds_data.json (前端 fetch('odds_data.json') 读取)
+    import time as _time
+    online_data = {}
+    for key, odds in existing_odds.items():
+        key_parts = key.split('_', 2)
+        if len(key_parts) < 3:
+            continue
+        _, h3, a3 = key_parts
+        vs_key = f'{h3} vs {a3}'
+        entry = {
+            '胜': odds.get('胜', ''),
+            '平': odds.get('平', ''),
+            '负': odds.get('负', ''),
+            '让球': odds.get('让球', []),
+            '比分': odds.get('比分', {}),
+            '总进球': odds.get('总进球', {}),
+            '半全场': odds.get('半全场', {}),
+            'league': odds.get('league', ''),
+            'date_key': key
+        }
+        for mfield in ['matchId', 'matchNumStr', 'matchNo']:
+            if odds.get(mfield):
+                entry[mfield] = odds[mfield]
+        online_data[vs_key] = entry
+    odds_json_full = {
+        'updated': _time.strftime('%Y-%m-%d %H:%M'),
+        'count': len(online_data),
+        'data': online_data
+    }
+    with open(os.path.join(BASE_DIR, 'odds_data.json'), 'w', encoding='utf-8') as f:
+        json.dump(odds_json_full, f, ensure_ascii=False, indent=2)
+    print('  ✅ ODDS 内联(index.html) + odds_data.json 已同步')
+
+    print('\n[4/4] 更新 index.html 中的赛果数据...')
     html_content = update_html_results(html_content, merged_results)
 
     with open(HTML_PATH, 'w', encoding='utf-8') as f:
