@@ -1816,165 +1816,114 @@ def fetch_match_numbers(start_date, end_date):
 
 def fetch_163_results():
     """
-    网易竞彩足球比分直播页：赛果数据主源。
-    来源URL: https://sports.163.com/caipiao/match/football/jczq
-    赛果页按"完赛日期"分组，包含全部竞彩在售/已售场次的完赛比分，且页面本身自带：
-      - jcNum（场次编号 周X###）
-      - leagueMatch.leagueName（联赛名）
-      - matchInfoId / matchCode（比赛ID）
-      - matchTime（开赛时间，Unix毫秒时间戳）
-      - homeTeam / guestTeam.teamName（队名）
-      - homeScore / guestScore（全场比分）
-      - homeHalfScore / guestHalfScore（半场比分）
-    周日001-0**编号比赛可能部分周日完赛、部分周一凌晨完赛。jczq 页按"完赛日期"分组，
-    但 SCHEDULE/赔率/前端均按"投注周期日"建 key（周日=8-16）。
-    本函数用 jcNum 前缀（周X）推算"投注周期日"作 key，保证与 SCHEDULE 一致；
-    matchTime 仅作辅助，不参与 key 日期计算。
-    本函数自包含全部字段，无需调用赔率API补全。
+    网易竞彩足球赛果主源：通过 jczq 页日期筛选 input 触发的 API 接口抓取多日历史赛果。
+    API: https://sports.163.com/caipiao/api/web/match/list/jingcai/matchList/1?days=YYYY-MM-DD HH:MM:SS
+    days 参数对应 jczq 页日期筛选 input，按"投注周期日"返回该日及次日在售/已售场次，
+    包含全部已完赛场次的 jcNum / league / matchId / score / halfScore，自包含全部字段。
+
+    周日 001-0** 编号比赛可能部分周日完赛、部分周一凌晨完赛（matchTime 落在周一），
+    但 jcNum 前缀仍为"周日"，投注周期日仍为周日。本函数遍历过去 7 天逐日调用 API
+    并按 jcNum 去重，确保跨天完赛的周日比赛也能被完整捕获。
+    key 日期推算：优先用 matchTime（开赛时间，Unix 毫秒，北京时间），
+      - 若 matchTime 的 weekday == jcNum 前缀的 weekday → key 日期 = matchTime 日期
+      - 否则（matchTime 落在次日凌晨，如周日022 实际 8-17 01:00 开赛）→ key 日期 = matchTime 日期 - 1 天
+    matchTime 缺失时用 jcNum 前缀推算最近过去的同周X日期作兜底。
+
     返回格式与 parse_results_json 一致: {key: {'home','away','score','halfScore','league','matchNumStr','matchId','matchNo'}}
     """
-    import urllib.request, re, html as _html_mod
+    import urllib.request, urllib.parse, json
     from datetime import datetime, timedelta, timezone
 
-    url = 'https://sports.163.com/caipiao/match/football/jczq'
+    beijing_tz = timezone(timedelta(hours=8))
+    today = datetime.now(beijing_tz)
+    today_wd = today.weekday()
+
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        'Accept': 'application/json,text/plain,*/*',
+        'Content-Type': 'application/x-www-form-urlencoded',
         'Accept-Encoding': 'identity',
+        'Referer': 'https://sports.163.com/caipiao/match/football/jczq',
     }
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            raw = resp.read().decode('utf-8', errors='ignore')
-    except Exception as e:
-        print(f'  ⚠️ 网易jczq比分页请求失败: {e}')
-        return {}
-    text = _html_mod.unescape(raw)
 
-    # 赛果页 jcNum 出现位置：每场完赛比赛一个 jcNum
-    jc_positions = list(re.finditer(r'"jcNum"\s*:\s*\[0,\s*"(周[一二三四五六日]\d{3})"', text))
-    if not jc_positions:
-        return {}
-
-    # 周几汉字 -> weekday int (0=周一 ... 6=周日)，仅作 matchTime 缺失时的兜底
-    weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
-    today = datetime.now()
-    today_wd = today.weekday()
-    date_today_str = today.strftime('%Y-%m-%d')
-    beijing_tz = timezone(timedelta(hours=8))  # matchTime 是北京时间 Unix 毫秒
-
-    PRE_BYTES = 3000
-    POST_BYTES = 3000   # 增大后视窗口以容纳 leagueMatch/matchInfoId/matchTime（均在 jcNum 之后）
-    matches = {}
-    for i, jc_m in enumerate(jc_positions):
-        jcNum = jc_m.group(1)
-        # 块边界：前一场 jcNum 之后到下一场 jcNum 之前
-        if i + 1 < len(jc_positions):
-            blk_end = jc_positions[i+1].start() + 1
-        else:
-            blk_end = len(text)
-        blk_start = max(0, jc_m.start() - PRE_BYTES)
-        blk_end = min(blk_end, jc_m.end() + POST_BYTES)
-        block = text[blk_start:blk_end]
-        jc_local_pos = jc_m.start() - blk_start
-        pre_block = block[:jc_local_pos]
-        post_block = block[jc_local_pos:]   # jcNum 及其之后
-
-        # 状态：matchStatus==3 且 status=="完" 视为完赛
-        ms_m = re.search(r'"matchStatus"\s*:\s*\[0,\s*(\d+)', pre_block)
-        scn_m = re.search(r'"status"\s*:\s*\[0,\s*"([^"]+)"', pre_block)
-        matchStatus = int(ms_m.group(1)) if ms_m else -1
-        status_cn = scn_m.group(1) if scn_m else ''
-        is_finished = (matchStatus == 3 and status_cn == '完')
-        if not is_finished and status_cn == '完':
-            hs_test = re.search(r'"homeScore"\s*:\s*\[0,\s*(\d+)', pre_block)
-            gs_test = re.search(r'"guestScore"\s*:\s*\[0,\s*(\d+)', pre_block)
-            if hs_test and gs_test and (int(hs_test.group(1)) > 0 or int(gs_test.group(1)) > 0):
-                is_finished = True
-        if not is_finished:
+    # 遍历过去 7 天（含今日），逐日调用 API；按 jcNum 去重（同一比赛可能在多日响应中重复出现）
+    all_matches = {}
+    for d_back in range(7):
+        day_dt = today - timedelta(days=d_back)
+        days_val = day_dt.strftime('%Y-%m-%d') + ' 12:00:00'
+        url = 'https://sports.163.com/caipiao/api/web/match/list/jingcai/matchList/1?days=' + urllib.parse.quote(days_val)
+        try:
+            req = urllib.request.Request(url, data=b'', headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                raw = resp.read().decode('utf-8', errors='ignore')
+            data = json.loads(raw)
+            day_matches = data.get('data', []) or []
+        except Exception as e:
+            print(f'  ⚠️ 网易赛果API请求失败 (days={days_val}): {e}')
             continue
-
-        # 比分：在 block 中找距离 jcNum 最近的 homeScore / guestScore
-        best_hs, best_hs_d = None, 999999
-        best_gs, best_gs_d = None, 999999
-        for tm in re.finditer(r'"homeScore"\s*:\s*\[0,\s*(\d+)', block):
-            d = abs(tm.start() - jc_local_pos)
-            if d < best_hs_d:
-                best_hs, best_hs_d = int(tm.group(1)), d
-        for tm in re.finditer(r'"guestScore"\s*:\s*\[0,\s*(\d+)', block):
-            d = abs(tm.start() - jc_local_pos)
-            if d < best_gs_d:
-                best_gs, best_gs_d = int(tm.group(1)), d
-        if best_hs is None or best_gs is None:
-            continue
-        if best_hs_d > 12000 or best_gs_d > 12000 or abs(best_hs_d - best_gs_d) > 1000:
-            continue
-        homeScore = best_hs
-        guestScore = best_gs
-
-        # 半场比分：homeHalfScore / guestHalfScore（在 pre_block，紧贴 homeScore/guestScore）
-        hh_m = re.search(r'"homeHalfScore"\s*:\s*\[0,\s*(\d+)', pre_block)
-        gh_m = re.search(r'"guestHalfScore"\s*:\s*\[0,\s*(\d+)', pre_block)
-        half_score = ''
-        if hh_m and gh_m:
-            half_score = f"{hh_m.group(1)}:{gh_m.group(1)}"
-
-        # 队名：从赛果页 teamName 提取（pre_block 中的 homeTeam/guestTeam.teamName）
-        teams = []
-        for tm in re.finditer(r'"teamName"\s*:\s*\[0,\s*"([^"]+)"', pre_block):
-            name = tm.group(1)
-            if name in teams:
+        for m in day_matches:
+            jcNum = m.get('jcNum', '')
+            if not jcNum:
                 continue
-            teams.append(name)
-            if len(teams) == 2:
-                break
-        if len(teams) < 2:
+            if jcNum not in all_matches:
+                all_matches[jcNum] = m
+
+    print(f'  🎯 网易API赛果: 累计解析到 {len(all_matches)} 场唯一比赛 (jcNum 去重，过去7日)')
+
+    # 周几汉字 -> weekday int (0=周一 ... 6=周日)
+    weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
+    matches = {}
+
+    for jcNum, m in all_matches.items():
+        # 仅保留已完赛：matchStatus==3 且 footballLiveScore.status=='完'
+        matchStatus = m.get('matchStatus', -1)
+        live_score = m.get('footballLiveScore') or {}
+        live_status = live_score.get('status', '')
+        if not (matchStatus == 3 and live_status == '完'):
             continue
-        home = teams[0]
-        away = teams[1]
 
-        # 联赛：从赛果页 leagueMatch.leagueName 提取（在 post_block，jcNum 之后）
-        league = ''
-        lg_m = re.search(r'"leagueMatch"\s*:\s*\[0,\s*\{[^}]*?"leagueName"\s*:\s*\[0,\s*"([^"]+)"', post_block)
-        if lg_m:
-            league = lg_m.group(1)
+        # 队名
+        home = (m.get('homeTeam') or {}).get('teamName', '') or ''
+        away = (m.get('guestTeam') or {}).get('teamName', '') or ''
+        if not home or not away:
+            continue
 
-        # 比赛ID：从赛果页 matchInfoId（post_block 中 jcNum 之后的那个）提取
-        matchId = ''
-        mid_m = re.search(r'"matchInfoId"\s*:\s*\[0,\s*(\d+)', post_block)
-        if mid_m:
-            matchId = mid_m.group(1)
-        matchCode = ''
-        mc_m = re.search(r'"matchCode"\s*:\s*\[0,\s*(\d+)', post_block)
-        if mc_m:
-            matchCode = mc_m.group(1)
+        # 比分（全场 + 半场）
+        homeScore = live_score.get('homeScore', 0) or 0
+        guestScore = live_score.get('guestScore', 0) or 0
+        homeHalf = live_score.get('homeHalfScore', 0) or 0
+        guestHalf = live_score.get('guestHalfScore', 0) or 0
+        half_score = f"{homeHalf}:{guestHalf}"
 
-        # 开赛时间：从赛果页 matchTime（post_block，Unix 毫秒时间戳）提取
-        match_time_str = ''
-        mt_m = re.search(r'"matchTime"\s*:\s*\[0,\s*(\d+)', post_block)
-        if mt_m:
-            try:
-                ms_ts = int(mt_m.group(1))
-                kick_dt = datetime.fromtimestamp(ms_ts / 1000.0, tz=beijing_tz)
-                match_time_str = kick_dt.strftime('%Y-%m-%d %H:%M:%S')
-            except Exception:
-                match_time_str = ''
+        # 联赛与比赛ID
+        league = (m.get('leagueMatch') or {}).get('leagueName', '') or ''
+        matchId = str(m.get('matchInfoId') or m.get('matchCode') or '')
 
-        # 日期推算逻辑（用 jcNum 前缀推算"投注周期日"，与 SCHEDULE 日期一致）：
-        # 网易 jczq 页按"完赛日期"分组，但 SCHEDULE/赔率/前端均按"投注周期日"建 key。
-        # 周日022 实际开赛 8-17 01:00（周一凌晨），但 jcNum=周日 → 投注周期日=8-16（周日）。
-        # 用 jcNum 前缀（周X）推算最近过去的那个周X，保证赛果 key 与 SCHEDULE 一致。
-        # matchTime 仅用于辅助判断（未来如需按开赛时间排序可用），不参与 key 日期计算。
+        # key 日期推算（投注周期日）：
+        # 优先用 matchTime，处理跨天完赛（周日022 实际周一 01:00 开赛 → key 日期 = 周日 8-16）
         prefix_cn = jcNum[:2]
         target_wd = weekday_map.get(prefix_cn)
-        if target_wd is None:
-            date_str = date_today_str
-        else:
-            diff_back = (today_wd - target_wd) % 7
-            date_str = (today - timedelta(days=diff_back)).strftime('%Y-%m-%d')
-        if not date_str or abs((datetime.strptime(date_str, '%Y-%m-%d') - today).days) > 7:
-            date_str = date_today_str
+        match_time_ms = m.get('matchTime')
+        date_str = None
+        if match_time_ms:
+            try:
+                kick_dt = datetime.fromtimestamp(match_time_ms / 1000.0, tz=beijing_tz)
+                kick_wd = kick_dt.weekday()
+                if target_wd is not None and kick_wd != target_wd:
+                    # matchTime 落在次日凌晨，投注周期日为前一天
+                    cycle_dt = kick_dt - timedelta(days=1)
+                else:
+                    cycle_dt = kick_dt
+                date_str = cycle_dt.strftime('%Y-%m-%d')
+            except Exception:
+                date_str = None
+        if not date_str:
+            # 兜底：jcNum 前缀推算最近过去的同周X日期
+            if target_wd is None:
+                date_str = today.strftime('%Y-%m-%d')
+            else:
+                diff_back = (today_wd - target_wd) % 7
+                date_str = (today - timedelta(days=diff_back)).strftime('%Y-%m-%d')
 
         # matchNo
         num_part = jcNum[2:] if len(jcNum) > 2 else ''
@@ -1993,21 +1942,20 @@ def fetch_163_results():
             'score': score,
             'halfScore': half_score,
             'league': league,
-            'matchId': matchId or matchCode,
+            'matchId': matchId,
             'matchNumStr': jcNum,
             'matchNo': matchNo_int,
         }
         # 主客场反序双写（SCHEDULE 的主客场顺序可能和网易页面相反）
         rev_key = f"{date_str}_{away}_{home}"
         if rev_key not in matches and rev_key != key:
-            hs_a, gs_a = score.split(':')
             matches[rev_key] = {
                 'home': away,
                 'away': home,
-                'score': f"{gs_a}:{hs_a}",
+                'score': f"{guestScore}:{homeScore}",
                 'halfScore': half_score,
                 'league': league,
-                'matchId': matchId or matchCode,
+                'matchId': matchId,
                 'matchNumStr': jcNum,
                 'matchNo': matchNo_int,
             }
@@ -2017,12 +1965,12 @@ def fetch_163_results():
         parts = k.split('_', 2)
         if len(parts) == 3:
             uniq_pairs.add((parts[0], tuple(sorted(parts[1:]))))
-    print(f'  🎯 网易jczq赛果: 解析到 {len(uniq_pairs)} 场已完赛比赛 (正反序key共{len(matches)}条)')
+    print(f'  🎯 网易API赛果: 解析到 {len(uniq_pairs)} 场已完赛比赛 (正反序key共{len(matches)}条)')
     shown = 0
     seen_pairs = set()
     for k, v in sorted(matches.items()):
         parts = k.split('_', 2)
-        pair = (parts[0], tuple(sorted(parts[1:]))) if len(parts)==3 else None
+        pair = (parts[0], tuple(sorted(parts[1:]))) if len(parts) == 3 else None
         if pair in seen_pairs:
             continue
         seen_pairs.add(pair)
