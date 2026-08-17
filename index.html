@@ -657354,7 +657354,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.112.3';
+const APP_VERSION = '7.112.4';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -659994,12 +659994,13 @@ function loadBatchSchedule() {
         return;
     }
 
-    // 收集现有比赛的去重键
+    // 收集现有比赛的去重键（主客对无序，避免主客场颠倒的重复比赛漏过）
     const existingKeys = new Set();
+    function _dedupKey(h, a) { return [h, a].sort().join('\x01'); }
     container.querySelectorAll('.batch-row').forEach(row => {
         const h = (row.querySelector('.batch-home')?.value || '').trim();
         const a = (row.querySelector('.batch-away')?.value || '').trim();
-        if (h && a) existingKeys.add(h + '\x01' + a);
+        if (h && a) existingKeys.add(_dedupKey(h, a));
     });
 
     // 收集现有日期分组
@@ -660015,8 +660016,8 @@ function loadBatchSchedule() {
     const rowsHtml = [];
     let autoFilled = 0;
     games.forEach(g => {
-        const key = g.home + '\x01' + g.away;
-        if (existingKeys.has(key)) return; // 跳过已存在的比赛
+        const key = _dedupKey(g.home, g.away);
+        if (existingKeys.has(key)) return; // 跳过已存在的比赛（含主客反序）
         existingKeys.add(key);
 
         const league = g.league || (isNationalTeam(g.home) ? '国际赛' : '');
@@ -662893,6 +662894,29 @@ function init() {
 
     loadFromStorage();
     
+    // 启动时全量 SCHEDULE 去重（按 matchId + 无序主客对），彻底消除主客颠倒的重复比赛
+    (function dedupScheduleOnLoad() {
+        if (typeof SCHEDULE === 'undefined') return;
+        let totalRemoved = 0;
+        Object.keys(SCHEDULE).forEach(date => {
+            const games = SCHEDULE[date];
+            if (!games || !games.length) return;
+            const seen = new Set();
+            const deduped = [];
+            for (const g of games) {
+                const h = g.home || '', a = g.away || '';
+                const pairKey = [h, a].sort().join('\x01');
+                const midKey = g.matchId ? 'mid:' + g.matchId : '';
+                const dk = midKey || pairKey;
+                if (seen.has(dk)) { totalRemoved++; continue; }
+                seen.add(dk);
+                deduped.push(g);
+            }
+            if (deduped.length !== games.length) SCHEDULE[date] = deduped;
+        });
+        if (totalRemoved) console.log('[SCHEDULE] 启动去重: 消除 ' + totalRemoved + ' 条主客反序重复比赛');
+    })();
+
     // oddsData 加载完成后，补充 aiCurrentMatches 中的 matchNumStr
     if (aiCurrentMatches && aiCurrentMatches.length > 0) {
         let _enriched = false;
@@ -662977,8 +663001,11 @@ function autoUpdateOdds() {
                             var home = parts.slice(1, -1).join('_');
                             var away = parts[parts.length - 1];
                             if (!SCHEDULE[date]) SCHEDULE[date] = [];
+                            // 无序主客对 + matchId 匹配：避免 oddsData 反序 key 把同一场比赛 push 两次
                             var existingGame = SCHEDULE[date].find(function(g) {
-                                return g.home === home && g.away === away;
+                                return (g.home === home && g.away === away) ||
+                                       (g.home === away && g.away === home) ||
+                                       (matchData.matchId && g.matchId === matchData.matchId);
                             });
                             if (existingGame) {
                                 // 更新已有比赛的编号信息（如果有的话）
