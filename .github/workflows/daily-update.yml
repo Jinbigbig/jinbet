@@ -30,10 +30,10 @@ jobs:
         env:
           PYTHONIOENCODING: utf-8
 
-      # === 赛果步骤：失败重试3次，仍失败则降级为"仅推送赔率" ===
-      # 根因：体彩赛果API（webapi.sporttery.cn）对GitHub Actions美国IP返回HTTP 567反爬封锁
-      # 网易赔率API（sports.163.com）不受影响，所以赔率永远正常、赛果在CI环境必失败
-      - name: 抓取赛果（失败降级+自动重试）
+      # === 赛果步骤：网易主源（sports.163.com/caipiao/match/football/jczq）+ 体彩备用 ===
+      # 网易jczq页按"完赛日期"分组，包含全部已完赛场次，CI不再受体彩API IP封锁影响
+      # 仅当网易主源返回空时才降级到体彩（CI环境下体彩通常返回HTTP 567，作为最后兜底）
+      - name: 抓取赛果（网易主源+体彩备用，失败重试）
         id: results_step
         uses: nick-fields/retry@v3
         continue-on-error: true
@@ -56,7 +56,7 @@ jobs:
             echo "✅ 赛果抓取成功"
           else
             echo "RESULTS_OK=false" >> $GITHUB_ENV
-            echo "⚠️ 赛果抓取失败（体彩API对CI IP返回HTTP 567），降级为仅推送赔率"
+            echo "⚠️ 赛果抓取失败（网易主源+体彩备用均无数据），降级为仅推送赔率"
           fi
 
       # === 赛果校验：只在赛果抓取成功时才校验（失败时跳过，不阻断推送）===
@@ -136,7 +136,7 @@ jobs:
           git add results_data.json 2>/dev/null || true
           git add results_history/ 2>/dev/null || true
           git diff --cached --stat
-          STATUS_TAG="${{ env.RESULTS_OK == 'true' && '赔率+赛果' || '仅赔率(赛果API被封567)' }}"
+          STATUS_TAG="${{ env.RESULTS_OK == 'true' && '赔率+赛果' || '仅赔率(网易主源+体彩备用赛果均失败)' }}"
           git commit -m "data: 自动更新${STATUS_TAG} $(date '+%Y-%m-%d %H:%M')"
           git pull origin master --rebase
           git push origin master
@@ -182,13 +182,13 @@ jobs:
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `赛果同步失败 ${today}（体彩API HTTP 567）`,
+              title: `赛果同步失败 ${today}（网易主源+体彩备用均失败）`,
               body: [
                 '## 赛果抓取失败',
                 '',
                 `**时间**: ${today}`,
-                `**根因**: 体彩赛果API (webapi.sporttery.cn) 对 GitHub Actions IP 返回 HTTP 567 反爬封锁`,
-                `**影响**: 赔率已正常推送，但赛果为空。需在本地（中国IP）手动补抓：`,
+                `**根因**: 网易jczq赛果页 + 体彩赛果API 均未返回有效数据`,
+                `**影响**: 赔率已正常推送，但赛果为空。需在本地手动补抓：`,
                 '',
                 '```bash',
                 'python update_odds_net.py --results-only',

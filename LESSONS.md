@@ -67,4 +67,38 @@
 ### 防复发
 - CI 出 Issue 通知后，管理员在本地跑 `python update_odds_net.py --results-only` 补抓，推送 master + gh-pages
 - 体彩API的IP封锁是基础设施层面的限制，除非更换 CI 运行位置（如自托管中国 runner），否则 CI 无法直接抓赛果
-- 网易API不含比分数据，不能作为赛果备选数据源
+- ~~网易API不含比分数据，不能作为赛果备选数据源~~（v7.105.0 已推翻：网易 jczq 比分直播页自带全场/半场比分+联赛+编号+开赛时间，已作为赛果主源）
+
+## 赛果改用网易jczq页为主源（v7.105.0 确立）
+
+### 背景
+v7.104.x 期间体彩赛果API对CI美国IP稳定返回HTTP 567，只能降级为"仅推送赔率"+本地补抓。这导致CI自动化失效，每天需人工介入。
+
+### 根因
+- 体彩赛果API（webapi.sporttery.cn）IP封锁无法绕过
+- 网易赔率API（sports.163.com/caipiao/bet/football）只含在售比赛，不含已完赛场次的比分
+- 但**网易竞彩足球比分直播页**（`sports.163.com/caipiao/match/football/jczq`）包含全部已完赛场次的完整数据
+
+### 修复方案（v7.105.0）
+1. **网易jczq页作赛果主源**：`fetch_163_results` 直接从 jczq 页提取，自包含全部字段：
+   - `jcNum`（场次编号 周X###）
+   - `leagueMatch.leagueName`（联赛名，如西甲/挪超/葡超）
+   - `matchInfoId` / `matchCode`（比赛ID）
+   - `matchTime`（开赛时间，Unix毫秒时间戳，北京时间）
+   - `homeTeam` / `guestTeam.teamName`（队名）
+   - `homeScore` / `guestScore`（全场比分）
+   - `homeHalfScore` / `guestHalfScore`（半场比分）
+2. **不再依赖赔率API补全**：原方案从赔率API jc_meta 补联赛/编号，但赔率API只含在售比赛（6场），已完赛比赛（周日022-028）不在其中。jczq 页本身自带全部字段，无需再调赔率API
+3. **体彩降为备用**：仅当网易主源返回空时才降级到体彩赛果API
+4. **日期key用jcNum前缀推算**（投注周期日），不用matchTime：
+   - 网易jczq页按"完赛日期"分组，但SCHEDULE/赔率/前端均按"投注周期日"建key
+   - 周日022 实际开赛8-17 01:00（周一凌晨），但jcNum=周日→投注周期日=8-16（周日）
+   - 用jcNum前缀（周X）推算最近过去的周X，保证赛果key与SCHEDULE一致
+   - matchTime仅作辅助，不参与key日期计算
+
+### 踩坑
+- **赔率API只含在售比赛**：`fetch_odds_from_net()` 返回的 bet/football 页只嵌入当日比赛（周一001-006），其他日期比赛由JS动态加载，urllib拿不到。odds_data.json 的100+场比赛是历次运行累积合并的结果
+- **jczq页字段在jcNum前后分布**：`matchStatus`/`status`/`homeScore`/`guestScore`/`teamName` 在 jcNum **之前**（pre_block），`leagueMatch`/`matchInfoId`/`matchCode`/`matchTime` 在 jcNum **之后**（post_block）。POST_BYTES 从500增到3000 才能容纳
+- **matchTime是开赛时间不是完赛时间**：周日022 matchTime=8-17 01:00（实际开赛），但jcNum=周日→投注周期日=8-16。若用matchTime作key会导致赛果key（8-17）与SCHEDULE key（8-16）错位，前端匹配不到
+- **正反序双写**：SCHEDULE的主客场顺序可能和网易页面相反，需同时写 `date_home_away` 和 `date_away_home` 两个key
+- **NameError隐患**：`fetch_and_save_results` 末尾 stats 字典引用 `json_text`，但该变量只在体彩分支定义，网易主源路径会NameError。改用 `fetched_bytes` 统一记录
