@@ -1374,6 +1374,43 @@ def main():
     for key, odds in odds_data.items():
         merged_odds[key] = odds
 
+    # P0-2：canonical 清洗 merged_odds 的 key（队名变体归一化 + 同方向去重）
+    # 旧 index.html 可能残留 "国际图尔" / "IFK哥德堡" / "布鲁马波卡纳" 等非标准队名 key，
+    # 需重算 canonical key 并合并到标准 key，避免 ODDS 字典里出现重复条目污染前端展示。
+    canon_dedup_count = 0
+    canon_merged = {}
+    for old_key, odds in merged_odds.items():
+        parts = old_key.split('_', 2)
+        if len(parts) < 3:
+            canon_merged[old_key] = odds
+            continue
+        date, home, away = parts
+        c_home = canonical_team_name(home)
+        c_away = canonical_team_name(away)
+        new_key = f'{date}_{c_home}_{c_away}'
+        if new_key == old_key:
+            canon_merged.setdefault(new_key, odds)
+            continue
+        # key 发生变化 → 合并到 canonical key（优先保留有赔率值/matchId 的条目）
+        if new_key in canon_merged:
+            existing = canon_merged[new_key]
+            existing_has_data = bool(existing.get('胜') or existing.get('matchId'))
+            new_has_data = bool(odds.get('胜') or odds.get('matchId'))
+            if new_has_data and not existing_has_data:
+                canon_merged[new_key] = {**existing, **odds}
+            else:
+                # 字段级补全
+                for k, v in odds.items():
+                    if k not in existing or not existing[k]:
+                        existing[k] = v
+        else:
+            canon_merged[new_key] = odds
+        canon_dedup_count += 1
+    if canon_dedup_count:
+        print(f'    [CLEAN] canonical 归一化 {canon_dedup_count} 条队名变体 key')
+    merged_odds = canon_merged
+    print(f'    合并后赔率（canonical 归一化）: {len(merged_odds)} 条')
+
     # P0-1：过滤 matchNumStr 星期与 key 中 date 实际星期不一致的残留错日期条目
     # 对应前端 v7.100.4 的 updateScheduleFromOdds 星期校验，双端一致避免脏数据累积
     bad_keys = []
@@ -2545,7 +2582,43 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     merged_results = dict(existing_results)
     for key, val in new_results.items():
         merged_results[key] = val
-    print(f'  合并后赛果: {len(merged_results)} 条')
+
+    # canonical 清洗 merged_results 的 key（队名变体归一化 + 同方向去重）
+    # 旧 RESULTS 可能残留 "国际图尔" / "IFK哥德堡" / "布鲁马波卡纳" 等非标准队名 key，
+    # 需重算 canonical key 并合并到标准 key，避免前端展示赛果时出现重复/缺失。
+    canon_dedup_count = 0
+    canon_merged = {}
+    for old_key, rec in merged_results.items():
+        parts = old_key.split('_', 2)
+        if len(parts) < 3:
+            canon_merged[old_key] = rec
+            continue
+        date, home, away = parts
+        c_home = canonical_team_name(home)
+        c_away = canonical_team_name(away)
+        new_key = f'{date}_{c_home}_{c_away}'
+        if new_key == old_key:
+            canon_merged.setdefault(new_key, rec)
+            continue
+        # key 发生变化 → 合并到 canonical key（优先保留有 fullScore 的条目）
+        if new_key in canon_merged:
+            existing = canon_merged[new_key]
+            existing_has_score = bool(existing.get('fullScore'))
+            new_has_score = bool(rec.get('fullScore'))
+            if new_has_score and not existing_has_score:
+                canon_merged[new_key] = {**existing, **rec}
+            else:
+                # 字段级补全
+                for k, v in rec.items():
+                    if k not in existing or not existing[k]:
+                        existing[k] = v
+        else:
+            canon_merged[new_key] = rec
+        canon_dedup_count += 1
+    if canon_dedup_count:
+        print(f'  [CLEAN] canonical 归一化 {canon_dedup_count} 条队名变体 key')
+    merged_results = canon_merged
+    print(f'  合并后赛果（canonical 归一化）: {len(merged_results)} 条')
 
     # 归档旧赛果
     archived_count = len(merged_results)
