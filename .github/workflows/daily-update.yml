@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,15 +24,17 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: 抓取赔率并更新
+      # === 赔率步骤：失败则直接阻断CI ===
+      - name: 抓取赔率并更新（必须成功）
         run: python update_odds_net.py --no-push
         env:
           PYTHONIOENCODING: utf-8
 
-      # === 赛果抓取：失败则retry，重试耗尽后真正阻断CI（禁止静默吞错）===
-      # 历史问题：2026-08-16工作流赛果步骤失败，被 set+e + continue-on-error 双保险吞掉，
-      # 导致 8-15 的 30 场赛果"API有数据但线上永远为空"。
-      - name: 抓取赛果（失败阻断+自动重试）
+      # === 赛果步骤：失败重试3次，仍失败则降级为"仅推送赔率" ===
+      # 根因：体彩赛果API（webapi.sporttery.cn）对GitHub Actions美国IP返回HTTP 567反爬封锁
+      # 网易赔率API（sports.163.com）不受影响，所以赔率永远正常、赛果在CI环境必失败
+      - name: 抓取赛果（失败降级+自动重试）
+        id: results_step
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 8
@@ -44,8 +47,20 @@ jobs:
             python update_odds_net.py --no-push --results-only
         env:
           PYTHONIOENCODING: utf-8
+      - name: 记录赛果状态
+        if: always()
+        run: |
+          if [ "${{ steps.results_step.outcome }}" = "success" ]; then
+            echo "RESULTS_OK=true" >> $GITHUB_ENV
+            echo "✅ 赛果抓取成功"
+          else
+            echo "RESULTS_OK=false" >> $GITHUB_ENV
+            echo "⚠️ 赛果抓取失败（体彩API对CI IP返回HTTP 567），降级为仅推送赔率"
+          fi
 
-      - name: 强制校验赛果完整性（前一天必须至少1条，否则阻断CI）
+      # === 赛果校验：只在赛果抓取成功时才校验（失败时跳过，不阻断推送）===
+      - name: 校验赛果完整性（仅在赛果成功时执行）
+        if: env.RESULTS_OK == 'true'
         run: |
           set -euo pipefail
           python3 -c "
@@ -53,24 +68,15 @@ jobs:
           from datetime import date, timedelta
           with open('results_data.json', 'r', encoding='utf-8') as f:
               results = json.load(f)
-          today = date.today().strftime('%Y-%m-%d')
           yesterday = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
-          today_count = sum(1 for k in results if k.startswith(today))
           yest_count = sum(1 for k in results if k.startswith(yesterday))
-          total = len(results)
-          print(f'赛果总计: {total} 条')
-          print(f'昨日({yesterday}): {yest_count} 条, 今日({today}): {today_count} 条')
-          if total == 0:
-              print('❌ 赛果数据完全为空，CI阻断')
-              sys.exit(1)
-          # 关键校验：过了 UTC+8 12点(=UTC 04点)后，前一天赛果必须≥1条
+          print(f'昨日({yesterday})赛果: {yest_count} 条')
           from datetime import datetime
           h = datetime.utcnow().hour
-          require_yesterday = (h >= 4)
-          if require_yesterday and yest_count == 0:
-              print(f'❌ 已过12点(北京时间)，{yesterday}赛果仍为0条。赛果同步链路异常，CI阻断')
+          if h >= 4 and yest_count == 0:
+              print(f'❌ 已过12点(北京时间)，{yesterday}赛果仍为0条，赛果同步异常')
               sys.exit(1)
-          print('✅ 赛果数据校验通过')
+          print('✅ 赛果校验通过')
           "
 
       - name: 生成版本号
@@ -105,6 +111,7 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
 
+      # === 推送：无论赛果成功还是降级，只要赔率有更新就推送 ===
       - name: 推送更新到 master 和 gh-pages
         if: steps.check_changes.outputs.changed == 'true'
         run: |
@@ -128,11 +135,12 @@ jobs:
           git add results_data.json 2>/dev/null || true
           git add results_history/ 2>/dev/null || true
           git diff --cached --stat
-          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')"
+          STATUS_TAG="${{ env.RESULTS_OK == 'true' && '赔率+赛果' || '仅赔率(赛果API被封567)' }}"
+          git commit -m "data: 自动更新${STATUS_TAG} $(date '+%Y-%m-%d %H:%M')"
           git pull origin master --rebase
           git push origin master
 
-          # 2. 推送到 gh-pages（保持分支独立，仅同步静态文件）
+          # 2. 推送到 gh-pages
           git checkout gh-pages
           cp /tmp/odds_data.json odds_data.json
           cp /tmp/index.html index.html
@@ -147,6 +155,47 @@ jobs:
           git add results_data.json 2>/dev/null || true
           git add results_history/ 2>/dev/null || true
           git diff --cached --stat
-          git commit -m "data: 自动更新赛程赔率 $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          git commit -m "data: 自动更新${STATUS_TAG} $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
           git pull origin gh-pages --rebase
           git push origin gh-pages
+
+      # === 赛果失败时自动创建 GitHub Issue 通知管理员 ===
+      - name: 创建赛果失败通知 Issue
+        if: env.RESULTS_OK == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().slice(0, 10);
+            // 检查是否已有同名 issue（避免重复创建）
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: '赛果同步失败'
+            });
+            const existing = issues.data.find(i => i.title.includes(today));
+            if (existing) {
+              console.log(`今日已创建过 issue #${existing.number}，跳过`);
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `赛果同步失败 ${today}（体彩API HTTP 567）`,
+              body: [
+                '## 赛果抓取失败',
+                '',
+                `**时间**: ${today}`,
+                `**根因**: 体彩赛果API (webapi.sporttery.cn) 对 GitHub Actions IP 返回 HTTP 567 反爬封锁`,
+                `**影响**: 赔率已正常推送，但赛果为空。需在本地（中国IP）手动补抓：`,
+                '',
+                '```bash',
+                'python update_odds_net.py --results-only',
+                '```',
+                '',
+                '**修复后**: 推送 master + gh-pages 即可',
+                '',
+                '> 此 Issue 由 CI 自动创建，补抓后可关闭。'
+              ].join('\n'),
+              labels: ['赛果同步失败', 'auto-created']
+            });
