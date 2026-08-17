@@ -1887,7 +1887,9 @@ def fetch_163_results(days_back=7):
         'Referer': 'https://sports.163.com/caipiao/match/football/jczq',
     }
 
-    # 遍历过去 days_back 天（含今日），逐日调用 API；按 jcNum 去重（同一比赛可能在多日响应中重复出现）
+    # 遍历过去 days_back 天（含今日），逐日调用 API；
+    # 去重注意：jcNum 在不同周次会复用（如8-9周日017 和 8-16周日017 是不同比赛），
+    # 必须用 (jcNum, matchInfoId) 或 (jcNum, 投注周期日) 联合去重，否则早期数据会被近期覆盖。
     all_matches = {}
     for d_back in range(days_back):
         day_dt = today - timedelta(days=d_back)
@@ -1906,16 +1908,21 @@ def fetch_163_results(days_back=7):
             jcNum = m.get('jcNum', '')
             if not jcNum:
                 continue
-            if jcNum not in all_matches:
-                all_matches[jcNum] = m
+            # 用 (jcNum, matchInfoId) 联合去重，同一比赛可能在相邻日的API响应中重复
+            mid = str(m.get('matchInfoId') or m.get('matchCode') or '')
+            dedup_key = (jcNum, mid) if mid else jcNum
+            if dedup_key not in all_matches:
+                all_matches[dedup_key] = m
 
-    print(f'  🎯 网易API赛果: 累计解析到 {len(all_matches)} 场唯一比赛 (jcNum 去重，过去{days_back}日)')
+    print(f'  🎯 网易API赛果: 累计解析到 {len(all_matches)} 场唯一比赛 ((jcNum,matchId) 去重，过去{days_back}日)')
 
     # 周几汉字 -> weekday int (0=周一 ... 6=周日)
     weekday_map = {'周一': 0, '周二': 1, '周三': 2, '周四': 3, '周五': 4, '周六': 5, '周日': 6}
     matches = {}
 
-    for jcNum, m in all_matches.items():
+    for dedup_key, m in all_matches.items():
+        # all_matches 的 key 是 (jcNum, matchId) tuple 或裸 jcNum 字符串，统一解出 jcNum
+        jcNum = dedup_key[0] if isinstance(dedup_key, tuple) else dedup_key
         # 仅保留已完赛：matchStatus==3 且 footballLiveScore.status=='完'
         matchStatus = m.get('matchStatus', -1)
         live_score = m.get('footballLiveScore') or {}
