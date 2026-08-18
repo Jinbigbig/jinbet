@@ -50204,7 +50204,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.112.5';
+const APP_VERSION = '7.112.8';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -50372,16 +50372,109 @@ const SCORE_GROUPS = [
 // 总进球选项
 const ZJQ_OPTIONS = ['0', '1', '2', '3', '4', '5', '6', '7+'];
 
-function loadOddsSchedule() {
+async function loadOddsSchedule() {
     const date = document.getElementById('oddsDate').value;
-    const games = SCHEDULE[date];
     const container = document.getElementById('oddsListContainer');
-    container.innerHTML = '';
+    container.innerHTML = '<div style="padding:20px;color:#9ca3af;text-align:center;">⏳ 加载中...</div>';
+
+    // ---- 从 results_history 加载归档数据（唯一数据源，含比分/让球/总进球/半全场）----
+    let archiveOddsMap = {};
+    let archiveGames = [];
+    const prefix = date + '_';
+
+    try {
+        const r = await fetch('results_history/' + date + '.json?t=' + Date.now(), { cache: 'no-cache' });
+        if (r.ok) {
+            const rhData = await r.json();
+            if (rhData) {
+                const _built = new Map();
+                Object.keys(rhData).forEach(function(k) {
+                    if (k.indexOf(prefix) !== 0) return;
+                    const rec = rhData[k];
+                    if (!rec) return;
+                    archiveOddsMap[k] = rec;
+                    const rest = k.substring(prefix.length);
+                    const sepIdx = rest.lastIndexOf('_');
+                    if (sepIdx <= 0) return;
+                    const home = rest.substring(0, sepIdx);
+                    const away = rest.substring(sepIdx + 1);
+                    const pairKey = [home, away].sort().join('\x01');
+                    if (_built.has(pairKey)) return;
+                    _built.set(pairKey, {
+                        home: rec.home || home,
+                        away: rec.away || away,
+                        league: rec.league || '',
+                        matchId: rec.matchId || '',
+                        matchNumStr: rec.matchNumStr || rec.matchNo || '',
+                        matchNo: rec.matchNo || '',
+                        fullScore: rec.fullScore || rec.score || '',
+                        halfScore: rec.halfScore || ''
+                    });
+                });
+                archiveGames = Array.from(_built.values());
+            }
+        }
+    } catch(e) {}
+
+    // 合并比赛列表：SCHEDULE(近7天) + results_history(归档)
+    let games = (SCHEDULE[date] || []).slice();
+    if (archiveGames.length > 0) {
+        const schKeys = new Set();
+        games.forEach(g => schKeys.add([g.home, g.away].sort().join('\x01')));
+        archiveGames.forEach(g => {
+            const pk = [g.home, g.away].sort().join('\x01');
+            if (!schKeys.has(pk)) { games.push(g); schKeys.add(pk); }
+        });
+    }
+
+    // 兜底：归档和SCHEDULE都没有时，从 ODDS/RESULTS 内嵌数据构建
+    if (!games || games.length === 0) {
+        const _built = new Map();
+        Object.keys(ODDS).forEach(function(key) {
+            if (key.indexOf(prefix) !== 0) return;
+            const rest = key.substring(prefix.length);
+            const sepIdx = rest.lastIndexOf('_');
+            if (sepIdx <= 0) return;
+            const home = rest.substring(0, sepIdx);
+            const away = rest.substring(sepIdx + 1);
+            const odds = ODDS[key];
+            const pairKey = [home, away].sort().join('\x01');
+            if (_built.has(pairKey)) return;
+            _built.set(pairKey, {
+                home: home, away: away,
+                league: odds.league || '',
+                matchId: odds.matchId || '',
+                matchNumStr: odds.matchNumStr || odds.matchNo || ''
+            });
+        });
+        if (_built.size === 0 && typeof RESULTS !== 'undefined') {
+            Object.keys(RESULTS).forEach(function(key) {
+                if (key.indexOf(prefix) !== 0) return;
+                const rec = RESULTS[key];
+                if (!rec) return;
+                const rest = key.substring(prefix.length);
+                const sepIdx = rest.lastIndexOf('_');
+                if (sepIdx <= 0) return;
+                const home = rest.substring(0, sepIdx);
+                const away = rest.substring(sepIdx + 1);
+                const pairKey = [home, away].sort().join('\x01');
+                if (_built.has(pairKey)) return;
+                _built.set(pairKey, {
+                    home: home, away: away,
+                    league: rec.league || '',
+                    matchId: rec.matchId || '',
+                    matchNumStr: rec.matchNumStr || rec.matchNo || ''
+                });
+            });
+        }
+        if (_built.size > 0) games = Array.from(_built.values());
+    }
+
     if (!games || games.length === 0) {
         container.innerHTML = '<div style="padding:20px;color:#9ca3af;">该日期暂无比赛</div>';
         return;
     }
-    // 去重：SCHEDULE 可能含正反序重复(同 matchId 主客对调)，按无序主客对 + matchId 去重
+    // 去重：SCHEDULE/ODDS 可能含正反序重复，按无序主客对 + matchId 去重
     const _seen = new Set();
     const dedupedGames = games.filter(g => {
         const pairKey = [g.home, g.away].sort().join('\x01');
@@ -50391,22 +50484,106 @@ function loadOddsSchedule() {
         _seen.add(dedupKey);
         return true;
     });
+    container.innerHTML = '';
     dedupedGames.forEach(g => {
         const key = date + '_' + g.home + '_' + g.away;
-        // 优先用用户保存的 oddsData；若赔率字段缺失，从 RESULTS 回填网易赛果 API 抓取的历史赔率
+        // 数据源优先级：用户保存(oddsData) > 归档赔率(results_history) > ODDS硬编码 > 内嵌RESULTS
         const saved = oddsData[key] || {};
         const matchResult = findResultForGame(g.home, g.away, g.matchId, date);
         const r = matchResult ? matchResult.result : null;
+        const rIsHome = matchResult ? matchResult.isHome : true;
+
+        // 归档赔率/ODDS 也可能存在反序 key，尝试两种方向
+        const altKey = date + '_' + g.away + '_' + g.home;
+        let archOdds = archiveOddsMap[key] || null;
+        let archOddsIsHome = true;
+        if (!archOdds && archiveOddsMap[altKey]) {
+            archOdds = archiveOddsMap[altKey];
+            archOddsIsHome = false;
+        }
+        let hardOdds = ODDS[key] || null;
+        let hardOddsIsHome = true;
+        if (!hardOdds && ODDS[altKey]) {
+            hardOdds = ODDS[altKey];
+            hardOddsIsHome = false;
+        }
+
         const baseOdds = { '胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {} };
-        // 从 RESULTS 合并历史赔率(来自网易 playMap / HDA / HHDA / FBF / FJQ / FBQC)
         const odds = Object.assign({}, baseOdds);
+
+        // 翻转赔率方向（当数据源的主客队方向和 SCHEDULE 不一致时）
+        function flipOdds(src) {
+            if (!src) return null;
+            const flipped = {};
+            // 胜平负：胜↔负交换
+            flipped['胜'] = src['负'] || '';
+            flipped['平'] = src['平'] || '';
+            flipped['负'] = src['胜'] || '';
+            // 让球：handicap 符号翻转，胜↔负交换
+            if (Array.isArray(src['让球']) && src['让球'].length > 0) {
+                flipped['让球'] = src['让球'].map(function(rq) {
+                    var h = String(rq.handicap || '0');
+                    if (h.startsWith('-')) h = '+' + h.substring(1);
+                    else if (h.startsWith('+')) h = '-' + h.substring(1);
+                    return { handicap: h, '胜': rq['负'] || '', '平': rq['平'] || '', '负': rq['胜'] || '' };
+                });
+            }
+            // 比分：x:y → y:x
+            if (src['比分'] && typeof src['比分'] === 'object') {
+                flipped['比分'] = {};
+                Object.keys(src['比分']).forEach(function(s) {
+                    if (s.indexOf(':') !== -1) {
+                        var parts = s.split(':');
+                        var fs = parts[1] + ':' + parts[0];
+                        flipped['比分'][fs] = src['比分'][s];
+                    } else {
+                        flipped['比分'][s] = src['比分'][s]; // "胜其他"等不变
+                    }
+                });
+            }
+            // 总进球：不变（和主客队方向无关）
+            if (src['总进球'] && typeof src['总进球'] === 'object') {
+                flipped['总进球'] = Object.assign({}, src['总进球']);
+            }
+            // 半全场：胜↔负交换（如 胜胜↔负负，胜平↔负平，平胜↔平负）
+            if (src['半全场'] && typeof src['半全场'] === 'object') {
+                flipped['半全场'] = {};
+                var flipMap = { '胜胜':'负负','负负':'胜胜','胜平':'负平','负平':'胜平','胜负':'负胜','负胜':'胜负','平胜':'平负','平负':'平胜','平平':'平平' };
+                Object.keys(src['半全场']).forEach(function(t) {
+                    var ft = flipMap[t] || t;
+                    flipped['半全场'][ft] = src['半全场'][t];
+                });
+            }
+            // 其他字段
+            if (src.handicap) {
+                var h = String(src.handicap);
+                if (h.startsWith('-')) flipped.handicap = '+' + h.substring(1);
+                else if (h.startsWith('+')) flipped.handicap = '-' + h.substring(1);
+                else flipped.handicap = h;
+            }
+            flipped.home = src.home;
+            flipped.away = src.away;
+            flipped.league = src.league;
+            flipped.matchId = src.matchId;
+            flipped.matchNumStr = src.matchNumStr;
+            flipped.matchNo = src.matchNo;
+            // hhda 胜平负也要翻转
+            if (src['hhda胜']) { flipped['hhda负'] = src['hhda胜']; flipped['hhda平'] = src['hhda平']; flipped['hhda胜'] = src['hhda负']; }
+            if (src['让球胜']) { flipped['让球负'] = src['让球胜']; flipped['让球平'] = src['让球平']; flipped['让球胜'] = src['让球负']; }
+            if (src['rq胜']) { flipped['rq负'] = src['rq胜']; flipped['rq平'] = src['rq平']; flipped['rq胜'] = src['rq负']; }
+            return flipped;
+        }
+
+        // 根据方向决定是否翻转
+        const rFinal = (r && !rIsHome) ? flipOdds(r) : r;
+        const archFinal = (archOdds && !archOddsIsHome) ? flipOdds(archOdds) : archOdds;
+        const hardFinal = (hardOdds && !hardOddsIsHome) ? flipOdds(hardOdds) : hardOdds;
+
         function _mergeFrom(r_src) {
             if (!r_src) return;
-            // 胜平负（让球0）：RESULTS.胜/平/负 = HDA(不让球)
             if (!odds['胜'] && r_src['胜']) odds['胜'] = r_src['胜'];
             if (!odds['平'] && r_src['平']) odds['平'] = r_src['平'];
             if (!odds['负'] && r_src['负']) odds['负'] = r_src['负'];
-            // 让球数组：优先用 RESULTS 已有完整「让球」数组；否则尝试从 hhda/handicap 构造
             if ((!odds['让球'] || odds['让球'].length === 0) && Array.isArray(r_src['让球']) && r_src['让球'].length > 0) {
                 odds['让球'] = r_src['让球'].slice();
             }
@@ -50422,28 +50599,27 @@ function loadOddsSchedule() {
                     '负': r_src['hhda负'] || r_src['让球负'] || r_src['rq负']
                 }];
             }
-            // 比分
             if (r_src['比分'] && typeof r_src['比分'] === 'object') {
                 Object.keys(r_src['比分']).forEach(s => {
                     if (!(s in odds['比分'])) odds['比分'][s] = r_src['比分'][s];
                 });
             }
-            // 总进球
             if (r_src['总进球'] && typeof r_src['总进球'] === 'object') {
                 Object.keys(r_src['总进球']).forEach(o => {
                     if (!(o in odds['总进球'])) odds['总进球'][o] = r_src['总进球'][o];
                 });
             }
-            // 半全场
             if (r_src['半全场'] && typeof r_src['半全场'] === 'object') {
                 Object.keys(r_src['半全场']).forEach(t => {
                     if (!(t in odds['半全场'])) odds['半全场'][t] = r_src['半全场'][t];
                 });
             }
         }
-        // 先从 RESULTS 回填，再用用户保存的 oddsData 覆盖（用户手工录入优先级最高）
-        _mergeFrom(r);
-        // oddsData 顶层字段覆盖（用户保存的胜平负/让球/比分等）
+        // 合并顺序（从低到高优先级）：内嵌RESULTS → ODDS硬编码 → 归档赔率(results_history) → 用户保存oddsData
+        _mergeFrom(rFinal);       // 1. 内嵌 RESULTS（只有基础胜平负，已按方向翻转）
+        _mergeFrom(hardFinal);    // 2. ODDS 硬编码（空壳或部分数据，已按方向翻转）
+        _mergeFrom(archFinal);    // 3. 归档赔率(results_history，含完整比分/让球/总进球/半全场，已按方向翻转)
+        // 用户保存（最高优先级）覆盖
         ['胜','平','负'].forEach(k => { if (saved[k] !== undefined && saved[k] !== '') odds[k] = saved[k]; });
         if (Array.isArray(saved['让球']) && saved['让球'].length > 0) odds['让球'] = saved['让球'].slice();
         if (saved['比分'] && typeof saved['比分'] === 'object') {
@@ -50455,7 +50631,9 @@ function loadOddsSchedule() {
         if (saved['半全场'] && typeof saved['半全场'] === 'object') {
             Object.keys(saved['半全场']).forEach(t => odds['半全场'][t] = saved['半全场'][t]);
         }
-        // 保存编号信息
+        // 编号信息：归档 > 用户保存 > 比赛本身
+        if (archOdds && archOdds.matchId && !g.matchId) g.matchId = archOdds.matchId;
+        if (archOdds && archOdds.matchNumStr && !g.matchNumStr) g.matchNumStr = archOdds.matchNumStr;
         if (saved.matchId) odds.matchId = saved.matchId;
         if (saved.matchNumStr) odds.matchNumStr = saved.matchNumStr;
         if (saved.matchNo) odds.matchNo = saved.matchNo;
@@ -50744,7 +50922,7 @@ function openOddsArchive() {
         Object.keys(ODDS).forEach(function(key) {
             var date = key.split('_')[0];
             if (date && date.startsWith('2026') && !allDates[date]) {
-                allDates[date] = '历史赔率';
+                allDates[date] = '归档赔率';
             }
         });
         // 3. RESULTS 中的日期
@@ -50768,7 +50946,7 @@ function openOddsArchive() {
         } else {
             var option = document.createElement('option');
             option.value = '';
-            option.textContent = '暂无历史数据';
+            option.textContent = '暂无归档数据';
             select.appendChild(option);
         }
     }).catch(function() {
@@ -50791,11 +50969,11 @@ function openOddsArchive() {
             sortedDates.forEach(function(date) {
                 var option = document.createElement('option');
                 option.value = date;
-                option.textContent = date + ' - 历史赔率';
+                option.textContent = date + ' - 归档赔率';
                 select.appendChild(option);
             });
         } else {
-            select.innerHTML = '<option value="">无历史数据</option>';
+            select.innerHTML = '<option value="">无归档数据</option>';
         }
     });
 
@@ -50822,7 +51000,7 @@ function loadArchiveIndex() {
     if (_archiveIndex) {
         return Promise.resolve(_archiveIndex);
     }
-    return fetch('odds_history/index.json?t=' + Date.now(), { cache: 'no-cache' })
+    return fetch('results_history/index.json?t=' + Date.now(), { cache: 'no-cache' })
         .then(function(r) {
             if (!r.ok) throw new Error('索引文件不存在');
             return r.json();
@@ -50847,174 +51025,152 @@ function loadArchiveDate(dateStr) {
     infoDiv.textContent = '⏳ 加载中...';
     listDiv.innerHTML = '';
 
-    fetch('odds_history/' + dateStr + '.json?t=' + Date.now(), { cache: 'no-cache' })
+    var prefix = dateStr + '_';
+    var archiveOdds = {};
+    var archiveSchedule = [];
+
+    // 1. 从 results_history 加载归档数据（含完整比分/让球/总进球/半全场）
+    fetch('results_history/' + dateStr + '.json?t=' + Date.now(), { cache: 'no-cache' })
         .then(function(r) {
-            if (!r.ok) throw new Error('归档文件不存在');
+            if (!r.ok) throw new Error('no archive');
             return r.json();
         })
-        .then(function(data) {
-            // 合并数据：归档文件 + SCHEDULE（用跨日期查找赛果）
-            if (SCHEDULE[dateStr]) {
-                var archiveSchedule = data.schedule || [];
-                var scheduleKeys = {};
-                archiveSchedule.forEach(function(g) {
-                    var key = (g.home || '') + '|' + (g.away || '');
-                    scheduleKeys[key] = true;
+        .then(function(rhData) {
+            var _built = new Map();
+            Object.keys(rhData).forEach(function(k) {
+                if (k.indexOf(prefix) !== 0) return;
+                var rec = rhData[k];
+                if (!rec) return;
+                archiveOdds[k] = rec;
+                var rest = k.substring(prefix.length);
+                var sepIdx = rest.lastIndexOf('_');
+                if (sepIdx <= 0) return;
+                var home = rest.substring(0, sepIdx);
+                var away = rest.substring(sepIdx + 1);
+                var pairKey = [home, away].sort().join('\x01');
+                if (_built.has(pairKey)) return;
+                _built.set(pairKey, {
+                    home: rec.home || home,
+                    away: rec.away || away,
+                    league: rec.league || '',
+                    matchId: rec.matchId || '',
+                    matchNumStr: rec.matchNumStr || rec.matchNo || '',
+                    matchNo: rec.matchNo || '',
+                    fullScore: rec.fullScore || rec.score || '',
+                    halfScore: rec.halfScore || ''
                 });
-                
-                // 添加SCHEDULE中有但归档中没有的比赛
-                SCHEDULE[dateStr].forEach(function(g) {
-                    var key = (g.home || '') + '|' + (g.away || '');
-                    if (!scheduleKeys[key]) {
-                        // 用findResultForGame查找赛果
-                        var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
-                        var newGame = {
-                            home: g.home,
-                            away: g.away,
-                            league: g.league || '',
-                            matchId: g.matchId || '',
-                            matchNumStr: g.matchNumStr || ''
-                        };
-                        if (matchResult && matchResult.result) {
-                            newGame.fullScore = matchResult.result.fullScore || '';
-                            newGame.halfScore = matchResult.result.halfScore || '';
-                        }
-                        archiveSchedule.push(newGame);
-                    }
-                });
-                data.schedule = archiveSchedule;
-                
-                // 补充SCHEDULE中有但ODDS中没有的赔率数据
-                var archiveOdds = data.odds || {};
-                SCHEDULE[dateStr].forEach(function(g) {
-                    var oddsKey = dateStr + '_' + g.home + '_' + g.away;
-                    if (!archiveOdds[oddsKey] && ODDS[oddsKey]) {
-                        archiveOdds[oddsKey] = ODDS[oddsKey];
-                    }
-                });
-                data.odds = archiveOdds;
-            }
-            renderArchiveData(data);
+            });
+            archiveSchedule = Array.from(_built.values());
+            finalize();
         })
-        .catch(function(err) {
-            // 归档文件不存在时，从 ODDS 全量数据按日期前缀过滤构建历史赔率
-            var prefix = dateStr + '_';
-            var fallbackOdds = {};
-            var fallbackSchedule = [];
-
-            // 1. 从 ODDS 中按日期前缀提取所有比赛
+        .catch(function() {
+            // 2. results_history 没有：回退到 ODDS/RESULTS 内嵌数据
+            var _built = new Map();
             Object.keys(ODDS).forEach(function(key) {
-                if (key.indexOf(prefix) === 0) {
-                    fallbackOdds[key] = ODDS[key];
-                    var parts = key.split('_', 2);
-                    // 提取主队和客队（key 格式: 日期_主队_客队）
+                if (key.indexOf(prefix) !== 0) return;
+                var rest = key.substring(prefix.length);
+                var sepIdx = rest.lastIndexOf('_');
+                if (sepIdx <= 0) return;
+                var home = rest.substring(0, sepIdx);
+                var away = rest.substring(sepIdx + 1);
+                var odds = ODDS[key];
+                archiveOdds[key] = odds;
+                var matchResult = findResultForGame(home, away, odds.matchId, dateStr);
+                var pairKey = [home, away].sort().join('\x01');
+                if (_built.has(pairKey)) return;
+                var _fs = matchResult && matchResult.result ? matchResult.result.fullScore || '' : '';
+                var _hs = matchResult && matchResult.result ? matchResult.result.halfScore || '' : '';
+                if (matchResult && !matchResult.isHome && _fs) {
+                    var p = _fs.split(':'); if (p.length === 2) _fs = p[1] + ':' + p[0];
+                    var hp = _hs.split(':'); if (hp.length === 2) _hs = hp[1] + ':' + hp[0];
+                }
+                _built.set(pairKey, {
+                    home: home, away: away,
+                    league: odds.league || '',
+                    matchId: odds.matchId || '',
+                    matchNumStr: odds.matchNumStr || odds.matchNo || '',
+                    fullScore: _fs,
+                    halfScore: _hs
+                });
+            });
+            if (_built.size === 0 && typeof RESULTS !== 'undefined') {
+                Object.keys(RESULTS).forEach(function(key) {
+                    if (key.indexOf(prefix) !== 0) return;
+                    var rec = RESULTS[key];
+                    if (!rec) return;
                     var rest = key.substring(prefix.length);
                     var sepIdx = rest.lastIndexOf('_');
-                    var home, away;
-                    if (sepIdx > 0) {
-                        home = rest.substring(0, sepIdx);
-                        away = rest.substring(sepIdx + 1);
-                    } else {
-                        return;
-                    }
-                    var odds = ODDS[key];
-                    // 从 RESULTS 查找赛果
-                    var matchResult = findResultForGame(home, away, odds.matchId, dateStr);
-                    fallbackSchedule.push({
-                        home: home,
-                        away: away,
-                        league: odds.league || '',
-                        matchId: odds.matchId || '',
-                        matchNumStr: odds.matchNumStr || odds.matchNo || '',
-                        fullScore: matchResult && matchResult.result ? matchResult.result.fullScore || '' : '',
-                        halfScore: matchResult && matchResult.result ? matchResult.result.halfScore || '' : ''
+                    if (sepIdx <= 0) return;
+                    var home = rest.substring(0, sepIdx);
+                    var away = rest.substring(sepIdx + 1);
+                    var matchResult = findResultForGame(home, away, rec.matchId, dateStr);
+                    archiveOdds[key] = {
+                        '胜': rec['胜'] || '', '平': rec['平'] || '', '负': rec['负'] || '',
+                        '让球': rec['让球'] || [], '比分': rec['比分'] || {},
+                        '总进球': rec['总进球'] || {}, '半全场': rec['半全场'] || {},
+                        'league': rec['league'] || '', 'matchId': rec['matchId'] || '',
+                        'matchNumStr': rec['matchNumStr'] || rec['matchNo'] || ''
+                    };
+                    var pairKey = [home, away].sort().join('\x01');
+                    if (_built.has(pairKey)) return;
+                    _built.set(pairKey, {
+                        home: home, away: away,
+                        league: rec['league'] || '',
+                        matchId: rec['matchId'] || '',
+                        matchNumStr: rec['matchNumStr'] || rec['matchNo'] || '',
+                        fullScore: rec.fullScore || rec.score || '',
+                        halfScore: rec.halfScore || ''
                     });
+                });
+            }
+            archiveSchedule = Array.from(_built.values());
+            finalize();
+        });
+
+    function finalize() {
+        // 3. 补充 SCHEDULE 中有但归档中没有的比赛
+        if (SCHEDULE[dateStr]) {
+            var existingKeys = {};
+            archiveSchedule.forEach(function(g) {
+                existingKeys[[g.home, g.away].sort().join('\x01')] = true;
+            });
+            SCHEDULE[dateStr].forEach(function(g) {
+                var pairKey = [g.home, g.away].sort().join('\x01');
+                if (!existingKeys[pairKey]) {
+                    var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
+                    var _fs2 = matchResult && matchResult.result ? matchResult.result.fullScore || '' : '';
+                    var _hs2 = matchResult && matchResult.result ? matchResult.result.halfScore || '' : '';
+                    if (matchResult && !matchResult.isHome && _fs2) {
+                        var p2 = _fs2.split(':'); if (p2.length === 2) _fs2 = p2[1] + ':' + p2[0];
+                        var hp2 = _hs2.split(':'); if (hp2.length === 2) _hs2 = hp2[1] + ':' + hp2[0];
+                    }
+                    archiveSchedule.push({
+                        home: g.home, away: g.away,
+                        league: g.league || '',
+                        matchId: g.matchId || '',
+                        matchNumStr: g.matchNumStr || '',
+                        fullScore: _fs2,
+                        halfScore: _hs2
+                    });
+                    var oddsKey = dateStr + '_' + g.home + '_' + g.away;
+                    if (ODDS[oddsKey]) archiveOdds[oddsKey] = ODDS[oddsKey];
                 }
             });
-
-            // 2. 如果 ODDS 没有该日期数据，尝试从 RESULTS 按日期前缀提取
-            if (fallbackSchedule.length === 0 && typeof RESULTS !== 'undefined') {
-                Object.keys(RESULTS).forEach(function(key) {
-                    if (key.indexOf(prefix) === 0) {
-                        var rec = RESULTS[key];
-                        if (!rec) return;
-                        var rest = key.substring(prefix.length);
-                        var sepIdx = rest.lastIndexOf('_');
-                        if (sepIdx <= 0) return;
-                        var home = rest.substring(0, sepIdx);
-                        var away = rest.substring(sepIdx + 1);
-                        var matchResult = findResultForGame(home, away, rec.matchId, dateStr);
-                        // 构建赔率数据（从 RESULTS 中的赔率字段）
-                        fallbackOdds[key] = {
-                            '胜': rec['胜'] || '',
-                            '平': rec['平'] || '',
-                            '负': rec['负'] || '',
-                            '让球': rec['让球'] || [],
-                            '比分': rec['比分'] || {},
-                            '总进球': rec['总进球'] || {},
-                            '半全场': rec['半全场'] || {},
-                            'league': rec['league'] || '',
-                            'matchId': rec['matchId'] || '',
-                            'matchNumStr': rec['matchNumStr'] || rec['matchNo'] || ''
-                        };
-                        fallbackSchedule.push({
-                            home: home,
-                            away: away,
-                            league: rec['league'] || '',
-                            matchId: rec['matchId'] || '',
-                            matchNumStr: rec['matchNumStr'] || rec['matchNo'] || '',
-                            fullScore: rec.fullScore || rec.score || '',
-                            halfScore: rec.halfScore || ''
-                        });
-                    }
-                });
-            }
-
-            // 3. 如果 SCHEDULE 也有该日期，补充 SCHEDULE 中有但 ODDS/RESULTS 中没有的比赛
-            if (SCHEDULE[dateStr]) {
-                var existingKeys = {};
-                fallbackSchedule.forEach(function(g) {
-                    existingKeys[[g.home, g.away].sort().join('\x01')] = true;
-                });
-                SCHEDULE[dateStr].forEach(function(g) {
-                    var pairKey = [g.home, g.away].sort().join('\x01');
-                    if (!existingKeys[pairKey]) {
-                        var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
-                        fallbackSchedule.push({
-                            home: g.home,
-                            away: g.away,
-                            league: g.league || '',
-                            matchId: g.matchId || '',
-                            matchNumStr: g.matchNumStr || '',
-                            fullScore: matchResult && matchResult.result ? matchResult.result.fullScore || '' : '',
-                            halfScore: matchResult && matchResult.result ? matchResult.result.halfScore || '' : ''
-                        });
-                        var oddsKey = dateStr + '_' + g.home + '_' + g.away;
-                        if (ODDS[oddsKey]) fallbackOdds[oddsKey] = ODDS[oddsKey];
-                    }
-                });
-            }
-
-            // 去重（主客反序）
-            var _seen = {};
-            fallbackSchedule = fallbackSchedule.filter(function(g) {
-                var dk = [g.home, g.away].sort().join('\x01');
-                if (_seen[dk]) return false;
-                _seen[dk] = true;
-                return true;
-            });
-
-            if (fallbackSchedule.length > 0) {
-                var fallbackData = {
-                    date: dateStr,
-                    schedule: fallbackSchedule,
-                    odds: fallbackOdds
-                };
-                renderArchiveData(fallbackData);
-            } else {
-                infoDiv.textContent = '❌ ' + dateStr + ' 无历史赔率数据';
-            }
+        }
+        // 去重（主客反序）
+        var _seen = {};
+        archiveSchedule = archiveSchedule.filter(function(g) {
+            var dk = [g.home, g.away].sort().join('\x01');
+            if (_seen[dk]) return false;
+            _seen[dk] = true;
+            return true;
         });
+        if (archiveSchedule.length > 0) {
+            renderArchiveData({ date: dateStr, schedule: archiveSchedule, odds: archiveOdds });
+        } else {
+            infoDiv.textContent = '❌ ' + dateStr + ' 无归档数据';
+        }
+    }
 }
 
 function renderArchiveData(data) {
@@ -51082,7 +51238,15 @@ function renderArchiveData(data) {
         var resultKey = key;
         var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
         if (matchResult && matchResult.result && matchResult.result.fullScore) {
-            actualFullScore = matchResult.result.fullScore;
+            var rawScore = matchResult.result.fullScore;
+            if (matchResult.isHome) {
+                actualFullScore = rawScore;
+            } else {
+                // 反序匹配：翻转比分方向
+                var parts = rawScore.split(':');
+                if (parts.length === 2) actualFullScore = parts[1] + ':' + parts[0];
+                else actualFullScore = rawScore;
+            }
             resultKey = matchResult.resultKey;
         }
 
@@ -52863,20 +53027,29 @@ const BATCH_PRESET_SCORES = {
 // 优先返回有fullScore的记录，没有赛果的记录只作为回退
 function findResultForGame(home, away, matchId, preferredDate) {
     const allResults = RESULTS || {};
-    
+
+    // 判断 result 记录的 home/away 是否和传入的 home/away 方向一致
+    function checkIsHome(r) {
+        if (r.home && r.away) {
+            return (r.home === home && r.away === away);
+        }
+        return true; // 无法判断时默认正序
+    }
+
     // 1. 优先用matchId精确匹配有fullScore的记录
     if (matchId) {
         let matchIdMatch = null;  // 存储没有fullScore的匹配
         for (const rk in allResults) {
             const r = allResults[rk];
             if (String(r.matchId) === String(matchId)) {
+                const isHome = checkIsHome(r);
                 if (r.fullScore) {
                     // 优先返回有赛果的
-                    return { result: r, resultKey: rk, isHome: true };
+                    return { result: r, resultKey: rk, isHome: isHome };
                 }
                 // 保存没有赛果的匹配作为回退
                 if (!matchIdMatch) {
-                    matchIdMatch = { result: r, resultKey: rk, isHome: true };
+                    matchIdMatch = { result: r, resultKey: rk, isHome: isHome };
                 }
             }
         }
@@ -52887,41 +53060,43 @@ function findResultForGame(home, away, matchId, preferredDate) {
             return matchIdMatch;
         }
     }
-    
+
     // 2. 队名+日期匹配回退（matchId不互通或未传matchId时均走这里）
     if (!preferredDate) {
         return matchIdMatch || null;  // 没有日期就无法队名匹配，返回找到的空matchId或null
     }
-    
+
     const teamPair = home + '_' + away;
     const altPair = away + '_' + home;
     let sameDateMatch = null;  // 同一日期的最佳匹配
-    
+
     for (const rk in allResults) {
         const rkDate = rk.substring(0, 10);
         // 只匹配同一日期的比赛
         if (rkDate !== preferredDate) {
             continue;
         }
-        
+
         const rkLower = rk.toLowerCase();
         if (rkLower.indexOf(teamPair.toLowerCase()) !== -1 || rkLower.indexOf(altPair.toLowerCase()) !== -1) {
             const r = allResults[rk];
+            // 判断正序还是反序匹配
+            const isHome = rkLower.indexOf(teamPair.toLowerCase()) !== -1;
             // 优先返回有fullScore的
             if (r.fullScore) {
-                return { result: r, resultKey: rk, isHome: true };
+                return { result: r, resultKey: rk, isHome: isHome };
             }
             // 保存没有赛果的匹配作为回退
             if (!sameDateMatch) {
-                sameDateMatch = { result: r, resultKey: rk, isHome: true };
+                sameDateMatch = { result: r, resultKey: rk, isHome: isHome };
             }
         }
     }
-    
+
     if (sameDateMatch) {
         return sameDateMatch;
     }
-    
+
     return null;
 }
 
@@ -53408,15 +53583,30 @@ function buildArchiveData(dateStr, resultsHistoryData, scheduleGames) {
         const key = dateStr + '_' + g.home + '_' + g.away;
         const matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
         const r = matchResult ? matchResult.result : null;
+        const rIsHome = matchResult ? matchResult.isHome : true;
+        var _fullScore = r ? (r.fullScore || '') : '';
+        var _halfScore = r ? (r.halfScore || '') : '';
+        var _handicap = r ? (r.handicap || '') : '';
+        var _winFlag = r ? (r.winFlag || '') : '';
+        if (r && !rIsHome && _fullScore) {
+            var parts = _fullScore.split(':');
+            if (parts.length === 2) _fullScore = parts[1] + ':' + parts[0];
+            var hparts = _halfScore.split(':');
+            if (hparts.length === 2) _halfScore = hparts[1] + ':' + hparts[0];
+            if (_handicap.startsWith('-')) _handicap = '+' + _handicap.substring(1);
+            else if (_handicap.startsWith('+')) _handicap = '-' + _handicap.substring(1);
+            if (_winFlag === 'H') _winFlag = 'A';
+            else if (_winFlag === 'A') _winFlag = 'H';
+        }
         merged[key] = {
             home: g.home,
             away: g.away,
             league: g.league || (r && r.league) || '',
             leagueAbbr: g.league || (r && r.leagueAbbr) || '',
-            fullScore: r ? (r.fullScore || '') : '',
-            halfScore: r ? (r.halfScore || '') : '',
-            handicap: r ? (r.handicap || '') : '',
-            winFlag: r ? (r.winFlag || '') : '',
+            fullScore: _fullScore,
+            halfScore: _halfScore,
+            handicap: _handicap,
+            winFlag: _winFlag,
             matchId: g.matchId || (r && r.matchId) || '',
             matchNumStr: g.matchNumStr || (r && r.matchNumStr) || ''
         };
@@ -53469,15 +53659,30 @@ function buildArchiveDataFromResults(dateStr, scheduleGames) {
         const key = dateStr + '_' + g.home + '_' + g.away;
         const matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
         const r = matchResult ? matchResult.result : null;
+        const rIsHome = matchResult ? matchResult.isHome : true;
+        var _fullScore = r ? (r.fullScore || '') : '';
+        var _halfScore = r ? (r.halfScore || '') : '';
+        var _handicap = r ? (r.handicap || '') : '';
+        var _winFlag = r ? (r.winFlag || '') : '';
+        if (r && !rIsHome && _fullScore) {
+            var parts = _fullScore.split(':');
+            if (parts.length === 2) _fullScore = parts[1] + ':' + parts[0];
+            var hparts = _halfScore.split(':');
+            if (hparts.length === 2) _halfScore = hparts[1] + ':' + hparts[0];
+            if (_handicap.startsWith('-')) _handicap = '+' + _handicap.substring(1);
+            else if (_handicap.startsWith('+')) _handicap = '-' + _handicap.substring(1);
+            if (_winFlag === 'H') _winFlag = 'A';
+            else if (_winFlag === 'A') _winFlag = 'H';
+        }
         merged[key] = {
             home: g.home,
             away: g.away,
             league: g.league || (r && r.league) || '',
             leagueAbbr: g.league || (r && r.leagueAbbr) || '',
-            fullScore: r ? (r.fullScore || '') : '',
-            halfScore: r ? (r.halfScore || '') : '',
-            handicap: r ? (r.handicap || '') : '',
-            winFlag: r ? (r.winFlag || '') : '',
+            fullScore: _fullScore,
+            halfScore: _halfScore,
+            handicap: _handicap,
+            winFlag: _winFlag,
             matchId: g.matchId || (r && r.matchId) || '',
             matchNumStr: g.matchNumStr || (r && r.matchNumStr) || ''
         };
