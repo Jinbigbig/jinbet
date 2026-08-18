@@ -1731,7 +1731,7 @@ def main():
 
     print('\n[4/4] 更新 index.html...')
     new_html = update_html_schedule(html_content, schedule)
-    new_html = update_html_odds(new_html, schedule, matched_odds)
+    new_html = update_html_odds(new_html, schedule, merged_odds)
     new_html = update_localstorage_injection(new_html, matched_odds)
 
     with open(HTML_PATH, 'w', encoding='utf-8') as f:
