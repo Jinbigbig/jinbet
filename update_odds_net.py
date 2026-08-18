@@ -2590,19 +2590,35 @@ def archive_results(results_data, days=7):
     # 更新归档索引
     index = {'dates': []}
     for filename in sorted(os.listdir(archive_dir)):
-        if filename.endswith('.json') and filename != 'index.json':
-            date_str = filename.replace('.json', '')
-            filepath = os.path.join(archive_dir, filename)
-            with open(filepath, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-            count = len(data)
-            from datetime import datetime as dt
-            weekday_cn = ['一', '二', '三', '四', '五', '六', '日']
-            try:
-                weekday = weekday_cn[dt.strptime(date_str, '%Y-%m-%d').weekday()]
-            except:
-                weekday = ''
-            index['dates'].append({'date': date_str, 'weekday': weekday, 'count': count})
+        if filename.endswith('.json') and filename == 'index.json':
+            continue
+        if not filename.endswith('.json'):
+            continue
+        date_str = filename.replace('.json', '')
+        filepath = os.path.join(archive_dir, filename)
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        # 按 matchNumStr 去重统计实际场数（同场正反序+队名差异会写入多条key）
+        seen_nums = set()
+        seen_pairs = set()
+        for k, v in data.items():
+            if not isinstance(v, dict):
+                continue
+            sn = v.get('matchNumStr', '') or v.get('matchNo', '')
+            if sn:
+                seen_nums.add(sn)
+            else:
+                parts = k.split('_', 2)
+                if len(parts) == 3:
+                    seen_pairs.add(tuple(sorted(parts[1:])))
+        count = len(seen_nums) + len(seen_pairs)
+        from datetime import datetime as dt
+        weekday_cn = ['一', '二', '三', '四', '五', '六', '日']
+        try:
+            weekday = weekday_cn[dt.strptime(date_str, '%Y-%m-%d').weekday()]
+        except:
+            weekday = ''
+        index['dates'].append({'date': date_str, 'weekday': weekday, 'count': count})
 
     with open(os.path.join(archive_dir, 'index.json'), 'w', encoding='utf-8') as f:
         json.dump(index, f, ensure_ascii=False, indent=2)
