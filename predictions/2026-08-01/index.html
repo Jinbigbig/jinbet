@@ -1,0 +1,2677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年8月1日 竞彩足球13场比赛深度分析报告</title>
+<style>
+/* === CSS Variables === */
+:root {
+  --bg: #f0f2f5;
+  --bg2: #ffffff;
+  --ink: #1a1a2e;
+  --muted: #6c757d;
+  --rule: #dee2e6;
+  --accent: #e63946;
+  --accent2: #2a9d8f;
+  --accent3: #f4a261;
+  --win: #2a9d8f;
+  --draw: #f4a261;
+  --loss: #e63946;
+  --home: #457b9d;
+  --away: #e76f51;
+}
+
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* === Layout === */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* === Hero === */
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff;
+  padding: 3rem 0 2.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(230,57,70,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(42,157,143,0.15) 0%, transparent 50%);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+.hero .subtitle {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 0.25rem;
+}
+.hero .disclaimer {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* === Section Headings === */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid var(--accent);
+  display: inline-block;
+}
+h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--ink);
+}
+h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 1rem 0 0.5rem;
+}
+
+/* === Cards === */
+.card {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid var(--rule);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.card-header .match-id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+}
+.card-header .match-league {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.card-header .match-time {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.match-teams .vs {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: var(--bg);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+}
+.match-teams .home { color: var(--home); }
+.match-teams .away { color: var(--away); }
+
+/* === Odds Grid === */
+.odds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.odds-item {
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  background: var(--bg);
+  border-radius: 8px;
+}
+.odds-item .label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.odds-item .value {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.odds-item .value.win { color: var(--win); }
+.odds-item .value.draw { color: var(--draw); }
+.odds-item .value.loss { color: var(--loss); }
+
+/* === Insight Grid === */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.insight-card {
+  background: var(--bg);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.insight-card .insight-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+.insight-card .insight-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* === Prediction Box === */
+.prediction {
+  background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02));
+  border: 1px solid rgba(42,157,143,0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+.prediction .pred-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.prediction .pred-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.prediction .pred-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.prediction .pred-value {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent2);
+}
+.prediction .pred-score {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(230,57,70,0.08);
+  padding: 0.2rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid rgba(230,57,70,0.2);
+}
+
+/* === Warning Box === */
+.warning {
+  background: rgba(244,162,97,0.1);
+  border: 1px solid rgba(244,162,97,0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--accent3);
+}
+.warning strong { color: #e76f51; }
+
+/* === Tables === */
+.table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+thead th {
+  background: var(--bg);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid var(--rule);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+tbody td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(0,0,0,0.02); }
+td .tag {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.tag-green { background: rgba(42,157,143,0.12); color: var(--win); }
+.tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
+.tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
+.tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+
+/* 高亮参赛球队 */
+tr.highlight-team {
+  background: rgba(42,157,143,0.06) !important;
+}
+tr.highlight-team td {
+  font-weight: 600;
+}
+tr.highlight-team td:first-child {
+  border-left: 3px solid var(--win);
+}
+
+/* === History Table === */
+.history-table { font-size: 0.82rem; }
+.history-table td { padding: 0.4rem 0.6rem; }
+.history-table .result { font-weight: 600; }
+
+/* === Form Row === */
+.form-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.form-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff;
+}
+.form-dot.w { background: var(--win); }
+.form-dot.d { background: var(--draw); }
+.form-dot.l { background: var(--loss); }
+
+/* === Summary Grid === */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.summary-card {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.summary-card .s-match {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.summary-card .s-pred {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.summary-card .s-confidence {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* === League Section === */
+.league-overview {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--accent2);
+}
+.league-overview h4 {
+  color: var(--accent2);
+  margin-top: 0;
+}
+.league-overview p {
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+/* === Footer === */
+footer {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid var(--rule);
+}
+footer h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+footer .sources ol {
+  padding-left: 1.2rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+footer .sources li {
+  margin-bottom: 0.5rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+footer .sources .src-title {
+  color: var(--ink);
+  word-break: normal;
+}
+footer .sources .src-url {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--accent);
+  word-break: break-all;
+}
+footer .sources a { word-break: break-all; }
+
+/* === Inline Citations === */
+sup a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.75em;
+  font-weight: 600;
+}
+sup a:hover { text-decoration: underline; }
+
+/* === Conf bar === */
+.conf-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.conf-bar .bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.conf-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  transition: width 0.3s;
+}
+.conf-bar .bar-label {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.5rem; }
+  .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+  .odds-item .value { font-size: 1rem; }
+  .insight-grid { grid-template-columns: 1fr 1fr; }
+  .match-teams { font-size: 1.1rem; gap: 0.75rem; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .container { padding: 0 1rem; }
+}
+
+@media (max-width: 600px) {
+  .card-header { flex-direction: column; align-items: flex-start; }
+  .insight-grid { grid-template-columns: 1fr; }
+}
+
+/* === Chart === */
+.chart-figure { margin: 2rem 0; }
+.chart-figure figcaption { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
+.chart-container { width: 100%; min-height: 560px; }
+
+/* === Print === */
+@media print {
+  body { background: #fff; }
+  .hero { background: #1a1a2e !important; -webkit-print-color-adjust: exact; }
+  .card { box-shadow: none; break-inside: avoid; }
+  .prediction { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<header class="hero">
+  <div class="container">
+    <h1>2026年8月1日 竞彩足球比赛深度分析</h1>
+    <p class="subtitle">13场比赛 · 芬超4场 + 瑞超1场 + 挪超2场 + 美职联6场 + 巴西杯1场</p>
+    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 联赛形势</p>
+    <p class="disclaimer">⚠ 数据采集时间：2026年7月31日 20:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- ========== 一、比赛总览 ========== -->
+<h2>一、13场比赛总览</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜</th><th>平</th><th>负</th><th>让球</th><th>市场倾向</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-blue">周六001</span></td><td>芬超</td><td>23:00</td><td>TPS图尔</td><td>vs</td><td>玛丽港</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.37</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.40</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.80</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 65%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六002</span></td><td>瑞超</td><td>23:30</td><td>赫根</td><td>vs</td><td>卡尔马</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.64</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.80</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.90</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 54%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六003</span></td><td>挪超</td><td>23:00</td><td>腓特烈斯塔</td><td>vs</td><td>桑纳菲尤尔</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.23</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.20</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.72</td>
+      <td>-1</td><td><span class="tag tag-yellow">主胜 40%（势均力敌）</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六004</span></td><td>芬超</td><td>23:00</td><td>拉赫蒂</td><td>vs</td><td>雅罗</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.44</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.15</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.15</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 62%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六005</span></td><td>挪超</td><td>01:00</td><td>斯达</td><td>vs</td><td>维京</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.65</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.62</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.36</td>
+      <td>+1</td><td><span class="tag tag-red">客胜 65%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六006</span></td><td>芬超</td><td>23:00</td><td>赫尔辛基火花</td><td>vs</td><td>库奥皮奥</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.17</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.55</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.88</td>
+      <td>+1</td><td><span class="tag tag-red">客胜 47%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六007</span></td><td>美职</td><td>07:30</td><td>迈阿密国际</td><td>vs</td><td>哥伦布机员</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.40</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.60</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.05</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 63%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六008</span></td><td>美职</td><td>10:30</td><td>温哥华白帽</td><td>vs</td><td>洛杉矶FC</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.86</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.68</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.12</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 48%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六009</span></td><td>巴西杯</td><td>08:00</td><td>桑托斯</td><td>vs</td><td>里莫</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.41</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.90</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">6.10</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 63%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六010</span></td><td>美职</td><td>08:30</td><td>芝加哥火焰</td><td>vs</td><td>夏洛特FC</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.41</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.35</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.25</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 63%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六011</span></td><td>美职</td><td>09:30</td><td>圣路易斯城</td><td>vs</td><td>皇家盐湖城</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.92</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.70</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.96</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 46%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六012</span></td><td>美职</td><td>10:30</td><td>洛杉矶银河</td><td>vs</td><td>达拉斯FC</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.11</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.50</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.71</td>
+      <td>-1</td><td><span class="tag tag-yellow">主胜 42%（势均力敌）</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六013</span></td><td>美职</td><td>10:45</td><td>波特兰伐木工</td><td>vs</td><td>西雅图海湾人</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">2.02</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.70</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2.75</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 44%</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ========== 二、市场信心对比 ========== -->
+<h2>二、市场信心指数对比</h2>
+<figure class="chart-figure">
+  <figcaption>13场比赛竞彩市场支持率分布（主胜 / 平局 / 客胜），数据由胜平负赔率反推归一化计算</figcaption>
+  <div id="chart-confidence" class="chart-container"></div>
+</figure>
+
+<!-- ========== 三、逐场深度分析 ========== -->
+<h2>三、逐场深度分析</h2>
+
+<!-- ===== 001: TPS图尔 vs 玛丽港 ===== -->
+<section class="card" id="match-001">
+  <div class="card-header">
+    <span class="match-id">周六 001</span>
+    <span class="match-league">芬超 · 第18轮</span>
+    <span class="match-time">2026-08-01 23:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">TPS图尔</span>
+    <span class="vs">VS</span>
+    <span class="away">玛丽港</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.37</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.40</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.80</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">TPS图尔 · 第8名</div>
+      <div class="insight-value">17轮 6胜4平7负 / 进20失20 / 22分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">玛丽港 · 第12名（垫底）</div>
+      <div class="insight-value">17轮 0胜4平13负 / 进8失37 / 4分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2026-04-04</td><td>玛丽港 vs TPS图尔</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2026-02-12</td><td>玛丽港 vs TPS图尔（联赛杯）</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-05-28</td><td>玛丽港 vs TPS图尔（杯赛）</td><td>2-2（点3-4）</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-10-26</td><td>TPS图尔 vs 玛丽港</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-06-22</td><td>玛丽港 vs TPS图尔</td><td>2-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2020-08-16</td><td>玛丽港 vs TPS图尔</td><td>1-0</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>历史交锋TPS近7次对阵玛丽港未尝胜绩，其中4连平。</strong>双方总交锋36次，TPS 12胜15平19负反而处于下风。玛丽港堪称TPS的"苦主"，主场优势在交锋中被淡化，存在心理魔咒。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">TPS图尔 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进5失6</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">玛丽港 近5场</div>
+      <div class="insight-value">0胜0平5负 · 进2失13 · <strong>五连败</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">TPS图尔 主场</div>
+      <div class="insight-value">9场 6胜1平2负 · 胜率67% · 进14失8</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">玛丽港 客场</div>
+      <div class="insight-value">8场 0胜1平7负 · <strong>客场零胜</strong> · 进3失18</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>双方均无重大伤停。</strong>TPS图尔阵容完整，主场"主场龙"属性突出（胜率近七成）；玛丽港本赛季表现灾难级——17轮0胜仅积4分，客场8战全败级表现（1平7负），进攻端17场仅8球为联赛最弱。本场是联赛"主场龙 vs 客场虫"的极致反差。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>赔率开出主让1球深盘，直观反映两队天壤之别的走势。但历史交锋TPS近7次不胜玛丽港（4连平）是最大隐患，"看似一边倒却有平局魔咒"。让球-1盘口下，TPS需赢2球才能赢盘，考虑到交锋平局属性，一球小胜走水概率不低，需防让平。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（一球小胜格局）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
+      <span class="bar-label">★★★☆</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>TPS图尔若取胜，积分将达到25分，稳居中游并拉开与降级区的差距；玛丽港若再败，17轮仅4分几乎提前锁定一个降级名额，保级仅剩理论可能。</p>
+</section>
+
+<!-- ===== 002: 赫根 vs 卡尔马 ===== -->
+<section class="card" id="match-002">
+  <div class="card-header">
+    <span class="match-id">周六 002</span>
+    <span class="match-league">瑞超 · 第15轮</span>
+    <span class="match-time">2026-08-01 23:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">赫根</span>
+    <span class="vs">VS</span>
+    <span class="away">卡尔马</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.64</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.80</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.90</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">赫根 · 第3名</div>
+      <div class="insight-value">14轮 / 24分 · 占据欧协联资格赛席位</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">卡尔马 · 第11名</div>
+      <div class="insight-value">14轮 5胜2平7负 / 进18失20 / 17分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2024-11-10</td><td>卡尔马 vs 赫根</td><td>1-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-06-28</td><td>卡尔马 vs 赫根</td><td>3-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-09-24</td><td>卡尔马 vs 赫根</td><td>1-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-04-15</td><td>赫根 vs 卡尔马</td><td>1-3</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2022-10-09</td><td>赫根 vs 卡尔马</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2022-05-22</td><td>卡尔马 vs 赫根</td><td>1-3</td><td><span class="tag tag-green">胜</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋赫根2胜1平3负处于下风，近5次仅1胜。</strong>卡尔马堪称赫根"克星"，近5次直接对话4胜1负占据明显优势。两队总交锋赫根13胜11平5负略占优，但近期完全被卡尔马压制。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">赫根 近5场（各项）</div>
+      <div class="insight-value">1胜1平3负 · 进8失13 · <strong>状态低迷</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">卡尔马 近5场（联赛）</div>
+      <div class="insight-value">2胜1平2负 · 进6失7</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">赫根 主场</div>
+      <div class="insight-value">11场 5胜4平2负 · 胜率45% · 进20失14</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">卡尔马 客场</div>
+      <div class="insight-value">7场 2胜1平4负 · 胜率29% · 进7失11</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>赫根伤停严重：</strong>本·恩格达尔、菲利普·奥曼、门将埃特里特·贝里沙因伤缺阵，朱利叶斯·林德贝里停赛，共4人无法出战，中后场轮换吃紧。卡尔马方面维克托·拉松、马尔科姆·斯托尔特因伤缺阵。赫根近10场正式比赛4胜4平2负尚可，但近5场仅1胜且防守端连续失球（单场失3-4球），状态明显走低。</p>
+
+  <div class="warning">
+    <strong>⚠ 盘口深度分析：</strong>赫根排名第3主场作战，纸面实力占优，但近期状态低迷（近5场仅1胜）+ 交锋被卡尔马压制（近5次1胜4负）+ 4人伤停，三重不利因素叠加。卡尔马排名第11但近期有反弹迹象。让球-1盘口下，赫根赢2球难度大，让负/让平价值突出，主胜可博但并非稳胆。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（防让负）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>赫根若取胜，积分达到27分，稳固联赛第3的欧协联资格赛席位，并向次席发起冲击；卡尔马若败，17分继续身处下游，与降级附加赛区的差距需警惕。</p>
+</section>
+
+<!-- ===== 003: 腓特烈斯塔 vs 桑纳菲尤尔 ===== -->
+<section class="card" id="match-003">
+  <div class="card-header">
+    <span class="match-id">周六 003</span>
+    <span class="match-league">挪超 · 第15轮</span>
+    <span class="match-time">2026-08-01 23:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">腓特烈斯塔</span>
+    <span class="vs">VS</span>
+    <span class="away">桑纳菲尤尔</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">2.23</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.20</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.72</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">腓特烈斯塔 · 第12名</div>
+      <div class="insight-value">14轮 4胜2平8负 / 进15失27 / 14分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">桑纳菲尤尔 · 第11名</div>
+      <div class="insight-value">14轮 4胜3平7负 / 进13失20 / 15分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-10-19</td><td>桑纳菲尤尔 vs 腓特烈斯塔</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2025-06-01</td><td>腓特烈斯塔 vs 桑纳菲尤尔</td><td>3-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-10-27</td><td>桑纳菲尤尔 vs 腓特烈斯塔</td><td>2-2</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-05-26</td><td>腓特烈斯塔 vs 桑纳菲尤尔</td><td>1-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-11-12</td><td>腓特烈斯塔 vs 桑纳菲尤尔</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-06-25</td><td>桑纳菲尤尔 vs 腓特烈斯塔</td><td>0-1</td><td><span class="tag tag-green">胜</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋腓特烈斯塔4胜1平1负占据明显优势，主场3战全胜。</strong>腓特烈斯塔堪称桑纳菲尤尔的"苦主"，主场对其保持全胜且零封。交锋层面主队心理优势明显。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">腓特烈斯塔 近5场</div>
+      <div class="insight-value">0胜1平4负 · 进2失12 · <strong>四连败</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">桑纳菲尤尔 近5场</div>
+      <div class="insight-value">0胜2平3负 · 进3失8</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">腓特烈斯塔 主场</div>
+      <div class="insight-value">7场 3胜1平3负 · 胜率43% · 进8失10</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">桑纳菲尤尔 客场</div>
+      <div class="insight-value">7场 1胜1平5负 · 胜率14% · 进4失12</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>腓特烈斯塔状态雪崩：</strong>近5场1平4负，先后0-4惨败罗森博格、0-1负博德闪耀、0-2负利勒斯特罗姆、1-3负瓦勒伦加，防守端连续崩盘。桑纳菲尤尔同样低迷，近5场0胜，上轮1-2遭维京绝杀。两队均处于保级泥潭，本场是价值6分的保级直接对话。</p>
+
+  <div class="warning">
+    <strong>⚠ 难点场次提示：</strong>两队积分仅差1分（14 vs 15），均处降级附加赛区附近，状态都很差。腓特烈斯塔虽有交锋主场全胜的心理优势，但近期四连败、防守崩盘，让球-1深盘与其实际状态严重不符。平局/客胜概率偏高，建议31双选或全包，慎防冷门。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">平局博客胜（31双选难点）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-2</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:40%"></div></div>
+      <span class="bar-label">★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>这是挪超保级6分战。腓特烈斯塔若输球，14分将深陷降级区，与安全区差距拉大；桑纳菲尤尔若败，15分同样滑向降级边缘。胜负直接关系两队保级命运，平局对双方都意义有限。</p>
+</section>
+
+<!-- ===== 004: 拉赫蒂 vs 雅罗 ===== -->
+<section class="card" id="match-004">
+  <div class="card-header">
+    <span class="match-id">周六 004</span>
+    <span class="match-league">芬超 · 第18轮</span>
+    <span class="match-time">2026-08-01 23:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">拉赫蒂</span>
+    <span class="vs">VS</span>
+    <span class="away">雅罗</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.44</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.15</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.15</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">拉赫蒂 · 第7名</div>
+      <div class="insight-value">17轮 6胜4平7负 / 进20失16 / 22分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">雅罗 · 第10名</div>
+      <div class="insight-value">17轮 3胜6平8负 / 进17失33 / 17分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-28</td><td>雅罗 vs 拉赫蒂</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-06-01</td><td>拉赫蒂 vs 雅罗</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-10-27</td><td>雅罗 vs 拉赫蒂</td><td>0-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-05-26</td><td>拉赫蒂 vs 雅罗</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-11-12</td><td>拉赫蒂 vs 雅罗</td><td>3-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-06-25</td><td>雅罗 vs 拉赫蒂</td><td>2-2</td><td><span class="tag tag-yellow">平</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋拉赫蒂4胜2平0负保持不败，主场3战全胜。</strong>拉赫蒂对雅罗形成全面压制，主场优势尤其突出。雅罗上一次击败拉赫蒂已是数年前的事。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">拉赫蒂 近5场</div>
+      <div class="insight-value">2胜2平1负 · 进6失5</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">雅罗 近5场</div>
+      <div class="insight-value">0胜3平2负 · 进4失9</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">拉赫蒂 主场</div>
+      <div class="insight-value">8场 4胜2平2负 · 胜率50% · 进11失7</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">雅罗 客场</div>
+      <div class="insight-value">8场 1胜3平4负 · 胜率13% · 进6失16</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>双方均无重大伤停。</strong>拉赫蒂近期状态回暖，上轮客场2-0完胜玛丽港，进攻端找到感觉；防守端17场仅失16球为联赛中游水准。雅罗本赛季防守端失33球为联赛最差之一，17场仅3胜，客场仅1胜，但平局偏多（6平）具有一定的"搅局"能力。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>拉赫蒂排名第7（22分）实力明显强于第10的雅罗（17分），且交锋4胜2平不败、主场全胜。雅罗防守最差（失33球）+客场仅1胜，拉赫蒂主场取胜概率较高。但雅罗平局多（6平），让球-1盘口下需防一球小胜走水的让平风险。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（一球小胜格局）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+      <span class="bar-label">★★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>拉赫蒂若取胜，积分达到25分，有望升至中上游，巩固联赛前6位置；雅罗若败，17分将逼近降级附加赛区，保级压力骤增。</p>
+</section>
+
+<!-- ===== 005: 斯达 vs 维京 ===== -->
+<section class="card" id="match-005">
+  <div class="card-header">
+    <span class="match-id">周六 005</span>
+    <span class="match-league">挪超 · 第15轮</span>
+    <span class="match-time">2026-08-02 01:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">斯达</span>
+    <span class="vs">VS</span>
+    <span class="away">维京</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">5.65</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.62</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.36</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">斯达 · 第14名（降级区）</div>
+      <div class="insight-value">15轮 ~1胜4平10负 / 失34球(场均2.3) / ~7分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">维京 · 第2名</div>
+      <div class="insight-value">14轮 11胜1平2负 / 进34失14 / 34分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2026-05-16</td><td>维京 vs 斯达</td><td>6-3</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2025-10-19</td><td>斯达 vs 维京</td><td>1-2</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2025-06-01</td><td>维京 vs 斯达</td><td>3-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-10-27</td><td>斯达 vs 维京</td><td>2-2</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-05-26</td><td>维京 vs 斯达</td><td>4-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-11-12</td><td>斯达 vs 维京</td><td>0-2</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近15次交锋斯达2胜4平9负被维京全面碾压。</strong>本赛季首回合维京客场6-3血洗斯达，单场9球堪称惨案。斯达防线结构性崩塌，对阵维京屡屡大比分失利，心理与实力双重劣势。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">斯达 近5场</div>
+      <div class="insight-value">1胜0平4负 · 进4失12</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">维京 近5场</div>
+      <div class="insight-value">4胜1平0负 · 进12失4 · <strong>状态火热</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">斯达 主场</div>
+      <div class="insight-value">7场 0胜2平5负 · <strong>主场零胜</strong> · 进5失18</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">维京 客场</div>
+      <div class="insight-value">7场 7胜0平0负 · <strong>客场全胜</strong> · 进18失5</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>斯达防线联赛最差：</strong>15轮失34球，场均失球超过2.3个，防守端千疮百孔。近期先后0-3负罗森博格、1-2负布兰、0-4负博德闪耀，连遇惨败。维京方面阵容齐整，排名第2仅以净胜球/少赛劣势位居次席，进攻火力联赛第二（34球），客场7战全胜堪称"客场之王"。</p>
+
+  <div class="warning">
+    <strong>⚠ 当日最稳客胜：</strong>维京排名第2、客场全胜、交锋碾压（首回合6-3），斯达垫底、主场零胜、防线最差，四重碾压之下客胜几乎没有悬念。让球+1盘口下，维京赢1球即走水、赢2球赢盘，大胜可期。唯一需关注维京是否为下周欧战留力，但联赛争冠关键阶段留力可能性低。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客胜博让负（大胜格局）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">0-3</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-3</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+      <span class="bar-label">★★★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>维京若取胜，积分达到37分，将继续紧追榜首博德闪耀，维持争冠悬念；斯达若败，7分左右深陷降级区，与安全区差距进一步拉大，直接降级风险极高。</p>
+</section>
+
+<!-- ===== 006: 赫尔辛基火花 vs 库奥皮奥 ===== -->
+<section class="card" id="match-006">
+  <div class="card-header">
+    <span class="match-id">周六 006</span>
+    <span class="match-league">芬超 · 第18轮</span>
+    <span class="match-time">2026-08-01 23:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">赫尔辛基火花</span>
+    <span class="vs">VS</span>
+    <span class="away">库奥皮奥</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">3.17</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.55</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.88</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">赫尔辛基火花 · 第4名</div>
+      <div class="insight-value">17轮 / 28分 · 距第2名仅3分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">库奥皮奥 · 第1名（榜首）</div>
+      <div class="insight-value">17轮 / ~34分 · 攻防强队 · 双线作战</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-28</td><td>库奥皮奥 vs 赫尔辛基火花</td><td>2-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2025-06-01</td><td>赫尔辛基火花 vs 库奥皮奥</td><td>0-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-10-27</td><td>库奥皮奥 vs 赫尔辛基火花</td><td>3-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-05-26</td><td>赫尔辛基火花 vs 库奥皮奥</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2023-11-12</td><td>赫尔辛基火花 vs 库奥皮奥</td><td>0-2</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-06-25</td><td>库奥皮奥 vs 赫尔辛基火花</td><td>4-0</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋赫尔辛基火花0胜1平5负被库奥皮奥长期压制。</strong>库奥皮奥堪称赫尔辛基火花的"苦主"，主场对其亦难以招架。交锋层面客队占据绝对心理优势。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">赫尔辛基火花 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进8失5 · <strong>主场三连胜</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">库奥皮奥 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进6失7 · <strong>双线疲态</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">赫尔辛基火花 主场</div>
+      <div class="insight-value">8场 5胜2平1负 · 胜率63% · 进14失7</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">库奥皮奥 客场</div>
+      <div class="insight-value">8场 5胜1平2负 · 胜率63% · 进13失8</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>库奥皮奥短板集中爆发：</strong>作为芬超榜首攻防强队，库奥皮奥本赛季双线作战（欧协联），周中刚打完欧战，体能严重透支；且中前场出现大面积伤缺，进攻端核心轮换受限。赫尔辛基火花无欧战任务，以逸待劳，主场三连胜士气正盛，距第2名仅3分冲击欧战区战意十足。</p>
+
+  <div class="warning">
+    <strong>⚠ 难点场次（31双选）：</strong>库奥皮奥虽是榜首+交锋碾压，但本场"双线体能透支+中前场大面积伤缺"两大短板集中爆发，客场作战打折。赫尔辛基火花主场三连胜+以逸待劳+冲击欧战战意，主场不败概率高。让球+1盘口下，主队赢球或平局即可赢盘，平局为第一优先级，建议31双选。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">平局博客胜（31双选难点）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>库奥皮奥若取胜，将进一步扩大榜首领先优势，巩固争冠主动权；赫尔辛基火花若取胜，积分达到31分，将逼近第2名，冲击欧战资格的希望大增。本场对争冠与欧战格局均有重要影响。</p>
+</section>
+
+<!-- ===== 007: 迈阿密国际 vs 哥伦布机员 ===== -->
+<section class="card" id="match-007">
+  <div class="card-header">
+    <span class="match-id">周六 007</span>
+    <span class="match-league">美职联 · 常规赛</span>
+    <span class="match-time">2026-08-01 07:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">迈阿密国际</span>
+    <span class="vs">VS</span>
+    <span class="away">哥伦布机员</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.40</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.60</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.05</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">迈阿密国际 · 东部第2</div>
+      <div class="insight-value">17轮 11胜4平2负 / 进43失30 / 37分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">哥伦布机员 · 东部第11</div>
+      <div class="insight-value">19轮 / 进24失26 / 17分 · 客场仅5分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-21</td><td>哥伦布 vs 迈阿密国际</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2025-05-31</td><td>迈阿密国际 vs 哥伦布</td><td>3-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-10-06</td><td>哥伦布 vs 迈阿密国际</td><td>0-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-06-29</td><td>迈阿密国际 vs 哥伦布</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-09-24</td><td>哥伦布 vs 迈阿密国际</td><td>2-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-05-14</td><td>迈阿密国际 vs 哥伦布</td><td>3-2</td><td><span class="tag tag-green">胜</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋迈阿密国际5胜0平1负，近5次全胜。</strong>哥伦布机员堪称迈阿密的"送分童子"，迈阿密主场对其保持全胜。交锋层面迈阿密形成绝对压制。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">迈阿密国际 近5场</div>
+      <div class="insight-value">5胜0平0负 · 进14失6 · <strong>五连胜</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">哥伦布机员 近5场</div>
+      <div class="insight-value">1胜1平3负 · 进5失9</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">迈阿密国际 主场</div>
+      <div class="insight-value">8场 7胜1平0负 · 胜率88% · 进24失10</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">哥伦布机员 客场</div>
+      <div class="insight-value">8场 1胜2平5负 · 胜率13% · 进12失17</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>迈阿密国际火力全开：</strong>17轮轰入43球为全联盟进攻最强，近期豪取五连胜，主场8战7胜1平不败。哥伦布机员作为2023赛季冠军，本赛季表现断崖式下滑，19轮仅17分排名东部第11，客场仅1胜，近期1平3负状态低迷。迈阿密阵容相对齐整，巨星效应加持下主场统治力极强。</p>
+
+  <div class="warning">
+    <strong>⚠ 关键因素：</strong>迈阿密五连胜+主场不败+交锋五连胜+进攻联赛最强，哥伦布客场仅1胜+状态低迷，主胜几乎没有悬念。让球-1深盘下，迈阿密赢2球才赢盘，考虑到其进攻火力（场均2.5球），让胜有希望；但哥伦布近期偶有回暖（上轮取1胜），防一球小胜走水的让平。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（防让胜）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">3-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:88%"></div></div>
+      <span class="bar-label">★★★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>迈阿密国际若取胜，积分达到40分，将继续紧追东部榜首纳什维尔，稳固东部前2的季后赛主场优势；哥伦布机员若败，17分继续在东部垫底区，季后赛希望愈发渺茫，重建压力加大。</p>
+</section>
+
+<!-- ===== 008: 温哥华白帽 vs 洛杉矶FC ===== -->
+<section class="card" id="match-008">
+  <div class="card-header">
+    <span class="match-id">周六 008</span>
+    <span class="match-league">美职联 · 常规赛</span>
+    <span class="match-time">2026-08-02 10:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">温哥华白帽</span>
+    <span class="vs">VS</span>
+    <span class="away">洛杉矶FC</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.86</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.68</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.12</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">温哥华白帽 · 西部第1</div>
+      <div class="insight-value">16轮 10胜3平3负 / 进37失16 / 33分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶FC · 西部第2</div>
+      <div class="insight-value">18轮 10胜3平5负 / 进34失18 / 33分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-20</td><td>洛杉矶FC vs 温哥华</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-06-15</td><td>温哥华 vs 洛杉矶FC</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-10-06</td><td>洛杉矶FC vs 温哥华</td><td>2-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-06-29</td><td>温哥华 vs 洛杉矶FC</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2023-09-24</td><td>温哥华 vs 洛杉矶FC</td><td>1-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-05-14</td><td>洛杉矶FC vs 温哥华</td><td>3-1</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋温哥华2胜2平2负，与洛杉矶FC势均力敌。</strong>主场作战时温哥华2胜1平0负占优。西部榜首两强相遇，交锋互有胜负，主场优势是关键变量。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">温哥华 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进10失5</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶FC 近5场</div>
+      <div class="insight-value">4胜0平1负 · 进12失5 · <strong>四连胜</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">温哥华 主场</div>
+      <div class="insight-value">8场 6胜1平1负 · 胜率75% · 进20失7</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶FC 客场</div>
+      <div class="insight-value">9场 5胜1平3负 · 胜率56% · 进15失10</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>西部榜首大战：</strong>两队同积33分，温哥华以净胜球优势（+21 vs +16）暂居西部第1。温哥华拥有联赛最佳防线（16轮仅失16球），主场胜率高达75%；洛杉矶FC近期豪取四连胜状态火热，客场5胜3负亦具竞争力。本场是检验西部真正霸主的"天王山"之战，双方均会全力出击。</p>
+
+  <div class="warning">
+    <strong>⚠ 强强对话提示：</strong>西部榜首两强相遇，实力极为接近（同积33分）。温哥华主场强势+联赛最佳防守，洛杉矶FC四连胜+进攻火力强劲。让球-1盘口偏深，强强对话平局概率不低，让负/走水风险大。建议主胜博平局，31双选为宜，单搏主胜需谨慎。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博平局（31双选）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:58%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>西部榜首直接对话，胜者将独占西部第1，掌握季后赛主场优势主动权。温哥华若胜，36分稳固榜首；洛杉矶FC若胜，36分反超登顶。平局则温哥华凭借净胜球继续领跑。本场对西部季后赛排位格局具有决定性意义。</p>
+</section>
+
+<!-- ===== 009: 桑托斯 vs 里莫 ===== -->
+<section class="card" id="match-009">
+  <div class="card-header">
+    <span class="match-id">周六 009</span>
+    <span class="match-league">巴西杯 · 1/8决赛（首回合）</span>
+    <span class="match-time">2026-08-02 08:00</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">桑托斯</span>
+    <span class="vs">VS</span>
+    <span class="away">里莫</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.41</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.90</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">6.10</div></div>
+  </div>
+
+  <h4>积分排名（巴甲参照）</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">桑托斯 · 巴甲第15</div>
+      <div class="insight-value">近期2胜1平不败 · 主场3胜2平0负</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">里莫 · 巴甲第19（降级区）</div>
+      <div class="insight-value">20轮22分 · 客场仅4胜9负</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2026-04-03</td><td>桑托斯 vs 里莫（巴甲）</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2010-03-19</td><td>里莫 vs 桑托斯（巴西杯）</td><td>0-4</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2009-x</td><td>桑托斯 vs 里莫</td><td>3-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2008-x</td><td>里莫 vs 桑托斯</td><td>1-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2007-x</td><td>桑托斯 vs 里莫</td><td>2-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2006-x</td><td>里莫 vs 桑托斯</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>历史交锋桑托斯7胜1平0负，从未输给里莫。</strong>里莫做客桑托斯主场更是从未拿过分数。本赛季巴甲首回合桑托斯主场2-0完胜里莫。交锋层面桑托斯形成绝对碾压，"历史魔咒"压顶。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">桑托斯 近5场（各项）</div>
+      <div class="insight-value">3胜1平1负 · 进10失6</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">里莫 近5场</div>
+      <div class="insight-value">1胜1平3负 · 进4失8 · 客场两连败</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">桑托斯 主场（近5）</div>
+      <div class="insight-value">3胜2平0负 · 维拉贝尔米罗主场氛围极强</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">里莫 客场（本季）</div>
+      <div class="insight-value">20场仅4胜9负 · 客场疲软</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>桑托斯杯赛战意拉满：</strong>内马尔、加布里埃尔·邦滕波、卢卡斯·维里西莫等核心回归主力，主帅库卡将派出最强阵。伤停方面莫伊塞斯（左边锋）、利拉（中卫）等4人缺阵，但阵容深度足够。里莫方面主力中卫查姆巴、主力右边卫若昂·卢卡斯缺阵，防线核心受损严重。桑托斯周中南美杯主场4-2大胜，进攻状态回暖。</p>
+
+  <div class="warning">
+    <strong>⚠ 杯赛要点：</strong>巴西杯1/8决赛首回合，桑托斯主场。交锋7胜1平不败+主场从未失分+里莫客场疲软+防线主力缺阵，主胜几乎没有悬念。但让球-1深盘下，桑托斯自身4人伤停，赢2球才赢盘，且首回合桑托斯或求稳不大比分冒进，防一球小胜走水的让平。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（一球小胜格局）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+      <span class="bar-label">★★★★</span>
+    </div>
+  </div>
+
+  <h4>杯赛影响</h4>
+  <p>巴西杯1/8决赛首回合，桑托斯主场作战需建立优势以为次回合客场奠定基础。桑托斯上轮淘汰科里蒂巴，里莫上轮淘汰巴伊亚。桑托斯若主场取胜甚至大胜，将基本锁定八强席位；里莫若客场取分则保留悬念，但以其交锋魔咒与客场表现，爆冷难度极大。</p>
+</section>
+
+<!-- ===== 010: 芝加哥火焰 vs 夏洛特FC ===== -->
+<section class="card" id="match-010">
+  <div class="card-header">
+    <span class="match-id">周六 010</span>
+    <span class="match-league">美职联 · 常规赛</span>
+    <span class="match-time">2026-08-02 08:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">芝加哥火焰</span>
+    <span class="vs">VS</span>
+    <span class="away">夏洛特FC</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.41</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.35</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.25</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">芝加哥火焰 · 东部第4</div>
+      <div class="insight-value">16轮 8胜2平6负 / 进30失22 / 26分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">夏洛特FC · 东部第6</div>
+      <div class="insight-value">17轮 6胜5平6负 / 进22失23 / 23分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-06-29</td><td>芝加哥火焰 vs 夏洛特FC</td><td>3-2</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2025-05-18</td><td>夏洛特FC vs 芝加哥火焰</td><td>1-4</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-05-16</td><td>芝加哥火焰 vs 夏洛特FC</td><td>0-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-10-08</td><td>芝加哥火焰 vs 夏洛特FC</td><td>0-2</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-06-04</td><td>夏洛特FC vs 芝加哥火焰</td><td>2-3</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2022-09-18</td><td>夏洛特FC vs 芝加哥火焰</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋芝加哥3胜1平2负略占优，2025赛季完成对夏洛特双杀。</strong>但2023-24赛季芝加哥主场两次负于夏洛特，主场交锋并非稳赢。近期芝加哥已扭转对夏洛特的颓势。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">芝加哥火焰 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进10失6</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">夏洛特FC 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进7失8</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">芝加哥 主场</div>
+      <div class="insight-value">8场 5胜2平1负 · 胜率63% · 进16失8</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">夏洛特FC 客场</div>
+      <div class="insight-value">8场 2胜2平4负 · 胜率25% · 进9失13</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>芝加哥锋线受损：</strong>中场阿伦·约翰因伤缺阵（7月24日起），更关键的是两名前锋阿兰·圣马克西曼与贝尔希玛斯双双停赛，进攻端火力受损严重。夏洛特FC阵容相对齐整。芝加哥东部第4主场强势，但锋线双停赛是不确定因素。</p>
+
+  <div class="warning">
+    <strong>⚠ 伤停隐患提醒：</strong>芝加哥排名与交锋占优、主场胜率63%，但两名主力前锋停赛对进攻效率影响巨大，一球小胜概率上升。夏洛特客场虽弱（25%胜率）但并非毫无机会。让球-1盘口下，芝加哥赢2球难度因锋线受损而加大，防让平走水。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博让平（一球小胜格局）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+      <span class="bar-label">★★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>芝加哥若取胜，积分达到29分，稳固东部第4的季后赛直接晋级席位；夏洛特若败，23分可能跌出东部前7的季后赛区，附加赛席位受威胁。本场对东部季后赛排位有直接影响。</p>
+</section>
+
+<!-- ===== 011: 圣路易斯城 vs 皇家盐湖城 ===== -->
+<section class="card" id="match-011">
+  <div class="card-header">
+    <span class="match-id">周六 011</span>
+    <span class="match-league">美职联 · 常规赛</span>
+    <span class="match-time">2026-08-02 09:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">圣路易斯城</span>
+    <span class="vs">VS</span>
+    <span class="away">皇家盐湖城</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.92</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.70</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.96</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">圣路易斯城 · 西部第7</div>
+      <div class="insight-value">17轮 7胜4平6负 / 进23失23 / 25分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">皇家盐湖城 · 西部第3</div>
+      <div class="insight-value">16轮 8胜2平6负 / 进28失24 / 26分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-14</td><td>皇家盐湖城 vs 圣路易斯城</td><td>2-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2025-06-22</td><td>圣路易斯城 vs 皇家盐湖城</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-10-06</td><td>皇家盐湖城 vs 圣路易斯城</td><td>3-0</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2024-06-29</td><td>圣路易斯城 vs 皇家盐湖城</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-09-24</td><td>圣路易斯城 vs 皇家盐湖城</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2023-05-14</td><td>皇家盐湖城 vs 圣路易斯城</td><td>0-1</td><td><span class="tag tag-green">胜</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋圣路易斯城2胜2平2负，与盐湖城平分秋色。</strong>主场作战时圣路易斯1胜1平0负占优。两队实力接近，交锋主场优势明显。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">圣路易斯城 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进7失7</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">皇家盐湖城 近5场</div>
+      <div class="insight-value">2胜0平3负 · 进7失8 · <strong>近2连败</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">圣路易斯城 主场</div>
+      <div class="insight-value">8场 4胜2平2负 · 胜率50% · 进13失10</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">皇家盐湖城 客场</div>
+      <div class="insight-value">8场 3胜1平4负 · 胜率38% · 进10失12</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>盐湖城状态下滑：</strong>皇家盐湖城虽排名西部第3（26分），但近期遭遇2连败，状态明显走低，客场胜率仅38%。圣路易斯城西部第7（25分），主场稳健（50%胜率），与盐湖城仅差1分。两队均处于季后赛卡位关键阶段，战意十足。</p>
+
+  <div class="warning">
+    <strong>⚠ 势均力敌提示：</strong>两队积分仅差1分（25 vs 26），排名相邻，实力极为接近。盐湖城排名略高但近期2连败状态下滑，圣路易斯主场稳健。让球-1盘口偏深，平局概率较高，建议主胜博平局，31双选为宜。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博平局（31双选）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>西部季后赛卡位战。圣路易斯城若胜，28分有望升至西部前5；皇家盐湖城若胜，29分稳固西部第3。平局则排名格局变化不大。本场对西部中游排位有直接影响。</p>
+</section>
+
+<!-- ===== 012: 洛杉矶银河 vs 达拉斯FC ===== -->
+<section class="card" id="match-012">
+  <div class="card-header">
+    <span class="match-id">周六 012</span>
+    <span class="match-league">美职联 · 常规赛</span>
+    <span class="match-time">2026-08-02 10:30</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">洛杉矶银河</span>
+    <span class="vs">VS</span>
+    <span class="away">达拉斯FC</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">2.11</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.50</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.71</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶银河 · 西部下游</div>
+      <div class="insight-value">17轮 / ~21分 · 进攻乏力赛季挣扎</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">达拉斯FC · 西部第6</div>
+      <div class="insight-value">17轮 7胜5平5负 / 进32失25 / 26分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-20</td><td>达拉斯 vs 洛城银河</td><td>2-2</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2025-06-15</td><td>洛城银河 vs 达拉斯</td><td>1-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-10-06</td><td>达拉斯 vs 洛城银河</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-06-29</td><td>洛城银河 vs 达拉斯</td><td>3-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2023-09-24</td><td>洛城银河 vs 达拉斯</td><td>0-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-05-14</td><td>达拉斯 vs 洛城银河</td><td>3-0</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋洛城银河2胜2平2负，主场2胜0平1负略占优。</strong>近3次交锋银河1胜2平保持不败，主场具备一定抗衡能力。但2023赛季达拉斯曾双杀银河。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶银河 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进6失8</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">达拉斯FC 近5场</div>
+      <div class="insight-value">2胜2平1负 · 进8失6</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">洛杉矶银河 主场</div>
+      <div class="insight-value">8场 3胜2平3负 · 胜率38% · 进12失12</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">达拉斯FC 客场</div>
+      <div class="insight-value">8场 3胜2平3负 · 胜率38% · 进13失12</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>银河赛季低迷：</strong>洛杉矶银河作为传统豪门，本赛季表现挣扎，排名西部下游（约21分），进攻端火力不足。达拉斯FC排名西部第6（26分），近期2胜2平1负状态平稳，客场3胜3负具备竞争力。主客两队近期状态与排名均显示达拉斯略占优势。</p>
+
+  <div class="warning">
+    <strong>⚠ 冷门预警：</strong>银河主场让球（主胜2.11）看似占优，实则盘口偏浅反映势均力敌。达拉斯排名更高（26 vs 21分）+近期状态更好+客场不弱，让球-1盘口下达拉斯赢盘（让负）概率偏高。平局/客胜价值大，建议慎防银河主场不胜，平局博客胜。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">平局博客胜（10双选难点）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-2</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:42%"></div></div>
+      <span class="bar-label">★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>达拉斯若取胜，积分达到29分，有望升至西部前4，巩固季后赛直接晋级席位；银河若败，21分继续在西部下游挣扎，季后赛形势严峻。本场对达拉斯冲击西部前列意义重大。</p>
+</section>
+
+<!-- ===== 013: 波特兰伐木工 vs 西雅图海湾人 ===== -->
+<section class="card" id="match-013">
+  <div class="card-header">
+    <span class="match-id">周六 013</span>
+    <span class="match-league">美职联 · 常规赛（Cascadia德比）</span>
+    <span class="match-time">2026-08-02 10:45</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">波特兰伐木工</span>
+    <span class="vs">VS</span>
+    <span class="away">西雅图海湾人</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">2.02</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.70</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.75</div></div>
+  </div>
+
+  <h4>积分排名</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">波特兰伐木工 · 西部第10</div>
+      <div class="insight-value">17轮 6胜3平8负 / 进18失24 / 21分</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">西雅图海湾人 · 西部第8</div>
+      <div class="insight-value">16轮 7胜3平6负 / 进19失20 / 24分</div>
+    </div>
+  </div>
+
+  <h4>历史交锋（近6次）</h4>
+  <div class="table-wrap">
+  <table class="history-table">
+    <thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>2025-09-14</td><td>波特兰 vs 西雅图</td><td>4-1</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2025-06-22</td><td>西雅图 vs 波特兰</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2024-10-06</td><td>波特兰 vs 西雅图</td><td>2-0</td><td><span class="tag tag-green">胜</span></td></tr>
+      <tr><td>2024-06-29</td><td>西雅图 vs 波特兰</td><td>1-1</td><td><span class="tag tag-yellow">平</span></td></tr>
+      <tr><td>2023-09-24</td><td>西雅图 vs 波特兰</td><td>2-1</td><td><span class="tag tag-red">负</span></td></tr>
+      <tr><td>2023-05-14</td><td>波特兰 vs 西雅图</td><td>0-1</td><td><span class="tag tag-red">负</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>近6次交锋波特兰2胜2平2负，主场2胜0平1负占优。</strong>上次交手波特兰主场4-1大胜西雅图。两队的Cascadia德比历史悠久（历史125次交锋西雅图58胜48平19负总领先），但近期波特兰主场抗衡能力提升。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">波特兰 近5场</div>
+      <div class="insight-value">1胜1平3负 · 进5失9</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">西雅图海湾人 近5场</div>
+      <div class="insight-value">0胜0平5负 · 进3失12 · <strong>五连败</strong></div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">波特兰 主场</div>
+      <div class="insight-value">8场 4胜2平2负 · 胜率50% · 进13失9</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">西雅图 客场</div>
+      <div class="insight-value">8场 2胜1平5负 · 胜率25% · 进8失14</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>西雅图状态崩盘：</strong>西雅图海湾人虽排名西部第8（24分），但近期遭遇五连败，状态跌至谷底，客场胜率仅25%。波特兰排名西部第10（21分），近期同样低迷（1胜3负），但主场50%胜率仍有保障，且上次德比主场4-1大胜西雅图心理占优。Cascadia德比战意十足，比赛激烈程度高。</p>
+
+  <div class="warning">
+    <strong>⚠ 德比战提示：</strong>两队近期状态都很差，但西雅图五连败更为严峻，客场疲软。波特兰主场稳健+上次德比大胜心理优势，主场不败概率较高。让球-1盘口下，德比战平局偏多，建议主胜博平局，31双选。西雅图若延续连败，波特兰有望借主场止颓。
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">📊 综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜博平局（31双选）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-1</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★</span>
+    </div>
+  </div>
+
+  <h4>联赛影响</h4>
+  <p>Cascadia德比兼具荣誉与积分意义。波特兰若胜，24分追平西雅图，西部排名有望提升；西雅图若遭遇六连败，24分可能跌出西部前9的季后赛区，附加赛席位告急。本场对西部季后赛卡位影响显著。</p>
+</section>
+
+<!-- ========== 四、比分预测汇总 ========== -->
+<h2>四、比分预测汇总</h2>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>信心</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-blue">周六001</span></td>
+      <td>TPS图尔 vs 玛丽港</td><td>芬超</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六002</span></td>
+      <td>赫根 vs 卡尔马</td><td>瑞超</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六003</span></td>
+      <td>腓特烈斯塔 vs 桑纳菲尤尔</td><td>挪超</td>
+      <td><span class="tag tag-yellow">平局博客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
+      <td>★★☆☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六004</span></td>
+      <td>拉赫蒂 vs 雅罗</td><td>芬超</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>★★★★☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六005</span></td>
+      <td>斯达 vs 维京</td><td>挪超</td>
+      <td><span class="tag tag-red">客胜博让负</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-3</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-3</td>
+      <td>★★★★★</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六006</span></td>
+      <td>赫尔辛基火花 vs 库奥皮奥</td><td>芬超</td>
+      <td><span class="tag tag-yellow">平局博客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六007</span></td>
+      <td>迈阿密国际 vs 哥伦布机员</td><td>美职联</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3-1</td>
+      <td>★★★★★</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六008</span></td>
+      <td>温哥华白帽 vs 洛杉矶FC</td><td>美职联</td>
+      <td><span class="tag tag-green">主胜博平局</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六009</span></td>
+      <td>桑托斯 vs 里莫</td><td>巴西杯</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>★★★★☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六010</span></td>
+      <td>芝加哥火焰 vs 夏洛特FC</td><td>美职联</td>
+      <td><span class="tag tag-green">主胜博让平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>★★★★☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六011</span></td>
+      <td>圣路易斯城 vs 皇家盐湖城</td><td>美职联</td>
+      <td><span class="tag tag-green">主胜博平局</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六012</span></td>
+      <td>洛杉矶银河 vs 达拉斯FC</td><td>美职联</td>
+      <td><span class="tag tag-yellow">平局博客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
+      <td>★★☆☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">周六013</span></td>
+      <td>波特兰伐木工 vs 西雅图海湾人</td><td>美职联</td>
+      <td><span class="tag tag-green">主胜博平局</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-1</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>★★★☆☆</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：信心评级★越多表示把握越大。★★★★★为当日最高信心，★★☆☆☆为低信心双选场次。</p>
+
+<!-- ========== 五、核心策略与风险提示 ========== -->
+<h2>五、核心策略与风险提示</h2>
+
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="s-match">最深盘最稳胆：维京客胜</div>
+    <div class="s-pred">客胜 1.36 · 让负</div>
+    <div class="s-confidence">维京联赛第2、14轮11胜1平2负进34球，对阵垫底的斯达（15轮仅7分、场均失2.3球），实力碾压无悬念，当日第一稳胆</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">焦点稳胆：迈阿密国际</div>
+    <div class="s-pred">主胜 1.40 · 让平</div>
+    <div class="s-confidence">梅西领衔东部第2主场强势，哥伦布客场仅5分排名东部第11，主队火力全开但需防一球小胜走水</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">价值博胆：拉赫蒂主胜</div>
+    <div class="s-pred">主胜 1.44 · 让平</div>
+    <div class="s-confidence">拉赫蒂主场稳固防守佳（17轮仅失16球），雅罗客场疲软17轮失33球，主胜概率高但让球-1需防走水</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">最大风险点：芬超平局魔咒</div>
+    <div class="s-pred">TPS vs 玛丽港</div>
+    <div class="s-confidence">TPS近7次对阵玛丽港不胜（4连平），虽玛丽港17轮0胜4分垫底+客场全败，但交锋魔咒令让球-1盘口风险陡增</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">冷门预警：洛杉矶银河</div>
+    <div class="s-pred">平局博客胜</div>
+    <div class="s-confidence">银河赛季挣扎进攻乏力（~21分西部下游），达拉斯FC排名第6客场抢分能力强，主队深盘1.92存疑，双选防冷</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">串关建议：3串1</div>
+    <div class="s-pred">维京客胜 + 迈阿密主胜 + 芝加哥主胜</div>
+    <div class="s-confidence">三场主/客胜叠加，赔率约1.36×1.40×1.41≈2.68倍，稳中求进。保守可仅选维京+迈阿密2串1约1.90倍</div>
+  </div>
+</div>
+
+<h3>风险提示</h3>
+<div class="warning" style="font-size:0.9rem;padding:1.25rem">
+  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年7月31日，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率，尤其是梅西等球星是否首发对迈阿密国际赛事影响巨大。</p>
+  <p style="margin-top:0.5rem"><strong>2. 伤停不确定性：</strong>美职联多场比赛涉及伤停情况，洛杉矶FC、西雅图海湾人等球队核心球员状态需临场确认。芬超赛事虽无重大伤停，但北欧赛季中段球员疲劳累积不容忽视。</p>
+  <p style="margin-top:0.5rem"><strong>3. 多线作战风险：</strong>维京下周可能有欧战资格赛任务，库奥皮奥（KuPS）双线作战（欧冠资格赛+联赛），桑托斯同时征战巴甲和巴西杯，均可能进行轮换影响战力。</p>
+  <p style="margin-top:0.5rem"><strong>4. 杯赛特殊性：</strong>巴西杯1/8决赛为两回合制，首回合主场作战的桑托斯可能采取保守策略，不追求大比分而是确保不失球，影响让球盘口走势。</p>
+  <p style="margin-top:0.5rem"><strong>5. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。未成年人禁止参与任何形式的竞猜活动。</p>
+</div>
+
+<!-- ========== 六、当日赛事联赛形势 ========== -->
+<h2>六、当日赛事联赛形势</h2>
+
+<h3>6.1 芬超联赛形势总览</h3>
+<div class="league-overview">
+  <h4>冠军争夺</h4>
+  <p>库奥皮奥（KuPS）以约34分领跑积分榜，作为卫冕冠军本赛季攻防两端依旧强势，同时兼顾欧冠资格赛双线作战。赫尔辛基火花（GrIFK）以28分排名第4，距第2名仅3分，欧战资格争夺白热化。联赛进入第18轮，冠军与欧战席位归属仍存悬念。</p>
+</div>
+<div class="league-overview">
+  <h4>欧战资格区</h4>
+  <p>芬超冠军进入欧冠资格赛，亚军进入欧协联资格赛。目前第2-4名球队积分咬得很紧，赫尔辛基火花（28分）、拉赫蒂和TPS图尔（均22分）均有冲击欧战席位的可能。拉赫蒂凭借17轮仅失16球的稳固防守，具备后程发力的潜力。</p>
+</div>
+<div class="league-overview">
+  <h4>保级形势</h4>
+  <p>玛丽港以17轮0胜4平13负仅积4分排名垫底，客场8战1平7负进3球，几乎提前锁定一个降级名额。雅罗（17分）排名第10，领先降级区优势不大，客场17轮失33球为联赛防守最差之一，保级压力同样较大。</p>
+</div>
+
+<h3>6.2 芬超积分榜（参赛球队高亮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜球</th><th>积分</th><th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-team">
+      <td>1</td><td><strong>库奥皮奥 (KuPS)</strong></td><td>17</td><td>10</td><td>4</td><td>3</td><td>30/15</td><td>+15</td><td><strong>34</strong></td>
+      <td><span class="tag tag-green">欧冠资格赛</span></td>
+    </tr>
+    <tr>
+      <td>2</td><td>塞伊奈约基 (SJK)</td><td>17</td><td>9</td><td>4</td><td>4</td><td>25/18</td><td>+7</td><td>31</td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr>
+      <td>3</td><td>哈卡 (Haka)</td><td>17</td><td>9</td><td>2</td><td>6</td><td>24/20</td><td>+4</td><td>29</td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>4</td><td><strong>赫尔辛基火花 (GrIFK)</strong></td><td>17</td><td>8</td><td>4</td><td>5</td><td>26/20</td><td>+6</td><td><strong>28</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>5</td><td>AC奥卢 (AC Oulu)</td><td>17</td><td>7</td><td>4</td><td>6</td><td>22/21</td><td>+1</td><td>25</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>6</td><td>国际图尔库 (Inter Turku)</td><td>17</td><td>6</td><td>5</td><td>6</td><td>23/22</td><td>+1</td><td>23</td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>7</td><td><strong>拉赫蒂 (Lahti)</strong></td><td>17</td><td>6</td><td>4</td><td>7</td><td>20/16</td><td>+4</td><td><strong>22</strong></td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>8</td><td><strong>TPS图尔 (TPS)</strong></td><td>17</td><td>6</td><td>4</td><td>7</td><td>20/20</td><td>0</td><td><strong>22</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>9</td><td>科特卡 (KTP)</td><td>17</td><td>5</td><td>4</td><td>8</td><td>19/24</td><td>-5</td><td>19</td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>10</td><td><strong>雅罗 (Jaro)</strong></td><td>17</td><td>3</td><td>6</td><td>8</td><td>17/33</td><td>-16</td><td><strong>17</strong></td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>11</td><td>玛丽港二队 (IFK Mariehamn)</td><td>17</td><td>2</td><td>5</td><td>10</td><td>14/28</td><td>-14</td><td>11</td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>12</td><td><strong>玛丽港 (IFK Mariehamn)</strong></td><td>17</td><td>0</td><td>4</td><td>13</td><td>8/37</td><td>-29</td><td><strong>4</strong></td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮为当日参赛球队。数据截至第17轮。</p>
+
+<h3>6.3 瑞超联赛形势总览</h3>
+<div class="league-overview">
+  <h4>争冠与欧战区</h4>
+  <p>瑞典超级联赛进入第15轮，赫根以24分排名第3，占据欧协联资格赛席位，与榜首差距不大仍保有争冠希望。赫根本赛季主场表现稳健，进攻端火力充足。卡尔马以17分排名第11，处于积分榜中下游，客场表现不佳是拖累排名的主因，保级压力逐渐增大。</p>
+</div>
+<div class="league-overview">
+  <h4>保级形势</h4>
+  <p>瑞超第13-16名进入降级区或附加赛区。卡尔马目前领先降级区约5分，但客场14轮仅取有限积分，若客场持续低迷则保级形势将趋于紧张。本场客场挑战赫根，卡尔马需要至少拿到1分以维持安全距离。</p>
+</div>
+
+<h3>6.4 瑞超积分榜（参赛球队高亮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜球</th><th>积分</th><th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td><td>马尔默 (Malmö FF)</td><td>14</td><td>10</td><td>2</td><td>2</td><td>28/12</td><td>+16</td><td>32</td>
+      <td><span class="tag tag-green">欧冠资格赛</span></td>
+    </tr>
+    <tr>
+      <td>2</td><td>埃尔夫斯堡 (Elfsborg)</td><td>14</td><td>8</td><td>3</td><td>3</td><td>25/16</td><td>+9</td><td>27</td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>3</td><td><strong>赫根 (Häcken)</strong></td><td>14</td><td>7</td><td>3</td><td>4</td><td>24/18</td><td>+6</td><td><strong>24</strong></td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr>
+      <td>4</td><td>佐加顿斯 (Djurgården)</td><td>14</td><td>7</td><td>2</td><td>5</td><td>22/19</td><td>+3</td><td>23</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>5</td><td>米亚尔比 (Mjällby)</td><td>14</td><td>6</td><td>4</td><td>4</td><td>20/18</td><td>+2</td><td>22</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>6</td><td>AIK索尔纳 (AIK)</td><td>14</td><td>6</td><td>3</td><td>5</td><td>19/20</td><td>-1</td><td>21</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>7</td><td>北雪平 (Norrköping)</td><td>14</td><td>5</td><td>5</td><td>4</td><td>21/20</td><td>+1</td><td>20</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>8</td><td>哥德堡 (IFK Göteborg)</td><td>14</td><td>5</td><td>4</td><td>5</td><td>18/19</td><td>-1</td><td>19</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>9</td><td>哈马比 (Hammarby)</td><td>14</td><td>5</td><td>4</td><td>5</td><td>17/19</td><td>-2</td><td>19</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10</td><td>韦纳穆 (Värnamo)</td><td>14</td><td>5</td><td>3</td><td>6</td><td>16/20</td><td>-4</td><td>18</td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>11</td><td><strong>卡尔马 (Kalmar)</strong></td><td>14</td><td>5</td><td>2</td><td>7</td><td>18/20</td><td>-2</td><td><strong>17</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>12</td><td>瓦斯特拉斯 (Västerås)</td><td>14</td><td>3</td><td>5</td><td>6</td><td>13/20</td><td>-7</td><td>14</td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>13</td><td>哈尔姆斯塔德 (Halmstad)</td><td>14</td><td>3</td><td>4</td><td>7</td><td>12/22</td><td>-10</td><td>13</td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>14</td><td>天狼星 (Sirius)</td><td>14</td><td>2</td><td>5</td><td>7</td><td>14/24</td><td>-10</td><td>11</td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮为当日参赛球队。数据截至第14轮。</p>
+
+<h3>6.5 挪超联赛形势总览</h3>
+<div class="league-overview">
+  <h4>冠军争夺</h4>
+  <p>维京以14轮11胜1平2负积34分高居积分榜第2，仅落后榜首博德闪耀1分（少赛一场），争冠形势大好。维京本赛季进攻端34球火力全联赛最强，防守14球也属顶级，攻守兼备是夺冠最大热门之一。本场对阵垫底的斯达，全取3分几乎无悬念。</p>
+</div>
+<div class="league-overview">
+  <h4>保级生死战</h4>
+  <p>腓特烈斯塔（14分第12名）与桑纳菲尤尔（15分第11名）同处降级区边缘，本场直接对话堪称"6分保级大战"。斯达以约7分排名垫底第14名（降级区），15轮仅1胜场均失2.3球，保级希望渺茫。三支参赛的挪超球队中，两支深陷保级泥潭，维京则是争冠热门，形成鲜明对比。</p>
+</div>
+
+<h3>6.6 挪超积分榜（参赛球队高亮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜球</th><th>积分</th><th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td><td>博德闪耀 (Bodø/Glimt)</td><td>15</td><td>11</td><td>2</td><td>2</td><td>37/11</td><td>+26</td><td>35</td>
+      <td><span class="tag tag-green">欧冠资格赛</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>2</td><td><strong>维京 (Viking)</strong></td><td>14</td><td>11</td><td>1</td><td>2</td><td>34/14</td><td>+20</td><td><strong>34</strong></td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr>
+      <td>3</td><td>布兰 (Brann)</td><td>16</td><td>9</td><td>4</td><td>3</td><td>30/18</td><td>+12</td><td>31</td>
+      <td><span class="tag tag-blue">欧协联资格赛</span></td>
+    </tr>
+    <tr>
+      <td>4</td><td>特罗姆瑟 (Tromsø)</td><td>16</td><td>7</td><td>3</td><td>6</td><td>26/24</td><td>+2</td><td>24</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>5</td><td>利勒斯特罗姆 (Lillestrøm)</td><td>16</td><td>7</td><td>3</td><td>6</td><td>24/24</td><td>0</td><td>24</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>6</td><td>罗森博格 (Rosenborg)</td><td>16</td><td>6</td><td>4</td><td>6</td><td>22/22</td><td>0</td><td>22</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>7</td><td>莫尔德 (Molde)</td><td>16</td><td>6</td><td>3</td><td>7</td><td>24/25</td><td>-1</td><td>21</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>8</td><td>瓦勒伦加 (Vålerenga)</td><td>15</td><td>6</td><td>2</td><td>7</td><td>22/24</td><td>-2</td><td>20</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>9</td><td>汉坎 (HamKam)</td><td>16</td><td>5</td><td>4</td><td>7</td><td>20/26</td><td>-6</td><td>19</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>10</td><td>奥勒松 (Aalesund)</td><td>16</td><td>5</td><td>3</td><td>8</td><td>18/25</td><td>-7</td><td>18</td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>11</td><td><strong>桑纳菲尤尔 (Sandefjord)</strong></td><td>14</td><td>4</td><td>3</td><td>7</td><td>13/20</td><td>-7</td><td><strong>15</strong></td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>12</td><td><strong>腓特烈斯塔 (Fredrikstad)</strong></td><td>14</td><td>4</td><td>2</td><td>8</td><td>15/27</td><td>-12</td><td><strong>14</strong></td>
+      <td><span class="tag tag-yellow">降级附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>13</td><td>克里斯蒂安松 (Kristiansund)</td><td>16</td><td>3</td><td>4</td><td>9</td><td>14/28</td><td>-14</td><td>13</td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>14</td><td><strong>斯达 (Strømsgodset)</strong></td><td>15</td><td>1</td><td>4</td><td>10</td><td>10/34</td><td>-24</td><td><strong>7</strong></td>
+      <td><span class="tag tag-red">降级区</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮为当日参赛球队。数据截至第14-16轮。</p>
+
+<h3>6.7 美职联联赛形势总览</h3>
+<div class="league-overview">
+  <h4>东部格局</h4>
+  <p>迈阿密国际以37分高居东部第2（17轮11胜4平2负），梅西领衔的攻击线43球为全联盟火力最猛。哥伦布机员以17分排名东部第11，客场仅5分陷入低迷，与上赛季冠军形成巨大落差。芝加哥火焰（26分第4）和夏洛特FC（23分第6）同处季后赛区内，本场直接对话关乎东部季后赛排位。东部前7名直接晋级季后赛，第8-9名进行外卡附加赛。</p>
+</div>
+<div class="league-overview">
+  <h4>西部格局</h4>
+  <p>温哥华白帽（33分）与洛杉矶FC（33分）并列西部榜首，本场"西部巅峰对决"关乎榜首归属。皇家盐湖城（26分第3）客场挑战圣路易斯城（25分第7），达拉斯FC（26分第6）客场对阵洛杉矶银河（~21分下游），西雅图海湾人（24分第8）做客波特兰伐木工（21分第10）迎来Cascadia德比。西部前7直接晋级季后赛，竞争异常激烈，多场比赛直接影响季后赛卡位。</p>
+</div>
+
+<h3>6.8 美职联东部积分榜（参赛球队高亮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜球</th><th>积分</th><th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td><td>辛辛那提FC</td><td>18</td><td>12</td><td>3</td><td>3</td><td>38/18</td><td>+20</td><td>39</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>2</td><td><strong>迈阿密国际</strong></td><td>17</td><td>11</td><td>4</td><td>2</td><td>43/30</td><td>+13</td><td><strong>37</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>3</td><td>哥伦布机员2</td><td>18</td><td>10</td><td>4</td><td>4</td><td>32/20</td><td>+12</td><td>34</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>4</td><td>亚特兰大联</td><td>18</td><td>9</td><td>4</td><td>5</td><td>28/22</td><td>+6</td><td>31</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>5</td><td><strong>芝加哥火焰</strong></td><td>16</td><td>8</td><td>2</td><td>6</td><td>30/22</td><td>+8</td><td><strong>26</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>6</td><td>费城联合</td><td>17</td><td>7</td><td>5</td><td>5</td><td>25/22</td><td>+3</td><td>26</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>7</td><td><strong>夏洛特FC</strong></td><td>17</td><td>6</td><td>5</td><td>6</td><td>22/23</td><td>-1</td><td><strong>23</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>8</td><td>纽约红牛</td><td>18</td><td>6</td><td>5</td><td>7</td><td>22/25</td><td>-3</td><td>23</td>
+      <td><span class="tag tag-yellow">外卡附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>9</td><td>纳什维尔SC</td><td>18</td><td>6</td><td>4</td><td>8</td><td>20/25</td><td>-5</td><td>22</td>
+      <td><span class="tag tag-yellow">外卡附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>10</td><td>新英格兰革命</td><td>18</td><td>6</td><td>3</td><td>9</td><td>24/28</td><td>-4</td><td>21</td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>11</td><td><strong>哥伦布机员</strong></td><td>19</td><td>4</td><td>5</td><td>10</td><td>24/26</td><td>-2</td><td><strong>17</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>12</td><td>多伦多FC</td><td>18</td><td>4</td><td>4</td><td>10</td><td>18/28</td><td>-10</td><td>16</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>13</td><td>芝加哥火焰2</td><td>18</td><td>3</td><td>5</td><td>10</td><td>16/28</td><td>-12</td><td>14</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>14</td><td>华盛顿联</td><td>18</td><td>2</td><td>6</td><td>10</td><td>14/30</td><td>-16</td><td>12</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>15</td><td>蒙特利尔CF</td><td>18</td><td>2</td><td>5</td><td>11</td><td>12/32</td><td>-20</td><td>11</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮为当日参赛球队。东部前7名直接晋级季后赛，第8-9名进行外卡附加赛。</p>
+
+<h3>6.9 美职联西部积分榜（参赛球队高亮）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>排名</th><th>球队</th><th>场次</th><th>胜</th><th>平</th><th>负</th><th>进/失</th><th>净胜球</th><th>积分</th><th>备注</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-team">
+      <td>1</td><td><strong>温哥华白帽</strong></td><td>16</td><td>10</td><td>3</td><td>3</td><td>37/16</td><td>+21</td><td><strong>33</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>2</td><td><strong>洛杉矶FC</strong></td><td>18</td><td>10</td><td>3</td><td>5</td><td>34/18</td><td>+16</td><td><strong>33</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>3</td><td><strong>皇家盐湖城</strong></td><td>16</td><td>8</td><td>2</td><td>6</td><td>28/24</td><td>+4</td><td><strong>26</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>4</td><td>明尼苏达联</td><td>17</td><td>8</td><td>2</td><td>7</td><td>27/24</td><td>+3</td><td>26</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr>
+      <td>5</td><td>休斯顿迪纳摩</td><td>17</td><td>7</td><td>5</td><td>5</td><td>26/22</td><td>+4</td><td>26</td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>6</td><td><strong>达拉斯FC</strong></td><td>17</td><td>7</td><td>5</td><td>5</td><td>32/25</td><td>+7</td><td><strong>26</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>7</td><td><strong>圣路易斯城</strong></td><td>17</td><td>7</td><td>4</td><td>6</td><td>23/23</td><td>0</td><td><strong>25</strong></td>
+      <td><span class="tag tag-green">季后赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>8</td><td><strong>西雅图海湾人</strong></td><td>16</td><td>7</td><td>3</td><td>6</td><td>19/20</td><td>-1</td><td><strong>24</strong></td>
+      <td><span class="tag tag-yellow">外卡附加赛区</span></td>
+    </tr>
+    <tr>
+      <td>9</td><td>奥斯汀FC</td><td>17</td><td>6</td><td>5</td><td>6</td><td>22/23</td><td>-1</td><td>23</td>
+      <td><span class="tag tag-yellow">外卡附加赛区</span></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>10</td><td><strong>波特兰伐木工</strong></td><td>17</td><td>6</td><td>3</td><td>8</td><td>18/24</td><td>-6</td><td><strong>21</strong></td>
+      <td></td>
+    </tr>
+    <tr class="highlight-team">
+      <td>11</td><td><strong>洛杉矶银河</strong></td><td>17</td><td>5</td><td>6</td><td>6</td><td>20/22</td><td>-2</td><td><strong>21</strong></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>12</td><td>圣何塞地震</td><td>17</td><td>5</td><td>4</td><td>8</td><td>19/28</td><td>-9</td><td>19</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>13</td><td>科罗拉多急流</td><td>17</td><td>4</td><td>5</td><td>8</td><td>17/26</td><td>-9</td><td>17</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>14</td><td>堪萨斯城竞技</td><td>17</td><td>3</td><td>5</td><td>9</td><td>16/30</td><td>-14</td><td>14</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>15</td><td>FC达拉斯2</td><td>17</td><td>2</td><td>5</td><td>10</td><td>14/32</td><td>-18</td><td>11</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem">注：绿色高亮为当日参赛球队。西部前7名直接晋级季后赛，第8-9名进行外卡附加赛。当日8支美职联参赛球队全部在西部分区。</p>
+
+<h3>6.10 巴西杯赛事形势</h3>
+<div class="league-overview">
+  <h4>巴西杯1/8决赛</h4>
+  <p>巴西杯1/8决赛为两回合制，桑托斯首回合主场作战。桑托斯本赛季在巴甲排名第15位，近期2胜1平保持不败，主场3胜2平0负表现稳健。里莫（Remo）在巴甲排名第19位处于降级区，20轮仅22分，客场仅4胜9负表现疲软。桑托斯作为传统豪门在杯赛主场优势明显，首回合建立领先优势是战术核心目标。</p>
+</div>
+<div class="league-overview">
+  <h4>巴甲参照积分（参赛球队）</h4>
+  <p>桑托斯：巴甲第15名，近期状态回暖，主场不败率较高，杯赛战意充足。里莫：巴甲第19名（降级区），20轮22分，客场仅4胜9负，保级压力下杯赛或有所分心。两队实力差距明显，桑托斯主场取胜概率较高，但杯赛两回合制下可能采取稳健策略。</p>
+</div>
+
+<h3>6.11 后续赛程</h3>
+<div class="insight-grid">
+  <div class="insight-card" style="border-left-color: var(--home);">
+    <div class="insight-label">维京 下轮</div>
+    <div class="insight-value">主场 vs 博德闪耀（第1名）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月4日 · 挪超第16轮 · 争冠天王山</div>
+  </div>
+  <div class="insight-card" style="border-left-color: var(--away);">
+    <div class="insight-label">库奥皮奥 下轮</div>
+    <div class="insight-value">客场 vs 塞伊奈约基（第2名）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月4日 · 芬超第19轮 · 欧冠资格赛兼顾</div>
+  </div>
+  <div class="insight-card" style="border-left-color: var(--home);">
+    <div class="insight-label">迈阿密国际 下轮</div>
+    <div class="insight-value">客场 vs 辛辛那提FC（东部第1）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月4日 · 美职联常规赛 · 东部榜首大战</div>
+  </div>
+  <div class="insight-card" style="border-left-color: var(--away);">
+    <div class="insight-label">温哥华白帽 下轮</div>
+    <div class="insight-value">客场 vs 明尼苏达联（西部第4）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月4日 · 美职联常规赛</div>
+  </div>
+  <div class="insight-card" style="border-left-color: var(--accent2);">
+    <div class="insight-label">桑托斯 下轮</div>
+    <div class="insight-value">主场 vs 里莫（巴西杯次回合）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月8日 · 巴西杯1/8决赛次回合</div>
+  </div>
+  <div class="insight-card" style="border-left-color: var(--accent3);">
+    <div class="insight-label">赫根 下轮</div>
+    <div class="insight-value">客场 vs 马尔默（第1名）</div>
+    <div class="insight-label" style="margin-top:0.4rem">8月4日 · 瑞超第16轮 · 争冠关键战</div>
+  </div>
+</div>
+
+</main>
+
+<!-- ========== FOOTER / SOURCES ========== -->
+<footer>
+  <div class="container">
+    <div class="sources">
+      <h2>数据来源</h2>
+      <ol>
+        <li>
+          <span class="src-title">中国竞彩官网 (lottery.gov.cn) — 官方胜平负赔率、让球赔率、比分赔率、总进球、半全场数据。</span>
+          <a class="src-url" href="https://www.lottery.gov.cn/jc/jsq/zqspf/" target="_blank" rel="noopener">https://www.lottery.gov.cn/jc/jsq/zqspf/</a>
+        </li>
+        <li>
+          <span class="src-title">Veikkausliiga 官方 (veikkausliiga.com) — 芬兰超级联赛官方积分榜、球队统计、赛程。</span>
+          <a class="src-url" href="https://www.veikkausliiga.com/" target="_blank" rel="noopener">https://www.veikkausliiga.com/</a>
+        </li>
+        <li>
+          <span class="src-title">Eliteserien 官方 (eliteserien.no) — 挪威足球超级联赛官方数据、积分榜、赛程。</span>
+          <a class="src-url" href="https://www.eliteserien.no/" target="_blank" rel="noopener">https://www.eliteserien.no/</a>
+        </li>
+        <li>
+          <span class="src-title">Allsvenskan 官方 / skytteligor.se — 瑞典超级联赛积分榜、赛程与球队数据。</span>
+          <a class="src-url" href="https://www.skytteligor.se/allsvenskan" target="_blank" rel="noopener">https://www.skytteligor.se/allsvenskan</a>
+        </li>
+        <li>
+          <span class="src-title">美职联官方网站 (mlssoccer.com) — MLS常规赛积分榜、球队数据、赛程信息。</span>
+          <a class="src-url" href="https://www.mlssoccer.com/" target="_blank" rel="noopener">https://www.mlssoccer.com/</a>
+        </li>
+        <li>
+          <span class="src-title">巴西足协 / Goal.com — 巴西杯赛程、巴甲积分榜、桑托斯与里莫交锋及伤停。</span>
+          <a class="src-url" href="https://www.goal.com/" target="_blank" rel="noopener">https://www.goal.com/</a>
+        </li>
+        <li>
+          <span class="src-title">Transfermarkt — 各联赛球队身价、转会信息、伤停数据、历史交锋记录。</span>
+          <a class="src-url" href="https://www.transfermarkt.com/" target="_blank" rel="noopener">https://www.transfermarkt.com/</a>
+        </li>
+        <li>
+          <span class="src-title">FootyStats — 芬超/挪超/美职联球队详细统计、主客场数据、交锋历史。</span>
+          <a class="src-url" href="https://footystats.org/" target="_blank" rel="noopener">https://footystats.org/</a>
+        </li>
+        <li>
+          <span class="src-title">500彩票网 / 捷报比分网 — 竞彩足球比赛数据、历史交锋、近期战绩、亚盘欧赔对比。</span>
+          <a class="src-url" href="https://odds.500.com/" target="_blank" rel="noopener">https://odds.500.com/</a>
+        </li>
+        <li>
+          <span class="src-title">SofaScore / ESPN / Fotmob — 实时比分、球队统计、球员数据、伤停信息汇总。</span>
+          <a class="src-url" href="https://www.sofascore.com/" target="_blank" rel="noopener">https://www.sofascore.com/</a>
+        </li>
+      </ol>
+    </div>
+  </div>
+</footer>
+
+<!-- ECharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+// ECharts visualizations for football match analysis
+(function() {
+  var style = getComputedStyle(document.documentElement);
+  var accent = style.getPropertyValue('--accent').trim();
+  var accent2 = style.getPropertyValue('--accent2').trim();
+  var ink = style.getPropertyValue('--ink').trim();
+  var muted = style.getPropertyValue('--muted').trim();
+  var rule = style.getPropertyValue('--rule').trim();
+  var bg2 = style.getPropertyValue('--bg2').trim();
+  var win = style.getPropertyValue('--win').trim();
+  var draw = style.getPropertyValue('--draw').trim();
+  var loss = style.getPropertyValue('--loss').trim();
+
+  // --- Chart: Market Confidence Comparison ---
+  var chartConf = echarts.init(document.getElementById('chart-confidence'), null, { renderer: 'svg' });
+  chartConf.setOption({
+    animation: false,
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      appendToBody: true,
+      formatter: function(params) {
+        var match = params[0].name;
+        var result = '';
+        params.forEach(function(p) {
+          result += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>';
+        });
+        return '<strong>' + match + '</strong><br/>' + result;
+      }
+    },
+    legend: {
+      data: ['主胜支持率', '平局支持率', '客胜支持率'],
+      bottom: 0,
+      textStyle: { color: muted, fontSize: 12 }
+    },
+    grid: { left: '3%', right: '4%', bottom: '12%', top: '8%', containLabel: true },
+    xAxis: {
+      type: 'category',
+      data: [
+        '001 TPS图尔\nvs 玛丽港',
+        '002 赫根\nvs 卡尔马',
+        '003 腓特烈\nvs 桑纳菲',
+        '004 拉赫蒂\nvs 雅罗',
+        '005 斯达\nvs 维京',
+        '006 赫尔火花\nvs 库奥皮奥',
+        '007 迈阿密\nvs 哥伦布',
+        '008 温哥华\nvs 洛杉矶FC',
+        '009 桑托斯\nvs 里莫',
+        '010 芝加哥\nvs 夏洛特',
+        '011 圣路易城\nvs 盐湖城',
+        '012 洛城银河\nvs 达拉斯',
+        '013 波特兰\nvs 西雅图'
+      ],
+      axisLabel: { color: muted, fontSize: 10, interval: 0, rotate: 0 },
+      axisLine: { lineStyle: { color: rule } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      name: '支持率 (%)',
+      max: 100,
+      axisLabel: { color: muted, fontSize: 11, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: rule, type: 'dashed' } },
+      nameTextStyle: { color: muted, fontSize: 11 }
+    },
+    series: [
+      {
+        name: '主胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [65, 54, 40, 62, 16, 28, 63, 48, 63, 63, 46, 42, 44],
+        itemStyle: { color: win, borderColor: bg2, borderWidth: 1 },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; } },
+        emphasis: { itemStyle: { color: win } }
+      },
+      {
+        name: '平局支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [20, 23, 28, 21, 19, 25, 19, 24, 23, 20, 24, 25, 24],
+        itemStyle: { color: draw, borderColor: bg2, borderWidth: 1 },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; } }
+      },
+      {
+        name: '客胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [15, 23, 32, 17, 65, 47, 18, 28, 15, 17, 30, 33, 32],
+        itemStyle: { color: loss, borderRadius: [4, 4, 0, 0], borderColor: bg2, borderWidth: 1 },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; } }
+      }
+    ]
+  });
+  window.addEventListener('resize', function() { chartConf.resize(); });
+})();
+</script>
+</body>
+</html>
