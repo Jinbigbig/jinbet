@@ -1509,10 +1509,14 @@ def main():
             key = f'{date}_{home}_{away}'
             if key in merged_odds:
                 matched_odds[key] = merged_odds[key]
+                # SCHEDULE 的 game 对象有 league 时，补充到赔率数据（避免 league 丢失导致 CI 校验失败）
+                if not matched_odds[key].get('league') and game.get('league'):
+                    matched_odds[key]['league'] = game['league']
             else:
                 matched_odds[key] = {
                     '胜': '', '平': '', '负': '',
-                    '让球': [], '比分': {}, '总进球': {}, '半全场': {}
+                    '让球': [], '比分': {}, '总进球': {}, '半全场': {},
+                    'league': game.get('league', '')
                 }
 
     # 对 matched_odds 中的所有条目补充编号信息（从 id_map）
