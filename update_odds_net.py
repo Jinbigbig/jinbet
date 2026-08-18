@@ -1491,7 +1491,8 @@ def main():
     else:
         print(f'    无需清理旧数据（保留最近 {KEEP_DAYS} 天）')
 
-    # 清理超过7天的旧赔率
+    # 清理超过7天的旧赔率（归档到 odds_history/ 后保留在 merged_odds 中，不删除）
+    # 之前 del merged_odds[key] 导致 ODDS 从全量缩水到只剩最近7天
     removed_odds = []
     for key in list(merged_odds.keys()):
         date = key.split('_')[0]
@@ -1499,9 +1500,9 @@ def main():
             date = merged_odds[key].get('date_key', '').split('_')[0]
         if date < cutoff:
             removed_odds.append(key)
-            del merged_odds[key]
+            # 不删除：保留全量历史赔率在 merged_odds 中
     if removed_odds:
-        print(f'    清理旧赔率: {len(removed_odds)} 条（{cutoff} 之前）')
+        print(f'    旧赔率归档(保留全量): {len(removed_odds)} 条（{cutoff} 之前,已复制到 odds_history/）')
 
     for date, games in schedule.items():
         for game in games:
@@ -2558,7 +2559,8 @@ def archive_results(results_data, days=7):
             existing[key] = r
             with open(archive_file, 'w', encoding='utf-8') as f:
                 json.dump(existing, f, ensure_ascii=False, indent=2)
-            del results_data[key]
+            # 不删除 results_data 中的条目：只复制到归档，保留全量数据在 results_data.json
+            # 之前 del results_data[key] 导致全量数据缩水到只剩最近7天
             archived_count += 1
 
     if archived_count:
@@ -2608,7 +2610,7 @@ def archive_results(results_data, days=7):
     return results_data
 
 
-def fetch_and_save_results(days_back=7, archive_days=365):
+def fetch_and_save_results(days_back=7, archive_days=7):
     """主函数：抓取赛果并保存，返回 (success, stats_dict)。
 
     网易为主源（fetch_163_results），体彩为备用（fetch_results + parse_results_json）。
