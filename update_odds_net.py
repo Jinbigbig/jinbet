@@ -667,7 +667,15 @@ def update_html_odds(html_content, schedule, odds_data):
         if key in odds_data:
             odds = odds_data[key]
         else:
-            odds = {'胜': '', '平': '', '负': '', '让球': [], '比分': {}, '总进球': {}, '半全场': {}}
+            odds = {}
+        # 确保所有字段存在（merged_odds 中部分历史条目可能缺胜/平/负等字段）
+        odds.setdefault('胜', '')
+        odds.setdefault('平', '')
+        odds.setdefault('负', '')
+        odds.setdefault('让球', [])
+        odds.setdefault('比分', {})
+        odds.setdefault('总进球', {})
+        odds.setdefault('半全场', {})
         
         let_str = json.dumps(odds['让球'], ensure_ascii=False)
         score_str = json.dumps(odds['比分'], ensure_ascii=False)
