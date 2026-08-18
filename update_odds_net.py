@@ -2608,7 +2608,7 @@ def archive_results(results_data, days=7):
     return results_data
 
 
-def fetch_and_save_results(days_back=7, archive_days=7):
+def fetch_and_save_results(days_back=7, archive_days=365):
     """主函数：抓取赛果并保存，返回 (success, stats_dict)。
 
     网易为主源（fetch_163_results），体彩为备用（fetch_results + parse_results_json）。
