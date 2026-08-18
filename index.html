@@ -50204,7 +50204,7 @@ function isNationalTeam(team) {
 // ================================================================
 //  核心存储
 // ================================================================
-const APP_VERSION = '7.112.4';
+const APP_VERSION = '7.112.5';
 const STORAGE_KEY_BETS = 'jinbet_bets_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_ODDS = 'jinbet_odds_' + APP_VERSION.replace(/\./g, '');
 const STORAGE_KEY_LAST_VERSION = 'jinbet_last_version';
@@ -50731,22 +50731,72 @@ function openOddsArchive() {
     loadArchiveIndex().then(function(dates) {
         var select = document.getElementById('archiveDateSelect');
         select.innerHTML = '<option value="">-- 选择日期 --</option>';
+
+        // 收集所有可用日期：归档索引 + ODDS 中的日期 + RESULTS 中的日期
+        var allDates = {};
+        // 1. 归档索引中的日期
         if (dates && dates.length > 0) {
             dates.forEach(function(item) {
+                allDates[item.date] = item.count + '场(归档)';
+            });
+        }
+        // 2. ODDS 中的日期
+        Object.keys(ODDS).forEach(function(key) {
+            var date = key.split('_')[0];
+            if (date && date.startsWith('2026') && !allDates[date]) {
+                allDates[date] = '历史赔率';
+            }
+        });
+        // 3. RESULTS 中的日期
+        if (typeof RESULTS !== 'undefined') {
+            Object.keys(RESULTS).forEach(function(key) {
+                var date = key.split('_')[0];
+                if (date && date.startsWith('2026') && !allDates[date]) {
+                    allDates[date] = '历史赛果';
+                }
+            });
+        }
+
+        var sortedDates = Object.keys(allDates).sort().reverse();
+        if (sortedDates.length > 0) {
+            sortedDates.forEach(function(date) {
                 var option = document.createElement('option');
-                option.value = item.date;
-                option.textContent = item.date + ' (周' + item.weekday + ') - ' + item.count + '场';
+                option.value = date;
+                option.textContent = date + ' - ' + allDates[date];
                 select.appendChild(option);
             });
         } else {
             var option = document.createElement('option');
             option.value = '';
-            option.textContent = '暂无归档数据';
+            option.textContent = '暂无历史数据';
             select.appendChild(option);
         }
     }).catch(function() {
+        // 归档索引不存在时，仍从 ODDS + RESULTS 构建日期列表
         var select = document.getElementById('archiveDateSelect');
-        select.innerHTML = '<option value="">归档目录不存在</option>';
+        select.innerHTML = '<option value="">-- 选择日期 --</option>';
+        var allDates = {};
+        Object.keys(ODDS).forEach(function(key) {
+            var date = key.split('_')[0];
+            if (date && date.startsWith('2026')) allDates[date] = true;
+        });
+        if (typeof RESULTS !== 'undefined') {
+            Object.keys(RESULTS).forEach(function(key) {
+                var date = key.split('_')[0];
+                if (date && date.startsWith('2026')) allDates[date] = true;
+            });
+        }
+        var sortedDates = Object.keys(allDates).sort().reverse();
+        if (sortedDates.length > 0) {
+            sortedDates.forEach(function(date) {
+                var option = document.createElement('option');
+                option.value = date;
+                option.textContent = date + ' - 历史赔率';
+                select.appendChild(option);
+            });
+        } else {
+            select.innerHTML = '<option value="">无历史数据</option>';
+        }
     });
 
     panel.style.display = 'block';
@@ -50847,27 +50897,114 @@ function loadArchiveDate(dateStr) {
             renderArchiveData(data);
         })
         .catch(function(err) {
-            // 归档文件不存在时，回退使用内联的SCHEDULE和ODDS数据
-            if (SCHEDULE[dateStr]) {
-                var fallbackSchedule = SCHEDULE[dateStr].map(function(g) {
-                    var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
-                    return {
-                        home: g.home,
-                        away: g.away,
-                        league: g.league || '',
-                        matchId: g.matchId || '',
-                        matchNumStr: g.matchNumStr || '',
+            // 归档文件不存在时，从 ODDS 全量数据按日期前缀过滤构建历史赔率
+            var prefix = dateStr + '_';
+            var fallbackOdds = {};
+            var fallbackSchedule = [];
+
+            // 1. 从 ODDS 中按日期前缀提取所有比赛
+            Object.keys(ODDS).forEach(function(key) {
+                if (key.indexOf(prefix) === 0) {
+                    fallbackOdds[key] = ODDS[key];
+                    var parts = key.split('_', 2);
+                    // 提取主队和客队（key 格式: 日期_主队_客队）
+                    var rest = key.substring(prefix.length);
+                    var sepIdx = rest.lastIndexOf('_');
+                    var home, away;
+                    if (sepIdx > 0) {
+                        home = rest.substring(0, sepIdx);
+                        away = rest.substring(sepIdx + 1);
+                    } else {
+                        return;
+                    }
+                    var odds = ODDS[key];
+                    // 从 RESULTS 查找赛果
+                    var matchResult = findResultForGame(home, away, odds.matchId, dateStr);
+                    fallbackSchedule.push({
+                        home: home,
+                        away: away,
+                        league: odds.league || '',
+                        matchId: odds.matchId || '',
+                        matchNumStr: odds.matchNumStr || odds.matchNo || '',
                         fullScore: matchResult && matchResult.result ? matchResult.result.fullScore || '' : '',
                         halfScore: matchResult && matchResult.result ? matchResult.result.halfScore || '' : ''
-                    };
-                });
-                var fallbackOdds = {};
-                fallbackSchedule.forEach(function(g) {
-                    var key = dateStr + '_' + g.home + '_' + g.away;
-                    if (ODDS[key]) {
-                        fallbackOdds[key] = ODDS[key];
+                    });
+                }
+            });
+
+            // 2. 如果 ODDS 没有该日期数据，尝试从 RESULTS 按日期前缀提取
+            if (fallbackSchedule.length === 0 && typeof RESULTS !== 'undefined') {
+                Object.keys(RESULTS).forEach(function(key) {
+                    if (key.indexOf(prefix) === 0) {
+                        var rec = RESULTS[key];
+                        if (!rec) return;
+                        var rest = key.substring(prefix.length);
+                        var sepIdx = rest.lastIndexOf('_');
+                        if (sepIdx <= 0) return;
+                        var home = rest.substring(0, sepIdx);
+                        var away = rest.substring(sepIdx + 1);
+                        var matchResult = findResultForGame(home, away, rec.matchId, dateStr);
+                        // 构建赔率数据（从 RESULTS 中的赔率字段）
+                        fallbackOdds[key] = {
+                            '胜': rec['胜'] || '',
+                            '平': rec['平'] || '',
+                            '负': rec['负'] || '',
+                            '让球': rec['让球'] || [],
+                            '比分': rec['比分'] || {},
+                            '总进球': rec['总进球'] || {},
+                            '半全场': rec['半全场'] || {},
+                            'league': rec['league'] || '',
+                            'matchId': rec['matchId'] || '',
+                            'matchNumStr': rec['matchNumStr'] || rec['matchNo'] || ''
+                        };
+                        fallbackSchedule.push({
+                            home: home,
+                            away: away,
+                            league: rec['league'] || '',
+                            matchId: rec['matchId'] || '',
+                            matchNumStr: rec['matchNumStr'] || rec['matchNo'] || '',
+                            fullScore: rec.fullScore || rec.score || '',
+                            halfScore: rec.halfScore || ''
+                        });
                     }
                 });
+            }
+
+            // 3. 如果 SCHEDULE 也有该日期，补充 SCHEDULE 中有但 ODDS/RESULTS 中没有的比赛
+            if (SCHEDULE[dateStr]) {
+                var existingKeys = {};
+                fallbackSchedule.forEach(function(g) {
+                    existingKeys[[g.home, g.away].sort().join('\x01')] = true;
+                });
+                SCHEDULE[dateStr].forEach(function(g) {
+                    var pairKey = [g.home, g.away].sort().join('\x01');
+                    if (!existingKeys[pairKey]) {
+                        var matchResult = findResultForGame(g.home, g.away, g.matchId, dateStr);
+                        fallbackSchedule.push({
+                            home: g.home,
+                            away: g.away,
+                            league: g.league || '',
+                            matchId: g.matchId || '',
+                            matchNumStr: g.matchNumStr || '',
+                            fullScore: matchResult && matchResult.result ? matchResult.result.fullScore || '' : '',
+                            halfScore: matchResult && matchResult.result ? matchResult.result.halfScore || '' : ''
+                        });
+                        var oddsKey = dateStr + '_' + g.home + '_' + g.away;
+                        if (ODDS[oddsKey]) fallbackOdds[oddsKey] = ODDS[oddsKey];
+                    }
+                });
+            }
+
+            // 去重（主客反序）
+            var _seen = {};
+            fallbackSchedule = fallbackSchedule.filter(function(g) {
+                var dk = [g.home, g.away].sort().join('\x01');
+                if (_seen[dk]) return false;
+                _seen[dk] = true;
+                return true;
+            });
+
+            if (fallbackSchedule.length > 0) {
                 var fallbackData = {
                     date: dateStr,
                     schedule: fallbackSchedule,
@@ -50875,7 +51012,7 @@ function loadArchiveDate(dateStr) {
                 };
                 renderArchiveData(fallbackData);
             } else {
-                infoDiv.textContent = '❌ 加载失败: ' + err.message;
+                infoDiv.textContent = '❌ ' + dateStr + ' 无历史赔率数据';
             }
         });
 }
