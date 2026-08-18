@@ -1740,7 +1740,7 @@ def main():
     print('  ✅ index.html 已更新')
 
     print('\n[5/5] 更新 odds_data.json...')
-    update_odds_json(matched_odds)
+    update_odds_json(merged_odds)
     print('  ✅ odds_data.json 已更新')
     
     if not no_push:

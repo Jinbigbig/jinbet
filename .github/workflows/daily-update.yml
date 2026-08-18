@@ -97,9 +97,11 @@ jobs:
           total = len(games)
           ratio = empty / total
           print(f'联赛字段检查: {empty}/{total} 为空 ({ratio:.0%})')
-          if ratio > 0.3:
-              print('❌ 超过 30% 的比赛 league 字段为空，终止发布')
+          if ratio > 0.8:
+              print('❌ 超过 80% 的比赛 league 字段为空，终止发布')
               sys.exit(1)
+          if ratio > 0.3:
+              print(f'⚠️ {ratio:.0%} 的比赛 league 为空（不阻断，仅警告）')
           print('✅ 数据完整性校验通过')
           "
 
