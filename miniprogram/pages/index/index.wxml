@@ -1,0 +1,15 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <web-view
+    src="{{src}}"
+    bindload="onLoad"
+    binderror="onError"
+    bindmessage="onMessage">
+  </web-view>
+
+  <view wx:if="{{showError}}" class="error-box">
+    <view class="error-title">加载失败</view>
+    <view class="error-text">{{errorMsg}}</view>
+    <button bindtap="reload" class="retry-btn">重新加载</button>
+  </view>
+</view>

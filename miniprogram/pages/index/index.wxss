@@ -1,0 +1,41 @@
+/* pages/index/index.wxss */
+.container {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  background-color: #0f172a;
+}
+
+.error-box {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 40rpx 32rpx;
+  text-align: center;
+  z-index: 99;
+}
+
+.error-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16rpx;
+}
+
+.error-text {
+  font-size: 26rpx;
+  color: #6b7280;
+  line-height: 1.6;
+  margin-bottom: 32rpx;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
