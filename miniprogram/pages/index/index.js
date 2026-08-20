@@ -13,9 +13,9 @@ Page({
   },
 
   onShow() {
-    // 每次显示时刷新一次（防止用户切后台后 web-view 空白）
-    if (this.data.src) {
-      this.setData({ showError: false })
+    // 只有报错时才在 onShow 重置状态（避免加载成功后反复刷新）
+    if (this.data.showError) {
+      this.loadWebView()
     }
   },
 
