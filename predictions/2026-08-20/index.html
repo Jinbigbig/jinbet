@@ -4,8 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2026年8月20日 竞彩足球3场比赛深度分析报告</title>
+<title>2026年8月20日 竞彩足球9场比赛深度分析报告</title>
 <style>
+/* === CSS Variables === */
 :root {
   --bg: #f0f2f5;
   --bg2: #ffffff;
@@ -21,6 +22,8 @@
   --home: #457b9d;
   --away: #e76f51;
 }
+
+/* === Reset & Base === */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; scroll-behavior: smooth; }
 body {
@@ -30,7 +33,11 @@ body {
   line-height: 1.7;
   min-height: 100vh;
 }
+
+/* === Layout === */
 .container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* === Hero === */
 .hero {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
   color: #fff;
@@ -47,21 +54,60 @@ body {
               radial-gradient(circle at 80% 50%, rgba(42,157,143,0.15) 0%, transparent 50%);
 }
 .hero .container { position: relative; z-index: 1; }
-.hero h1 { font-weight: 700; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.hero h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
 .hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
-.hero .disclaimer { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block; }
-h2 { font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
-h3 { font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink); }
-h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem; }
-.card { background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid var(--rule); }
-.card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
-.card-header .match-id { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.8rem; color: var(--muted); background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px; }
+.hero .disclaimer {
+  font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem;
+  padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block;
+}
+
+/* === Section Headings === */
+h2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem;
+  padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block;
+}
+h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink);
+}
+h4 {
+  font-size: 0.9rem; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem;
+}
+
+/* === Cards === */
+.card {
+  background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid var(--rule);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+  margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule);
+}
+.card-header .match-id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.8rem; color: var(--muted); background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px;
+}
 .card-header .match-league { font-size: 0.8rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
 .card-header .match-time { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.85rem; color: var(--muted); }
-.match-teams { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 1rem 0; font-size: 1.4rem; font-weight: 700; }
-.match-teams .vs { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; }
+.match-teams {
+  display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 1rem 0; font-size: 1.4rem; font-weight: 700;
+}
+.match-teams .vs {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px;
+}
 .match-teams .home { color: var(--home); }
 .match-teams .away { color: var(--away); }
+
+/* === Odds Grid === */
 .odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
 .odds-item { text-align: center; padding: 0.75rem 0.5rem; background: var(--bg); border-radius: 8px; }
 .odds-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
@@ -69,22 +115,45 @@ h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: u
 .odds-item .value.win { color: var(--win); }
 .odds-item .value.draw { color: var(--draw); }
 .odds-item .value.loss { color: var(--loss); }
+.odds-item .value.na { color: var(--muted); font-size: 1rem; }
+
+/* === Insight Grid === */
 .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
 .insight-card { background: var(--bg); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--accent); }
 .insight-card .insight-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
 .insight-card .insight-value { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
-.prediction { background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02)); border: 1px solid rgba(42,157,143,0.2); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; }
+
+/* === Prediction Box === */
+.prediction {
+  background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02));
+  border: 1px solid rgba(42,157,143,0.2); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem;
+}
 .prediction .pred-title { font-size: 0.8rem; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
 .prediction .pred-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .prediction .pred-label { font-size: 0.8rem; color: var(--muted); }
 .prediction .pred-value { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent2); }
-.prediction .pred-score { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); background: rgba(230,57,70,0.08); padding: 0.2rem 0.8rem; border-radius: 6px; border: 1px solid rgba(230,57,70,0.2); }
-.prediction .prob-tag { font-size: 0.75rem; color: var(--muted); margin-left: 0.3rem; }
-.warning { background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: var(--accent3); }
+.prediction .pred-score {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 1.3rem; font-weight: 700; color: var(--accent);
+  background: rgba(230,57,70,0.08); padding: 0.2rem 0.8rem; border-radius: 6px; border: 1px solid rgba(230,57,70,0.2);
+}
+.prediction .pred-prob { font-size: 0.72rem; color: var(--muted); margin-left: 0.25rem; }
+
+/* === Warning Box === */
+.warning {
+  background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: 8px;
+  padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: var(--accent3);
+}
 .warning strong { color: #e76f51; }
+
+/* === Tables === */
 .table-wrap { overflow-x: auto; overflow-y: auto; max-height: 600px; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--rule); }
 table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-thead th { background: var(--bg); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 0.6rem 0.75rem; text-align: left; border-bottom: 2px solid var(--rule); }
+thead th {
+  background: var(--bg); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); padding: 0.6rem 0.75rem; text-align: left; border-bottom: 2px solid var(--rule);
+  position: sticky; top: 0; z-index: 1;
+}
 tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--rule); }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: rgba(0,0,0,0.02); }
@@ -93,29 +162,36 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 .tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
 .tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
 .tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+
+/* === History Table === */
 .history-table { font-size: 0.82rem; }
 .history-table td { padding: 0.4rem 0.6rem; }
+.history-table .result { font-weight: 600; }
+
+/* === Impact Table === */
+.impact-table { font-size: 0.8rem; }
+.impact-table td { padding: 0.4rem 0.6rem; }
+.impact-table .impact-result { font-weight: 600; width: 80px; }
+
+/* === Form Row === */
 .form-row { display: flex; gap: 0.35rem; align-items: center; }
-.form-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; }
+.form-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700; color: #fff;
+}
 .form-dot.w { background: var(--win); }
 .form-dot.d { background: var(--draw); }
 .form-dot.l { background: var(--loss); }
+
+/* === Summary Grid === */
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
 .summary-card { background: var(--bg2); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--rule); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
 .summary-card .s-match { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
 .summary-card .s-pred { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); }
 .summary-card .s-confidence { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
-.conf-bar { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
-.conf-bar .bar-track { flex: 1; height: 8px; background: var(--rule); border-radius: 4px; overflow: hidden; }
-.conf-bar .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 0.3s; }
-.conf-bar .bar-label { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: var(--muted); min-width: 36px; text-align: right; }
-.chart-figure { margin: 2rem 0; }
-.chart-figure figcaption { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
-.chart-container { width: 100%; min-height: 380px; }
-footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--rule); }
-footer h2 { font-size: 1.1rem; margin-bottom: 1rem; }
-footer .sources ol { padding-left: 1.2rem; font-size: 0.8rem; color: var(--muted); }
-footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-break: break-all; }
+
+/* === Hit Rate Tracking === */
 .hit-rate-box { background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid var(--rule); }
 .hit-bar { display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0; }
 .hit-bar .h-track { flex: 1; height: 12px; background: var(--rule); border-radius: 6px; overflow: hidden; }
@@ -123,6 +199,44 @@ footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-brea
 .hit-bar .h-fill.green { background: var(--win); }
 .hit-bar .h-fill.yellow { background: var(--draw); }
 .hit-bar .h-fill.red { background: var(--loss); }
+.hit-list { display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 1rem; }
+.hit-item {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.82rem;
+}
+.hit-item.yes { background: rgba(42,157,143,0.08); border-left: 3px solid var(--win); }
+.hit-item.no { background: rgba(230,57,70,0.06); border-left: 3px solid var(--loss); }
+.hit-item.partial { background: rgba(244,162,97,0.08); border-left: 3px solid var(--draw); }
+.hit-item .hit-icon { font-size: 1rem; font-weight: 700; }
+.hit-item .hit-match { font-weight: 600; min-width: 140px; }
+.hit-item .hit-result { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; color: var(--muted); }
+
+/* === Conf bar === */
+.conf-bar { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+.conf-bar .bar-track { flex: 1; height: 8px; background: var(--rule); border-radius: 4px; overflow: hidden; }
+.conf-bar .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent2), var(--accent)); transition: width 0.3s; }
+.conf-bar .bar-label { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 0.75rem; font-weight: 600; color: var(--muted); min-width: 80px; text-align: right; }
+
+/* === Footer === */
+footer { margin-top: 3rem; padding: 2rem 0; border-top: 1px solid var(--rule); }
+footer h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+footer .sources ol { padding-left: 1.2rem; font-size: 0.8rem; color: var(--muted); }
+footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-break: break-all; }
+footer .sources .src-title { color: var(--ink); word-break: normal; }
+footer .sources .src-url { display: block; margin-top: 0.15rem; font-size: 0.78rem; color: var(--accent); word-break: break-all; }
+footer .sources a { word-break: break-all; }
+
+/* === Chart === */
+.chart-figure { margin: 2rem 0; }
+.chart-figure figcaption { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 0.75rem; }
+.chart-container { width: 100%; min-height: 420px; }
+
+/* === Upset Signal === */
+.upset-signal {
+  display: inline-block; background: rgba(230,57,70,0.1); color: var(--loss);
+  padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; margin-left: 0.5rem;
+}
+
+/* === Responsive === */
 @media (max-width: 768px) {
   .hero h1 { font-size: 1.5rem; }
   .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
@@ -131,66 +245,111 @@ footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-brea
   .match-teams { font-size: 1.1rem; gap: 0.75rem; }
   .summary-grid { grid-template-columns: 1fr; }
   .container { padding: 0 1rem; }
+  .chart-container { min-height: 500px; }
 }
 @media (max-width: 600px) {
   .card-header { flex-direction: column; align-items: flex-start; }
   .insight-grid { grid-template-columns: 1fr; }
 }
+
+/* === Print === */
+@media print {
+  body { background: #fff; }
+  .hero { background: #1a1a2e !important; -webkit-print-color-adjust: exact; }
+  .card { box-shadow: none; break-inside: avoid; }
+  .prediction { break-inside: avoid; }
+}
 </style>
 </head>
 <body>
+
+<!-- ========== HERO ========== -->
 <header class="hero">
   <div class="container">
-    <h1>2026年8月20日 竞彩足球比赛深度分析</h1>
-    <p class="subtitle">3场比赛 · 沙职 x1 / 西甲 x1 / 解放者杯 x1</p>
-    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 泊松模型</p>
-    <p class="disclaimer">⚠ 数据采集时间：2026年8月20日 16:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
+    <h1>2026年8月20日 竞彩足球9场比赛深度分析</h1>
+    <p class="subtitle">9场比赛 · 沙职 x1 / 西甲 x1 / 解放者杯 x1 / 欧罗巴附加赛 x6</p>
+    <p class="subtitle">综合分析：盘口赔率 · 历史交锋 · 近期状态 · 主客场表现 · 伤停因素 · 泊松模型 · 凯利指数</p>
+    <p class="disclaimer">⚠ 数据采集时间：2026年8月20日 15:00（北京时间）· 赔率实时变动 · 分析仅供参考，不构成投注建议</p>
   </div>
 </header>
+
 <main class="container">
-<h2>一、3场比赛总览</h2>
+
+<!-- ========== 一、比赛总览 ========== -->
+<h2>一、9场比赛总览</h2>
 <div class="table-wrap">
 <table>
-  <thead><tr><th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜</th><th>平</th><th>负</th><th>让球</th><th>市场倾向</th></tr></thead>
+  <thead>
+    <tr>
+      <th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜</th><th>平</th><th>负</th><th>让球</th><th>市场倾向</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
-      <td><span class="tag tag-yellow">001</span></td><td>沙职</td><td>20:00</td><td>迈季宽广</td><td>vs</td><td>利雅新月</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">10.0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.72</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.17</td>
-      <td>+1</td><td><span class="tag tag-green">客胜 82%</span></td>
+      <td><span class="tag tag-yellow">001</span></td><td>沙职</td><td>02:00</td><td>迈季宽广</td><td>vs</td><td>利雅新月</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">10.00</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.72</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.17</td>
+      <td>+2</td><td><span class="tag tag-red">客胜 76%</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">002</span></td><td>西甲</td><td>19:00</td><td>巴列卡诺</td><td>vs</td><td>阿拉维斯</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">-</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">-</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">-</td>
-      <td></td><td><span class="tag tag-green">主不败 58%</span></td>
+      <td><span class="tag tag-blue">002</span></td><td>西甲</td><td>04:00</td><td>巴列卡诺</td><td>vs</td><td>阿拉维斯</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td>
+      <td>—</td><td><span class="tag tag-yellow">均势对峙</span></td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">003</span></td><td>解放者杯</td><td>08:30</td><td>科林蒂安</td><td>vs</td><td>罗萨里奥中央</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">-</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">-</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;">-</td>
-      <td></td><td><span class="tag tag-green">平局 42%</span></td>
+      <td><span class="tag tag-red">003</span></td><td>解放者杯</td><td>08:30</td><td>科林蒂安</td><td>vs</td><td>罗萨里奥中央</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td>
+      <td>—</td><td><span class="tag tag-green">主胜 68%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">004</span></td><td>欧罗巴</td><td>01:00</td><td>阿拉木图</td><td>vs</td><td>安德莱</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.35</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.25</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.91</td>
+      <td>+1</td><td><span class="tag tag-red">客不败 46%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">005</span></td><td>欧罗巴</td><td>01:30</td><td>米亚尔比</td><td>vs</td><td>萨尔茨堡</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.15</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.85</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.59</td>
+      <td>+1</td><td><span class="tag tag-red">客胜 56%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">006</span></td><td>欧罗巴</td><td>02:00</td><td>特拉布宗</td><td>vs</td><td>费伦茨</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.53</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.77</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.75</td>
+      <td>-1</td><td><span class="tag tag-yellow">主胜 58%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">007</span></td><td>欧罗巴</td><td>02:30</td><td>波兹南</td><td>vs</td><td>图恩</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2);font-weight:700">1.40</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.15</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">5.75</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 63%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">008</span></td><td>欧罗巴</td><td>03:00</td><td>贝红星</td><td>vs</td><td>比尔森</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--accent2)">1.61</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3.65</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4.28</td>
+      <td>-1</td><td><span class="tag tag-green">主胜 55%</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">009</span></td><td>欧罗巴</td><td>03:15</td><td>本菲卡</td><td>vs</td><td>奥胡斯</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td><td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;color:var(--muted)">—</td>
+      <td>-2</td><td><span class="tag tag-green">主胜 78%</span></td>
     </tr>
   </tbody>
 </table>
 </div>
 
+<!-- ========== 二、市场信心对比 ========== -->
 <h2>二、市场信心指数对比</h2>
 <figure class="chart-figure">
-  <figcaption>市场支持率分布（主胜 / 平局 / 客胜）</figcaption>
+  <figcaption>9场比赛竞彩市场支持率分布（主胜 / 平局 / 客胜）— 基于赔率隐含概率与泊松模型综合估算</figcaption>
   <div id="chart-confidence" class="chart-container"></div>
 </figure>
 
+<!-- ========== 三、逐场深度分析 ========== -->
 <h2>三、逐场深度分析</h2>
 
-<section class="card" id="match-周四001">
+<!-- ===== 001: 迈季宽广 vs 利雅新月 ===== -->
+<section class="card" id="match-001">
   <div class="card-header">
-    <span class="match-id">周四001</span>
-    <span class="match-league">沙职</span>
-    <span class="match-time">2026-08-20 20:00</span>
+    <span class="match-id">周四 001</span>
+    <span class="match-league">沙职 · 第2轮</span>
+    <span class="match-time">2026-08-20 02:00（次日）</span>
   </div>
   <div class="match-teams">
     <span class="home">迈季宽广</span>
@@ -198,77 +357,209 @@ footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-brea
     <span class="away">利雅新月</span>
   </div>
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">10.0</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">5.72</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.17</div></div>
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value loss">10.00</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">5.72</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value win">1.17</div>
+    </div>
   </div>
-  <h4>积分排名与基本面</h4>
+
+  <h4>积分排名与首轮回顾</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">迈季宽广</div><div class="insight-value">沙职中下游</div></div>
-    <div class="insight-card"><div class="insight-label">利雅新月</div><div class="insight-value">沙职领头羊</div></div>
-    <div class="insight-card"><div class="insight-label">迈季宽广 近5场</div><div class="insight-value">L · D · L · W · L</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot l">L</span></div></div>
-    <div class="insight-card"><div class="insight-label">利雅新月 近5场</div><div class="insight-value">W · W · W · W · W</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span></div></div>
-    <div class="insight-card"><div class="insight-label">迈季宽广 主场</div><div class="insight-value">主场表现一般</div></div>
-    <div class="insight-card"><div class="insight-label">利雅新月 客场</div><div class="insight-value">客场统治力强</div></div>
+    <div class="insight-card">
+      <div class="insight-label">迈季宽广 · 沙职中下游</div>
+      <div class="insight-value">首轮 1-2负 · 场均进1.0失2.0 · 攻防两端均处劣势</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">利雅新月(Al Hilal) · 沙职豪门</div>
+      <div class="insight-value">首轮 4-2大胜 · 场均进4.0失2.0 · 本泽马+苏梅维尔+马尔科姆三叉戟</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.38 / 客队 λ=3.24 · 客队进攻预期为主队2.3倍</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 8.9% / 平局 15.5% / 客胜 75.7%</div>
+    </div>
   </div>
-  <h4>历史交锋</h4>
-  <p>利雅新月历史交手占优</p>
+
+  <h4>首轮回顾</h4>
+  <p><strong>利雅新月首轮4-2大胜展示恐怖火力：</strong>本泽马(Karim Benzema)首开纪录，苏梅维尔(Crysencio Summerville)和马尔科姆(Malcolm)各入一球，进攻三叉戟配合默契，全场创造14次射门机会。迈季宽广首轮1-2告负，防守端暴露明显漏洞，面对利雅新月级别的攻击线将承受巨大压力。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">迈季宽广 近5场</div>
+      <div class="insight-value">1胜1平1负 · 进3失4 · 新赛季首轮落败</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">利雅新月 近5场</div>
+      <div class="insight-value">4胜1平0负 · 进12失4 · 状态火热</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">迈季宽广 主场</div>
+      <div class="insight-value">上赛季主场胜率约40% · 面对豪门毫无抵抗之力</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">利雅新月 客场</div>
+      <div class="insight-value">客场攻击力强劲 · 场均2.5球 · 无欧战任务专注联赛</div>
+    </div>
+  </div>
+
   <h4>伤停与赛前动态</h4>
-  <p>迈季宽广：阵容有限；利雅新月：阵容豪华，内马尔、米特罗维奇等</p>
-  <p>沙职联赛。利雅新月实力碾压，客场深盘1.17极低位。迈季宽广保级队，主场难挡强敌。</p>
-  <div class="warning"><strong>⚠ 分析警示：</strong>利雅新月深盘1.17，但需防范大热倒灶。迈季宽广主场可能死守，总进球倾向小球。</div>
+  <p><strong>利雅新月：</strong>Al-Dawsari（沙特国脚边锋）和Tambakti（中卫）伤缺，但本泽马+苏梅维尔+马尔科姆的攻击组合不受影响。球队无欧战任务，可全力出击联赛。<strong>迈季宽广：</strong>阵容相对完整，但整体实力与利雅新月不在同一层级。</p>
+
+  <div class="warning">
+    <strong>⚠ 凯利指数异常：</strong>客胜1.17极端低赔，市场隐含概率高达75.7%，但泊松模型客队λ=3.24对应大量客场进球。主胜10.00极端高赔，让球(+2)主胜仅2.03，机构通过深盘+2隔离风险。客胜方向凯利指数接近1.0，赔付控制严格，但极端赔率下客胜方向价值极低，需防范"赢球输盘"风险（客队赢1球即让球主胜）。
+  </div>
+
+  <h4>比赛结果联赛影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>联赛影响</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-red">主胜</span></td><td>迈季宽广爆冷取首胜，升至积分榜中游（概率极低 8.9%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>各取1分，迈季宽广止跌拿分（概率 15.5%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-green">客胜</span></td><td>利雅新月两连胜，巩固榜首位置，展现夺冠决心（概率 75.7%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
   <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row"><span class="pred-label">推荐方向：</span><span class="pred-value">客胜</span></div>
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客胜（利雅新月赢球）</span>
+    </div>
     <div class="pred-row" style="margin-top:0.5rem">
       <span class="pred-label">比分预测：</span>
-      <span class="pred-score" style="background:rgba(230,57,70,0.08);border-color:rgba(230,57,70,0.2);color:var(--accent)">0-2<span class="prob-tag">P=14.5%</span></span><span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-3<span class="prob-tag">P=12.8%</span></span><span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">1-2<span class="prob-tag">P=9.8%</span></span>
+      <span class="pred-score">1-3</span><span class="pred-prob">P(1-3)=7.7%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-2</span><span class="pred-prob">P(1-2)=7.1%</span>
     </div>
     <div class="conf-bar" style="margin-top:0.5rem">
       <span style="font-size:0.7rem;color:var(--muted)">信心</span>
-      <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
       <span class="bar-label">★★★★☆</span>
     </div>
   </div>
 </section>
 
-<section class="card" id="match-周四002">
+<!-- ===== 002: 巴列卡诺 vs 阿拉维斯 ===== -->
+<section class="card" id="match-002">
   <div class="card-header">
-    <span class="match-id">周四002</span>
-    <span class="match-league">西甲</span>
-    <span class="match-time">2026-08-20 19:00</span>
+    <span class="match-id">周四 002</span>
+    <span class="match-league">西甲 · 新赛季</span>
+    <span class="match-time">2026-08-20 04:00（次日）</span>
   </div>
   <div class="match-teams">
     <span class="home">巴列卡诺</span>
     <span class="vs">VS</span>
     <span class="away">阿拉维斯</span>
+    <span class="upset-signal">⚠ 冷门信号</span>
   </div>
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">-</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">-</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">-</div></div>
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value na">暂无</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value na">暂无</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value na">暂无</div>
+    </div>
   </div>
-  <h4>积分排名与基本面</h4>
+
+  <h4>积分排名与实力对比</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">巴列卡诺</div><div class="insight-value">西甲中游</div></div>
-    <div class="insight-card"><div class="insight-label">阿拉维斯</div><div class="insight-value">西甲中游</div></div>
-    <div class="insight-card"><div class="insight-label">巴列卡诺 近5场</div><div class="insight-value">D · W · D · W · D</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span></div></div>
-    <div class="insight-card"><div class="insight-label">阿拉维斯 近5场</div><div class="insight-value">W · D · L · W · D</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span></div></div>
-    <div class="insight-card"><div class="insight-label">巴列卡诺 主场</div><div class="insight-value">主场防守稳固，近10主场6场零封</div></div>
-    <div class="insight-card"><div class="insight-label">阿拉维斯 客场</div><div class="insight-value">客场进攻不稳定</div></div>
+    <div class="insight-card">
+      <div class="insight-label">巴列卡诺 · 西甲中游</div>
+      <div class="insight-value">上赛季西甲第16名 · 惊险保级 · 场均进1.0失2.0</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">阿拉维斯 · 西甲中游</div>
+      <div class="insight-value">上赛季西甲第14名 · 场均进1.0失1.0 · 防守相对稳固</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.15 / 客队 λ=1.08 · 双方进攻预期接近</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场预估概率</div>
+      <div class="insight-value">主胜 38% / 平局 28% / 客胜 34% · 均势格局</div>
+    </div>
   </div>
+
   <h4>历史交锋</h4>
-  <p>近10次交手巴列卡诺占优，9场BTTS=No</p>
+  <p><strong>双方实力接近：</strong>近6次交手巴列卡诺2胜2平2负与阿拉维斯平分秋色。上赛季两回合均以平局收场，巴列卡诺主场1-1、客场0-0。双方进攻火力均不突出，比赛大概率呈现低进球数格局。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">巴列卡诺 近5场</div>
+      <div class="insight-value">1胜1平1负 · 进3失4 · 热身赛状态一般</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">阿拉维斯 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进3失4 · 热身赛起伏不定</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">巴列卡诺 主场</div>
+      <div class="insight-value">主场临时更换为Butarque球场 · 主场优势削弱</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">阿拉维斯 客场</div>
+      <div class="insight-value">客场防守相对稳固 · 场均失1.0球</div>
+    </div>
+  </div>
+
   <h4>伤停与赛前动态</h4>
-  <p>巴列卡诺：后卫加尔塞斯停赛；阿拉维斯：多名球员伤缺</p>
-  <p>西甲首轮。巴列卡诺主场防守出色，阿拉维斯客场进攻乏力。双方近期交锋进球数少。</p>
-  <div class="warning"><strong>⚠ 分析警示：</strong>两队均偏向防守，历史交锋进球少。巴列卡诺主场让球合理，小球方向值得关注。</div>
+  <p><strong>巴列卡诺：</strong>主场临时从Vallecas更换为Butarque球场，主场氛围和熟悉度受损。Garces红牌停赛，Valentini停赛，后防线人员吃紧。<strong>阿拉维斯：</strong>托马斯·门德斯(Thomas Mendes)伤缺，中场创造力下降。双方均有重要球员缺阵，比赛质量可能进一步降低。</p>
+
+  <h4>比赛结果联赛影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>联赛影响</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>巴列卡诺主场取分开门红，缓解保级压力（预估 38%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>各取1分，双方均可接受的开局（预估 28%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>阿拉维斯客场抢分，巴列卡诺主场失分（预估 34%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
   <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row"><span class="pred-label">推荐方向：</span><span class="pred-value">主不败（双平）</span></div>
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜或平（巴列卡诺主场不败）</span>
+    </div>
     <div class="pred-row" style="margin-top:0.5rem">
       <span class="pred-label">比分预测：</span>
-      <span class="pred-score" style="background:rgba(230,57,70,0.08);border-color:rgba(230,57,70,0.2);color:var(--accent)">1-0<span class="prob-tag">P=11.8%</span></span><span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-0<span class="prob-tag">P=11.2%</span></span><span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">1-1<span class="prob-tag">P=9.8%</span></span>
+      <span class="pred-score">1-1</span><span class="pred-prob">P(1-1)=13.4%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-0</span><span class="pred-prob">P(1-0)=12.4%</span>
     </div>
     <div class="conf-bar" style="margin-top:0.5rem">
       <span style="font-size:0.7rem;color:var(--muted)">信心</span>
@@ -278,43 +569,107 @@ footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-brea
   </div>
 </section>
 
-<section class="card" id="match-周四003">
+<!-- ===== 003: 科林蒂安 vs 罗萨里奥中央 ===== -->
+<section class="card" id="match-003">
   <div class="card-header">
-    <span class="match-id">周四003</span>
-    <span class="match-league">解放者杯</span>
-    <span class="match-time">2026-08-20 08:30</span>
+    <span class="match-id">周四 003</span>
+    <span class="match-league">解放者杯 · 1/8决赛次回合</span>
+    <span class="match-time">2026-08-20 08:30（次日）</span>
   </div>
   <div class="match-teams">
-    <span class="home">科林蒂安</span>
+    <span class="home">科林蒂安 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">巴西</small></span>
     <span class="vs">VS</span>
-    <span class="away">罗萨里奥中央</span>
+    <span class="away">罗萨里奥中央 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">阿根廷</small></span>
   </div>
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">-</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">-</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">-</div></div>
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value na">暂无</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value na">暂无</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value na">暂无</div>
+    </div>
   </div>
-  <h4>积分排名与基本面</h4>
+
+  <h4>首回合回顾与积分排名</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">科林蒂安</div><div class="insight-value">巴甲第7</div></div>
-    <div class="insight-card"><div class="insight-label">罗萨里奥中央</div><div class="insight-value">阿甲中上游</div></div>
-    <div class="insight-card"><div class="insight-label">科林蒂安 近5场</div><div class="insight-value">D · W · L · W · D</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span></div></div>
-    <div class="insight-card"><div class="insight-label">罗萨里奥中央 近5场</div><div class="insight-value">D · L · W · D · W</div><div class="form-row" style="margin-top:0.4rem"><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span></div></div>
-    <div class="insight-card"><div class="insight-label">科林蒂安 主场</div><div class="insight-value">主场表现稳健</div></div>
-    <div class="insight-card"><div class="insight-label">罗萨里奥中央 客场</div><div class="insight-value">客场防守出色</div></div>
+    <div class="insight-card">
+      <div class="insight-label">首回合结果</div>
+      <div class="insight-value">罗萨里奥中央 0-0 科林蒂安 · 双方互交白卷</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 · 巴甲第7名</div>
+      <div class="insight-value">巴甲32分 · 场均进2.4失2.0 · 主场战力强劲</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">罗萨里奥中央 · 阿甲中游</div>
+      <div class="insight-value">场均进0.8失0.4 · 防守极其出色 · 首回合零封</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=2.3 / 客队 λ=0.94 · 主队进攻预期为客队2.4倍</div>
+    </div>
   </div>
-  <h4>历史交锋</h4>
-  <p>首回合0-0战平</p>
+
+  <h4>首回合回顾</h4>
+  <p><strong>首回合0-0闷平：</strong>罗萨里奥中央凭借出色的防守体系零封科林蒂安，全场仅让科林蒂安获得6次射门。科林蒂安客场保守，未全力出击。次回合回到主场，科林蒂安必须主动进攻争取进球，罗萨里奥中央则可能延续防守反击策略。首回合0-0意味着任何有进球的结果都将直接决定晋级归属。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进6失5 · 状态起伏</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">罗萨里奥中央 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进3失3 · 防守稳固</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">科林蒂安 主场</div>
+      <div class="insight-value">近10主场 5胜3平2负 · 主场氛围狂热 · 解放者杯主场优势明显</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">罗萨里奥中央 客场</div>
+      <div class="insight-value">客场防守出色 · 场均失0.4球 · 擅长防守反击</div>
+    </div>
+  </div>
+
   <h4>伤停与赛前动态</h4>
-  <p>科林蒂安：德佩缺阵，锋线人手受限；罗萨里奥中央：阵容相对齐整</p>
-  <p>解放者杯1/8决赛次回合。首回合0-0，本场胜者晋级，再平则点球。科林蒂安主场作战但进攻受限，罗萨里奥防守稳固。</p>
-  <div class="warning"><strong>⚠ 分析警示：</strong>⚠ 比赛动机差异：科林蒂安联赛排名第7，巴甲竞争激烈；罗萨里奥中央更专注杯赛。平局可能性极高。</div>
+  <p><strong>科林蒂安伤停严重：</strong>Allan红牌停赛（中场核心）；Yuri Alberto伤（头号射手）；Labyad ACL重伤赛季报销；Vitinho膝伤缺阵。进攻端遭受毁灭性打击。利好：Memphis Depay可能伤愈回归，若出战将极大补充攻击力。<strong>罗萨里奥中央：</strong>阵容相对完整，防守体系不受影响，首回合零封表现给予他们极大信心。</p>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>晋级形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>科林蒂安总比分领先，主场晋级八强（预估 68%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>0-0则进入点球大战；有进球平局则科林蒂安凭客场进球晋级（预估 20%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>罗萨里奥中央客场爆冷晋级，科林蒂安主场出局（预估 12%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
   <div class="prediction">
-    <div class="pred-title">📊 综合判断</div>
-    <div class="pred-row"><span class="pred-label">推荐方向：</span><span class="pred-value">双平博平</span></div>
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜（科林蒂安赢球），防平</span>
+    </div>
     <div class="pred-row" style="margin-top:0.5rem">
       <span class="pred-label">比分预测：</span>
-      <span class="pred-score" style="background:rgba(230,57,70,0.08);border-color:rgba(230,57,70,0.2);color:var(--accent)">1-0<span class="prob-tag">P=10.8%</span></span><span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">0-0<span class="prob-tag">P=10.5%</span></span><span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">1-1<span class="prob-tag">P=9.8%</span></span>
+      <span class="pred-score">2-0</span><span class="pred-prob">P(2-0)=10.4%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">2-1</span><span class="pred-prob">P(2-1)=9.7%</span>
     </div>
     <div class="conf-bar" style="margin-top:0.5rem">
       <span style="font-size:0.7rem;color:var(--muted)">信心</span>
@@ -324,114 +679,1134 @@ footer .sources li { margin-bottom: 0.5rem; overflow-wrap: break-word; word-brea
   </div>
 </section>
 
-<h2>四、3场比赛比分预测汇总</h2>
+<!-- ===== 004: 阿拉木图 vs 安德莱 ===== -->
+<section class="card" id="match-004">
+  <div class="card-header">
+    <span class="match-id">周四 004</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 01:00（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">阿拉木图 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">哈萨克斯坦</small></span>
+    <span class="vs">VS</span>
+    <span class="away">安德莱 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">比利时</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value loss">3.35</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.25</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value win">1.91</div>
+    </div>
+  </div>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">阿拉木图(Kairat)</div>
+      <div class="insight-value">哈萨克斯坦豪门 · 阵容完整 · 主场气候因素（高海拔+极端温度）</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">安德莱(Anderlecht)</div>
+      <div class="insight-value">比利时传统豪门 · 欧战经验丰富 · 但阵容不整</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.38 / 客队 λ=1.73 · 客队进攻预期略高</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 26.4% / 平局 27.2% / 客胜 46.3%</div>
+    </div>
+  </div>
+
+  <h4>首回合前瞻</h4>
+  <p><strong>欧罗巴附加赛首回合：</strong>阿拉木图坐拥主场之利，哈萨克斯坦的高海拔和极端气候条件是天然优势。安德莱作为比利时传统豪门，欧战经验远超对手，但首回合客场需克服气候和旅途因素。Kairat阵容完整，无重大伤病困扰，主场作战将以稳守反击为主。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">阿拉木图 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进7失4 · 主场状态不错</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">安德莱 近5场</div>
+      <div class="insight-value">3胜1平1负 · 进7失4 · 经验丰富但客场存疑</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">阿拉木图 主场</div>
+      <div class="insight-value">主场气候因素显著 · 高海拔+极端温度 · 客队适应困难</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">安德莱 客场</div>
+      <div class="insight-value">欧战客场经验丰富 · 但远征哈萨克斯坦旅途疲劳</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>安德莱阵容不整：</strong>Camara、Hey、Sardella三名球员伤缺，中场和后防轮换深度受损。但核心框架仍在，欧战经验是最大优势。<strong>阿拉木图(Kairat)：</strong>阵容完整，无重大伤病，可派出最强阵容应战。主场气候条件是最大筹码。</p>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>阿拉木图带入优势赴比利时，次回合守势即可（预估 26%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>开放态势，次回合定生死（预估 27%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>安德莱带回客场优势，晋级在望（预估 46%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客不败（安德莱不败），让球+1主胜防平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span><span class="pred-prob">P(1-1)=10.7%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">1-2</span><span class="pred-prob">P(1-2)=9.2%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 005: 米亚尔比 vs 萨尔茨堡 ===== -->
+<section class="card" id="match-005">
+  <div class="card-header">
+    <span class="match-id">周四 005</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 01:30（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">米亚尔比 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞典</small></span>
+    <span class="vs">VS</span>
+    <span class="away">萨尔茨堡 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">奥地利</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value loss">4.15</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.85</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value win">1.59</div>
+    </div>
+  </div>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">米亚尔比 · 瑞典超第10</div>
+      <div class="insight-value">16场 5胜5平6负 · 场均进1.5失1.44 · 联赛中下游</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">萨尔茨堡 · 奥甲豪门</div>
+      <div class="insight-value">场均进2.5失1.0 · 客场进攻强劲 · 欧战常客</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.61 / 客队 λ=2.06 · 客队进攻预期明显更高</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 21.3% / 平局 23.0% / 客胜 55.7%</div>
+    </div>
+  </div>
+
+  <h4>首回合前瞻</h4>
+  <p><strong>实力差距明显：</strong>萨尔茨堡作为奥甲霸主和欧战常客，整体实力远在瑞典超第10的米亚尔比之上。萨尔茨堡客场进攻火力强劲，场均2.5球。米亚尔比联赛排名中下游，防守端场均失1.44球，面对萨尔茨堡的攻击群将面临严峻考验。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">米亚尔比 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进5失6 · 联赛状态低迷</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">萨尔茨堡 近5场</div>
+      <div class="insight-value">4胜0平1负 · 进10失4 · 状态出色</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot w">W</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">米亚尔比 主场</div>
+      <div class="insight-value">16场5胜5平6负 · 主场胜率约38% · 防守不稳</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">萨尔茨堡 客场</div>
+      <div class="insight-value">客场进攻强劲 · 场均2.5球 · 欧战客场经验丰富</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>萨尔茨堡伤病较多：</strong>Aguilar手臂骨折缺阵；Baidoo、Diabate、Diakite三名球员带伤出战成疑。但萨尔茨堡阵容深度充足，核心攻击框架不受影响。<strong>米亚尔比：</strong>阵容相对完整，但整体实力差距难以弥补。</p>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>米亚尔比爆冷主场取胜，带入优势赴奥地利（预估 21%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>开放态势，次回合萨尔茨堡主场定生死（预估 23%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>萨尔茨堡带回客场优势，晋级在望（预估 56%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">客胜（萨尔茨堡赢球）</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-2</span><span class="pred-prob">P(1-2)=8.7%</span>
+      <span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">1-1</span><span class="pred-prob">P(1-1)=8.5%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 006: 特拉布宗 vs 费伦茨 ===== -->
+<section class="card" id="match-006">
+  <div class="card-header">
+    <span class="match-id">周四 006</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 02:00（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">特拉布宗 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">土耳其</small></span>
+    <span class="vs">VS</span>
+    <span class="away">费伦茨 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">匈牙利</small></span>
+    <span class="upset-signal">⚠ 冷门信号</span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.53</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.77</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">4.75</div>
+    </div>
+  </div>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">特拉布宗 · 土超劲旅</div>
+      <div class="insight-value">场均进1.0失1.4 · 进攻疲软 · 主场氛围狂热</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">费伦茨 · 匈甲霸主</div>
+      <div class="insight-value">场均进1.5失0.8 · 客场不败 · 攻守均衡</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.10 / 客队 λ=1.33 · 客队进攻预期反而更高！</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 57.9% / 平局 23.5% / 客胜 18.6%</div>
+    </div>
+  </div>
+
+  <h4>历史交锋</h4>
+  <p><strong>2022-23赛季欧联杯曾交手：</strong>两队在2022-23赛季欧联杯小组赛中有过交手记录，彼此已有了解。费伦茨在双方交锋中展现出了不俗的客场作战能力。本场是附加赛首回合，特拉布宗主场求胜但进攻端问题突出，费伦茨客场不败的特质可能再次发挥作用。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">特拉布宗 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进4失5 · 进攻疲软</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">费伦茨 近5场</div>
+      <div class="insight-value">2胜3平0负 · 进6失3 · 客场不败</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">特拉布宗 主场</div>
+      <div class="insight-value">主场氛围狂热 · 但进攻效率低下 · 场均仅1.0球</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">费伦茨 客场</div>
+      <div class="insight-value">客场不败 · 防守稳固 · 场均失0.8球 · 欧战客场经验丰富</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>特拉布宗进攻线重创：</strong>Batagov和Jabol双双膝伤缺阵，Muci腿筋伤缺阵，进攻端三名重要球员无法出战，本就疲软的进攻雪上加霜。<strong>费伦茨：</strong>客场不败纪录延续，防守体系稳固，场均仅失0.8球。球队欧战客场经验丰富，首回合客场守平甚至偷袭得手并非不可能。</p>
+
+  <div class="warning">
+    <strong>⚠ 凯利指数异常：</strong>市场主胜1.53隐含概率57.9%，但泊松模型客队λ=1.33竟高于主队λ=1.10，模型与市场出现明显分歧！特拉布宗进攻端三名主力伤缺，进攻预期进一步下降。让球(-1)主胜2.65，机构对主队大胜缺乏信心。费伦茨客场不败的特质+特拉布宗进攻残缺，客胜方向存在显著价值，平局概率被市场低估。
+  </div>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>特拉布宗带入优势赴匈牙利，但进攻疲软大胜难（预估 58%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>开放态势，次回合费伦茨主场占优（预估 24%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>费伦茨客场爆冷带回优势，特拉布宗陷入被动（预估 19%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜或平（特拉布宗不败），让球(-1)防平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-1</span><span class="pred-prob">P(1-1)=12.9%</span>
+      <span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">0-1</span><span class="pred-prob">P(0-1)=11.7%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 007: 波兹南 vs 图恩 ===== -->
+<section class="card" id="match-007">
+  <div class="card-header">
+    <span class="match-id">周四 007</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 02:30（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">波兹南 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">波兰</small></span>
+    <span class="vs">VS</span>
+    <span class="away">图恩 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">瑞士</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.40</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">4.15</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">5.75</div>
+    </div>
+  </div>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">波兹南(Lech Poznan)</div>
+      <div class="insight-value">波兰联赛卫冕冠军 · 4连胜状态火热 · 欧联资格赛3-0+5-0晋级</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">图恩(Thun)</div>
+      <div class="insight-value">瑞士超中游 · 场均进1.67失3.17 · 防守端漏洞明显</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=3.49 / 客队 λ=1.29 · 主队进攻预期为客队2.7倍</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 63.3% / 平局 21.3% / 客胜 15.4%</div>
+    </div>
+  </div>
+
+  <h4>首回合前瞻</h4>
+  <p><strong>波兹南状态如日中天：</strong>4连胜且进攻火力凶猛，欧联资格赛两回合分别3-0和5-0横扫对手晋级，累计8-0的恐怖比分。波兹南进攻体系运转流畅，场均3.0球火力全开。图恩防守端问题严重，场均失3.17球，中后卫Montolio十字韧带重伤赛季报销，Burki缺阵，后防线几乎崩溃。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">波兹南 近5场</div>
+      <div class="insight-value">5胜0平0负 · 进15失3 · 4连胜+资格赛全胜</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">图恩 近5场</div>
+      <div class="insight-value">1胜2平2负 · 进5失8 · 防守端问题严重</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">波兹南 主场</div>
+      <div class="insight-value">主场强势 · 资格赛主场5-0屠杀 · 场均3.0球</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">图恩 客场</div>
+      <div class="insight-value">客场防守薄弱 · 场均失3.17球 · 中后卫缺人</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>图恩后防崩溃：</strong>中后卫Montolio十字韧带重伤赛季报销，Burki缺阵，后防线核心力量尽失。面对波兹南场均3.0球的恐怖攻击力，图恩残缺的后防线将承受巨大压力。<strong>波兹南：</strong>阵容齐整，士气正旺，4连胜+资格赛8-0的晋级历程令全队信心爆棚。</p>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>波兹南带入巨大优势，一只脚踏入欧罗巴正赛（预估 63%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>波兹南仍占优，但次回合需客场保平（预估 21%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>图恩爆冷客场取胜，形势逆转（预估 15%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜（波兹南赢球），让胜/让平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">3-1</span><span class="pred-prob">P(3-1)=7.7%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">4-1</span><span class="pred-prob">P(4-1)=6.7%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
+      <span class="bar-label">★★★★☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 008: 贝红星 vs 比尔森 ===== -->
+<section class="card" id="match-008">
+  <div class="card-header">
+    <span class="match-id">周四 008</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 03:00（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">贝红星 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">塞尔维亚</small></span>
+    <span class="vs">VS</span>
+    <span class="away">比尔森 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">捷克</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.61</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">3.65</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">4.28</div>
+    </div>
+  </div>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">贝红星(Crvena Zvezda)</div>
+      <div class="insight-value">塞尔维亚豪门 · 主场强势 · 场均进1.0失0.4 · 防守稳固</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">比尔森(Viktoria Plzen)</div>
+      <div class="insight-value">捷克豪门 · 场均进1.2失1.1 · 后防伤病困扰</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=1.17 / 客队 λ=0.94 · 双方进攻预期接近，主队略高</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场隐含概率</div>
+      <div class="insight-value">主胜 55.0% / 平局 24.3% / 客胜 20.7%</div>
+    </div>
+  </div>
+
+  <h4>首回合前瞻</h4>
+  <p><strong>贝红星主场强势：</strong>红星主场是欧洲著名的魔鬼主场，球迷氛围狂热，欧战主场战绩出色。比尔森后防线伤病严重：Baier、Jemelka、Paluska三名后卫伤缺，防守体系受到严重影响。红星Abufani红牌停赛，Advic十字韧带重伤，但主场优势和防守稳固性仍是最大筹码。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">贝红星 近5场</div>
+      <div class="insight-value">4胜1平0负 · 进8失2 · 主场状态出色</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">比尔森 近5场</div>
+      <div class="insight-value">2胜1平2负 · 进5失5 · 后防不稳</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot w">W</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">贝红星 主场</div>
+      <div class="insight-value">欧战主场不败 · 球迷氛围狂热 · 场均失0.4球</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">比尔森 客场</div>
+      <div class="insight-value">后防伤病严重 · 客场表现一般 · 场均失1.1球</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>贝红星：</strong>Abufani红牌停赛缺阵，Advic十字韧带重伤长期缺阵。但主场强势和防守稳固（场均失0.4球）足以弥补个别球员缺阵的影响。<strong>比尔森：</strong>Baier、Jemelka、Paluska三名后卫伤缺，后防线人员严重不足，面对红星主场将承受巨大压力。</p>
+
+  <div class="warning">
+    <strong>⚠ 凯利指数警示：</strong>主胜1.61与平局3.65之间差距不大，泊松模型1-0概率14.2%与1-1概率13.3%极为接近，平局风险显著。让球(-1)主胜2.96，机构对红星大胜缺乏信心。比尔森虽后防伤病，但捷克球队欧战韧性不容小觑，首回合主场守平可能性不可忽视。
+  </div>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>红星带入主场优势赴捷克，晋级在望（预估 55%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>开放态势，次回合定生死（预估 24%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>比尔森客场爆冷带回优势（预估 21%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜（贝红星赢球），防平</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">1-0</span><span class="pred-prob">P(1-0)=14.2%</span>
+      <span class="pred-score" style="background:rgba(244,162,97,0.08);border-color:rgba(244,162,97,0.2);color:var(--accent3)">1-1</span><span class="pred-prob">P(1-1)=13.3%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+      <span class="bar-label">★★★☆☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 009: 本菲卡 vs 奥胡斯 ===== -->
+<section class="card" id="match-009">
+  <div class="card-header">
+    <span class="match-id">周四 009</span>
+    <span class="match-league">欧罗巴 · 附加赛首回合</span>
+    <span class="match-time">2026-08-20 03:15（次日）</span>
+  </div>
+  <div class="match-teams">
+    <span class="home">本菲卡 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">葡萄牙</small></span>
+    <span class="vs">VS</span>
+    <span class="away">奥胡斯 <small style="font-weight:400;font-size:0.7em;color:var(--muted)">丹麦</small></span>
+  </div>
+  <div class="odds-grid">
+    <div class="odds-item">
+      <div class="label">主胜</div>
+      <div class="value win">1.20*</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">平局</div>
+      <div class="value draw">5.50*</div>
+    </div>
+    <div class="odds-item">
+      <div class="label">客胜</div>
+      <div class="value loss">12.00*</div>
+    </div>
+  </div>
+  <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-top:-0.5rem">*竞彩暂未开盘，赔率为欧系主流机构参考值</p>
+
+  <h4>积分排名与实力对比</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">本菲卡(Benfica)</div>
+      <div class="insight-value">葡萄牙豪门 · 场均进3.8失1.0 · 主场强势 · 上轮3-0横扫哈茨</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">奥胡斯(AGF)</div>
+      <div class="insight-value">丹麦中游 · 场均进1.2失1.3 · 客场连续不胜</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">泊松模型 λ值</div>
+      <div class="insight-value">主队 λ=3.79 / 客队 λ=1.04 · 主队进攻预期为客队3.6倍！</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">市场预估概率</div>
+      <div class="insight-value">主胜 78% / 平局 14% / 客胜 8%</div>
+    </div>
+  </div>
+
+  <h4>首回合前瞻</h4>
+  <p><strong>本菲卡实力碾压：</strong>本菲卡上轮欧罗巴资格赛首回合即3-0横扫哈茨，展现恐怖攻击力，场均3.8球的进攻火力令任何对手胆寒。奥胡斯客场连续不胜，面对本菲卡主场将是巨大考验。本菲卡主场是欧洲最令客队畏惧的球场之一，奥胡斯想要在里斯本全身而退难度极大。</p>
+
+  <h4>近期状态与主客场</h4>
+  <div class="insight-grid">
+    <div class="insight-card">
+      <div class="insight-label">本菲卡 近5场</div>
+      <div class="insight-value">4胜1平0负 · 进14失4 · 状态火热</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot w">W</span><span class="form-dot d">D</span><span class="form-dot w">W</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">奥胡斯 近5场</div>
+      <div class="insight-value">0胜3平2负 · 进4失6 · 客场连续不胜</div>
+      <div class="form-row" style="margin-top:0.4rem">
+        <span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span><span class="form-dot l">L</span><span class="form-dot d">D</span>
+      </div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">本菲卡 主场</div>
+      <div class="insight-value">主场强势 · 上轮3-0胜哈茨 · 场均3.8球 · 欧战主场恐怖</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-label">奥胡斯 客场</div>
+      <div class="insight-value">客场连续不胜 · 场均失1.3球 · 面对本菲卡火力将承受巨大压力</div>
+    </div>
+  </div>
+
+  <h4>伤停与赛前动态</h4>
+  <p><strong>本菲卡：</strong>Aursnes肠胃炎出战成疑；Ivanovic、Wynder、Umeh缺阵。但本菲卡阵容深度充足，核心攻击框架不受影响，上轮3-0横扫哈茨已证明即使轮换仍有恐怖火力。<strong>奥胡斯：</strong>客场连续不胜，面对本菲卡主场想要扭转颓势难度极大。</p>
+
+  <h4>比赛结果晋级影响</h4>
+  <div class="table-wrap">
+  <table class="impact-table">
+    <thead><tr><th>结果</th><th>次回合形势</th></tr></thead>
+    <tbody>
+      <tr><td class="impact-result"><span class="tag tag-green">主胜</span></td><td>本菲卡带入巨大优势，一只脚踏入欧罗巴正赛（预估 78%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-yellow">平局</span></td><td>本菲卡仍占绝对优势，次回合客场保平即可（预估 14%）</td></tr>
+      <tr><td class="impact-result"><span class="tag tag-red">客胜</span></td><td>奥胡斯爆冷客场取胜，本菲卡陷入被动（预估 8%）</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="prediction">
+    <div class="pred-title">综合判断</div>
+    <div class="pred-row">
+      <span class="pred-label">推荐方向：</span>
+      <span class="pred-value">主胜（本菲卡赢球），净胜2球+</span>
+    </div>
+    <div class="pred-row" style="margin-top:0.5rem">
+      <span class="pred-label">比分预测：</span>
+      <span class="pred-score">3-1</span><span class="pred-prob">P(3-1)=7.5%</span>
+      <span class="pred-score" style="background:rgba(42,157,143,0.08);border-color:rgba(42,157,143,0.2);color:var(--accent2)">3-0</span><span class="pred-prob">P(3-0)=7.2%</span>
+    </div>
+    <div class="conf-bar" style="margin-top:0.5rem">
+      <span style="font-size:0.7rem;color:var(--muted)">信心</span>
+      <div class="bar-track"><div class="bar-fill" style="width:75%"></div></div>
+      <span class="bar-label">★★★★☆</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 四、比分预测汇总 ========== -->
+<h2>四、9场比赛比分预测汇总</h2>
 <div class="table-wrap">
 <table>
-  <thead><tr><th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>备选比分</th><th>概率标注</th><th>信心</th></tr></thead>
+  <thead>
+    <tr>
+      <th>编号</th><th>对阵</th><th>联赛</th><th>推荐方向</th><th>首选比分</th><th>概率</th><th>备选比分</th><th>概率</th><th>信心</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
       <td><span class="tag tag-yellow">001</span></td>
       <td>迈季宽广 vs 利雅新月</td><td>沙职</td>
-      <td><span class="tag tag-green">客胜</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">0-2</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-3</td>
-      <td>P(0-2)=14.5%</td>
+      <td><span class="tag tag-red">客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-3</td>
+      <td>7.7%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
+      <td>7.1%</td>
       <td>★★★★☆</td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">002</span></td>
+      <td><span class="tag tag-blue">002</span></td>
       <td>巴列卡诺 vs 阿拉维斯</td><td>西甲</td>
-      <td><span class="tag tag-green">主不败（双平）</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-0</td>
-      <td>P(1-0)=11.8%</td>
+      <td><span class="tag tag-yellow">主胜或平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td>13.4%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-0</td>
+      <td>12.4%</td>
       <td>★★★☆☆</td>
     </tr>
     <tr>
-      <td><span class="tag tag-yellow">003</span></td>
+      <td><span class="tag tag-red">003</span></td>
       <td>科林蒂安 vs 罗萨里奥中央</td><td>解放者杯</td>
-      <td><span class="tag tag-green">双平博平</span></td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
-      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-0</td>
-      <td>P(1-0)=10.8%</td>
+      <td><span class="tag tag-green">主胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">2-0</td>
+      <td>10.4%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">2-1</td>
+      <td>9.7%</td>
       <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">004</span></td>
+      <td>阿拉木图 vs 安德莱</td><td>欧罗巴</td>
+      <td><span class="tag tag-red">客不败</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td>10.7%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-2</td>
+      <td>9.2%</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">005</span></td>
+      <td>米亚尔比 vs 萨尔茨堡</td><td>欧罗巴</td>
+      <td><span class="tag tag-red">客胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-2</td>
+      <td>8.7%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>8.5%</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">006</span></td>
+      <td>特拉布宗 vs 费伦茨</td><td>欧罗巴</td>
+      <td><span class="tag tag-yellow">主胜或平</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-1</td>
+      <td>12.9%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">0-1</td>
+      <td>11.7%</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">007</span></td>
+      <td>波兹南 vs 图恩</td><td>欧罗巴</td>
+      <td><span class="tag tag-green">主胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">3-1</td>
+      <td>7.7%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">4-1</td>
+      <td>6.7%</td>
+      <td>★★★★☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">008</span></td>
+      <td>贝红星 vs 比尔森</td><td>欧罗巴</td>
+      <td><span class="tag tag-green">主胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">1-0</td>
+      <td>14.2%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">1-1</td>
+      <td>13.3%</td>
+      <td>★★★☆☆</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">009</span></td>
+      <td>本菲卡 vs 奥胡斯</td><td>欧罗巴</td>
+      <td><span class="tag tag-green">主胜</span></td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-weight:700;color:var(--accent)">3-1</td>
+      <td>7.5%</td>
+      <td style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace">3-0</td>
+      <td>7.2%</td>
+      <td>★★★★☆</td>
     </tr>
   </tbody>
 </table>
 </div>
 
+<!-- ========== 五、核心策略与风险提示 ========== -->
 <h2>五、核心策略与风险提示</h2>
+
+<h3>当日盘口特征总结</h3>
 <div class="summary-grid">
   <div class="summary-card">
-    <div class="s-match">最深盘：迈季宽广 vs 利雅新月</div>
-    <div class="s-pred">主胜 10.0</div>
-    <div class="s-confidence">市场共识最强，但需防大热走盘</div>
+    <div class="s-match">最具信心博胆：本菲卡</div>
+    <div class="s-pred">主胜 · λ=3.79/1.04</div>
+    <div class="s-confidence">上轮3-0横扫哈茨 · 主场恐怖火力 · 客队客场连续不胜</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">最高信心：迈季宽广 vs 利雅新月</div>
-    <div class="s-pred">客胜</div>
-    <div class="s-confidence">★★★★☆ 信心评级</div>
+    <div class="s-match">最强主场火力：波兹南</div>
+    <div class="s-pred">主胜 1.40</div>
+    <div class="s-confidence">4连胜+资格赛8-0 · 对手后防崩溃 · 概率最高</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">巴列卡诺 vs 阿拉维斯</div>
-    <div class="s-pred">主不败（双平）</div>
-    <div class="s-confidence">主不败 58%</div>
+    <div class="s-match">最可能爆冷：特拉布宗 vs 费伦茨</div>
+    <div class="s-pred">模型与市场分歧</div>
+    <div class="s-confidence">市场主胜58%但泊松客队λ更高 · 主队进攻残缺 · 客队客场不败</div>
   </div>
   <div class="summary-card">
-    <div class="s-match">科林蒂安 vs 罗萨里奥中央</div>
-    <div class="s-pred">双平博平</div>
-    <div class="s-confidence">平局 42%</div>
+    <div class="s-match">极端赔率：迈季宽广 vs 利雅新月</div>
+    <div class="s-pred">客胜 1.17</div>
+    <div class="s-confidence">本泽马+苏梅维尔+马尔科姆三叉戟 · 首轮4-2大胜 · 客胜概率75.7%</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">凯利异常：贝红星 vs 比尔森</div>
+    <div class="s-pred">主胜防平</div>
+    <div class="s-confidence">1-0(14.2%)与1-1(13.3%)极接近 · 平局风险显著 · 主场强势但非碾压</div>
+  </div>
+  <div class="summary-card">
+    <div class="s-match">均势对峙：巴列卡诺 vs 阿拉维斯</div>
+    <div class="s-pred">主胜或平</div>
+    <div class="s-confidence">无竞彩赔率 · 双方λ接近 · 主场更换球场 · 均势格局</div>
   </div>
 </div>
 
 <h3>风险提示</h3>
 <div class="warning" style="font-size:0.9rem;padding:1.25rem">
-  <p><strong>1. 数据时效性：</strong>赔率数据截至报告生成时，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
-  <p style="margin-top:0.5rem"><strong>2. 不确定性：</strong>足球比赛存在大量不可控因素——红牌、点球、VAR判罚、天气等，任何分析都无法100%预测结果。</p>
-  <p style="margin-top:0.5rem"><strong>3. 伤停变动：</strong>伤病信息以赛前最终确认名单为准。部分球队可能在赛前调整首发。</p>
-  <p style="margin-top:0.5rem"><strong>4. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
+  <p><strong>1. 数据时效性：</strong>赔率数据截至2026年8月20日15:00，赛前可能发生重大变动。建议赛前1小时再次确认首发名单和临场赔率。</p>
+  <p style="margin-top:0.5rem"><strong>2. 欧战附加赛特殊性：</strong>本场6场欧罗巴附加赛均为首回合，首回合球队策略可能偏保守，不追求大胜。泊松模型基于常规联赛数据，可能高估首回合进球数。</p>
+  <p style="margin-top:0.5rem"><strong>3. 伤停变动：</strong>科林蒂安Memphis Depay出战成疑、安德莱多名球员伤缺等信息以赛前最终确认名单为准。部分球队可能在赛前调整首发。</p>
+  <p style="margin-top:0.5rem"><strong>4. 模型局限性：</strong>泊松模型假设进球独立且服从泊松分布，无法捕捉红牌、点球、VAR判罚、天气突变等不可控因素。特拉布宗vs费伦茨场次模型与市场分歧最大，需格外谨慎。</p>
+  <p style="margin-top:0.5rem"><strong>5. 声明：</strong>本报告所有分析基于公开数据和专业研究，仅供足球爱好者参考，不构成任何形式的投注建议。请理性看待，量力而行。</p>
 </div>
+
+<!-- ========== 六、当日赛事晋级路径与联赛形势 ========== -->
+<h2>六、当日赛事晋级路径与联赛形势</h2>
+
+<h3>欧罗巴附加赛形势总览（6场）</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>编号</th><th>对阵</th><th>赛制</th><th>首回合主场</th><th>关键因素</th><th>晋级热门</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-red">004</span></td><td>阿拉木图 vs 安德莱</td><td>两回合制</td><td>阿拉木图</td><td>气候因素vs欧战经验</td><td><span class="tag tag-red">安德莱</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">005</span></td><td>米亚尔比 vs 萨尔茨堡</td><td>两回合制</td><td>米亚尔比</td><td>实力差距明显</td><td><span class="tag tag-red">萨尔茨堡</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">006</span></td><td>特拉布宗 vs 费伦茨</td><td>两回合制</td><td>特拉布宗</td><td>模型vs市场分歧</td><td><span class="tag tag-yellow">势均力敌</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">007</span></td><td>波兹南 vs 图恩</td><td>两回合制</td><td>波兹南</td><td>火力碾压+对手后防崩溃</td><td><span class="tag tag-green">波兹南</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">008</span></td><td>贝红星 vs 比尔森</td><td>两回合制</td><td>贝红星</td><td>魔鬼主场vs后防伤病</td><td><span class="tag tag-green">贝红星</span></td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-red">009</span></td><td>本菲卡 vs 奥胡斯</td><td>两回合制</td><td>本菲卡</td><td>实力碾压+主场恐怖</td><td><span class="tag tag-green">本菲卡</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p><strong>欧罗巴附加赛规则：</strong>两回合总比分胜者晋级欧罗巴联赛阶段（正赛），负者降入欧协联附加赛。首回合客场进球规则已取消，总比分相同则进入加时赛和点球大战。本场6场首回合中，波兹南和本菲卡被看好带入巨大优势，安德莱和萨尔茨堡客场占优，特拉布宗vs费伦茨最为胶着。</p>
+
+<h3>解放者杯形势</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>编号</th><th>对阵</th><th>赛制</th><th>首回合</th><th>次回合主场</th><th>晋级热门</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-red">003</span></td><td>科林蒂安 vs 罗萨里奥中央</td><td>1/8决赛两回合</td><td>0-0</td><td>科林蒂安</td><td><span class="tag tag-green">科林蒂安</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p><strong>解放者杯形势：</strong>首回合0-0闷平，次回合科林蒂安回到主场必须争胜。首回合0-0意味着任何有进球的结果都将直接决定晋级。科林蒂安巴甲第7名32分，主场氛围狂热，但Allan红牌停赛+Yuri Alberto伤缺令进攻端遭受重创。Memphis Depay若回归将极大改变战局。罗萨里奥中央首回合零封展现了出色的防守体系，客场防守反击可能再次奏效。</p>
+
+<h3>联赛形势</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>编号</th><th>联赛</th><th>对阵</th><th>联赛阶段</th><th>影响</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="tag tag-yellow">001</span></td><td>沙职</td><td>迈季宽广 vs 利雅新月</td><td>第2轮</td><td>利雅新月争两连胜巩固榜首；迈季宽广避免连败开局</td>
+    </tr>
+    <tr>
+      <td><span class="tag tag-blue">002</span></td><td>西甲</td><td>巴列卡诺 vs 阿拉维斯</td><td>新赛季</td><td>双方均需抢分保级，巴列卡诺主场更换球场增添变数</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<p><strong>沙特联赛：</strong>新赛季第2轮，利雅新月(Al Hilal)首轮4-2大胜展示恐怖火力，本泽马+苏梅维尔+马尔科姆三叉戟已形成默契。迈季宽广首轮1-2负，本场面对沙特豪门恐难取分。利雅新月无欧战任务，可全力出击联赛争冠。</p>
+<p><strong>西甲联赛：</strong>新赛季初期，巴列卡诺上赛季第16名惊险保级，阿拉维斯第14名。巴列卡诺主场临时从Vallecas更换为Butarque，主场优势削弱。双方实力接近，均需在赛季初抢分建立保级基础。</p>
 
 </main>
 
+<!-- ========== 历史预测命中率追踪 ========== -->
+<h2 style="margin-left:1.5rem">历史预测命中率追踪</h2>
+<div class="container">
+<div class="hit-rate-box">
+  <h3>上次报告（2026-08-19 周三）8场预测回顾</h3>
+  <p style="font-size:0.9rem;color:var(--muted);margin-bottom:0.5rem">方向命中：4/8 = <strong style="color:var(--win);font-size:1.1rem">50%</strong>（含1场部分命中）</p>
+  <div class="hit-bar">
+    <div class="h-track">
+      <div class="h-fill green" style="width:50%;float:left"></div>
+      <div class="h-fill red" style="width:37.5%;float:left;background:var(--loss)"></div>
+      <div class="h-fill yellow" style="width:12.5%;float:left;background:var(--draw)"></div>
+    </div>
+    <span style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;font-size:0.8rem;font-weight:700;color:var(--win)">50%</span>
+  </div>
+  <div style="display:flex;gap:1rem;font-size:0.75rem;color:var(--muted);margin-top:0.3rem">
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--win);border-radius:2px;margin-right:3px"></span>命中 4场</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--loss);border-radius:2px;margin-right:3px"></span>未中 3场</span>
+    <span><span style="display:inline-block;width:10px;height:10px;background:var(--draw);border-radius:2px;margin-right:3px"></span>部分命中 1场</span>
+  </div>
+
+  <div class="hit-list">
+    <div class="hit-item yes">
+      <span class="hit-icon">✅</span>
+      <span class="hit-match">周三001 安养FC vs 济州SK</span>
+      <span class="hit-result">0-1 · 预测客不败 → 命中</span>
+    </div>
+    <div class="hit-item yes">
+      <span class="hit-icon">✅</span>
+      <span class="hit-match">周三002 马竞 vs 马拉加</span>
+      <span class="hit-result">2-0 · 预测主胜 → 命中</span>
+    </div>
+    <div class="hit-item no">
+      <span class="hit-icon">❌</span>
+      <span class="hit-match">周三003 波特诺 vs 帕梅拉斯</span>
+      <span class="hit-result">0-1 · 预测主不败 → 未中</span>
+    </div>
+    <div class="hit-item no">
+      <span class="hit-icon">❌</span>
+      <span class="hit-match">周三004 纽约红牛 vs 纳什维尔</span>
+      <span class="hit-result">0-1 · 预测双平 → 未中</span>
+    </div>
+    <div class="hit-item no">
+      <span class="hit-icon">❌</span>
+      <span class="hit-match">周三005 科罗拉多 vs 洛杉矶FC</span>
+      <span class="hit-result">1-0 · 预测双平 → 未中</span>
+    </div>
+    <div class="hit-item yes">
+      <span class="hit-icon">✅</span>
+      <span class="hit-match">周三006 凯尔特人 vs LASK</span>
+      <span class="hit-result">3-0 · 预测主胜 → 命中</span>
+    </div>
+    <div class="hit-item yes">
+      <span class="hit-icon">✅</span>
+      <span class="hit-match">周三007 奈梅亨 vs 博德闪耀</span>
+      <span class="hit-result">1-3 · 预测客不败 → 命中</span>
+    </div>
+    <div class="hit-item partial">
+      <span class="hit-icon">🟡</span>
+      <span class="hit-match">周三008 布拉迪斯 vs 采列</span>
+      <span class="hit-result">1-1 · 预测主胜防平 → 部分命中（平局命中，主胜未中）</span>
+    </div>
+  </div>
+
+  <h4 style="margin-top:1rem">偏差分析与模型调整建议</h4>
+  <p style="font-size:0.85rem"><strong>1. 美职双平策略失效：</strong>周三004和005两场美职比赛均预测"双平"但结果为主胜和客胜，均未命中。美职联赛主客场差距大、平局率低于欧洲联赛，"双平"策略在美职适用性较差。<strong>建议：</strong>对美职比赛降低双平推荐权重，更多关注胜负方向。</p>
+  <p style="font-size:0.85rem;margin-top:0.5rem"><strong>2. 南美杯赛主不败过于乐观：</strong>周三003波特诺预测"主不败"但0-1告负。南美解放者杯客场球队防守反击能力强，主队优势不如欧洲联赛明显。<strong>建议：</strong>南美杯赛调低主队λ值10-15%，提高客胜概率权重。</p>
+  <p style="font-size:0.85rem;margin-top:0.5rem"><strong>3. 防平策略有效：</strong>周三008布拉迪斯预测"主胜防平"，结果1-1平局，防平策略成功部分命中。<strong>建议：</strong>对势均力敌的欧战场次继续保持"主胜防平"策略。</p>
+  <p style="font-size:0.85rem;margin-top:0.5rem"><strong>4. 欧冠强队预测准确：</strong>周三006凯尔特人3-0、周三007博德闪耀客胜均准确命中。欧战强队主场优势明显、客场强队反击效率高，模型对此类场次预测质量较高。</p>
+</div>
+</div>
+
+<!-- ========== FOOTER / SOURCES ========== -->
 <footer>
   <div class="container">
     <div class="sources">
       <h2>数据来源</h2>
       <ol>
-        <li><span class="src-title">中国竞彩官网 — 官方胜平负赔率、让球赔率。</span></li>
-        <li><span class="src-title">UEFA官网 — 欧冠资格赛赛程、规则、对阵信息。</span></li>
-        <li><span class="src-title">SportsMole — 赛前前瞻、阵容分析、伤病报告。</span></li>
-        <li><span class="src-title">FotMob — 实时比赛数据、阵容、赔率。</span></li>
-        <li><span class="src-title">懂球帝/搜狐体育 — 中文赛前分析、伤停情报。</span></li>
-        <li><span class="src-title">7M体育网 — 亚洲赛事数据分析。</span></li>
-        <li><span class="src-title">Flashscore — 历史交锋、近期战绩统计。</span></li>
+        <li id="cite-1">
+          <span class="src-title">中国竞彩官网 (lottery.gov.cn) — 官方胜平负赔率、让球赔率、市场支持率。</span>
+          <a class="src-url" href="https://www.lottery.gov.cn/jc/jsq/zqspf/" target="_blank" rel="noopener">https://www.lottery.gov.cn/jc/jsq/zqspf/</a>
+          <span class="src-url">P0级官方数据</span>
+        </li>
+        <li id="cite-2">
+          <span class="src-title">泊松模型预测数据 — 基于球队进攻/防守期望进球值的泊松分布概率计算。</span>
+          <span class="src-url">P1级模型数据 · 含λ值、比分概率、市场隐含概率</span>
+        </li>
+        <li id="cite-3">
+          <span class="src-title">比赛赔率与让球数据 — 竞彩足球9场比赛完整赔率信息。</span>
+          <span class="src-url">P0级官方数据 · 含胜平负赔率、让球盘口</span>
+        </li>
+        <li id="cite-4">
+          <span class="src-title">各比赛前瞻分析 — 欧罗巴附加赛、解放者杯、沙特联赛、西甲赛事前瞻。</span>
+          <span class="src-url">P1级专业体育媒体 · 含伤停信息、阵容分析、历史交锋</span>
+        </li>
+        <li id="cite-5">
+          <span class="src-title">凯利指数与盘口解读 — 基于竞彩赔率与欧系机构赔率对比的凯利指数分析。</span>
+          <span class="src-url">P1级专业分析 · 含凯利离散度、亚盘水位变动</span>
+        </li>
+        <li id="cite-6">
+          <span class="src-title">球队伤停信息 — 各队最新伤病名单、停赛信息、出战成疑球员。</span>
+          <span class="src-url">P1级体育数据 · 赛前最终确认名单为准</span>
+        </li>
+        <li id="cite-7">
+          <span class="src-title">历史预测命中率追踪 — 2026-08-19（周三）8场预测结果回顾。</span>
+          <span class="src-url">P2级内部数据 · 基于实际比赛结果与预测方向对比</span>
+        </li>
+        <li id="cite-8">
+          <span class="src-title">ECharts图表库 — 市场信心指数堆叠柱状图可视化。</span>
+          <a class="src-url" href="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" target="_blank" rel="noopener">https://cdn.jsdelivr.net/npm/echarts@5/</a>
+          <span class="src-url">P2级开源可视化工具</span>
+        </li>
       </ol>
     </div>
   </div>
 </footer>
 
+<!-- ECharts CDN -->
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <script>
 (function() {
-  var muted = '#6c757d';
-  var rule = '#dee2e6';
-  var bg2 = '#ffffff';
-  var win = '#2a9d8f';
-  var draw = '#f4a261';
-  var loss = '#e63946';
+  var style = getComputedStyle(document.documentElement);
+  var accent = style.getPropertyValue('--accent').trim();
+  var accent2 = style.getPropertyValue('--accent2').trim();
+  var ink = style.getPropertyValue('--ink').trim();
+  var muted = style.getPropertyValue('--muted').trim();
+  var rule = style.getPropertyValue('--rule').trim();
+  var bg2 = style.getPropertyValue('--bg2').trim();
+  var win = style.getPropertyValue('--win').trim();
+  var draw = style.getPropertyValue('--draw').trim();
+  var loss = style.getPropertyValue('--loss').trim();
+
   var chartConf = echarts.init(document.getElementById('chart-confidence'), null, { renderer: 'svg' });
   chartConf.setOption({
     animation: false,
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['主胜支持率', '平局支持率', '客胜支持率'], bottom: 0, textStyle: { color: muted, fontSize: 12 } },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      appendToBody: true,
+      formatter: function(params) {
+        var match = params[0].name;
+        var result = '';
+        params.forEach(function(p) {
+          result += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>';
+        });
+        return '<strong>' + match + '</strong><br/>' + result;
+      }
+    },
+    legend: {
+      data: ['主胜支持率', '平局支持率', '客胜支持率'],
+      bottom: 0,
+      textStyle: { color: muted, fontSize: 12 }
+    },
     grid: { left: '3%', right: '4%', bottom: '15%', top: '8%', containLabel: true },
-    xAxis: { type: 'category', data: ['001 迈季vs利雅','002 巴列vs阿拉','003 科林vs罗萨',], axisLabel: { color: muted, fontSize: 11, interval: 0 }, axisLine: { lineStyle: { color: rule } }, axisTick: { show: false } },
-    yAxis: { type: 'value', name: '支持率 (%)', max: 100, axisLabel: { color: muted, fontSize: 11, formatter: '{value}%' }, splitLine: { lineStyle: { color: rule, type: 'dashed' } } },
+    xAxis: {
+      type: 'category',
+      data: [
+        '001 迈季宽广\nvs 利雅新月',
+        '002 巴列卡诺\nvs 阿拉维斯',
+        '003 科林蒂安\nvs 罗萨里奥',
+        '004 阿拉木图\nvs 安德莱',
+        '005 米亚尔比\nvs 萨尔茨堡',
+        '006 特拉布宗\nvs 费伦茨',
+        '007 波兹南\nvs 图恩',
+        '008 贝红星\nvs 比尔森',
+        '009 本菲卡\nvs 奥胡斯'
+      ],
+      axisLabel: { color: muted, fontSize: 10, interval: 0 },
+      axisLine: { lineStyle: { color: rule } },
+      axisTick: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      name: '支持率 (%)',
+      max: 100,
+      axisLabel: { color: muted, fontSize: 11, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: rule, type: 'dashed' } },
+      nameTextStyle: { color: muted, fontSize: 11 }
+    },
     series: [
-      { name: '主胜支持率', type: 'bar', stack: 'total', data: [10,40,40,], itemStyle: { color: win, borderColor: bg2, borderWidth: 1 }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600, formatter: function(p){ return p.value>15 ? p.value+'%' : ''; } } },
-      { name: '平局支持率', type: 'bar', stack: 'total', data: [17,33,33,], itemStyle: { color: draw, borderColor: bg2, borderWidth: 1 }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600, formatter: function(p){ return p.value>15 ? p.value+'%' : ''; } } },
-      { name: '客胜支持率', type: 'bar', stack: 'total', data: [85,40,40,], itemStyle: { color: loss, borderRadius: [4,4,0,0], borderColor: bg2, borderWidth: 1 }, label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600, formatter: function(p){ return p.value>15 ? p.value+'%' : ''; } } }
+      {
+        name: '主胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [9, 38, 68, 26, 21, 58, 63, 55, 78],
+        itemStyle: {
+          color: win,
+          borderRadius: [0, 0, 0, 0],
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 10,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; }
+        },
+        emphasis: { itemStyle: { color: win } }
+      },
+      {
+        name: '平局支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [15, 28, 20, 27, 23, 24, 21, 24, 14],
+        itemStyle: {
+          color: draw,
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 10,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; }
+        }
+      },
+      {
+        name: '客胜支持率',
+        type: 'bar',
+        stack: 'total',
+        data: [76, 34, 12, 47, 56, 19, 16, 21, 8],
+        itemStyle: {
+          color: loss,
+          borderRadius: [4, 4, 0, 0],
+          borderColor: bg2,
+          borderWidth: 1
+        },
+        label: {
+          show: true,
+          position: 'inside',
+          color: '#fff',
+          fontSize: 10,
+          fontWeight: 600,
+          formatter: function(p) { return p.value > 12 ? p.value + '%' : ''; }
+        }
+      }
     ]
   });
   window.addEventListener('resize', function() { chartConf.resize(); });
