@@ -1,175 +1,175 @@
-1	<!DOCTYPE html>
-2	<html lang="zh-CN">
-3	<head>
-4	<meta charset="UTF-8">
-5	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-6	<title>AI 足球预测报告归档</title>
-7	<style>
-8	* { margin: 0; padding: 0; box-sizing: border-box; }
-9	body {
-10	  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-11	  background: #f0f2f5;
-12	  color: #1a1a2e;
-13	  min-height: 100vh;
-14	}
-15	.page-container {
-16	  max-width: 800px;
-17	  margin: 0 auto;
-18	  padding: 40px 20px;
-19	}
-20	.back-link {
-21	  display: inline-flex;
-22	  align-items: center;
-23	  gap: 6px;
-24	  color: #06b6d4;
-25	  text-decoration: none;
-26	  font-size: 14px;
-27	  font-weight: 500;
-28	  margin-bottom: 24px;
-29	}
-30	.back-link:hover { text-decoration: underline; }
-31	h1 {
-32	  font-size: 28px;
-33	  font-weight: 700;
-34	  margin-bottom: 8px;
-35	}
-36	.subtitle {
-37	  color: #6c757d;
-38	  font-size: 15px;
-39	  margin-bottom: 32px;
-40	}
-41	.report-list { list-style: none; }
-42	.report-item {
-43	  display: flex;
-44	  align-items: center;
-45	  justify-content: space-between;
-46	  background: #fff;
-47	  border-radius: 14px;
-48	  padding: 18px 24px;
-49	  margin-bottom: 12px;
-50	  border: 1px solid #eef0f4;
-51	  text-decoration: none;
-52	  color: inherit;
-53	  transition: all 0.2s;
-54	}
-55	.report-item:hover {
-56	  transform: translateY(-2px);
-57	  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-58	  border-color: #06b6d4;
-59	}
-60	.report-item .date {
-61	  font-size: 20px;
-62	  font-weight: 700;
-63	  color: #1a1a2e;
-64	}
-65	.report-item .date-weekday {
-66	  font-size: 13px;
-67	  color: #6c757d;
-68	  margin-left: 8px;
-69	  font-weight: 400;
-70	}
-71	.report-item .meta {
-72	  text-align: right;
-73	}
-74	.report-item .match-count {
-75	  font-size: 13px;
-76	  color: #6c757d;
-77	}
-78	.report-item .arrow {
-79	  font-size: 20px;
-80	  color: #06b6d4;
-81	  margin-left: 12px;
-82	}
-83	.empty-state {
-84	  text-align: center;
-85	  padding: 60px 20px;
-86	  color: #6c757d;
-87	}
-88	.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-89	.empty-state p { font-size: 15px; }
-90	.auto-badge {
-91	  display: inline-flex;
-92	  align-items: center;
-93	  gap: 4px;
-94	  background: rgba(6,182,212,0.1);
-95	  color: #06b6d4;
-96	  font-size: 11px;
-97	  font-weight: 600;
-98	  padding: 2px 10px;
-99	  border-radius: 20px;
-100	}
-101	</style>
-102	</head>
-103	<body>
-104	<div class="page-container">
-105	  <a class="back-link" href="../index.html">← 返回投注工具</a>
-106	  <h1>AI 足球预测报告 <span class="auto-badge">每日自动更新</span></h1>
-107	  <p class="subtitle">基于盘口赔率、历史交锋、近期状态、伤停情报等多维度深度分析</p>
-108	
-109	  <ul class="report-list" id="reportList"></ul>
-110	</div>
-111	
-112	<script>
-113	(function() {
-114	    var reports = [
-115	    { date: '2026-08-21', weekday: '周四', matches: 11, leagues: '日职 x2 / 沙职 x2 / 芬超 x1 / 瑞超 x1 / 法乙 x1 / 荷乙 x1 / 法甲 x1 / 英超 x1 / 西甲 x1' },
-116	    { date: '2026-08-20', weekday: '周四', matches: 9, leagues: '沙职 x1 / 西甲 x1 / 解放者杯 x1 / 欧罗巴 x6' },
-117	    { date: '2026-08-19', weekday: '周三', matches: 8, leagues: '韩国杯 x1 / 西甲 x1 / 解放者杯 x1 / 美职 x2 / 欧冠 x3' },
-118	    { date: '2026-08-18', weekday: '周二', matches: 4, leagues: '解放者杯 x1 / 欧冠 x3' },
-119	    { date: '2026-08-17', weekday: '周一', matches: 6, leagues: '芬超 x1 / 瑞超 x1 / 英冠 x1 / 西甲 x1 / 葡超 x1 / 巴甲 x1' },
-120	    { date: '2026-08-16', weekday: '周日', matches: 28, leagues: '瑞超 x5 / 挪超 x5 / 荷甲 x4 / 葡超 x4 / 韩职 x2 / 西甲 x2 / 日乙 x1 / 社区盾杯 x1 / 芬超 x1 / 英冠 x1 / 巴甲 x1 / 美职 x1' },
-121	    { date: '2026-08-15', weekday: '周六', matches: 27, leagues: '荷甲 x4 / 日职 x3 / 葡超 x3 / 英冠 x3 / 沙职 x3 / 韩职 x2 / 西甲 x2 / 日乙 x1 / 德乙 x1 / 瑞超 x1 / 挪超 x1 / 芬超 x1 / 巴甲 x1 / 美职 x1' },
-122	    { date: '2026-08-14', weekday: '周五', matches: 17, leagues: '沙职 x3 / 法乙 x3 / 德乙 x2 / 荷乙 x2 / 荷甲 x1 / 日职 x1 / 芬超 x1 / 瑞超 x1 / 挪超 x1 / 英冠 x1 / 葡超 x1' },
-123	    { date: '2026-08-13', weekday: '周四', matches: 10, leagues: '欧罗巴 x6 / 沙职 x2 / 解放者杯 x2' },
-124	    { date: '2026-08-12', weekday: '周二', matches: 3, leagues: '欧超杯 x1 / 解放者杯 x2' },
-125	    { date: '2026-08-11', weekday: '周一', matches: 10, leagues: '欧冠 x8 / 亚冠精英 x1 / 解放者杯 x1' },
-126	    { date: '2026-08-10', weekday: '周一', matches: 3, leagues: '瑞超 x2 / 葡超 x1' },
-127	    { date: '2026-08-09', weekday: '周日', matches: 24, leagues: '葡超 x4 / 荷甲 x4 / 芬超 x3 / 挪超 x3 / 瑞超 x3 / 巴甲 x2 / 日职 x2 / 德乙 x2 / 日乙 x1' },
-128	    { date: '2026-08-08', weekday: '周六', matches: 25, leagues: '荷甲 x4 / 韩职 x3 / 英联赛杯 x3 / 葡超 x3 / 法乙 x3 / 挪超 x2 / 瑞超 x2 / 巴甲 x2 / 日职 x1 / 日乙 x1 / 芬超 x1' },
-129	    { date: '2026-08-07', weekday: '周五', matches: 10, leagues: '日职 x2 / 荷乙 x2 / 芬超 x1 / 挪超 x1 / 荷甲 x1 / 德乙 x1 / 英联赛杯 x1 / 葡超 x1' },
-130	    { date: '2026-08-06', weekday: '周四', matches: 5, leagues: '欧罗巴 x4 / 巴西杯 x1' },
-131	    { date: '2026-08-05', weekday: '周三', matches: 3, leagues: '欧冠 x2 / 巴西杯 x1' },
-132	    { date: '2026-08-04', weekday: '周二', matches: 5, leagues: '巴西杯 x1 / 欧冠 x4' },
-133	    { date: '2026-08-03', weekday: '周一', matches: 4, leagues: '芬超 x1 / 瑞超 x2 / 巴西杯 x1' },
-134	    { date: '2026-08-02', weekday: '周日', matches: 14, leagues: '韩职 x3 / 瑞超 x3 / 芬超 x2 / 挪超 x4 / 巴西杯 x2' },
-135	    { date: '2026-08-01', weekday: '周六', matches: 13, leagues: '芬超 x3 / 瑞超 x1 / 挪超 x2 / 美职 x6 / 巴西杯 x1' },
-136	    { date: '2026-07-31', weekday: '周五', matches: 3, leagues: '挪超 x2 / 美职 x1' },
-137	    { date: '2026-07-30', weekday: '周四', matches: 6, leagues: '欧罗巴 x5 / 巴甲 x1' },
-138	    { date: '2026-07-29', weekday: '周三', matches: 6, leagues: '欧冠 x2 / 巴甲 x4' },
-139	    { date: '2026-07-28', weekday: '周二', matches: 2, leagues: '欧冠 x2' },
-140	    { date: '2026-07-27', weekday: '周一', matches: 2, leagues: '瑞超 / 挪超' },
-141	    { date: '2026-07-26', weekday: '周日', matches: 18, leagues: '韩职 x4 / 瑞超 x4 / 芬超 x3 / 挪超 x5 / 巴甲 x2' },
-142	    { date: '2026-07-25', weekday: '周六', matches: 2, leagues: '韩职 x2' },
-143	    { date: '2026-07-24', weekday: '周五', matches: 2, leagues: '芬超 / 瑞超' },
-144	    { date: '2026-07-23', weekday: '周四', matches: 7, leagues: '巴甲 x2 / 欧罗巴 x5' },
-145	    { date: '2026-07-22', weekday: '周三', matches: 10, leagues: '韩职 x3 / 挪超 x2 / 美职 x2 / 巴甲 x2 / 欧冠 x1' },
-146	    { date: '2026-07-21', weekday: '周二', matches: 7, leagues: '韩职 x3 / 巴甲 / 欧冠 x3' }
-147	  ];
-148	
-149	  var list = document.getElementById('reportList');
-150	  if (reports.length === 0) {
-151	    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>暂无报告，每日 16:00 自动生成</p></div>';
-152	    return;
-153	  }
-154	
-155	  reports.sort(function(a, b) { return b.date.localeCompare(a.date); });
-156	
-157	  reports.forEach(function(r) {
-158	    var li = document.createElement('li');
-159	    li.innerHTML =
-160	      '<a class="report-item" href="' + r.date + '/index.html">' +
-161	        '<div>' +
-162	          '<span class="date">' + r.date + '</span>' +
-163	          '<span class="date-weekday">' + r.weekday + '</span>' +
-164	        '</div>' +
-165	        '<div class="meta">' +
-166	          '<div class="match-count">' + r.matches + ' 场比赛 · ' + r.leagues + '</div>' +
-167	          '<span class="arrow">→</span>' +
-168	        '</div>' +
-169	      '</a>';
-170	    list.appendChild(li);
-171	  });
-172	})();
-173	</script>
-174	</body>
-175	</html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 足球预测报告归档</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f0f2f5;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+.page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #06b6d4;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.back-link:hover { text-decoration: underline; }
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.subtitle {
+  color: #6c757d;
+  font-size: 15px;
+  margin-bottom: 32px;
+}
+.report-list { list-style: none; }
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 12px;
+  border: 1px solid #eef0f4;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+}
+.report-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  border-color: #06b6d4;
+}
+.report-item .date {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.report-item .date-weekday {
+  font-size: 13px;
+  color: #6c757d;
+  margin-left: 8px;
+  font-weight: 400;
+}
+.report-item .meta {
+  text-align: right;
+}
+.report-item .match-count {
+  font-size: 13px;
+  color: #6c757d;
+}
+.report-item .arrow {
+  font-size: 20px;
+  color: #06b6d4;
+  margin-left: 12px;
+}
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6c757d;
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state p { font-size: 15px; }
+.auto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(6,182,212,0.1);
+  color: #06b6d4;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+</style>
+</head>
+<body>
+<div class="page-container">
+  <a class="back-link" href="../index.html">← 返回投注工具</a>
+  <h1>AI 足球预测报告 <span class="auto-badge">每日自动更新</span></h1>
+  <p class="subtitle">基于盘口赔率、历史交锋、近期状态、伤停情报等多维度深度分析</p>
+
+  <ul class="report-list" id="reportList"></ul>
+</div>
+
+<script>
+(function() {
+    var reports = [
+    { date: '2026-08-21', weekday: '周四', matches: 11, leagues: '日职 x2 / 沙职 x2 / 芬超 x1 / 瑞超 x1 / 法乙 x1 / 荷乙 x1 / 法甲 x1 / 英超 x1 / 西甲 x1' },
+    { date: '2026-08-20', weekday: '周四', matches: 9, leagues: '沙职 x1 / 西甲 x1 / 解放者杯 x1 / 欧罗巴 x6' },
+    { date: '2026-08-19', weekday: '周三', matches: 8, leagues: '韩国杯 x1 / 西甲 x1 / 解放者杯 x1 / 美职 x2 / 欧冠 x3' },
+    { date: '2026-08-18', weekday: '周二', matches: 4, leagues: '解放者杯 x1 / 欧冠 x3' },
+    { date: '2026-08-17', weekday: '周一', matches: 6, leagues: '芬超 x1 / 瑞超 x1 / 英冠 x1 / 西甲 x1 / 葡超 x1 / 巴甲 x1' },
+    { date: '2026-08-16', weekday: '周日', matches: 28, leagues: '瑞超 x5 / 挪超 x5 / 荷甲 x4 / 葡超 x4 / 韩职 x2 / 西甲 x2 / 日乙 x1 / 社区盾杯 x1 / 芬超 x1 / 英冠 x1 / 巴甲 x1 / 美职 x1' },
+    { date: '2026-08-15', weekday: '周六', matches: 27, leagues: '荷甲 x4 / 日职 x3 / 葡超 x3 / 英冠 x3 / 沙职 x3 / 韩职 x2 / 西甲 x2 / 日乙 x1 / 德乙 x1 / 瑞超 x1 / 挪超 x1 / 芬超 x1 / 巴甲 x1 / 美职 x1' },
+    { date: '2026-08-14', weekday: '周五', matches: 17, leagues: '沙职 x3 / 法乙 x3 / 德乙 x2 / 荷乙 x2 / 荷甲 x1 / 日职 x1 / 芬超 x1 / 瑞超 x1 / 挪超 x1 / 英冠 x1 / 葡超 x1' },
+    { date: '2026-08-13', weekday: '周四', matches: 10, leagues: '欧罗巴 x6 / 沙职 x2 / 解放者杯 x2' },
+    { date: '2026-08-12', weekday: '周二', matches: 3, leagues: '欧超杯 x1 / 解放者杯 x2' },
+    { date: '2026-08-11', weekday: '周一', matches: 10, leagues: '欧冠 x8 / 亚冠精英 x1 / 解放者杯 x1' },
+    { date: '2026-08-10', weekday: '周一', matches: 3, leagues: '瑞超 x2 / 葡超 x1' },
+    { date: '2026-08-09', weekday: '周日', matches: 24, leagues: '葡超 x4 / 荷甲 x4 / 芬超 x3 / 挪超 x3 / 瑞超 x3 / 巴甲 x2 / 日职 x2 / 德乙 x2 / 日乙 x1' },
+    { date: '2026-08-08', weekday: '周六', matches: 25, leagues: '荷甲 x4 / 韩职 x3 / 英联赛杯 x3 / 葡超 x3 / 法乙 x3 / 挪超 x2 / 瑞超 x2 / 巴甲 x2 / 日职 x1 / 日乙 x1 / 芬超 x1' },
+    { date: '2026-08-07', weekday: '周五', matches: 10, leagues: '日职 x2 / 荷乙 x2 / 芬超 x1 / 挪超 x1 / 荷甲 x1 / 德乙 x1 / 英联赛杯 x1 / 葡超 x1' },
+    { date: '2026-08-06', weekday: '周四', matches: 5, leagues: '欧罗巴 x4 / 巴西杯 x1' },
+    { date: '2026-08-05', weekday: '周三', matches: 3, leagues: '欧冠 x2 / 巴西杯 x1' },
+    { date: '2026-08-04', weekday: '周二', matches: 5, leagues: '巴西杯 x1 / 欧冠 x4' },
+    { date: '2026-08-03', weekday: '周一', matches: 4, leagues: '芬超 x1 / 瑞超 x2 / 巴西杯 x1' },
+    { date: '2026-08-02', weekday: '周日', matches: 14, leagues: '韩职 x3 / 瑞超 x3 / 芬超 x2 / 挪超 x4 / 巴西杯 x2' },
+    { date: '2026-08-01', weekday: '周六', matches: 13, leagues: '芬超 x3 / 瑞超 x1 / 挪超 x2 / 美职 x6 / 巴西杯 x1' },
+    { date: '2026-07-31', weekday: '周五', matches: 3, leagues: '挪超 x2 / 美职 x1' },
+    { date: '2026-07-30', weekday: '周四', matches: 6, leagues: '欧罗巴 x5 / 巴甲 x1' },
+    { date: '2026-07-29', weekday: '周三', matches: 6, leagues: '欧冠 x2 / 巴甲 x4' },
+    { date: '2026-07-28', weekday: '周二', matches: 2, leagues: '欧冠 x2' },
+    { date: '2026-07-27', weekday: '周一', matches: 2, leagues: '瑞超 / 挪超' },
+    { date: '2026-07-26', weekday: '周日', matches: 18, leagues: '韩职 x4 / 瑞超 x4 / 芬超 x3 / 挪超 x5 / 巴甲 x2' },
+    { date: '2026-07-25', weekday: '周六', matches: 2, leagues: '韩职 x2' },
+    { date: '2026-07-24', weekday: '周五', matches: 2, leagues: '芬超 / 瑞超' },
+    { date: '2026-07-23', weekday: '周四', matches: 7, leagues: '巴甲 x2 / 欧罗巴 x5' },
+    { date: '2026-07-22', weekday: '周三', matches: 10, leagues: '韩职 x3 / 挪超 x2 / 美职 x2 / 巴甲 x2 / 欧冠 x1' },
+    { date: '2026-07-21', weekday: '周二', matches: 7, leagues: '韩职 x3 / 巴甲 / 欧冠 x3' }
+  ];
+
+  var list = document.getElementById('reportList');
+  if (reports.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>暂无报告，每日 16:00 自动生成</p></div>';
+    return;
+  }
+
+  reports.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+  reports.forEach(function(r) {
+    var li = document.createElement('li');
+    li.innerHTML =
+      '<a class="report-item" href="' + r.date + '/index.html">' +
+        '<div>' +
+          '<span class="date">' + r.date + '</span>' +
+          '<span class="date-weekday">' + r.weekday + '</span>' +
+        '</div>' +
+        '<div class="meta">' +
+          '<div class="match-count">' + r.matches + ' 场比赛 · ' + r.leagues + '</div>' +
+          '<span class="arrow">→</span>' +
+        '</div>' +
+      '</a>';
+    list.appendChild(li);
+  });
+})();
+</script>
+</body>
+</html>
