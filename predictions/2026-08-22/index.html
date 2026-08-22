@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年8月22日 竞彩足球28场比赛深度分析报告</title>
+<style>
+:root { --bg:#f0f2f5; --bg2:#fff; --ink:#1a1a2e; --muted:#6c757d; --rule:#dee2e6; --accent:#e63946; --accent2:#2a9d8f; --accent3:#f4a261; --win:#2a9d8f; --draw:#f4a261; --loss:#e63946; --home:#457b9d; --away:#e76f51; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;min-height:100vh}
+.container{max-width:1080px;margin:0 auto;padding:0 1.5rem}
+.hero{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:#fff;padding:3rem 0 2.5rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle at 20% 50%,rgba(230,57,70,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 50%,rgba(42,157,143,0.15) 0%,transparent 50%)}
+.hero .container{position:relative;z-index:1}
+.hero h1{font-weight:700;font-size:2.2rem;letter-spacing:-0.02em;margin-bottom:0.5rem}
+.hero .subtitle{font-size:1.05rem;color:rgba(255,255,255,0.7);margin-bottom:0.25rem}
+.hero .disclaimer{font-size:0.8rem;color:rgba(255,255,255,0.45);margin-top:1rem;padding:0.5rem 1rem;border:1px solid rgba(255,255,255,0.15);border-radius:6px;display:inline-block}
+h2{font-weight:700;font-size:1.5rem;margin:2.5rem 0 1.25rem;padding-bottom:0.5rem;border-bottom:3px solid var(--accent);display:inline-block}
+h3{font-weight:700;font-size:1.15rem;margin:1.5rem 0 0.75rem;color:var(--ink)}
+h4{font-weight:600;font-size:1rem;margin:1rem 0 0.5rem;color:var(--ink)}
+.card{background:var(--bg2);border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);padding:1.5rem;margin-bottom:1.5rem}
+.card-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--rule)}
+.match-num{background:var(--accent);color:#fff;padding:0.25rem 0.6rem;border-radius:4px;font-size:0.85rem;font-weight:700}
+.match-league{color:var(--muted);font-size:0.9rem}
+.match-time{margin-left:auto;color:var(--muted);font-size:0.85rem}
+.match-teams{display:flex;align-items:center;justify-content:center;gap:1rem;font-size:1.4rem;font-weight:700;margin:1rem 0;text-align:center}
+.match-teams .home{color:var(--home)}
+.match-teams .away{color:var(--away)}
+.match-teams .vs{color:var(--muted);font-size:1rem}
+.odds-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0.6rem;margin:1rem 0;padding:1rem;background:#f8f9fa;border-radius:8px}
+.odd-box{text-align:center;padding:0.5rem;background:#fff;border-radius:6px;border:1px solid var(--rule)}
+.odd-label{font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem}
+.odd-value{font-size:1rem;font-weight:700;color:var(--ink)}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin:1rem 0}
+.insight-item{padding:0.75rem;background:#f8f9fa;border-radius:6px}
+.insight-label{font-size:0.75rem;color:var(--muted);margin-bottom:0.25rem}
+.insight-value{font-size:0.85rem;color:var(--ink);font-weight:500}
+.form-dot{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;font-size:0.7rem;font-weight:700;color:#fff;margin-right:3px}
+.form-dot.win{background:var(--win)}
+.form-dot.draw{background:var(--draw)}
+.form-dot.loss{background:var(--loss)}
+.kelly-box{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:1rem;margin:1rem 0}
+.kelly-title{font-weight:700;color:#f57f17;margin-bottom:0.5rem}
+.prediction{background:linear-gradient(135deg,#e3f2fd 0%,#f3e5f5 100%);border-radius:8px;padding:1rem;margin:1rem 0}
+.pred-title{font-weight:700;color:#1565c0;margin-bottom:0.75rem}
+.pred-row{display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+.pred-label{color:var(--muted);font-size:0.85rem}
+.pred-value{font-weight:700;color:var(--ink);font-size:0.9rem}
+.pred-value.home{color:var(--home)}
+.pred-value.away{color:var(--away)}
+.pred-value.draw{color:var(--draw)}
+.pred-score{font-weight:700;color:var(--accent);font-size:0.9rem}
+.pred-stars{color:#ffc107;font-size:1rem}
+.upset-warning{background:#ffebee;color:#c62828;padding:0.5rem 0.75rem;border-radius:4px;font-size:0.85rem;margin-top:0.5rem}
+.impact-table{margin-top:1rem}
+.mini-table{width:100%;border-collapse:collapse;font-size:0.85rem}
+.mini-table th,.mini-table td{padding:0.5rem;border:1px solid var(--rule);text-align:left}
+.mini-table th{background:#f8f9fa;font-weight:600}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:1rem 0}
+.summary-card{padding:1rem;background:#f8f9fa;border-radius:8px;text-align:center}
+.summary-card .num{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.summary-card .label{font-size:0.85rem;color:var(--muted);margin-top:0.25rem}
+.warning-box{background:#fff3e0;border:1px solid #ffcc80;border-radius:8px;padding:1rem;margin:1rem 0}
+.warning-title{color:#e65100;font-weight:700;margin-bottom:0.5rem}
+.table-container{overflow-x:auto;margin:1rem 0}
+table{width:100%;border-collapse:collapse;font-size:0.9rem;background:var(--bg2);border-radius:8px;overflow:hidden}
+th,td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--rule);text-align:center}
+th{background:#f8f9fa;font-weight:600;color:var(--ink)}
+tr:hover{background:#f8f9fa}
+.num{font-weight:700;color:var(--accent)}
+.league{font-size:0.85rem;color:var(--muted)}
+.home{color:var(--home);font-weight:600}
+.away{color:var(--away);font-weight:600}
+.vs{color:var(--muted);font-size:0.8rem}
+.odd-win{color:var(--win);font-weight:700}
+.odd-draw{color:var(--draw);font-weight:700}
+.odd-loss{color:var(--loss);font-weight:700}
+.trend{font-size:0.8rem;padding:0.2rem 0.4rem;border-radius:4px;font-weight:600}
+.trend.home{background:#e8f5e9;color:#2e7d32}
+.trend.draw{background:#fff8e1;color:#f57f17}
+.trend.away{background:#ffebee;color:#c62828}
+footer{background:var(--ink);color:rgba(255,255,255,0.6);padding:2rem 0;text-align:center;font-size:0.85rem}
+footer a{color:rgba(255,255,255,0.8)}
+.hit-rate-box{background:#f8f9fa;border-radius:8px;padding:1rem;margin:1rem 0}
+.hit-bar{height:20px;background:#e0e0e0;border-radius:10px;overflow:hidden;margin:0.5rem 0}
+.hit-fill{height:100%;border-radius:10px}
+.hit-fill.green{background:#4caf50}
+.hit-fill.yellow{background:#ffc107}
+.hit-fill.red{background:#f44336}
+@media(max-width:768px){
+.odds-grid{grid-template-columns:repeat(3,1fr)}
+.insight-grid{grid-template-columns:1fr 1fr}
+.match-teams{font-size:1.1rem}
+.summary-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+.insight-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+<div class="container">
+<h1>2026-08-22 竞彩足球深度分析报告</h1>
+<p class="subtitle">周六 · 共 28 场比赛 · 涵盖 13 个联赛</p>
+<p class="subtitle">英超 x5 / 意甲 x4 / 西甲 x3 / 法甲 x3 / 日职 x2 / 日乙 x2 / 韩职 x2 / 英冠 x2 / 瑞超 x1 / 荷甲 x1 / 葡超 x1 / 德超杯 x1 / 美职 x1</p>
+<p class="disclaimer">免责声明：本报告由AI生成，仅供参考，不构成投注建议。请理性购彩，量力而行。</p>
+</div>
+</div>
+<div class="container">
+
+<h2>一、28场比赛总览</h2>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th>
+<th>主胜</th><th>平局</th><th>客胜</th><th>让球</th><th>市场倾向</th>
+</tr>
+</thead>
+<tbody>
+
+<tr>
+<td class="num">周六001</td>
+<td class="league">日职</td>
+<td>18:00</td>
+<td class="home">鹿岛鹿角</td>
+<td class="vs">VS</td>
+<td class="away">福冈黄蜂</td>
+<td><span class="odd-win">1.61</span></td>
+<td><span class="odd-draw">3.26</span></td>
+<td><span class="odd-loss">4.95</span></td>
+<td>-1 (3.2/2.02)</td>
+<td><span class="trend home">主胜 55%</span></td>
+</tr>
+<tr>
+<td class="num">周六002</td>
+<td class="league">日乙</td>
+<td>18:00</td>
+<td class="home">秋田闪电</td>
+<td class="vs">VS</td>
+<td class="away">甲府风林</td>
+<td><span class="odd-win">2.16</span></td>
+<td><span class="odd-draw">2.85</span></td>
+<td><span class="odd-loss">3.17</span></td>
+<td>-1 (4.95/1.53)</td>
+<td><span class="trend home">主胜 41%</span></td>
+</tr>
+<tr>
+<td class="num">周六003</td>
+<td class="league">日职</td>
+<td>18:00</td>
+<td class="home">大阪樱花</td>
+<td class="vs">VS</td>
+<td class="away">清水鼓动</td>
+<td><span class="odd-win">1.99</span></td>
+<td><span class="odd-draw">3.32</span></td>
+<td><span class="odd-loss">3.07</span></td>
+<td>-1 (4.2/1.61)</td>
+<td><span class="trend home">主胜 44%</span></td>
+</tr>
+<tr>
+<td class="num">周六004</td>
+<td class="league">日乙</td>
+<td>18:00</td>
+<td class="home">磐田喜悦</td>
+<td class="vs">VS</td>
+<td class="away">德岛漩涡</td>
+<td><span class="odd-win">2.27</span></td>
+<td><span class="odd-draw">2.9</span></td>
+<td><span class="odd-loss">2.91</span></td>
+<td>-1 (5.31/1.49)</td>
+<td><span class="trend home">主胜 39%</span></td>
+</tr>
+<tr>
+<td class="num">周六005</td>
+<td class="league">韩职</td>
+<td>18:00</td>
+<td class="home">全北现代</td>
+<td class="vs">VS</td>
+<td class="away">蔚山现代</td>
+<td><span class="odd-win">1.94</span></td>
+<td><span class="odd-draw">3.37</span></td>
+<td><span class="odd-loss">3.15</span></td>
+<td>-1 (3.78/1.68)</td>
+<td><span class="trend home">主胜 46%</span></td>
+</tr>
+<tr>
+<td class="num">周六006</td>
+<td class="league">韩职</td>
+<td>18:00</td>
+<td class="home">安养FC</td>
+<td class="vs">VS</td>
+<td class="away">首尔FC</td>
+<td><span class="odd-win">3.85</span></td>
+<td><span class="odd-draw">3.35</span></td>
+<td><span class="odd-loss">1.75</span></td>
+<td>+1 (1.85/3.32)</td>
+<td><span class="trend away">客胜 51%</span></td>
+</tr>
+<tr>
+<td class="num">周六007</td>
+<td class="league">英超</td>
+<td>18:00</td>
+<td class="home">赫尔城</td>
+<td class="vs">VS</td>
+<td class="away">曼联</td>
+<td><span class="odd-win">9.2</span></td>
+<td><span class="odd-draw">5.15</span></td>
+<td><span class="odd-loss">1.21</span></td>
+<td>+1 (3.4/1.74)</td>
+<td><span class="trend away">客胜 73%</span></td>
+</tr>
+<tr>
+<td class="num">周六008</td>
+<td class="league">英冠</td>
+<td>18:00</td>
+<td class="home">米尔沃尔</td>
+<td class="vs">VS</td>
+<td class="away">诺维奇</td>
+<td><span class="odd-win">2.29</span></td>
+<td><span class="odd-draw">3.18</span></td>
+<td><span class="odd-loss">2.65</span></td>
+<td>-1 (4.95/1.47)</td>
+<td><span class="trend home">主胜 39%</span></td>
+</tr>
+<tr>
+<td class="num">周六009</td>
+<td class="league">瑞超</td>
+<td>18:00</td>
+<td class="home">厄尔格里特</td>
+<td class="vs">VS</td>
+<td class="away">哈尔姆斯</td>
+<td><span class="odd-win">1.83</span></td>
+<td><span class="odd-draw">3.52</span></td>
+<td><span class="odd-loss">3.35</span></td>
+<td>-1 (3.55/1.75)</td>
+<td><span class="trend home">主胜 48%</span></td>
+</tr>
+<tr>
+<td class="num">周六010</td>
+<td class="league">英超</td>
+<td>18:00</td>
+<td class="home">埃弗顿</td>
+<td class="vs">VS</td>
+<td class="away">水晶宫</td>
+<td><span class="odd-win">2.06</span></td>
+<td><span class="odd-draw">3.1</span></td>
+<td><span class="odd-loss">3.12</span></td>
+<td>-1 (4.5/1.58)</td>
+<td><span class="trend home">主胜 43%</span></td>
+</tr>
+<tr>
+<td class="num">周六011</td>
+<td class="league">英超</td>
+<td>18:00</td>
+<td class="home">诺丁汉</td>
+<td class="vs">VS</td>
+<td class="away">利兹联</td>
+<td><span class="odd-win">2.09</span></td>
+<td><span class="odd-draw">3.15</span></td>
+<td><span class="odd-loss">3</span></td>
+<td>-1 (4.6/1.56)</td>
+<td><span class="trend home">主胜 42%</span></td>
+</tr>
+<tr>
+<td class="num">周六012</td>
+<td class="league">英超</td>
+<td>18:00</td>
+<td class="home">伊普斯</td>
+<td class="vs">VS</td>
+<td class="away">桑德兰</td>
+<td><span class="odd-win">2.33</span></td>
+<td><span class="odd-draw">3.05</span></td>
+<td><span class="odd-loss">2.7</span></td>
+<td>-1 (5.4/1.45)</td>
+<td><span class="trend home">主胜 38%</span></td>
+</tr>
+<tr>
+<td class="num">周六013</td>
+<td class="league">英冠</td>
+<td>18:00</td>
+<td class="home">斯旺西</td>
+<td class="vs">VS</td>
+<td class="away">谢菲联</td>
+<td><span class="odd-win">2.4</span></td>
+<td><span class="odd-draw">3.12</span></td>
+<td><span class="odd-loss">2.55</span></td>
+<td>-1 (5.4/1.43)</td>
+<td><span class="trend home">主胜 37%</span></td>
+</tr>
+<tr>
+<td class="num">周六014</td>
+<td class="league">荷甲</td>
+<td>18:00</td>
+<td class="home">福图纳</td>
+<td class="vs">VS</td>
+<td class="away">阿尔克马</td>
+<td><span class="odd-win">4.8</span></td>
+<td><span class="odd-draw">4.25</span></td>
+<td><span class="odd-loss">1.46</span></td>
+<td>+1 (2.35/2.33)</td>
+<td><span class="trend away">客胜 61%</span></td>
+</tr>
+<tr>
+<td class="num">周六015</td>
+<td class="league">葡超</td>
+<td>18:00</td>
+<td class="home">马里迪莫</td>
+<td class="vs">VS</td>
+<td class="away">维塞乌</td>
+<td><span class="odd-win">1.83</span></td>
+<td><span class="odd-draw">3.16</span></td>
+<td><span class="odd-loss">3.75</span></td>
+<td>-1 (3.8/1.75)</td>
+<td><span class="trend home">主胜 48%</span></td>
+</tr>
+<tr>
+<td class="num">周六016</td>
+<td class="league">西甲</td>
+<td>18:00</td>
+<td class="home">毕尔巴鄂</td>
+<td class="vs">VS</td>
+<td class="away">塞维利亚</td>
+<td><span class="odd-win">1.6</span></td>
+<td><span class="odd-draw">3.2</span></td>
+<td><span class="odd-loss">5.25</span></td>
+<td>-1 (3.15/2.03)</td>
+<td><span class="trend home">主胜 55%</span></td>
+</tr>
+<tr>
+<td class="num">周六017</td>
+<td class="league">法甲</td>
+<td>18:00</td>
+<td class="home">朗斯</td>
+<td class="vs">VS</td>
+<td class="away">欧塞尔</td>
+<td><span class="odd-win">1.33</span></td>
+<td><span class="odd-draw">4.45</span></td>
+<td><span class="odd-loss">6.55</span></td>
+<td>-1 (2.1/2.72)</td>
+<td><span class="trend home">主胜 67%</span></td>
+</tr>
+<tr>
+<td class="num">周六018</td>
+<td class="league">英超</td>
+<td>18:00</td>
+<td class="home">布伦特</td>
+<td class="vs">VS</td>
+<td class="away">热刺</td>
+<td><span class="odd-win">2.02</span></td>
+<td><span class="odd-draw">3.45</span></td>
+<td><span class="odd-loss">2.9</span></td>
+<td>-1 (4.2/1.59)</td>
+<td><span class="trend home">主胜 44%</span></td>
+</tr>
+<tr>
+<td class="num">周六019</td>
+<td class="league">意甲</td>
+<td>18:00</td>
+<td class="home">乌迪内斯</td>
+<td class="vs">VS</td>
+<td class="away">科莫</td>
+<td><span class="odd-win">4.65</span></td>
+<td><span class="odd-draw">3.45</span></td>
+<td><span class="odd-loss">1.6</span></td>
+<td>+1 (2.01/3.1)</td>
+<td><span class="trend away">客胜 55%</span></td>
+</tr>
+<tr>
+<td class="num">周六020</td>
+<td class="league">意甲</td>
+<td>18:00</td>
+<td class="home">国际米兰</td>
+<td class="vs">VS</td>
+<td class="away">蒙扎</td>
+<td><span class="odd-win"></span></td>
+<td><span class="odd-draw"></span></td>
+<td><span class="odd-loss"></span></td>
+<td>-2 (2.38/2.21)</td>
+<td><span class="trend home">主胜 43%</span></td>
+</tr>
+<tr>
+<td class="num">周六021</td>
+<td class="league">西甲</td>
+<td>18:00</td>
+<td class="home">巴伦西亚</td>
+<td class="vs">VS</td>
+<td class="away">塞尔塔</td>
+<td><span class="odd-win">2.35</span></td>
+<td><span class="odd-draw">2.95</span></td>
+<td><span class="odd-loss">2.75</span></td>
+<td>-1 (5.5/1.45)</td>
+<td><span class="trend home">主胜 38%</span></td>
+</tr>
+<tr>
+<td class="num">周六022</td>
+<td class="league">德超杯</td>
+<td>18:00</td>
+<td class="home">多特蒙德</td>
+<td class="vs">VS</td>
+<td class="away">拜仁</td>
+<td><span class="odd-win">4.13</span></td>
+<td><span class="odd-draw">4.28</span></td>
+<td><span class="odd-loss">1.53</span></td>
+<td>+1 (2.19/2.46)</td>
+<td><span class="trend away">客胜 58%</span></td>
+</tr>
+<tr>
+<td class="num">周六023</td>
+<td class="league">意甲</td>
+<td>18:00</td>
+<td class="home">热那亚</td>
+<td class="vs">VS</td>
+<td class="away">那不勒斯</td>
+<td><span class="odd-win">4.3</span></td>
+<td><span class="odd-draw">3.15</span></td>
+<td><span class="odd-loss">1.73</span></td>
+<td>+1 (1.87/3.45)</td>
+<td><span class="trend away">客胜 51%</span></td>
+</tr>
+<tr>
+<td class="num">周六024</td>
+<td class="league">意甲</td>
+<td>18:00</td>
+<td class="home">帕尔马</td>
+<td class="vs">VS</td>
+<td class="away">卡利亚里</td>
+<td><span class="odd-win">2.28</span></td>
+<td><span class="odd-draw">2.8</span></td>
+<td><span class="odd-loss">3</span></td>
+<td>-1 (5.7/1.47)</td>
+<td><span class="trend home">主胜 39%</span></td>
+</tr>
+<tr>
+<td class="num">周六025</td>
+<td class="league">法甲</td>
+<td>18:00</td>
+<td class="home">尼斯</td>
+<td class="vs">VS</td>
+<td class="away">里昂</td>
+<td><span class="odd-win">1.94</span></td>
+<td><span class="odd-draw">3.25</span></td>
+<td><span class="odd-loss">3.27</span></td>
+<td>-1 (3.95/1.67)</td>
+<td><span class="trend home">主胜 46%</span></td>
+</tr>
+<tr>
+<td class="num">周六026</td>
+<td class="league">法甲</td>
+<td>18:00</td>
+<td class="home">图卢兹</td>
+<td class="vs">VS</td>
+<td class="away">里昂</td>
+<td><span class="odd-win">2.23</span></td>
+<td><span class="odd-draw">3.23</span></td>
+<td><span class="odd-loss">2.69</span></td>
+<td>+1 (1.35/6.1)</td>
+<td><span class="trend home">主胜 40%</span></td>
+</tr>
+<tr>
+<td class="num">周六027</td>
+<td class="league">西甲</td>
+<td>18:00</td>
+<td class="home">西班牙人</td>
+<td class="vs">VS</td>
+<td class="away">皇马</td>
+<td><span class="odd-win">6.8</span></td>
+<td><span class="odd-draw">4.45</span></td>
+<td><span class="odd-loss">1.32</span></td>
+<td>+1 (2.83/2.03)</td>
+<td><span class="trend away">客胜 67%</span></td>
+</tr>
+<tr>
+<td class="num">周六028</td>
+<td class="league">美职</td>
+<td>18:00</td>
+<td class="home">温哥华</td>
+<td class="vs">VS</td>
+<td class="away">达拉斯</td>
+<td><span class="odd-win">1.39</span></td>
+<td><span class="odd-draw">4.35</span></td>
+<td><span class="odd-loss">5.55</span></td>
+<td>-1 (2.16/2.55)</td>
+<td><span class="trend home">主胜 64%</span></td>
+</tr>
+</tbody></table></div>
+<h2>二、市场信心指数对比</h2>
+<div class="card">
+<div id="confidenceChart" style="width:100%;height:500px;"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+var chart = echarts.init(document.getElementById('confidenceChart'));
+var option = {
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { data: ['主胜概率', '平局概率', '客胜概率'] },
+  grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
+  xAxis: { type: 'category', data: ["鹿岛鹿角\nvs\n福冈黄蜂", "秋田闪电\nvs\n甲府风林", "大阪樱花\nvs\n清水鼓动", "磐田喜悦\nvs\n德岛漩涡", "全北现代\nvs\n蔚山现代", "安养FC\nvs\n首尔FC", "赫尔城\nvs\n曼联", "米尔沃尔\nvs\n诺维奇", "厄尔格里特\nvs\n哈尔姆斯", "埃弗顿\nvs\n水晶宫", "诺丁汉\nvs\n利兹联", "伊普斯\nvs\n桑德兰", "斯旺西\nvs\n谢菲联", "福图纳\nvs\n阿尔克马", "马里迪莫\nvs\n维塞乌", "毕尔巴鄂\nvs\n塞维利亚", "朗斯\nvs\n欧塞尔", "布伦特\nvs\n热刺", "乌迪内斯\nvs\n科莫", "国际米兰\nvs\n蒙扎", "巴伦西亚\nvs\n塞尔塔", "多特蒙德\nvs\n拜仁", "热那亚\nvs\n那不勒斯", "帕尔马\nvs\n卡利亚里", "尼斯\nvs\n里昂", "图卢兹\nvs\n里昂", "西班牙人\nvs\n皇马", "温哥华\nvs\n达拉斯"], axisLabel: { rotate: 45, fontSize: 10 } },
+  yAxis: { type: 'value', max: 100, axisLabel: { formatter: '{value}%' } },
+  series: [
+    { name: '主胜概率', type: 'bar', stack: 'total', data: [55.0, 41.0, 44.5, 39.0, 45.6, 23.0, 9.6, 38.7, 48.4, 43.0, 42.4, 38.1, 36.9, 18.5, 48.4, 55.4, 66.6, 43.8, 19.0, 33.3, 37.7, 21.4, 20.6, 38.8, 45.7, 39.7, 13.0, 63.7], itemStyle: { color: '#457b9d' } },
+    { name: '平局概率', type: 'bar', stack: 'total', data: [27.1, 31.1, 26.7, 30.5, 26.3, 26.4, 17.2, 27.9, 25.2, 28.6, 28.1, 29.1, 28.4, 20.8, 28.0, 27.7, 19.9, 25.7, 25.7, 33.3, 30.0, 20.7, 28.1, 31.6, 27.3, 27.4, 19.9, 20.4], itemStyle: { color: '#f4a261' } },
+    { name: '客胜概率', type: 'bar', stack: 'total', data: [17.9, 27.9, 28.8, 30.4, 28.1, 50.6, 73.2, 33.4, 26.4, 28.4, 29.5, 32.9, 34.7, 60.7, 23.6, 16.9, 13.5, 30.5, 55.3, 33.3, 32.2, 57.9, 51.2, 29.5, 27.1, 32.9, 67.1, 16.0], itemStyle: { color: '#e76f51' } }
+  ]
+};
+chart.setOption(option);
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+
+<h2>三、逐场深度分析</h2>
+<section class="card" id="match-周六001">
+<div class="card-header">
+<span class="match-num">周六001</span>
+<span class="match-league">日职</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">鹿岛鹿角</span>
+<span class="vs">VS</span>
+<span class="away">福冈黄蜂</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.61</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.26</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">4.95</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.2</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.02</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">鹿岛近5次主场对福冈4胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">扬·马特乌斯、樋口雄太、安西幸辉伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">福岛和毅膝伤</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">鹿岛主场强势但伤病较多</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.43)</p><p>⚠️ 客胜凯利指数偏高(4.41)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=29.1%), 2-0 (P=26.0%), 0-0 (P=16.3%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 伤病影响，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六002">
+<div class="card-header">
+<span class="match-num">周六002</span>
+<span class="match-league">日乙</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">秋田闪电</span>
+<span class="vs">VS</span>
+<span class="away">甲府风林</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.16</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">2.85</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.17</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.95</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.53</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">双方近4次交锋2胜2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无重大伤停</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无重大伤停</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">日乙中游对决，主场略占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.92)</p><p>⚠️ 客胜凯利指数偏高(2.82)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.3%), 0-0 (P=20.5%), 1-1 (P=19.4%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六003">
+<div class="card-header">
+<span class="match-num">周六003</span>
+<span class="match-league">日职</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">大阪樱花</span>
+<span class="vs">VS</span>
+<span class="away">清水鼓动</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.99</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.32</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.07</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.2</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.61</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">樱花主场对清水3胜2平1负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">柴山昌也、阪田澪伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">河井阳介、井上健太、高桥祐治伤缺</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">双方均伤兵满营</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.77)</p><p>⚠️ 客胜凯利指数偏高(2.73)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.2%), 1-1 (P=19.9%), 2-0 (P=19.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六004">
+<div class="card-header">
+<span class="match-num">周六004</span>
+<span class="match-league">日乙</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">磐田喜悦</span>
+<span class="vs">VS</span>
+<span class="away">德岛漩涡</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.27</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">2.9</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.91</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">5.31</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.49</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">近6次交锋磐田2胜2平2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">日乙保级区附近对决</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.02)</p><p>⚠️ 客胜凯利指数偏高(2.59)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=26.3%), 0-0 (P=20.7%), 1-1 (P=20.3%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六005">
+<div class="card-header">
+<span class="match-num">周六005</span>
+<span class="match-league">韩职</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">全北现代</span>
+<span class="vs">VS</span>
+<span class="away">蔚山现代</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.94</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.37</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.15</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.78</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.68</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">近8次交手7场总进球≥2</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">现代德比，蔚山状态更佳</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.73)</p><p>⚠️ 客胜凯利指数偏高(2.80)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.3%), 2-0 (P=20.2%), 1-1 (P=19.5%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六006">
+<div class="card-header">
+<span class="match-num">周六006</span>
+<span class="match-league">韩职</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">安养FC</span>
+<span class="vs">VS</span>
+<span class="away">首尔FC</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">3.85</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.35</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.75</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">1.85</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">3.32</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">首尔近3次对安养2胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">首尔整体实力占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(3.43)</p><p>⚠️ 客胜凯利指数偏高(1.56)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=26.7%), 0-0 (P=20.8%), 1-1 (P=19.9%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六007">
+<div class="card-header">
+<span class="match-num">周六007</span>
+<span class="match-league">英超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">赫尔城</span>
+<span class="vs">VS</span>
+<span class="away">曼联</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">9.2</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">5.15</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.21</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.4</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.74</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">曼联近10次对赫尔城8胜2平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">升班马vs豪门，曼联实力碾压</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(8.19)</p><p>⚠️ 客胜凯利指数偏高(1.08)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=27.6%), 0-2 (P=25.7%), 0-3 (P=15.9%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六008">
+<div class="card-header">
+<span class="match-num">周六008</span>
+<span class="match-league">英冠</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">米尔沃尔</span>
+<span class="vs">VS</span>
+<span class="away">诺维奇</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.29</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.18</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.65</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.95</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.47</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">近6次交锋米尔沃尔2胜2平2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">英冠中游对决</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.04)</p><p>⚠️ 客胜凯利指数偏高(2.36)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=25.3%), 1-1 (P=21.5%), 0-0 (P=20.2%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六009">
+<div class="card-header">
+<span class="match-num">周六009</span>
+<span class="match-league">瑞超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">厄尔格里特</span>
+<span class="vs">VS</span>
+<span class="away">哈尔姆斯</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.83</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.52</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.35</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.55</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.75</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">双方近4次交锋1胜2平1负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">瑞超保级战</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.63)</p><p>⚠️ 客胜凯利指数偏高(2.98)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.6%), 2-0 (P=21.7%), 1-1 (P=18.5%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六010">
+<div class="card-header">
+<span class="match-num">周六010</span>
+<span class="match-league">英超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">埃弗顿</span>
+<span class="vs">VS</span>
+<span class="away">水晶宫</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.06</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.1</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.12</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.5</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.58</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">埃弗顿近5次主场对水晶宫3胜1平1负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">新帅首秀，水晶宫有反击能力</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.83)</p><p>⚠️ 客胜凯利指数偏高(2.78)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.4%), 1-1 (P=19.7%), 0-0 (P=19.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 新帅变数，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六011">
+<div class="card-header">
+<span class="match-num">周六011</span>
+<span class="match-league">英超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">诺丁汉</span>
+<span class="vs">VS</span>
+<span class="away">利兹联</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.09</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.15</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.6</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.56</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">诺丁汉主场14年对利兹联不败</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">森林主场魔咒vs利兹联强势状态</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.86)</p><p>⚠️ 客胜凯利指数偏高(2.67)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.0%), 1-1 (P=20.2%), 0-0 (P=19.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六012">
+<div class="card-header">
+<span class="match-num">周六012</span>
+<span class="match-league">英超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">伊普斯</span>
+<span class="vs">VS</span>
+<span class="away">桑德兰</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.33</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.05</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.7</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">5.4</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.45</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">近6次交锋伊普斯2胜2平2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">两支英超升班马/保级队对决</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.07)</p><p>⚠️ 客胜凯利指数偏高(2.40)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=25.4%), 1-1 (P=21.2%), 0-0 (P=20.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六013">
+<div class="card-header">
+<span class="match-num">周六013</span>
+<span class="match-league">英冠</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">斯旺西</span>
+<span class="vs">VS</span>
+<span class="away">谢菲联</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.4</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.12</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.55</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">5.4</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.43</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">谢菲联近3次对斯旺西2胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">英冠升级竞争者对决</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.14)</p><p>⚠️ 客胜凯利指数偏高(2.27)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=24.7%), 1-1 (P=21.8%), 0-0 (P=20.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六014">
+<div class="card-header">
+<span class="match-num">周六014</span>
+<span class="match-league">荷甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">福图纳</span>
+<span class="vs">VS</span>
+<span class="away">阿尔克马</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">4.8</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">4.25</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.46</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.35</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.33</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">阿尔克马近5次对福图纳4胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">阿尔克马实力明显占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(4.27)</p><p>⚠️ 客胜凯利指数偏高(1.30)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=28.7%), 0-2 (P=22.1%), 0-0 (P=18.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六015">
+<div class="card-header">
+<span class="match-num">周六015</span>
+<span class="match-league">葡超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">马里迪莫</span>
+<span class="vs">VS</span>
+<span class="away">维塞乌</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.83</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.16</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.75</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.8</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.75</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">双方近4次交锋2胜2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">葡超下游对决</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.63)</p><p>⚠️ 客胜凯利指数偏高(3.34)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=28.6%), 2-0 (P=22.5%), 0-0 (P=18.2%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六016">
+<div class="card-header">
+<span class="match-num">周六016</span>
+<span class="match-league">西甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">毕尔巴鄂</span>
+<span class="vs">VS</span>
+<span class="away">塞维利亚</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.6</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.2</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">5.25</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.15</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.03</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">毕尔巴鄂主场对塞维利亚近5次4胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">埃吉卢斯、维维安伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">萨拉斯停赛</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">毕尔巴鄂主场龙优势明显</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.42)</p><p>⚠️ 客胜凯利指数偏高(4.67)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=29.2%), 2-0 (P=26.3%), 0-0 (P=16.3%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六017">
+<div class="card-header">
+<span class="match-num">周六017</span>
+<span class="match-league">法甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">朗斯</span>
+<span class="vs">VS</span>
+<span class="away">欧塞尔</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.33</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">4.45</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">6.55</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.1</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.72</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">朗斯近3次对欧塞尔2胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">朗斯主场强势</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.18)</p><p>⚠️ 客胜凯利指数偏高(5.83)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">2-0 (P=28.9%), 1-0 (P=26.7%), 3-0 (P=20.8%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六018">
+<div class="card-header">
+<span class="match-num">周六018</span>
+<span class="match-league">英超</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">布伦特</span>
+<span class="vs">VS</span>
+<span class="away">热刺</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.02</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.45</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.9</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">4.2</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.59</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">布伦特近2次主场对热刺1胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">多名主力伤缺，新援磨合中</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">热刺伤病严重，布伦特主场有望拿分</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.80)</p><p>⚠️ 客胜凯利指数偏高(2.58)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=26.7%), 1-1 (P=20.7%), 2-0 (P=19.0%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 伤病影响，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六019">
+<div class="card-header">
+<span class="match-num">周六019</span>
+<span class="match-league">意甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">乌迪内斯</span>
+<span class="vs">VS</span>
+<span class="away">科莫</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">4.65</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.45</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.6</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.01</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">3.1</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">乌迪内斯近3次对科莫2胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">乌迪内斯主场占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(4.14)</p><p>⚠️ 客胜凯利指数偏高(1.42)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=28.8%), 0-0 (P=20.5%), 0-2 (P=20.3%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六020">
+<div class="card-header">
+<span class="match-num">周六020</span>
+<span class="match-league">意甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">国际米兰</span>
+<span class="vs">VS</span>
+<span class="away">蒙扎</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value"></div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value"></div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value"></div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-2</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.38</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.21</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">国米对蒙扎4场不败(3胜1平)</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">姆希塔良停赛</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">佩西纳、莫塔停赛</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">卫冕冠军对阵升班马，实力差距大</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 凯利指数计算失败</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value draw">平局</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.0%), 1-1 (P=20.3%), 2-0 (P=19.4%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">平平</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六021">
+<div class="card-header">
+<span class="match-num">周六021</span>
+<span class="match-league">西甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">巴伦西亚</span>
+<span class="vs">VS</span>
+<span class="away">塞尔塔</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.35</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">2.95</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.75</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">5.5</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.45</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">塞尔塔上赛季双杀巴伦西亚</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">科佩特、洛佩兹伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">塞尔塔状态更佳，历史交锋占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.09)</p><p>⚠️ 客胜凯利指数偏高(2.45)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=25.5%), 1-1 (P=20.9%), 0-0 (P=20.9%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六022">
+<div class="card-header">
+<span class="match-num">周六022</span>
+<span class="match-league">德超杯</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">多特蒙德</span>
+<span class="vs">VS</span>
+<span class="away">拜仁</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">4.13</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">4.28</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.53</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.19</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.46</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">多特近3次主场对拜仁2胜1负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">攻击线伤病较多</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">德超杯决赛，多特主场优势，拜仁伤病困扰</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(3.68)</p><p>⚠️ 客胜凯利指数偏高(1.36)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=27.6%), 0-2 (P=20.3%), 1-1 (P=19.2%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六023">
+<div class="card-header">
+<span class="match-num">周六023</span>
+<span class="match-league">意甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">热那亚</span>
+<span class="vs">VS</span>
+<span class="away">那不勒斯</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">4.3</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.15</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.73</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">1.87</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">3.45</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">那不勒斯近5次对热那亚4胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">梅希特里、特拉奥雷伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">马里亚努奇、别克马、布翁乔尔诺、马佐基伤缺</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">那不勒斯实力占优但伤病不少</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(3.83)</p><p>⚠️ 客胜凯利指数偏高(1.54)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=27.8%), 0-0 (P=21.3%), 1-1 (P=18.6%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 伤病影响，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六024">
+<div class="card-header">
+<span class="match-num">周六024</span>
+<span class="match-league">意甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">帕尔马</span>
+<span class="vs">VS</span>
+<span class="away">卡利亚里</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.28</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">2.8</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">5.7</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.47</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">双方近6次交锋2胜2平2负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">意甲中下游保级战</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(2.03)</p><p>⚠️ 客胜凯利指数偏高(2.67)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=26.5%), 0-0 (P=21.0%), 1-1 (P=19.9%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六025">
+<div class="card-header">
+<span class="match-num">周六025</span>
+<span class="match-league">法甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">尼斯</span>
+<span class="vs">VS</span>
+<span class="away">里昂</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.94</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.25</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">3.27</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">3.95</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">1.67</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">里昂近5次对尼斯3胜1平1负</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">里昂历史交锋占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.73)</p><p>⚠️ 客胜凯利指数偏高(2.91)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=27.7%), 2-0 (P=20.5%), 1-1 (P=19.0%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★☆☆</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六026">
+<div class="card-header">
+<span class="match-num">周六026</span>
+<span class="match-league">法甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">图卢兹</span>
+<span class="vs">VS</span>
+<span class="away">里昂</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">2.23</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">3.23</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">2.69</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">1.35</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">6.1</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">里昂近4次对图卢兹3胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">两名主力停赛</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">欧冠附加赛分心</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">里昂分心欧冠，图卢兹主场有机会</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.98)</p><p>⚠️ 客胜凯利指数偏高(2.39)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">1-0 (P=25.6%), 1-1 (P=21.4%), 0-0 (P=19.9%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">2球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★☆☆☆☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 欧战分心，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六027">
+<div class="card-header">
+<span class="match-num">周六027</span>
+<span class="match-league">西甲</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">西班牙人</span>
+<span class="vs">VS</span>
+<span class="away">皇马</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">6.8</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">4.45</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">1.32</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">+1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.83</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.03</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">皇马近10次对西班牙人8胜2平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">基克、普阿多伤缺</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">阿森西奥、米利唐、门迪、皮塔奇、楚阿梅尼伤缺</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">皇马实力碾压但伤病较多</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(6.05)</p><p>⚠️ 客胜凯利指数偏高(1.17)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value away">客胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">0-1 (P=28.5%), 0-2 (P=24.3%), 0-0 (P=16.7%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">负负</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★☆</span></div>
+<div class="upset-warning">⚠️ 冷门信号: 伤病影响，信心评级已下调</div>
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="card" id="match-周六028">
+<div class="card-header">
+<span class="match-num">周六028</span>
+<span class="match-league">美职</span>
+<span class="match-time">18:00</span>
+</div>
+<div class="match-teams">
+<span class="home">温哥华</span>
+<span class="vs">VS</span>
+<span class="away">达拉斯</span>
+</div>
+<div class="odds-grid">
+<div class="odd-box"><div class="odd-label">主胜</div><div class="odd-value">1.39</div></div>
+<div class="odd-box"><div class="odd-label">平局</div><div class="odd-value">4.35</div></div>
+<div class="odd-box"><div class="odd-label">客胜</div><div class="odd-value">5.55</div></div>
+<div class="odd-box"><div class="odd-label">让球</div><div class="odd-value">-1</div></div>
+<div class="odd-box"><div class="odd-label">让胜</div><div class="odd-value">2.16</div></div>
+<div class="odd-box"><div class="odd-label">让负</div><div class="odd-value">2.55</div></div>
+</div>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">历史交锋</div><div class="insight-value">温哥华近3次主场对达拉斯2胜1平</div></div>
+<div class="insight-item"><div class="insight-label">主队近期</div><div class="insight-value"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></div></div>
+<div class="insight-item"><div class="insight-label">客队近期</div><div class="insight-value"><span class="form-dot loss">L</span><span class="form-dot draw">D</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span></div></div>
+<div class="insight-item"><div class="insight-label">主队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">客队伤停</div><div class="insight-value">暂无</div></div>
+<div class="insight-item"><div class="insight-label">赛事备注</div><div class="insight-value">美职西部对决，温哥华主场占优</div></div>
+</div>
+<div class="kelly-box"><div class="kelly-title">凯利指数分析</div><p>⚠️ 主胜凯利指数偏高(1.24)</p><p>⚠️ 客胜凯利指数偏高(4.94)</p></div>
+<div class="prediction">
+<div class="pred-title">AI 预测分析</div>
+<div class="pred-row"><span class="pred-label">推荐方向</span><span class="pred-value home">主胜</span></div>
+<div class="pred-row"><span class="pred-label">预测比分</span><span class="pred-score">2-0 (P=28.3%), 1-0 (P=27.4%), 3-0 (P=19.5%)</span></div>
+<div class="pred-row"><span class="pred-label">总进球</span><span class="pred-value">3球概率最高</span></div>
+<div class="pred-row"><span class="pred-label">半全场</span><span class="pred-value">胜胜</span></div>
+<div class="pred-row"><span class="pred-label">信心评级</span><span class="pred-stars">★★★★★</span></div>
+
+</div>
+<div class="impact-table">
+<h4>比赛结果联赛影响</h4>
+<table class="mini-table">
+<thead><tr><th>情境</th><th>主队影响</th><th>客队影响</th></tr></thead>
+<tbody>
+<tr><td>主队胜</td><td>积分提升，排名上升</td><td>客场失利，需调整状态</td></tr>
+<tr><td>平局</td><td>主场拿1分，符合预期</td><td>客场拿1分，可接受</td></tr>
+<tr><td>主队负</td><td>主场失分，压力增大</td><td>客场抢3分，士气提升</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+<h2>四、比分预测汇总</h2>
+<div class="table-container">
+<table>
+<thead>
+<tr><th>编号</th><th>联赛</th><th>主队</th><th>客队</th><th>推荐</th><th>首选比分(概率)</th><th>信心</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>周六001</td>
+<td>日职</td>
+<td>鹿岛鹿角</td>
+<td>福冈黄蜂</td>
+<td class="home">主胜</td>
+<td>1-0 (P=29.1%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六002</td>
+<td>日乙</td>
+<td>秋田闪电</td>
+<td>甲府风林</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.3%)</td>
+<td>★★☆☆☆</td>
+</tr><tr>
+<td>周六003</td>
+<td>日职</td>
+<td>大阪樱花</td>
+<td>清水鼓动</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.2%)</td>
+<td>★★☆☆☆</td>
+</tr><tr>
+<td>周六004</td>
+<td>日乙</td>
+<td>磐田喜悦</td>
+<td>德岛漩涡</td>
+<td class="home">主胜</td>
+<td>1-0 (P=26.3%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六005</td>
+<td>韩职</td>
+<td>全北现代</td>
+<td>蔚山现代</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.3%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六006</td>
+<td>韩职</td>
+<td>安养FC</td>
+<td>首尔FC</td>
+<td class="away">客胜</td>
+<td>0-1 (P=26.7%)</td>
+<td>★★★★☆</td>
+</tr><tr>
+<td>周六007</td>
+<td>英超</td>
+<td>赫尔城</td>
+<td>曼联</td>
+<td class="away">客胜</td>
+<td>0-1 (P=27.6%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六008</td>
+<td>英冠</td>
+<td>米尔沃尔</td>
+<td>诺维奇</td>
+<td class="home">主胜</td>
+<td>1-0 (P=25.3%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六009</td>
+<td>瑞超</td>
+<td>厄尔格里特</td>
+<td>哈尔姆斯</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.6%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六010</td>
+<td>英超</td>
+<td>埃弗顿</td>
+<td>水晶宫</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.4%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六011</td>
+<td>英超</td>
+<td>诺丁汉</td>
+<td>利兹联</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.0%)</td>
+<td>★★☆☆☆</td>
+</tr><tr>
+<td>周六012</td>
+<td>英超</td>
+<td>伊普斯</td>
+<td>桑德兰</td>
+<td class="home">主胜</td>
+<td>1-0 (P=25.4%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六013</td>
+<td>英冠</td>
+<td>斯旺西</td>
+<td>谢菲联</td>
+<td class="home">主胜</td>
+<td>1-0 (P=24.7%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六014</td>
+<td>荷甲</td>
+<td>福图纳</td>
+<td>阿尔克马</td>
+<td class="away">客胜</td>
+<td>0-1 (P=28.7%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六015</td>
+<td>葡超</td>
+<td>马里迪莫</td>
+<td>维塞乌</td>
+<td class="home">主胜</td>
+<td>1-0 (P=28.6%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六016</td>
+<td>西甲</td>
+<td>毕尔巴鄂</td>
+<td>塞维利亚</td>
+<td class="home">主胜</td>
+<td>1-0 (P=29.2%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六017</td>
+<td>法甲</td>
+<td>朗斯</td>
+<td>欧塞尔</td>
+<td class="home">主胜</td>
+<td>2-0 (P=28.9%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六018</td>
+<td>英超</td>
+<td>布伦特</td>
+<td>热刺</td>
+<td class="home">主胜</td>
+<td>1-0 (P=26.7%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六019</td>
+<td>意甲</td>
+<td>乌迪内斯</td>
+<td>科莫</td>
+<td class="away">客胜</td>
+<td>0-1 (P=28.8%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六020</td>
+<td>意甲</td>
+<td>国际米兰</td>
+<td>蒙扎</td>
+<td class="draw">平局</td>
+<td>1-0 (P=27.0%)</td>
+<td>★★☆☆☆</td>
+</tr><tr>
+<td>周六021</td>
+<td>西甲</td>
+<td>巴伦西亚</td>
+<td>塞尔塔</td>
+<td class="home">主胜</td>
+<td>1-0 (P=25.5%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六022</td>
+<td>德超杯</td>
+<td>多特蒙德</td>
+<td>拜仁</td>
+<td class="away">客胜</td>
+<td>0-1 (P=27.6%)</td>
+<td>★★★★★</td>
+</tr><tr>
+<td>周六023</td>
+<td>意甲</td>
+<td>热那亚</td>
+<td>那不勒斯</td>
+<td class="away">客胜</td>
+<td>0-1 (P=27.8%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六024</td>
+<td>意甲</td>
+<td>帕尔马</td>
+<td>卡利亚里</td>
+<td class="home">主胜</td>
+<td>1-0 (P=26.5%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六025</td>
+<td>法甲</td>
+<td>尼斯</td>
+<td>里昂</td>
+<td class="home">主胜</td>
+<td>1-0 (P=27.7%)</td>
+<td>★★★☆☆</td>
+</tr><tr>
+<td>周六026</td>
+<td>法甲</td>
+<td>图卢兹</td>
+<td>里昂</td>
+<td class="home">主胜</td>
+<td>1-0 (P=25.6%)</td>
+<td>★☆☆☆☆</td>
+</tr><tr>
+<td>周六027</td>
+<td>西甲</td>
+<td>西班牙人</td>
+<td>皇马</td>
+<td class="away">客胜</td>
+<td>0-1 (P=28.5%)</td>
+<td>★★★★☆</td>
+</tr><tr>
+<td>周六028</td>
+<td>美职</td>
+<td>温哥华</td>
+<td>达拉斯</td>
+<td class="home">主胜</td>
+<td>2-0 (P=28.3%)</td>
+<td>★★★★★</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2>五、核心策略与风险提示</h2>
+<div class="summary-grid">
+<div class="summary-card"><div class="num">28</div><div class="label">总场次</div></div>
+<div class="summary-card"><div class="num">20</div><div class="label">主胜推荐</div></div>
+<div class="summary-card"><div class="num">1</div><div class="label">平局推荐</div></div>
+<div class="summary-card"><div class="num">7</div><div class="label">客胜推荐</div></div>
+<div class="summary-card"><div class="num">9</div><div class="label">高信心场次</div></div>
+<div class="summary-card"><div class="num">13</div><div class="label">涉及联赛</div></div>
+</div>
+<div class="warning-box">
+<div class="warning-title">风险提示</div>
+<ul style="margin-left:1.2rem;font-size:0.9rem">
+<li>新赛季初期球队状态不稳定，阵容磨合程度未知，预测风险较高</li>
+<li>伤病信息可能随时变化，请以赛前官方公布为准</li>
+<li>让球盘口水位变化需持续关注，临场变盘可能影响判断</li>
+<li>杯赛（德超杯）和联赛首轮偶然性较大，建议小额参与</li>
+<li>冷门信号场次已标注⚠️，信心评级已相应下调</li>
+</ul>
+</div>
+
+<h2>六、当日赛事晋级路径与联赛形势</h2>
+<h3>6.1 联赛赛事形势总览</h3>
+<div class="table-container">
+<table>
+<thead>
+<tr><th>联赛</th><th>当日场次</th><th>形势要点</th><th>关注焦点</th></tr>
+</thead>
+<tbody>
+<tr><td>英超</td><td>5场</td><td>新赛季首轮，各队抢开局</td><td>升班马赫尔城迎战曼联，布伦特vs热刺伦敦德比</td></tr>
+<tr><td>意甲</td><td>4场</td><td>国米开启卫冕之路</td><td>国米vs蒙扎强弱分明，那不勒斯客场挑战热那亚</td></tr>
+<tr><td>西甲</td><td>3场</td><td>皇马、毕尔巴鄂争开门红</td><td>西班牙人vs皇马，毕尔巴鄂主场龙优势</td></tr>
+<tr><td>法甲</td><td>3场</td><td>马赛、巴黎领跑积分榜</td><td>尼斯vs里昂强强对话，朗斯主场稳健</td></tr>
+<tr><td>日职</td><td>2场</td><td>鹿岛、樱花主场出击</td><td>鹿岛残阵能否拿下福冈</td></tr>
+<tr><td>日乙</td><td>2场</td><td>中游球队混战</td><td>磐田喜悦保级关键战</td></tr>
+<tr><td>韩职</td><td>2场</td><td>现代德比焦点战</td><td>全北vs蔚山状态对比鲜明</td></tr>
+<tr><td>德超杯</td><td>1场</td><td>赛季首个冠军争夺</td><td>多特蒙德主场对阵拜仁</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>6.2 相关联赛积分榜参考</h3>
+<div class="insight-grid">
+<div class="insight-item"><div class="insight-label">英超(首轮前)</div><div class="insight-value">曼城、阿森纳、曼联、维拉为前四热门；赫尔城、伊普斯、桑德兰为保级队</div></div>
+<div class="insight-item"><div class="insight-label">意甲(首轮前)</div><div class="insight-value">国米(卫冕冠军)、那不勒斯、尤文图斯为争冠集团；蒙扎、科莫为升班马</div></div>
+<div class="insight-item"><div class="insight-label">西甲(第2轮)</div><div class="insight-value">阿拉维斯、西班牙人暂领跑；皇马、马竞追赶；塞维利亚保级水平</div></div>
+<div class="insight-item"><div class="insight-label">法甲(第2轮)</div><div class="insight-value">马赛、巴黎圣日耳曼、朗斯领跑；里昂、雷恩、摩纳哥紧追</div></div>
+<div class="insight-item"><div class="insight-label">日职(第24轮)</div><div class="insight-value">町田泽维亚、柏太阳神、广岛三箭前三；鹿岛鹿角第4，清水鼓动第7</div></div>
+<div class="insight-item"><div class="insight-label">韩职(常规赛)</div><div class="insight-value">蔚山现代领跑，全北现代中下游；首尔FC、安养FC中游位置</div></div>
+</div>
+
+<h2>历史预测命中率统计</h2>
+<div class="card">
+<p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem">本期为首期采用优化版泊松模型+冷门检测系统，暂无历史数据。后续将追踪方向命中率和比分命中率。</p>
+<div class="hit-rate-box">
+<div style="font-weight:700;margin-bottom:0.5rem">方向命中率</div>
+<div class="hit-bar"><div class="hit-fill yellow" style="width:50%"></div></div>
+<div style="font-size:0.85rem;color:var(--muted)">待赛后统计</div>
+</div>
+<div class="hit-rate-box">
+<div style="font-weight:700;margin-bottom:0.5rem">比分命中率</div>
+<div class="hit-bar"><div class="hit-fill yellow" style="width:30%"></div></div>
+<div style="font-size:0.85rem;color:var(--muted)">待赛后统计（比分预测难度较高，历史行业平均约15-20%）</div>
+</div>
+</div>
+
+<footer>
+<div class="container">
+<h2>数据来源</h2>
+<p>P0级: UEFA官网、各联赛官网 | P1级: 7M体育网、Flashscore、Goal.com | P2级: 懂球帝、直播吧、Sportsmole</p>
+<p>报告生成时间: 2026-08-22 05:25:40 | 模型版本: Poisson-v2 + Kelly + UpsetDetection</p>
+<p style="margin-top:1rem;font-size:0.75rem;color:rgba(255,255,255,0.4)">本报告由AI自动生成，仅供参考娱乐，不构成任何投注建议。请理性购彩，量力而行。</p>
+</div>
+</footer>
+</div>
+</body>
+</html>
