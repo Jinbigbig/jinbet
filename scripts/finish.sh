@@ -56,8 +56,8 @@ with open(INDEX_FILE, 'r', encoding='utf-8') as f:
 # 构建新条目
 new_entry = f"{{ date: '{TODAY}', weekday: '{weekday}', matches: {match_count}, leagues: '{leagues_str}' }}"
 
-# 查找 reports 数组
-reports_match = re.search(r'const\s+reports\s*=\s*\[([\s\S]*?)\];', content)
+# 查找 reports 数组（兼容 const/var/let 声明，分号可选）
+reports_match = re.search(r'(?:const|var|let)\s+reports\s*=\s*\[([\s\S]*?)\]\s*;?', content)
 if reports_match:
     reports_str = reports_match.group(1)
     # 检查是否已有当天条目
