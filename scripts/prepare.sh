@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-TOKEN="${GITHUB_TOKEN:-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}"
+TOKEN="${GITHUB_TOKEN:-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}"
 REPO="Jinbigbig/jinbet"
 WORKFLOW="daily-update.yml"
 API_BASE="https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW"
