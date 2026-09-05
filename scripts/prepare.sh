@@ -2,12 +2,29 @@
 # prepare.sh - AI足球预测任务环境准备脚本
 # 包含：步骤0(触发赔率更新) + 步骤1(克隆仓库) + 步骤2(检查已有报告) + 步骤3(提取比赛和赔率数据)
 # 用法: GITHUB_TOKEN=xxx bash prepare.sh
-# 输出: /workspace/jinbet/scripts/matches_data.json (比赛+赔率数据)
+#       [可选] JINBET_WORKSPACE=/path/to/dir  指定克隆目标目录(默认 /workspace)
+#       本地模式: 若脚本本身位于已克隆的仓库内(存在 .git)，则跳过克隆直接使用该仓库
+# 输出: {仓库根}/scripts/matches_data.json (比赛+赔率数据)
 #       脚本退出码: 0=正常继续, 10=报告已存在跳过, 20=无比赛数据
 
 set -euo pipefail
 
-TOKEN="${GITHUB_TOKEN:-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}"
+# ---------- 路径解析：本地仓库优先，否则克隆到工作区 ----------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_CANDIDATE="$(dirname "$SCRIPT_DIR")"
+if [ -d "$REPO_CANDIDATE/.git" ]; then
+  REPO_ROOT="$REPO_CANDIDATE"
+  LOCAL_MODE=1
+else
+  REPO_ROOT="${JINBET_WORKSPACE:-/workspace}/jinbet"
+  LOCAL_MODE=0
+fi
+# Git Bash/MSYS 环境下把 /c/... 转成 Windows 可识别的 C:/...（供 python 读取）
+case "$REPO_ROOT" in
+  /[a-zA-Z]/*) REPO_ROOT="$(cygpath -m "$REPO_ROOT" 2>/dev/null || echo "$REPO_ROOT")" ;;
+esac
+
+TOKEN="${GITHUB_TOKEN:?必须通过环境变量 GITHUB_TOKEN 提供 GitHub Token}"
 REPO="Jinbigbig/jinbet"
 WORKFLOW="daily-update.yml"
 API_BASE="https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW"
@@ -53,14 +70,22 @@ echo "额外等待 10 秒确保远程同步..."
 sleep 10
 
 # ============================================================
-# 步骤1：克隆项目并切换到 gh-pages
+# 步骤1：克隆项目并切换到 gh-pages（本地已有仓库则跳过克隆）
 # ============================================================
 echo ""
-echo "--- 步骤1：克隆项目 ---"
-cd /workspace
-rm -rf jinbet
-git clone "$CLONE_URL"
-cd /workspace/jinbet
+echo "--- 步骤1：获取仓库 ---"
+if [ "$LOCAL_MODE" = "1" ]; then
+  echo "本地模式：检测到现有仓库 $REPO_ROOT，跳过克隆"
+  cd "$REPO_ROOT"
+  git stash list > /dev/null 2>&1 || true
+else
+  echo "容器模式：克隆到 $REPO_ROOT"
+  mkdir -p "$(dirname "$REPO_ROOT")"
+  cd "$(dirname "$REPO_ROOT")"
+  rm -rf jinbet
+  git clone "$CLONE_URL"
+  cd "$REPO_ROOT"
+fi
 git checkout gh-pages
 git pull origin gh-pages
 echo "当前分支: $(git branch --show-current)"
@@ -70,13 +95,13 @@ echo "当前分支: $(git branch --show-current)"
 # ============================================================
 echo ""
 echo "--- 步骤2：检查当日已有报告 ---"
-REPORT_PATH="/workspace/jinbet/predictions/${TODAY}/index.html"
+REPORT_PATH="$REPO_ROOT/predictions/${TODAY}/index.html"
 
 # 先从 SCHEDULE 提取当天比赛数量（用于对比）
-SCHEDULE_COUNT=$(python3 -c "
-import re, datetime
+SCHEDULE_COUNT=$(REPO_ROOT="$REPO_ROOT" python3 -c "
+import re, datetime, os
 TODAY = datetime.date.today().isoformat()
-with open('/workspace/jinbet/index.html', 'r', encoding='utf-8') as f:
+with open(os.path.join(os.environ['REPO_ROOT'], 'index.html'), 'r', encoding='utf-8') as f:
     html = f.read()
 schedule_match = re.search(r'const SCHEDULE\s*=\s*\{([\s\S]*?)\};', html)
 if schedule_match:
@@ -114,13 +139,14 @@ fi
 echo ""
 echo "--- 步骤3：提取比赛和赔率数据 ---"
 
-python3 << 'PYTHON_EOF'
+REPO_ROOT="$REPO_ROOT" python3 << 'PYTHON_EOF'
 import re, json, datetime, os
 
 TODAY = datetime.date.today().isoformat()
-OUTPUT_FILE = '/workspace/jinbet/scripts/matches_data.json'
+REPO_ROOT = os.environ['REPO_ROOT']
+OUTPUT_FILE = os.path.join(REPO_ROOT, 'scripts', 'matches_data.json')
 
-with open('/workspace/jinbet/index.html', 'r', encoding='utf-8') as f:
+with open(os.path.join(REPO_ROOT, 'index.html'), 'r', encoding='utf-8') as f:
     html = f.read()
 
 # 3a: 从 SCHEDULE 提取当日比赛
@@ -178,7 +204,7 @@ print(f"从 ODDS 变量匹配到 {matched}/{len(matches)} 场比赛的赔率数�
 
 # 3c: 从 odds_data.json 补充缺失赔率
 try:
-    with open('/workspace/jinbet/odds_data.json', 'r', encoding='utf-8') as f:
+    with open(os.path.join(REPO_ROOT, 'odds_data.json'), 'r', encoding='utf-8') as f:
         raw_odds = json.load(f)
     for m in matches:
         existing = m.get('odds', {})
@@ -225,6 +251,6 @@ PYTHON_EOF
 
 echo ""
 echo "=== 环境准备完成 ==="
-echo "比赛数据: /workspace/jinbet/scripts/matches_data.json"
+echo "比赛数据: $REPO_ROOT/scripts/matches_data.json"
 echo "请读取该 JSON 文件获取比赛列表和赔率数据，然后进行 AI 深度分析"
 exit 0
