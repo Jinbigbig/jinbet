@@ -2,16 +2,25 @@
 # finish.sh - AI足球预测任务收尾脚本
 # 包含：步骤6(更新索引页) + 步骤7(git提交推送)
 # 用法: bash finish.sh
-# 前提：报告已生成到 /workspace/jinbet/predictions/{TODAY}/index.html
-#       比赛数据在 /workspace/jinbet/scripts/matches_data.json
+# 前提：报告已生成到 {仓库根}/predictions/{TODAY}/index.html
+#       比赛数据在 {仓库根}/scripts/matches_data.json
+#       本地运行如需代理: https_proxy=http://127.0.0.1:7897 bash finish.sh
 
 set -euo pipefail
 
-cd /workspace/jinbet
+# ---------- 路径解析：以脚本所在位置定位仓库根 ----------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+# Git Bash/MSYS 环境下把 /c/... 转成 Windows 可识别的 C:/...（供 python 读取）
+case "$REPO_ROOT" in
+  /[a-zA-Z]/*) REPO_ROOT="$(cygpath -m "$REPO_ROOT" 2>/dev/null || echo "$REPO_ROOT")" ;;
+esac
+
+cd "$REPO_ROOT"
 
 TODAY=$(date +%Y-%m-%d)
-DATA_FILE="/workspace/jinbet/scripts/matches_data.json"
-INDEX_FILE="/workspace/jinbet/predictions/index.html"
+DATA_FILE="$REPO_ROOT/scripts/matches_data.json"
+INDEX_FILE="$REPO_ROOT/predictions/index.html"
 
 echo "=== AI足球预测收尾 ==="
 echo "今天日期: $TODAY"
@@ -23,12 +32,13 @@ echo ""
 echo "--- 步骤6：更新索引页 ---"
 
 # 从 matches_data.json 读取比赛信息
-python3 << 'PYTHON_EOF'
-import json, re, datetime
+REPO_ROOT="$REPO_ROOT" python3 << 'PYTHON_EOF'
+import json, re, datetime, os
 
 TODAY = datetime.date.today().isoformat()
-DATA_FILE = '/workspace/jinbet/scripts/matches_data.json'
-INDEX_FILE = '/workspace/jinbet/predictions/index.html'
+REPO_ROOT = os.environ['REPO_ROOT']
+DATA_FILE = os.path.join(REPO_ROOT, 'scripts', 'matches_data.json')
+INDEX_FILE = os.path.join(REPO_ROOT, 'predictions', 'index.html')
 
 with open(DATA_FILE, 'r', encoding='utf-8') as f:
     data = json.load(f)
