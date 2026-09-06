@@ -106,16 +106,18 @@ def league_score_freq(league):
 
 
 def mix_score_matrix(grid, league):
-    """第七步形状后处理：模型矩阵与联赛经验比分频率按 w=0.3 混合。
+    """第七步形状后处理：模型矩阵与联赛经验比分频率按 w=0.5 混合。
 
-    依据（2026-09-06 walk-forward 1992 场）：纯泊松 Brier 0.9303 → 混合 0.9261(-0.45%)；
-    0-0 预测 9.5%→8.1%（实际 6.5%），1-0/0-1/1-1 校准同步改善。
-    对照：Dixon-Coles τ 仅 -0.09% 且 0-0 校准恶化，故弃用。
+    依据（2026-09-06 晚 二次 walk-forward 2438 场，前60%训练/后40%验证，双指标一致）：
+      Top1 命中率随 w 单调升：w=0 → 11.03%，w=0.3 → 12.43%，w=0.5 → 13.37%，w=0.6 → 13.90%；
+      Brier 同步改善：0.9376 → 0.9317 → 0.9296 → 0.9291；后40%段同样成立（14.14%/14.55%）。
+      w=0.5~0.7 为平台区，取保守值 0.5（保留更多比赛特异性信号）。
+      对照：「大球导向」（P(≥3)≥58% 时强选 3+ 球比分）Top1 降至 11.36%/8.66%，否决。
     """
     freq = league_score_freq(league)
     if not freq:
         return grid
-    w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.3))
+    w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
     out = {}
     for key, p in grid.items():
         out[key] = (1 - w) * p + w * freq.get(key, 0.0)
