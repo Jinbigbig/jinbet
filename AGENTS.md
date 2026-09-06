@@ -11,6 +11,14 @@
 - GitHub Actions 从 master 分支运行，将生成的静态文件推送到 gh-pages
 - master 与 gh-pages 需保持双向同步，保留 2026-07-23/25/26 的原始报告
 
+### predictions/ 归属（2026-09-06 明确）
+
+- **`predictions/` 只属于 gh-pages，master 不需要同步**：`scripts/finish.sh` 只推 gh-pages，
+  `.github/workflows/daily-update.yml` 全程不碰 `predictions/`，master 上有无报告对 CI 零影响
+- 上一条「双向同步」仅指 CI 搬运的数据文件：`index.html`、`odds_data.json`、`version.txt`、
+  `odds_history/`、`results_data.json`、`results_history/`
+- master 上残留的历史 `predictions/`（截至 2026-08-17）属早期遗留，不扩写、不追加新报告
+
 ## 版本管理
 
 - 遵循 SemVer 格式：MAJOR.MINOR.PATCH（当前版本：7.101.0）
