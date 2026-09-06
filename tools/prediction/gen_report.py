@@ -203,6 +203,9 @@ def match_card(m):
       {esc(m['chain'])}
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主{m['lam_home']:.2f}/客{m['lam_away']:.2f}（总{m['lam_total']:.2f}） → 校准后 λ×{m.get('calib_note','1.00')}
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       📊 零封修正：主队近10场零封{zero['home_rate']*100:.0f}%→P(0)×{zero['f_home']:.1f} | 客队近10场零封{zero['away_rate']*100:.0f}%→P(0)×{zero['f_away']:.1f}
     </div>
   </div>
