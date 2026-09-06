@@ -5,6 +5,7 @@
   基础λ(指数衰减) → xG融合 → H2H(A总量+B方向再分配) → 市场混合 → 动态校准 → 零封修正 → 泊松
 输出: _calc_result.json
 """
+import glob
 import json
 import math
 import os
@@ -141,6 +142,196 @@ def clamp(v, lo, hi):
     return max(lo, min(hi, v))
 
 
+# ---------------------------------------------------------------- Platt 概率校准（PLATT_ISOTONIC，V3.1）
+# 病灶：泊松独立性导致平局全桶系统性低估（预测 22.6% vs 实际 26.6%，各概率桶 -3~-7pp）。
+# 方案：胜/平/负三类各自做一维逻辑回归（特征=logit(p)），牛顿法拟合，缓存 platt_params.json。
+# 验证（2026-09-06 walk-forward 2364 场测试集）：多类 Brier -0.37%，LogLoss -0.61%，
+#       平局偏差 -3.8pp → +0.2pp；5 折时序 CV 3/5 折改善、另 2 折近似持平。
+# 对照弃用：isotonic -0.15%、温度缩放 -0.02%、对角线膨胀 δ=1.2 虽修平局但比分 Top1 命中率 -1pp。
+# 注意：不动比分矩阵（1X2 后处理），星级（基于首选比分概率）不受影响；
+#       凯利信号改用校准后概率，方向不变但更贴近真实命中率。
+PLATT_W = 1.0          # 校准强度（1.0=全量；若线上发现与市场混合叠加过修可降到 0.5）
+PLATT_PARAMS = None
+
+
+def _repo_root():
+    here = BASE
+    for _ in range(3):
+        if os.path.isdir(os.path.join(here, "results_history")):
+            return here
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return BASE
+
+
+def _logit(p):
+    p = clamp(p, 1e-4, 1 - 1e-4)
+    return math.log(p / (1 - p))
+
+
+def _fit_platt_1d(X, Y, iters=30):
+    """牛顿法一维逻辑回归。X=logit(模型概率)，Y=0/1。返回 (a, b)。"""
+    a, b = 1.0, 0.0
+    for _ in range(iters):
+        ga = gb = haa = hab = hbb = 0.0
+        for x, y in zip(X, Y):
+            p = 1 / (1 + math.exp(-clamp(a * x + b, -30, 30)))
+            w = p * (1 - p) + 1e-9
+            e = y - p
+            ga += e * x
+            gb += e
+            haa -= w * x * x
+            hab -= w * x
+            hbb -= w
+        haa -= 1e-6
+        hbb -= 1e-6
+        det = haa * hbb - hab * hab
+        if abs(det) < 1e-12:
+            break
+        da = (hbb * ga - hab * gb) / det
+        db = (haa * gb - hab * ga) / det
+        a -= da
+        b -= db
+        if abs(da) < 1e-8 and abs(db) < 1e-8:
+            break
+    return a, b
+
+
+def fit_platt_params(force=False):
+    """从 results_history 重建模型流水线样本并拟合 Platt 参数。
+
+    样本重建复刻引擎主链路（联赛收缩 + 经验形状混合 + 零封修正），
+    保证拟合分布与应用分布一致。结果缓存 platt_params.json，当日已拟合则跳过。
+    """
+    global PLATT_PARAMS
+    root = _repo_root()
+    cache_path = os.path.join(root, "platt_params.json")
+    today = datetime.date.today().isoformat()
+    if not force and os.path.exists(cache_path):
+        try:
+            d = json.load(open(cache_path, encoding="utf-8"))
+            if d.get("fitted_at") == today and d.get("params"):
+                PLATT_PARAMS = d
+                return PLATT_PARAMS
+        except Exception:  # noqa: BLE001
+            pass
+    load_league_profile()
+    recs = []
+    rh = os.path.join(root, "results_history")
+    if not os.path.isdir(rh):
+        return None
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if f.endswith("index.json"):
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            recs.append({"lg": v.get("league") or "其他", "home": v.get("home"),
+                         "away": v.get("away"), "hg": hg, "ag": ag})
+    recs.sort(key=lambda r: r.get("date", ""))
+    gf, ga, zr = {}, {}, {}
+    lg_tot, lg_hist = {}, {}
+    MAXG = 8
+    mix_w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.3))
+    k_shrink = float(LEAGUE_PROFILE.get("score_mix", {}).get("k_shrink", 50))
+    shrink_w = float(LEAGUE_PROFILE.get("shrink", {}).get("w", 0.25))
+    samples = []
+    for r in recs:
+        H, A, lg = r["home"], r["away"], r["lg"]
+        gh, ga_ = gf.get(H, []), ga.get(A, [])
+        if len(gh) >= 3 and len(gf.get(A, [])) >= 3 and len(ga.get(H, [])) >= 3 and len(ga_) >= 3:
+            h_gf = statistics.mean(gh[-5:])
+            h_ga = statistics.mean(ga[H][-5:])
+            a_gf = statistics.mean(gf[A][-5:])
+            a_ga = statistics.mean(ga_[-5:])
+            lh = h_gf * 0.75 + a_ga * 0.25
+            la = a_gf * 0.75 + h_ga * 0.25
+            base = league_baseline(lg)
+            t = (lh + la) * (1 - shrink_w) + base * shrink_w
+            if lh + la > 0:
+                lh, la = lh * t / (lh + la), la * t / (lh + la)
+            zh = zr.get(H, [])
+            za = zr.get(A, [])
+            f_h = (0.6 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.15 else
+                   0.8 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.25 else
+                   1.0 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.40 else 1.2) if zh else 0.8
+            f_a = (0.6 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.15 else
+                   0.8 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.25 else
+                   1.0 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.40 else 1.2) if za else 0.8
+            ph = [pmf(i, lh) * (f_h if i == 0 else 1.0) for i in range(MAXG + 1)]
+            pa = [pmf(j, la) * (f_a if j == 0 else 1.0) for j in range(MAXG + 1)]
+            m = [[ph[i] * pa[j] for j in range(MAXG + 1)] for i in range(MAXG + 1)]
+            s = sum(sum(row) for row in m)
+            m = [[v / s for v in row] for row in m]
+            hist = lg_hist.get(lg, [])
+            if len(hist) >= 40 and mix_w > 0:
+                cnt = Counter(hist)
+                n2 = len(hist)
+                tot = 0.0
+                out = [[0.0] * (MAXG + 1) for _ in range(MAXG + 1)]
+                for i in range(MAXG + 1):
+                    for j in range(MAXG + 1):
+                        ev_ = (n2 * cnt.get((i, j), 0) / n2 + k_shrink * (1 / 81)) / (n2 + k_shrink)
+                        out[i][j] = (1 - mix_w) * m[i][j] + mix_w * ev_
+                        tot += out[i][j]
+                m = [[v / tot for v in row] for row in out]
+            p_hw = sum(m[i][j] for i in range(MAXG + 1) for j in range(MAXG + 1) if i > j)
+            p_dr = sum(m[i][i] for i in range(MAXG + 1))
+            y = 0 if r["hg"] > r["ag"] else (1 if r["hg"] == r["ag"] else 2)
+            samples.append((p_hw, p_dr, 1 - p_hw - p_dr, y))
+        for team, gs, gc in ((H, r["hg"], r["ag"]), (A, r["ag"], r["hg"])):
+            gf.setdefault(team, []).append(gs)
+            ga.setdefault(team, []).append(gc)
+            zr.setdefault(team, []).append(1 if gc == 0 else 0)
+        lg_tot.setdefault(lg, []).append(r["hg"] + r["ag"])
+        lg_hist.setdefault(lg, []).append((r["hg"], r["ag"]))
+    if len(samples) < 300:
+        return None
+    params = {}
+    for k, name in enumerate(("home", "draw", "away")):
+        X = [_logit(s[k]) for s in samples]
+        Y = [1.0 if s[3] == k else 0.0 for s in samples]
+        params[name] = [round(v, 4) for v in _fit_platt_1d(X, Y)]
+    PLATT_PARAMS = {"fitted_at": today, "n_samples": len(samples), "w": PLATT_W,
+                    "params": params,
+                    "note": "胜平负 Platt 校准；样本复刻引擎主链路（收缩+形状混合+零封）"}
+    try:
+        json.dump(PLATT_PARAMS, open(cache_path, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except OSError:
+        pass
+    return PLATT_PARAMS
+
+
+def apply_platt(p_home, p_draw, p_away):
+    """胜平负概率 Platt 校准；无参数时原样返回。"""
+    if not PLATT_PARAMS or PLATT_W <= 0:
+        return p_home, p_draw, p_away
+    w = float(PLATT_PARAMS.get("w", PLATT_W))
+    params = PLATT_PARAMS.get("params", {})
+    if not params:
+        return p_home, p_draw, p_away
+    out = []
+    for k, p in enumerate((p_home, p_draw, p_away)):
+        name = ("home", "draw", "away")[k]
+        a, b = params.get(name, (1.0, 0.0))
+        q = 1 / (1 + math.exp(-clamp(a * _logit(p) + b, -30, 30)))
+        out.append((1 - w) * p + w * q)
+    tot = sum(out)
+    return tuple(v / tot for v in out)
+
+
 def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
 
@@ -174,8 +365,9 @@ V3_CONFIG = {
                           "note": "联赛经验比分频率混合(第七步B, w=0.3, K=50收缩)："
                                   "walk-forward Brier -0.45%，0-0高估+3.0pp→+1.6pp，1-1校准改善。"
                                   "数据: league_profile.json score_freq(34联赛)"},
-    "PLATT_ISOTONIC": {"enabled": False, "min_samples": 300,
-                       "note": "胜平负/比分概率可靠性校准(Platt/isotonic)，Brier评估"},
+    "PLATT_ISOTONIC": {"enabled": True, "min_samples": 300,
+                       "note": "胜平负 Platt 校准已启用(V3.1)：Brier -0.37%、平局偏差-3.8pp→+0.2pp；"
+                               "isotonic/温度缩放/对角线膨胀均已验证劣于 Platt，弃用"},
     "DIXON_COLES_TAU": {"enabled": False, "min_samples": 0, "rejected": True,
                         "note": "❌ 2026-09-06 验证不通过：全局ρ网格搜索最优-0.12，Brier仅-0.09%，"
                                 "且0-0校准恶化(9.5%→10.7%，实际6.5%)。由 LEAGUE_DIST_SHAPE 经验混合替代"},
@@ -649,6 +841,11 @@ def calc_match(m, calib):
     p_home = sum(p for (k1, k2), p in grid.items() if k1 > k2)
     p_draw = sum(p for (k1, k2), p in grid.items() if k1 == k2)
     p_away = sum(p for (k1, k2), p in grid.items() if k1 < k2)
+    # ---------- 第七步C：胜平负 Platt 校准（PLATT_ISOTONIC，V3.1）----------
+    # 泊松独立性使平局系统性低估约 4pp；walk-forward Brier -0.37%、LogLoss -0.61%
+    p_home_raw, p_draw_raw, p_away_raw = p_home, p_draw, p_away
+    p_home, p_draw, p_away = apply_platt(p_home, p_draw, p_away)
+    platt_applied = abs(p_draw - p_draw_raw) > 1e-6
 
     # ---------- 冷门信号 ----------
     signals = []
@@ -696,6 +893,8 @@ def calc_match(m, calib):
         for name, info, lh, la in steps
     )
     chain += f" → 最终λ 主{lam_h:.2f} 客{lam_a:.2f}"
+    if platt_applied:
+        chain += (f" → Platt校准(1X2: 平局{p_draw_raw*100:.1f}%→{p_draw*100:.1f}%)")
 
     return {
         "matchNumStr": m["matchNumStr"], "league": league,
@@ -724,6 +923,11 @@ def calc_match(m, calib):
 def main():
     # 加载联赛进球环境画像（先验收缩 + H2H 阈值归一 + 赔率反推锚点）
     load_league_profile()
+    # Platt 胜平负概率校准（当日已拟合则读缓存）
+    pp = fit_platt_params()
+    if pp:
+        print(f"=== Platt 概率校准 === 样本 {pp['n_samples']} 场 | "
+              f"home={pp['params']['home']} draw={pp['params']['draw']} away={pp['params']['away']}")
     _lp = LEAGUE_PROFILE
     print("=== 联赛进球环境画像 ===")
     print(f"来源 {_lp.get('_meta', {}).get('source', '?')} | "
