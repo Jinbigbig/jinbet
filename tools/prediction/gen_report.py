@@ -230,7 +230,7 @@ summary4_sec = f'''
 # ---------- 五、核心策略与风险提示 ----------
 by_stars = sorted(MATCHES, key=lambda m: (-m['stars'], -first_score(m)[1]))
 conf_pool = [m for m in by_stars if m['stars'] >= 3]
-cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s) for s in m['signals'])]
+cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s or '爆冷' in s or '防平防冷' in s or '双平' in s) for s in m['signals'])]
 
 def make_group(ms):
     legs, odds_prod, prob_prod = [], 1.0, 1.0
@@ -244,18 +244,32 @@ def make_group(ms):
         prob_prod *= p
     return ' × '.join(legs), odds_prod, prob_prod
 
-parlay_rows = ''
+# 比分串关推荐：信心串关 + 冷门串关，腿数随当日场次缩放（每组至少2腿）
+N_MATCHES = len(MATCHES)
+n_conf_legs = 3 if N_MATCHES >= 15 else 2
+n_cold_legs = 2
 parlays = []
-if len(conf_pool) >= 6:
-    for i in range(3):
-        g = make_group(conf_pool[i*3:(i+1)*3]); parlays.append(('信心', g, min(m['stars'] for m in conf_pool[i*3:(i+1)*3])))
-if len(cold_pool) >= 1 and len(conf_pool) >= 2:
-    anchors = conf_pool[:2]
-    for cm in cold_pool[:2]:
-        g = make_group(anchors + [cm]); parlays.append(('爆冷', g, min(anchors[0]['stars'], anchors[1]['stars'], cm['stars'])))
-for typ, (comb, op, pp), st in parlays:
+if len(conf_pool) >= n_conf_legs:
+    legs = conf_pool[:n_conf_legs]
+    parlays.append(('信心', make_group(legs), min(m['stars'] for m in legs),
+                    f"{n_conf_legs}串1：取当日评级最高（4-5★优先）的{len(legs)}场，均取模型首选比分稳胆打底"))
+cold_sorted = sorted(cold_pool, key=lambda m: (-len(m['signals']), -first_score(m)[1]))
+if len(cold_sorted) >= n_cold_legs:
+    legs = cold_sorted[:n_cold_legs]
+    cold_note = f"{n_cold_legs}串1：由冷门信号最强的{len(legs)}场（凯利异常/排名背离/德比双平等博平博冷方向）组成，小注博高赔"
+elif cold_sorted and len(conf_pool) >= n_cold_legs - len(cold_sorted):
+    legs = cold_sorted + [m for m in conf_pool if m not in cold_sorted][:n_cold_legs - len(cold_sorted)]
+    cold_note = f"{len(legs)}串1：冷门场次不足{n_cold_legs}场，以高信心场锚定+冷门场博冷"
+else:
+    legs, cold_note = None, ''
+if legs:
+    parlays.append(('冷门', make_group(legs), min(m['stars'] for m in legs), cold_note))
+parlay_rows = ''
+for typ, (comb, op, pp), st, note in parlays:
     cls = 'parlay-confident' if typ == '信心' else 'parlay-upset'
-    parlay_rows += (f'<tr class="{cls}"><td><strong>{typ}串关</strong></td><td>{esc(comb)}</td>'
+    parlay_rows += (f'<tr class="{cls}"><td><strong>{typ}串关</strong><br>'
+                    f'<span style="font-size:0.72rem;color:var(--muted);">{esc(note)}</span></td>'
+                    f'<td>{esc(comb)}</td>'
                     f'<td style="font-family:monospace;font-weight:700;">{op:.2f}</td>'
                     f'<td>{pp*100:.2f}%</td><td>{stars_html(st)}</td></tr>')
 
@@ -286,7 +300,7 @@ strategy_sec = f'''
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
   </table>
-  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，爆冷串关橙色背景（高信心托底+冷门预警场博高赔）。</div>
+  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。腿数随当日场次动态调整：≥15场信心组取3腿、6-14场取2腿，冷门组固定2腿起；冷门场次不足时以高信心场锚定补足。</div>
 </div>
 '''
 
