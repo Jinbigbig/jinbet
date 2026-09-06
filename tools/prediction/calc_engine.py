@@ -844,6 +844,14 @@ def calc_match(m, calib):
     p_home = sum(p for (k1, k2), p in grid.items() if k1 > k2)
     p_draw = sum(p for (k1, k2), p in grid.items() if k1 == k2)
     p_away = sum(p for (k1, k2), p in grid.items() if k1 < k2)
+    # ---------- 象限内首选比分（条件口径）：若倾向=主胜/平/负，该象限内概率最高的比分 ----------
+    quad_top = {}
+    for qname, qfilter in (("home", lambda k: k[0] > k[1]),
+                           ("draw", lambda k: k[0] == k[1]),
+                           ("away", lambda k: k[0] < k[1])):
+        qcells = [(k, v) for k, v in grid.items() if qfilter(k)]
+        (bk, bv) = max(qcells, key=lambda x: x[1])
+        quad_top[qname] = {"score": f"{bk[0]}:{bk[1]}", "prob": round(bv * 100, 1)}
     # ---------- 第七步C：胜平负 Platt 校准（PLATT_ISOTONIC，V3.1）----------
     # 泊松独立性使平局系统性低估约 4pp；walk-forward Brier -0.37%、LogLoss -0.61%
     p_home_raw, p_draw_raw, p_away_raw = p_home, p_draw, p_away
@@ -914,6 +922,7 @@ def calc_match(m, calib):
                        for (k1, k2), p in ranked],
         "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
                  "away": round(p_away * 100, 1)},
+        "quad_top": quad_top,
         "zero": {"home_rate": round(zr_h, 3), "away_rate": round(zr_a, 3),
                  "f_home": f_h, "f_away": f_a},
         "signals": signals,

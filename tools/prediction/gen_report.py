@@ -266,10 +266,13 @@ for m in MATCHES:
     num_cell = f'<td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
     pair = f'<td>{rank_tag(m["home"], m["home_rank"])}</td><td>{rank_tag(m["away"], m["away_rank"])}</td>'
     # 4.1 胜负预测
-    best = max([('主胜', pr['home'], 'tag-green'), ('平局', pr['draw'], 'tag-yellow'), ('客胜', pr['away'], 'tag-red')], key=lambda x: x[1])
+    best = max([('home', '主胜', 'tag-green'), ('draw', '平局', 'tag-yellow'), ('away', '客胜', 'tag-red')], key=lambda x: pr[x[0]])
+    qt = m.get('quad_top', {}).get(best[0], {})
+    quad_s = f"{esc(qt.get('score', '-'))} <span style='color:var(--muted);font-size:0.8rem;'>({qt.get('prob', 0):.1f}%)</span>" if qt else '-'
     rows41 += (f'<tr>{num_cell}{pair}'
                f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
-               f'<td><span class="tag {best[2]}">{best[0]} {best[1]:.1f}%</span></td></tr>')
+               f'<td><span class="tag {best[2]}">{best[1]} {pr[best[0]]:.1f}%</span></td>'
+               f'<td style="font-family:monospace;">{quad_s}</td></tr>')
     # 4.2 比分预测
     rows42 += (f'<tr>{num_cell}{pair}'
                f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(s1)}</td>'
@@ -296,8 +299,8 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">三种玩法口径分开看：<b>胜负</b>看方向（Platt 校准概率）、<b>比分</b>看组合覆盖（Top3 合计，勿单押首选）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。</p>
-{_sub_table('4.1 胜负预测', '概率经 Platt 校准（修正泊松平局低估）。倾向 = 三者中概率最高者。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th>', rows41)}
+{_sub_table('4.1 胜负预测', '概率经 Platt 校准（修正泊松平局低估）。倾向 = 三者中概率最高者；"倾向内首选比分" = 该结果象限中概率最高的比分（若跟方向玩法，配这个比分）。',
+            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>倾向内首选比分</th>', rows41)}
 {_sub_table('4.2 比分预测', '首选比分为单一比分众数（天然偏小，≈11~14%）；押比分建议 Top3 组合覆盖，勿单押首选。',
             '<th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rows42)}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
