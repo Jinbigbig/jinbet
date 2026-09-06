@@ -24,11 +24,16 @@ case "$REPO_ROOT" in
   /[a-zA-Z]/*) REPO_ROOT="$(cygpath -m "$REPO_ROOT" 2>/dev/null || echo "$REPO_ROOT")" ;;
 esac
 
-TOKEN="${GITHUB_TOKEN:?必须通过环境变量 GITHUB_TOKEN 提供 GitHub Token}"
+# Token 仅用于调用 GitHub REST API 触发赔率更新；未设置时跳过触发，用现有数据继续
+TOKEN="${GITHUB_TOKEN:-}"
 REPO="Jinbigbig/jinbet"
 WORKFLOW="daily-update.yml"
 API_BASE="https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW"
-CLONE_URL="https://${TOKEN}@github.com/${REPO}.git"
+if [ -n "$TOKEN" ]; then
+  CLONE_URL="https://${TOKEN}@github.com/${REPO}.git"
+else
+  CLONE_URL="git@github.com:${REPO}.git"
+fi
 
 TODAY=$(date +%Y-%m-%d)
 echo "=== AI足球预测环境准备 ==="
@@ -39,6 +44,10 @@ echo "今天日期: $TODAY"
 # ============================================================
 echo ""
 echo "--- 步骤0：触发赔率更新工作流 ---"
+
+if [ -z "$TOKEN" ]; then
+  echo "未设置 GITHUB_TOKEN：跳过工作流触发（SSH 密钥无法调用 REST API），直接使用现有赔率数据"
+else
 
 BEFORE_RUN_ID=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $TOKEN" \
   "${API_BASE}/runs?per_page=1" | python3 -c "import sys,json; runs=json.load(sys.stdin)['workflow_runs']; print(runs[0]['id'] if runs else '0')" 2>/dev/null)
@@ -68,6 +77,9 @@ done
 if [ "$WORKFLOW_DONE" = "false" ]; then echo "⚠️ 超时10分钟，用现有数据继续"; fi
 echo "额外等待 10 秒确保远程同步..."
 sleep 10
+
+fi
+# end: 需要 TOKEN 才触发工作流
 
 # ============================================================
 # 步骤1：克隆项目并切换到 gh-pages（本地已有仓库则跳过克隆）
