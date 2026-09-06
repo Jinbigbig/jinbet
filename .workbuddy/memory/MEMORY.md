@@ -68,6 +68,10 @@ git status --short                                        # 必须为 0 项
 - 开发改 master → CI 自动同步到 gh-pages
 - 推送前必须 `git pull --rebase` 避免分叉
 - 禁止 force push；保留 2026-07-23/25/26 的原始 prediction 报告
+- **`predictions/` 只归 gh-pages，master 不同步**（2026-09-06 明确）：
+  finish.sh 只推 gh-pages，CI(daily-update.yml) 全程不碰 predictions/，
+  master 上有无报告对 CI 零影响。"双向同步"仅指 CI 搬运的 index.html/odds_data.json/
+  version.txt/odds_history/results_data.json/results_history/
 
 ### HTML / 前端
 - 必须包含 Cache-Control / Pragma / Expires meta 标签
