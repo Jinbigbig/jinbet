@@ -32,9 +32,22 @@
 
 ### 网络代理
 - 环境变量 `http_proxy/https_proxy = http://127.0.0.1:53311` **访问 GitHub 返回 502**，不可用
-- 可用通道：**`http://127.0.0.1:7897`**
-- 用法（临时指定，不污染用户配置）：
+- HTTPS 流量可用通道：**`http://127.0.0.1:7897`**
+- **SSH 不需要代理**：github.com:22 与 ssh.github.com:443 均直连可达（2026-09-06 实测）
+- HTTPS 用法（临时指定，不污染用户配置）：
   `git -c http.proxy=http://127.0.0.1:7897 -c https.proxy=http://127.0.0.1:7897 fetch origin`
+
+### Git 认证（2026-09-06 起改用 SSH）
+- `origin` 已切到 `git@github.com:Jinbigbig/jinbet.git`，HTTPS 版保留为 `origin-https`
+- 密钥：`~/.ssh/id_ed25519`（无密码，供自动化），配置见 `~/.ssh/config`
+  （含 `github-443` 备用主机，走 ssh.github.com:443）
+- **git 操作不再需要 token，也不要加代理参数**
+- 本机无 gh CLI、无 `.git-credentials`、无 GCM 缓存 → 除 SSH 外没有任何免交互通道
+- GCM（`git-credential-manager.exe`）在 HTTPS 推送时弹 GUI 窗，非交互环境会挂起直至被杀
+- `scripts/prepare.sh` 的 `GITHUB_TOKEN` 已改为**可选**：
+  仅用于调用 REST API 触发赔率工作流，未设置则跳过该步、用现有数据继续
+  （SSH 密钥无法认证 REST API，这是 token 目前唯一的用途）
+- 那个 `ghp_...` token 已出现在公开仓库 git 历史中，建议用户去 GitHub Settings 吊销
 
 ### Git 远端引用（高危陷阱）
 1. **`git fetch <remote> <refspec>` 不更新 remote-tracking refs**，只写 `FETCH_HEAD`。
