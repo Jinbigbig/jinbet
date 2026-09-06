@@ -244,30 +244,37 @@ def make_group(ms):
         prob_prod *= p
     return ' × '.join(legs), odds_prod, prob_prod
 
-# 比分串关推荐：信心串关 + 冷门串关，腿数随当日场次缩放（每组至少2腿）
-N_MATCHES = len(MATCHES)
-n_conf_legs = 3 if N_MATCHES >= 15 else 2
-n_cold_legs = 2
+# 比分串关推荐：信心串关（多组）+ 冷门串关（多组）
+# 组数/腿数随当日场次缩放：每组至少2组、每组至少2腿
+N = len(MATCHES)
+legs_per_group = 3 if N >= 15 else 2
+n_conf_groups = min(3, max(2, N // 8))     # 24场→3组，16场→2组，8场以下→2组
+n_cold_groups = min(3, max(2, N // 10))    # 30场→3组，24场→2组，20场以下→2组
+GROUP_NAME = ['A', 'B', 'C', 'D']
+
 parlays = []
-if len(conf_pool) >= n_conf_legs:
-    legs = conf_pool[:n_conf_legs]
-    parlays.append(('信心', make_group(legs), min(m['stars'] for m in legs),
-                    f"{n_conf_legs}串1：取当日评级最高（4-5★优先）的{len(legs)}场，均取模型首选比分稳胆打底"))
+for i in range(n_conf_groups):
+    legs = conf_pool[i*legs_per_group:(i+1)*legs_per_group]
+    if len(legs) < 2:
+        break
+    parlays.append(('信心', GROUP_NAME[i], make_group(legs), min(m['stars'] for m in legs),
+                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取模型首选比分稳胆打底"))
+
 cold_sorted = sorted(cold_pool, key=lambda m: (-len(m['signals']), -first_score(m)[1]))
-if len(cold_sorted) >= n_cold_legs:
-    legs = cold_sorted[:n_cold_legs]
-    cold_note = f"{n_cold_legs}串1：由冷门信号最强的{len(legs)}场（凯利异常/排名背离/德比双平等博平博冷方向）组成，小注博高赔"
-elif cold_sorted and len(conf_pool) >= n_cold_legs - len(cold_sorted):
-    legs = cold_sorted + [m for m in conf_pool if m not in cold_sorted][:n_cold_legs - len(cold_sorted)]
-    cold_note = f"{len(legs)}串1：冷门场次不足{n_cold_legs}场，以高信心场锚定+冷门场博冷"
-else:
-    legs, cold_note = None, ''
-if legs:
-    parlays.append(('冷门', make_group(legs), min(m['stars'] for m in legs), cold_note))
+need = n_cold_groups * legs_per_group
+if len(cold_sorted) < need:  # 冷门池不足：用信心池剩余场次锚定补足
+    cold_sorted += [m for m in conf_pool if m not in cold_sorted][:need - len(cold_sorted)]
+for i in range(n_cold_groups):
+    legs = cold_sorted[i*legs_per_group:(i+1)*legs_per_group]
+    if len(legs) < 2:
+        break
+    parlays.append(('冷门', GROUP_NAME[i], make_group(legs), min(m['stars'] for m in legs),
+                    f"{len(legs)}串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔"))
+
 parlay_rows = ''
-for typ, (comb, op, pp), st, note in parlays:
+for typ, gname, (comb, op, pp), st, note in parlays:
     cls = 'parlay-confident' if typ == '信心' else 'parlay-upset'
-    parlay_rows += (f'<tr class="{cls}"><td><strong>{typ}串关</strong><br>'
+    parlay_rows += (f'<tr class="{cls}"><td><strong>{typ}串关 {gname}</strong><br>'
                     f'<span style="font-size:0.72rem;color:var(--muted);">{esc(note)}</span></td>'
                     f'<td>{esc(comb)}</td>'
                     f'<td style="font-family:monospace;font-weight:700;">{op:.2f}</td>'
@@ -300,7 +307,7 @@ strategy_sec = f'''
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
   </table>
-  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。腿数随当日场次动态调整：≥15场信心组取3腿、6-14场取2腿，冷门组固定2腿起；冷门场次不足时以高信心场锚定补足。</div>
+  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
 '''
 
