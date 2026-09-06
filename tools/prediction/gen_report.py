@@ -21,12 +21,24 @@ for i in range(1, 7):
 
 OLD = open('_old_0905.html', encoding='utf-8').read()
 CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
+# 追加：队名右下角排名小字（CSS 变量兜底，兼容浅/深色）
+CSS += '''
+<style>
+  .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
+    color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
+</style>'''
 LEAGUE_SEC = OLD[OLD.find('<h2>六、当日赛事联赛形势</h2>'):OLD.find('<h2>📊 动态校准与历史命中率</h2>')]
 
 def esc(s): return html.escape(str(s if s is not None else ''))
 
 def rank_tag(name, rank):
     return f'{esc(name)}<sub class="rank-tag">[{esc(rank)}]</sub>' if rank is not None else esc(name)
+
+def team_with_rank(name, rank):
+    """第三节队名右下角排名小字（缺失排名时只显示队名）"""
+    if rank in (None, '', '-', 0): return esc(name)
+    r = rank if str(rank).startswith('联赛第') else f'联赛第{rank}'
+    return f'{esc(name)}<sub class="team-rank">{esc(r)}</sub>'
 
 def dash(score): return score.replace(':', '-')
 
@@ -141,9 +153,9 @@ def match_card(m):
   </div>
 
   <div class="match-teams">
-    <span class="home">{rank_tag(m["home"], m["home_rank"])}</span>
+    <span class="home">{team_with_rank(m["home"], m["home_rank"])}</span>
     <span class="vs">VS</span>
-    <span class="away">{rank_tag(m["away"], m["away_rank"])}</span>
+    <span class="away">{team_with_rank(m["away"], m["away_rank"])}</span>
   </div>
 
   <div class="odds-grid">
