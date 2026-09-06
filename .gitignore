@@ -39,6 +39,20 @@ build/
 .env
 .env.local
 
-# 下载归档（临时文件，下载后可删）
+### 下载归档（临时文件，下载后可删）
 jinbet-*.tar.gz
 jinbet-*.zip
+
+# AI 预测报告流水线中间产物（本地临时，勿提交）
+# 正式脚本已归档在 tools/prediction/
+_calc_engine.py
+_gen_report.py
+_local_prepare.py
+_calc_result.json
+_data_batch*.json
+_old_*.html
+_old_css.txt
+scripts/matches_data.json
+
+# 工作记忆日志（每日临时，仅保留 MEMORY.md）
+.workbuddy/memory/20*-*-*.md

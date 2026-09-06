@@ -1,0 +1,370 @@
+# -*- coding: utf-8 -*-
+# 由 _calc_result.json + _data_batch*.json 生成 2026-09-05 V2.2 报告
+# 版式严格复刻 2026-07-21 风格（与上午云端旧版一致）：CSS 直接取自 _old_0905.html
+import json, re, html, datetime
+from collections import Counter
+
+CALC = json.load(open('_calc_result.json', encoding='utf-8'))
+MATCHES = CALC['matches']
+CALIB = CALC['calibration']
+TODAY = CALC['today']
+
+# 合并采集数据中的 H2H 明细（history 表用）
+H2H = {}
+for i in range(1, 7):
+    try:
+        b = json.load(open(f'_data_batch{i}.json', encoding='utf-8'))
+        for m in b['matches']:
+            H2H[m['matchNumStr']] = m.get('h2h') or []
+    except FileNotFoundError:
+        pass
+
+OLD = open('_old_0905.html', encoding='utf-8').read()
+CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
+LEAGUE_SEC = OLD[OLD.find('<h2>六、当日赛事联赛形势</h2>'):OLD.find('<h2>📊 动态校准与历史命中率</h2>')]
+
+def esc(s): return html.escape(str(s if s is not None else ''))
+
+def rank_tag(name, rank):
+    return f'{esc(name)}<sub class="rank-tag">[{esc(rank)}]</sub>' if rank is not None else esc(name)
+
+def dash(score): return score.replace(':', '-')
+
+def stars_html(n):
+    return f'<span style="color:var(--accent3);font-size:1.05rem;">{"★"*n}{"☆"*(5-n)}</span>'
+
+def first_score(m):
+    ts = m['top_scores']
+    return (ts[0]['score'], ts[0]['prob']/100) if ts else ('1:1', 0.0)
+
+def score_odd(m, score):
+    return m['odds'].get('比分', {}).get(score)
+
+def h2h_mean(m):
+    hh = H2H.get(m['matchNumStr']) or []
+    if not hh: return None
+    return sum(x['home_goals']+x['away_goals'] for x in hh) / len(hh)
+
+# ---------- 一、比赛总览 ----------
+rows1 = ''
+for m in MATCHES:
+    pr = m['prob']
+    best = max([('主胜', pr['home'], 'tag-green'), ('平局', pr['draw'], 'tag-yellow'), ('客胜', pr['away'], 'tag-red')], key=lambda x: x[1])
+    o = m['odds']
+    rows1 += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
+              f'<td>{esc(m["league"])}</td>'
+              f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
+              f'<td style="text-align:center;color:var(--muted);">VS</td>'
+              f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
+              f'<td style="font-family:monospace;">{esc(o.get("胜","-"))}</td>'
+              f'<td style="font-family:monospace;">{esc(o.get("平","-"))}</td>'
+              f'<td style="font-family:monospace;">{esc(o.get("负","-"))}</td>'
+              f'<td><span class="tag {best[2]}">{best[0]}</span></td></tr>')
+
+overview_sec = f'''
+<h2>一、比赛总览</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th></tr></thead>
+      <tbody>{rows1}</tbody>
+    </table>
+  </div>
+</div>
+'''
+
+# ---------- 二、市场信心指数对比（模型胜平负概率） ----------
+labels = json.dumps([m['matchNumStr'] for m in MATCHES], ensure_ascii=False)
+ph = json.dumps([m['prob']['home'] for m in MATCHES])
+pd_ = json.dumps([m['prob']['draw'] for m in MATCHES])
+pa = json.dumps([m['prob']['away'] for m in MATCHES])
+
+chart_sec = f'''
+<h2>二、市场信心指数对比</h2>
+<div class="card">
+  <div id="confidenceChart" class="chart-container"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+var chart = echarts.init(document.getElementById('confidenceChart'));
+var matchLabels = {labels};
+var homeWinProbs = {ph};
+var drawProbs = {pd_};
+var awayWinProbs = {pa};
+chart.setOption({{
+  title: {{ text: '模型V2.2胜平负概率分布', left: 'center', textStyle: {{ fontSize: 14 }} }},
+  tooltip: {{ trigger: 'axis', axisPointer: {{ type: 'shadow' }} }},
+  legend: {{ data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 }},
+  grid: {{ left: '3%', right: '4%', bottom: '12%', containLabel: true }},
+  xAxis: {{ type: 'category', data: matchLabels, axisLabel: {{ rotate: 45, fontSize: 10 }} }},
+  yAxis: {{ type: 'value', name: '概率(%)', max: 80 }},
+  series: [
+    {{ name: '主胜概率', type: 'bar', stack: 'total', data: homeWinProbs, itemStyle: {{ color: '#2a9d8f' }} }},
+    {{ name: '平局概率', type: 'bar', stack: 'total', data: drawProbs, itemStyle: {{ color: '#f4a261' }} }},
+    {{ name: '客胜概率', type: 'bar', stack: 'total', data: awayWinProbs, itemStyle: {{ color: '#e63946' }} }}
+  ]
+}});
+window.addEventListener('resize', function() {{ chart.resize(); }});
+</script>
+'''
+
+# ---------- 三、逐场深度分析 ----------
+def match_card(m):
+    hh = H2H.get(m['matchNumStr']) or []
+    s1, p1 = first_score(m)
+    others = ' | '.join(f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in m['top_scores'][1:3]) or '-'
+    hm = h2h_mean(m)
+    hm_str = f'{hm:.2f} 球' if hm else '数据不足'
+    factor_str = f'{m["h2h_factor"]:.2f}' + ('（含方向再分配）' if m['dir_applied'] else '')
+    zero = m['zero']
+    o = m['odds']
+    hist_rows = ''
+    for x in hh[:6]:
+        hg, ag = x['home_goals'], x['away_goals']
+        cls = 'var(--win)' if hg > ag else ('var(--draw)' if hg == ag else 'var(--loss)')
+        res = '主胜' if hg > ag else ('平局' if hg == ag else '客胜')
+        hist_rows += f'<tr><td style="color:{cls};">{hg}-{ag}</td><td>{res}</td></tr>'
+    if not hist_rows:
+        hist_rows = '<tr><td colspan="2">H2H数据不足</td></tr>'
+    n_h2h = len(hh) if hh else m.get('h2h_count', 0)
+    # 冷门信号块
+    sig_html = ''
+    if m['signals'] and m['signals'] != ['无明显冷门信号']:
+        sig_items = ''.join(f'<strong>{esc(s)}</strong>；' for s in m['signals'])
+        sig_html = f'<div class="warning">⚠️ 冷门信号：{sig_items}</div>'
+    return f'''
+<div class="card" id="match-{esc(m["matchNumStr"])}">
+  <div class="card-header">
+    <span class="match-id">{esc(m["matchNumStr"])}</span>
+    <span class="match-league">{esc(m["league"])}</span>
+    <span class="match-time">{TODAY}</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">{rank_tag(m["home"], m["home_rank"])}</span>
+    <span class="vs">VS</span>
+    <span class="away">{rank_tag(m["away"], m["away_rank"])}</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">{esc(o.get("胜","-"))}</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">{esc(o.get("平","-"))}</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">{esc(o.get("负","-"))}</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">{esc(m["home_rank"] if m["home_rank"] else "-")} / {esc(m["league"])}</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">{esc(m["away_rank"] if m["away_rank"] else "-")} / {esc(m["league"])}</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">{hm_str}</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">{esc(factor_str)}</div></div>
+  </div>
+
+  <h4>历史交锋（近{n_h2h}场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody>{hist_rows}</tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">{esc(m["news"])}</p>
+
+  {sig_html}
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V2.2预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">{dash(s1)}</span>
+      <span class="pred-value">({p1*100:.1f}%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">{esc(others)}</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      {stars_html(m['stars'])}
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      {esc(m['chain'])}
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封{zero['home_rate']*100:.0f}%→P(0)×{zero['f_home']:.1f} | 客队近10场零封{zero['away_rate']*100:.0f}%→P(0)×{zero['f_away']:.1f}
+    </div>
+  </div>
+</div>
+'''
+
+deep_sec = '<h2>三、逐场深度分析</h2>\n' + '\n'.join(match_card(m) for m in MATCHES)
+
+# ---------- 四、比分预测汇总 ----------
+rows4 = ''
+for m in MATCHES:
+    ts = m['top_scores']
+    s1, p1 = first_score(m)
+    second = f'{dash(ts[1]["score"])} ({ts[1]["prob"]:.1f}%)' if len(ts) > 1 else '-'
+    cold = esc(m['signals'][0]) if m['signals'] and m['signals'] != ['无明显冷门信号'] else '-'
+    rows4 += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
+              f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
+              f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
+              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(s1)}</td>'
+              f'<td>{p1*100:.1f}%</td>'
+              f'<td style="font-family:monospace;">{esc(second)}</td>'
+              f'<td>{stars_html(m["stars"])}</td>'
+              f'<td style="font-size:0.78rem;">{cold}</td></tr>')
+
+summary4_sec = f'''
+<h2>四、比分预测汇总</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>信心</th><th>冷门</th></tr></thead>
+      <tbody>{rows4}</tbody>
+    </table>
+  </div>
+</div>
+'''
+
+# ---------- 五、核心策略与风险提示 ----------
+by_stars = sorted(MATCHES, key=lambda m: (-m['stars'], -first_score(m)[1]))
+conf_pool = [m for m in by_stars if m['stars'] >= 3]
+cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s) for s in m['signals'])]
+
+def make_group(ms):
+    legs, odds_prod, prob_prod = [], 1.0, 1.0
+    for m in ms:
+        s, p = first_score(m)
+        odd = score_odd(m, s)
+        legs.append(f"[{m['matchNumStr']}]{m['home']}vs{m['away']} {dash(s)}")
+        if odd:
+            try: odds_prod *= float(odd)
+            except ValueError: pass
+        prob_prod *= p
+    return ' × '.join(legs), odds_prod, prob_prod
+
+parlay_rows = ''
+parlays = []
+if len(conf_pool) >= 6:
+    for i in range(3):
+        g = make_group(conf_pool[i*3:(i+1)*3]); parlays.append(('信心', g, min(m['stars'] for m in conf_pool[i*3:(i+1)*3])))
+if len(cold_pool) >= 1 and len(conf_pool) >= 2:
+    anchors = conf_pool[:2]
+    for cm in cold_pool[:2]:
+        g = make_group(anchors + [cm]); parlays.append(('爆冷', g, min(anchors[0]['stars'], anchors[1]['stars'], cm['stars'])))
+for typ, (comb, op, pp), st in parlays:
+    cls = 'parlay-confident' if typ == '信心' else 'parlay-upset'
+    parlay_rows += (f'<tr class="{cls}"><td><strong>{typ}串关</strong></td><td>{esc(comb)}</td>'
+                    f'<td style="font-family:monospace;font-weight:700;">{op:.2f}</td>'
+                    f'<td>{pp*100:.2f}%</td><td>{stars_html(st)}</td></tr>')
+
+stars_dist = Counter(m['stars'] for m in MATCHES)
+cold_cnt = sum(1 for m in MATCHES if m['signals'] != ['无明显冷门信号'])
+dir_cnt = sum(1 for m in MATCHES if m['dir_applied'])
+lam_mean = sum(m['lam_total'] for m in MATCHES) / len(MATCHES)
+
+strategy_sec = f'''
+<h2>五、核心策略与风险提示</h2>
+
+<div class="summary-grid">
+  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">{max(m['stars'] for m in MATCHES)}★</strong>（{stars_dist.get(3,0)}场3★ / {stars_dist.get(2,0)}场2★），无4-5★场次——冷门信号普遍存在，串关按实际评级从严组串。</p></div>
+  <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">{cold_cnt}</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
+  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
+  <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
+  <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
+</div>
+
+<div class="warning">
+  <strong>风险提示：</strong>足球比赛存在较大不确定性，伤病、红牌、点球、VAR等因素均可能影响比赛结果。本报告基于历史数据和AI模型分析，仅供参考，不构成投注建议。请理性购彩，量力而行。
+</div>
+
+<div class="parlay-section">
+  <h3>比分串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    {parlay_rows}
+  </table>
+  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，爆冷串关橙色背景（高信心托底+冷门预警场博高赔）。</div>
+</div>
+'''
+
+# ---------- 📊 动态校准与历史命中率 ----------
+cal_daily = ''.join(
+    f'<div class="cal-item"><span>{d["date"]}（{d["n"]}场）</span>'
+    f'<span>预测均值 <strong>{d["pred"]:.2f}</strong> | 实际均值 <strong>{d["actual"]:.2f}</strong> | 偏差比 <strong>{d["actual"]/d["pred"]:.2f}</strong></span></div>'
+    for d in CALIB.get('daily', []))
+calib_sec = f'''
+<h2>📊 动态校准与历史命中率</h2>
+<div class="calibration-box">
+  <div class="cal-item">
+    <span>近5期预测总进球均值</span>
+    <span><strong>{CALIB['pred_mean']:.2f}球</strong> | 实际均值: <strong>{CALIB['actual_mean']:.2f}球</strong></span>
+  </div>
+  <div class="cal-item">
+    <span>系统偏差比</span>
+    <span><strong style="color:var(--accent3);">{CALIB['ratio']:.2f}</strong> → 模型系统性低估 → λ×<strong>{CALIB['factor']:.2f}</strong> 已应用</span>
+  </div>
+  <div class="cal-item">
+    <span>H2H方向性再分配 (V2.2)</span>
+    <span><strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
+  </div>
+  <div class="cal-item">
+    <span>零封修正效果</span>
+    <span>零封频率≤15%→P(0)×0.6，16-25%→×0.8，26-40%→×1.0，&gt;40%→×1.2，逐场已应用</span>
+  </div>
+  {cal_daily}
+</div>
+'''
+
+now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+page = f'''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026-{TODAY[5:]} 竞彩足球深度分析报告</title>
+{CSS}
+</head>
+<body>
+
+<!-- Hero区域 -->
+<div class="hero">
+  <div class="container">
+    <h1>{TODAY} 竞彩足球深度分析报告</h1>
+    <div class="subtitle">AI泊松模型V2.2 · H2H方向性再分配 · 零封修正动态校准 · {len(MATCHES)}场比赛全面覆盖</div>
+    <div class="subtitle">数据更新时间: {now} (北京时间)</div>
+    <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
+  </div>
+</div>
+
+<div class="container">
+
+{overview_sec}
+{chart_sec}
+{deep_sec}
+{summary4_sec}
+{strategy_sec}
+{LEAGUE_SEC}
+{calib_sec}
+
+</div>
+
+<div class="footer">
+  <div class="container">
+    <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V2.2 · 指数衰减加权 · xG融合 · H2H总量因子+方向性再分配 · 市场混合 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
+  </div>
+</div>
+</body>
+</html>'''
+
+out = f'predictions/{TODAY}/index.html'
+with open(out, 'w', encoding='utf-8') as f:
+    f.write(page)
+print(f'已生成 {out}: {len(page)} 字符, {len(MATCHES)} 场卡片, 串关 {len(parlays)} 组')
