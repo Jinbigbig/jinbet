@@ -12,9 +12,12 @@
 import json
 import os
 import re
+import sys
+
+import datetime
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-TODAY = "2026-09-06"
+TODAY = sys.argv[1] if len(sys.argv) > 1 else datetime.date.today().isoformat()
 
 md = json.load(open(os.path.join(BASE, "scripts", "matches_data.json"), encoding="utf-8"))
 matches = md["matches"]
@@ -35,9 +38,18 @@ for key, v in results.items():
 for t in team_idx:
     team_idx[t].sort(key=lambda x: x[0], reverse=True)  # 最新在前
 
-# ---------- 2. 旧报告解析：排名 + 伤停新闻 ----------
-old_html = open(os.path.join(BASE, "predictions", TODAY, "index.html"),
-                encoding="utf-8").read()
+# ---------- 2. 旧报告解析：排名 + 伤停新闻（当日已生成过报告才有，缺失则跳过） ----------
+rank_map = {}
+news_map = {}
+_old_path = os.path.join(BASE, "predictions", TODAY, "index.html")
+old_html = ""
+if os.path.exists(_old_path):
+    old_html = open(_old_path, encoding="utf-8").read()
+    # 剥离 IDE 注入的 data-page-node-id 属性，避免污染解析
+    old_html = re.sub(r'\s*data-page-node-id="[^"]*"', "", old_html)
+
+def _strip(s):
+    return re.sub(r"<[^>]+>", "", s).strip()
 
 rank_map = {}
 for m in re.finditer(r'<span class="(home|away)"[^>]*>([^<]+?)(?:<sub class="team-rank">联赛第(\d+)</sub>)?</span>', old_html):
@@ -46,9 +58,6 @@ for m in re.finditer(r'<span class="(home|away)"[^>]*>([^<]+?)(?:<sub class="tea
         rank_map[name] = int(m.group(3))
 
 # 按 home-span 切分详情卡，段内找「伤停与赛前动态」后的 <p>
-def _strip(s):
-    return re.sub(r"<[^>]+>", "", s).strip()
-
 news_map = {}
 home_spans = []
 for sp in re.finditer(r'<span class="home"[^>]*>(.*?)</span>', old_html, re.S):
