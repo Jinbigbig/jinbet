@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # 由 _calc_result.json + _data_batch*.json 生成 2026-09-05 V2.2 报告
 # 版式严格复刻 2026-07-21 风格（与上午云端旧版一致）：CSS 直接取自 _old_0905.html
-import json, re, html, datetime
+import json, re, html, datetime, math
 from collections import Counter
 
 CALC = json.load(open('_calc_result.json', encoding='utf-8'))
@@ -58,6 +58,25 @@ def first_score(m):
     ts = m['top_scores']
     return (ts[0]['score'], ts[0]['prob']/100) if ts else ('1:1', 0.0)
 
+def total_goals_info(m):
+    """总进球倾向：λ主/客独立泊松相加，算 P(≥3球)/P(≥4球) 与总量众数。
+
+    首选比分是单一比分众数（天然偏小），总量判断以此为准——
+    防止「首选1:1」被误读为小球预测。
+    """
+    lt = m['lam_home'] + m['lam_away']
+    pois = lambda k: math.exp(-lt) * lt**k / math.factorial(k)
+    p_ge3 = 1 - sum(pois(k) for k in range(3))
+    p_ge4 = 1 - sum(pois(k) for k in range(4))
+    if p_ge3 >= 0.58:
+        tag, cls = '大球倾向', 'tag-red'
+    elif p_ge3 <= 0.42:
+        tag, cls = '小球倾向', 'tag-green'
+    else:
+        tag, cls = '均势总量', 'tag-yellow'
+    mode_k = max(range(9), key=pois)
+    return {'lt': lt, 'ge3': p_ge3, 'ge4': p_ge4, 'tag': tag, 'cls': cls, 'mode': mode_k}
+
 def score_odd(m, score):
     return m['odds'].get('比分', {}).get(score)
 
@@ -71,6 +90,7 @@ rows1 = ''
 for m in MATCHES:
     pr = m['prob']
     best = max([('主胜', pr['home'], 'tag-green'), ('平局', pr['draw'], 'tag-yellow'), ('客胜', pr['away'], 'tag-red')], key=lambda x: x[1])
+    tg = total_goals_info(m)
     o = m['odds']
     rows1 += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
               f'<td>{esc(m["league"])}</td>'
@@ -80,14 +100,15 @@ for m in MATCHES:
               f'<td style="font-family:monospace;">{esc(o.get("胜","-"))}</td>'
               f'<td style="font-family:monospace;">{esc(o.get("平","-"))}</td>'
               f'<td style="font-family:monospace;">{esc(o.get("负","-"))}</td>'
-              f'<td><span class="tag {best[2]}">{best[0]}</span></td></tr>')
+              f'<td><span class="tag {best[2]}">{best[0]}</span></td>'
+              f'<td><span class="tag {tg["cls"]}" title="λ总分{tg["lt"]:.2f}，≥3球{tg["ge3"]*100:.0f}%">{tg["tag"]} {tg["ge3"]*100:.0f}%</span></td></tr>')
 
 overview_sec = f'''
 <h2>一、比赛总览</h2>
 <div class="card">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th></tr></thead>
+      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th><th>总进球倾向</th></tr></thead>
       <tbody>{rows1}</tbody>
     </table>
   </div>
@@ -133,6 +154,7 @@ window.addEventListener('resize', function() {{ chart.resize(); }});
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     s1, p1 = first_score(m)
+    tg = total_goals_info(m)
     others = ' | '.join(f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in m['top_scores'][1:3]) or '-'
     hm = h2h_mean(m)
     hm_str = f'{hm:.2f} 球' if hm else '数据不足'
@@ -194,7 +216,7 @@ def match_card(m):
 
   {sig_html}
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V2.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
       <span class="pred-label">首选比分:</span>
       <span class="pred-score">{dash(s1)}</span>
@@ -207,6 +229,14 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
       {stars_html(m['stars'])}
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag {tg['cls']}" style="margin-right:0.5rem;">{tg['tag']}</span>
+      <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       {esc(m['chain'])}
@@ -230,12 +260,14 @@ for m in MATCHES:
     s1, p1 = first_score(m)
     second = f'{dash(ts[1]["score"])} ({ts[1]["prob"]:.1f}%)' if len(ts) > 1 else '-'
     cold = esc(m['signals'][0]) if m['signals'] and m['signals'] != ['无明显冷门信号'] else '-'
+    tg = total_goals_info(m)
     rows4 += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
               f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
               f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(s1)}</td>'
               f'<td>{p1*100:.1f}%</td>'
               f'<td style="font-family:monospace;">{esc(second)}</td>'
+              f'<td><span class="tag {tg["cls"]}" title="λ总分{tg["lt"]:.2f}">{tg["tag"]} {tg["ge3"]*100:.0f}%</span></td>'
               f'<td>{stars_html(m["stars"])}</td>'
               f'<td style="font-size:0.78rem;">{cold}</td></tr>')
 
@@ -244,7 +276,7 @@ summary4_sec = f'''
 <div class="card">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>信心</th><th>冷门</th></tr></thead>
+      <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>总进球倾向</th><th>信心</th><th>冷门</th></tr></thead>
       <tbody>{rows4}</tbody>
     </table>
   </div>
