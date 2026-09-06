@@ -224,7 +224,7 @@ def match_card(m):
     </div>
     <div class="pred-row">
       <span class="pred-label">次选/三选:</span>
-      <span class="pred-value">{esc(others)}</span>
+      <span class="pred-value">{esc(others)}（Top3合计 {sum(t['prob'] for t in m['top_scores'][:3]):.0f}%）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
