@@ -18,6 +18,15 @@ for i in range(1, 7):
             H2H[m['matchNumStr']] = m.get('h2h') or []
     except FileNotFoundError:
         pass
+# 回退：当日 matches_data.json 内自算 H2H（results_data 标定库推导）
+try:
+    _md = json.load(open('scripts/matches_data.json', encoding='utf-8'))
+    for m in _md.get('matches', []):
+        if m['matchNumStr'] not in H2H or not H2H[m['matchNumStr']]:
+            if m.get('h2h'):
+                H2H[m['matchNumStr']] = m['h2h']
+except FileNotFoundError:
+    pass
 
 OLD = open('_old_0905.html', encoding='utf-8').read()
 CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)

@@ -15,7 +15,7 @@ import datetime
 from collections import Counter
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-TODAY = "2026-09-05"
+TODAY = "2026-09-06"
 DECAY = 0.85
 HOME_BOOST = 1.15   # 动态主客场系数回退默认值
 AWAY_DISCOUNT = 0.90
@@ -551,7 +551,7 @@ def compute_calibration():
     league_buckets = {}
 
     for i in range(1, 8):
-        d = (datetime.date(2026, 9, 5) - datetime.timedelta(days=i)).isoformat()
+        d = (datetime.date(2026, 9, 6) - datetime.timedelta(days=i)).isoformat()
         pred = read_daily_pred(d)
         if not pred:
             continue
