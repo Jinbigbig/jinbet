@@ -78,6 +78,51 @@ def league_baseline(league):
     return float(LEAGUE_PROFILE.get("shrink", {}).get("fallback_mean", 2.83))
 
 
+def league_score_freq(league):
+    """返回该联赛平滑后的 7x7 经验比分频率 {(h,a): p}；无数据返回 None。
+
+    数据来自 league_profile.json 的 score_freq（已按 K=50 向均匀分布收缩），
+    用于第七步泊松矩阵的形状混合（walk-forward: Brier -0.45%，低比分四格校准改善）。
+    """
+    prof = LEAGUE_PROFILE.get("leagues", {})
+    g = prof.get(league)
+    if not g:
+        for k, v in prof.items():
+            if k and league and (k in league or league in k):
+                g = v
+                break
+    if not g or "score_freq" not in g:
+        return None
+    freq = {}
+    try:
+        for k, v in g["score_freq"].items():
+            h, a = k.split("-")
+            freq[(int(h), int(a))] = float(v)
+    except (ValueError, KeyError):
+        return None
+    return freq or None
+
+
+def mix_score_matrix(grid, league):
+    """第七步形状后处理：模型矩阵与联赛经验比分频率按 w=0.3 混合。
+
+    依据（2026-09-06 walk-forward 1992 场）：纯泊松 Brier 0.9303 → 混合 0.9261(-0.45%)；
+    0-0 预测 9.5%→8.1%（实际 6.5%），1-0/0-1/1-1 校准同步改善。
+    对照：Dixon-Coles τ 仅 -0.09% 且 0-0 校准恶化，故弃用。
+    """
+    freq = league_score_freq(league)
+    if not freq:
+        return grid
+    w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.3))
+    out = {}
+    for key, p in grid.items():
+        out[key] = (1 - w) * p + w * freq.get(key, 0.0)
+    tot = sum(out.values())
+    if tot <= 0:
+        return grid
+    return {k: v / tot for k, v in out.items()}
+
+
 def shrink_to_league(total_lambda, league, league_note_out=None):
     """联赛先验收缩：λ_total_final = λ_total*(1-w) + 联赛基线均值*w
 
@@ -125,13 +170,15 @@ V3_CONFIG = {
     "H2H_LEAGUE_NORM": {"enabled": True, "min_samples": 0,
                         "note": "H2H分档阈值按联赛基线归一(1.41/1.06/0.88/0.71×)，"
                                 "解决德甲3.0球≠韩职3.0球的问题。弱验证(样本80场)，需持续观察"},
-    "LEAGUE_DIST_SHAPE": {"enabled": False, "min_samples": 200,
-                          "note": "联赛级分布形状先验：0-0率跨联赛相差10倍(法乙20.5% vs 欧罗巴2.0%)，"
-                                  "均值相同形状也不同。用 league_profile 的 p00/p_under15/p_over35 调 Dixon-Coles τ"},
+    "LEAGUE_DIST_SHAPE": {"enabled": True, "min_samples": 0,
+                          "note": "联赛经验比分频率混合(第七步B, w=0.3, K=50收缩)："
+                                  "walk-forward Brier -0.45%，0-0高估+3.0pp→+1.6pp，1-1校准改善。"
+                                  "数据: league_profile.json score_freq(34联赛)"},
     "PLATT_ISOTONIC": {"enabled": False, "min_samples": 300,
                        "note": "胜平负/比分概率可靠性校准(Platt/isotonic)，Brier评估"},
-    "DIXON_COLES_TAU": {"enabled": False, "min_samples": 200,
-                        "note": "低比分(0-0/1-0/0-1/1-1)相依性τ修正，解决只校准均值不管分布形状"},
+    "DIXON_COLES_TAU": {"enabled": False, "min_samples": 0, "rejected": True,
+                        "note": "❌ 2026-09-06 验证不通过：全局ρ网格搜索最优-0.12，Brier仅-0.09%，"
+                                "且0-0校准恶化(9.5%→10.7%，实际6.5%)。由 LEAGUE_DIST_SHAPE 经验混合替代"},
     "BRIER_OPT": {"enabled": False, "min_samples": 500,
                   "note": "周期寻优衰减0.85/xG权重/H2H权重/市场混合α/clamp边界，walk-forward防过拟合"},
     "HEDGE_ENSEMBLE": {"enabled": False, "min_samples": 500,
@@ -197,6 +244,8 @@ def roadmap_status(n_samples):
         need = cfg["min_samples"]
         if cfg["enabled"]:
             state = "ON"
+        elif cfg.get("rejected"):
+            state = "REJECTED"
         elif need and n_samples >= need:
             state = "READY"
         else:
@@ -590,6 +639,10 @@ def calc_match(m, calib):
             grid[(k1, k2)] = p
     tot = sum(grid.values())
     grid = {k: v / tot for k, v in grid.items()}
+    # ---------- 第七步B：联赛经验比分频率混合（LEAGUE_DIST_SHAPE，V3.1）----------
+    # 泊松形状与联赛实测比分分布存在系统性偏差（0-0 高估、1-1 低估45%），
+    # 与联赛平滑经验频率混合 w=0.3：walk-forward Brier -0.45%，低比分四格校准改善
+    grid = mix_score_matrix(grid, league)
     ranked = sorted(grid.items(), key=lambda x: -x[1])[:4]
 
     # 胜平负概率（由修正后的分布求和）
