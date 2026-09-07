@@ -36,7 +36,29 @@ CSS += '''
   .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
     color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
 </style>'''
-LEAGUE_SEC = OLD[OLD.find('<h2>六、当日赛事联赛形势</h2>'):OLD.find('<h2>📊 动态校准与历史命中率</h2>')]
+# 第六节已改为按当日实际联赛动态生成（见 build_league_sec），不再回收旧报告静态段落
+
+def build_league_sec(matches):
+    """按当日实际联赛动态生成第六节（旧版为回收上一份报告的静态段落，会串场）"""
+    from collections import OrderedDict
+    grouped = OrderedDict()
+    for m in matches:
+        grouped.setdefault(m.get('league') or '未知', []).append(m)
+    out = ['<h2>六、当日赛事联赛形势</h2>', '<div class="league-overview-grid">']
+    for lg, ms in grouped.items():
+        out.append('  <div class="league-card">')
+        out.append(f'    <h4>{esc(lg)} ({len(ms)}场)</h4>')
+        out.append('    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">')
+        for m in ms:
+            sc, pr = first_score(m)
+            out.append(f"      <li>{m.get('matchNumStr','')} {rank_tag(m['home'], m.get('home_rank'))}"
+                       f" vs {rank_tag(m['away'], m.get('away_rank'))}"
+                       f" — 总进球λ {m.get('lam_total',0):.2f}，首选 {sc}（{pr*100:.1f}%）</li>")
+        out.append('    </ul>')
+        out.append('  </div>')
+    out.append('</div>')
+    return '\n'.join(out)
+
 
 def esc(s): return html.escape(str(s if s is not None else ''))
 
@@ -423,6 +445,8 @@ calib_sec = f'''
 '''
 
 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+league_sec = build_league_sec(MATCHES)
+
 page = f'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -453,7 +477,7 @@ page = f'''<!DOCTYPE html>
 {deep_sec}
 {summary4_sec}
 {strategy_sec}
-{LEAGUE_SEC}
+{league_sec}
 {calib_sec}
 
 </div>
