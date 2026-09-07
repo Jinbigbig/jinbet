@@ -26,6 +26,12 @@ LIMIT_PCT = 0.25    # 单侧调整限幅
 MAX_TOTAL = 4.20
 MIN_TOTAL = 1.60
 MAX_SINGLE = 3.20
+# 第七步B 混合权重随强弱差自适应衰减（2026-09-07 实装，walk-forward 2462 场验证）
+# 背景：固定 w=0.5 会用联赛平均形状稀释极端热门，实测 λ比≥1.8 的场次系统性低估强队 7~9pp
+#       （周一005 利雅新月：纯泊松主胜 73.9% → 混合后 57.8%，市场隐含 79.2%）
+# 公式：w_eff = w0 * max(FLOOR, 1 - K*(λ比-1))，λ比 = max(λh,λa)/min(λh,λa)
+ADAPTIVE_MIX_K = 0.20      # 衰减斜率：λ比=2 → w0×0.80；λ比=3 → w0×0.60
+ADAPTIVE_MIX_FLOOR = 0.35  # 衰减下限，保留一部分经验形状修正
 
 # ---------------------------------------------------------------- 联赛进球环境画像
 # 来源：results_history/ 全量赛果离线标定（7174 场）
@@ -105,7 +111,7 @@ def league_score_freq(league):
     return freq or None
 
 
-def mix_score_matrix(grid, league):
+def mix_score_matrix(grid, league, lam_ratio=None):
     """第七步形状后处理：模型矩阵与联赛经验比分频率按 w=0.5 混合。
 
     依据（2026-09-06 晚 二次 walk-forward 2438 场，前60%训练/后40%验证，双指标一致）：
@@ -113,11 +119,22 @@ def mix_score_matrix(grid, league):
       Brier 同步改善：0.9376 → 0.9317 → 0.9296 → 0.9291；后40%段同样成立（14.14%/14.55%）。
       w=0.5~0.7 为平台区，取保守值 0.5（保留更多比赛特异性信号）。
       对照：「大球导向」（P(≥3)≥58% 时强选 3+ 球比分）Top1 降至 11.36%/8.66%，否决。
+
+    【2026-09-07 自适应衰减】lam_ratio = max(λh,λa)/min(λh,λa) 越大（强弱越悬殊），
+    经验频率的稀释越有害——联赛平均形状会把强队胜率拉回 40% 出头。
+    故 w_eff = w0 * max(FLOOR, 1 - K*(λ比-1))。walk-forward 2462 场验证（k=0.20）：
+      1X2 Brier 0.6303 → 0.6279（配对 +0.0025，Z=+2.3 显著）；后40%段 0.6203 → 0.6149；
+      5 段时序中 4 段一致改善；
+      Top1 13.28% → 13.04%（-0.24pp，Z=-0.8 不显著，噪声范围内）；
+      强队方向校准偏差：λ比≥2.5 桶 -7.2pp → +1.0pp，λ比1.8~2.5 桶 -9.1pp → -6.8pp。
+    注意：这里的衰减只作用于「形状混合」，与 λ clamp（MAX_TOTAL 等）无关。
     """
     freq = league_score_freq(league)
     if not freq:
         return grid
     w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
+    if lam_ratio and lam_ratio > 1.0:
+        w *= max(ADAPTIVE_MIX_FLOOR, 1.0 - ADAPTIVE_MIX_K * (lam_ratio - 1.0))
     out = {}
     for key, p in grid.items():
         out[key] = (1 - w) * p + w * freq.get(key, 0.0)
@@ -365,9 +382,11 @@ V3_CONFIG = {
                         "note": "H2H分档阈值按联赛基线归一(1.41/1.06/0.88/0.71×)，"
                                 "解决德甲3.0球≠韩职3.0球的问题。弱验证(样本80场)，需持续观察"},
     "LEAGUE_DIST_SHAPE": {"enabled": True, "min_samples": 0,
-                          "note": "联赛经验比分频率混合(第七步B, w=0.3, K=50收缩)："
+                          "note": "联赛经验比分频率混合(第七步B, w=0.5, K=50收缩)："
                                   "walk-forward Brier -0.45%，0-0高估+3.0pp→+1.6pp，1-1校准改善。"
-                                  "数据: league_profile.json score_freq(34联赛)"},
+                                  "数据: league_profile.json score_freq(34联赛)。"
+                                  "2026-09-07 加自适应衰减 w_eff=w0×max(0.35,1-0.20×(λ比-1))："
+                                  "1X2 Brier -0.38%(Z=+2.3)，λ比≥2.5桶强队低估-7.2pp→+1.0pp，Top1 -0.24pp(不显著)"},
     "PLATT_ISOTONIC": {"enabled": True, "min_samples": 300,
                        "note": "胜平负 Platt 校准已启用(V3.1)：Brier -0.37%、平局偏差-3.8pp→+0.2pp；"
                                "isotonic/温度缩放/对角线膨胀均已验证劣于 Platt，弃用"},
@@ -837,7 +856,9 @@ def calc_match(m, calib):
     # ---------- 第七步B：联赛经验比分频率混合（LEAGUE_DIST_SHAPE，V3.1）----------
     # 泊松形状与联赛实测比分分布存在系统性偏差（0-0 高估、1-1 低估45%），
     # 与联赛平滑经验频率混合 w=0.3：walk-forward Brier -0.45%，低比分四格校准改善
-    grid = mix_score_matrix(grid, league)
+    _lam_lo, _lam_hi = min(lam_h, lam_a), max(lam_h, lam_a)
+    _lam_ratio = (_lam_hi / _lam_lo) if _lam_lo > 1e-9 else 99.0
+    grid = mix_score_matrix(grid, league, _lam_ratio)
     ranked = sorted(grid.items(), key=lambda x: -x[1])[:4]
 
     # 胜平负概率（由修正后的分布求和）
