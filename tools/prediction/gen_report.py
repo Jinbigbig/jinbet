@@ -361,6 +361,9 @@ for typ, gname, (comb, op, pp), st, note in parlays:
                     f'<td>{pp*100:.2f}%</td><td>{stars_html(st)}</td></tr>')
 
 stars_dist = Counter(m['stars'] for m in MATCHES)
+top_star = max(stars_dist) if stars_dist else 0
+dist_desc = ' / '.join(f"{stars_dist.get(s,0)}场{s}★" for s in (5, 4, 3, 2) if stars_dist.get(s, 0))
+hi_note = '无4★以上场次——' if top_star < 4 else (f"共{stars_dist.get(4,0)+stars_dist.get(5,0)}场高信心场次，" if top_star >= 4 else '')
 cold_cnt = sum(1 for m in MATCHES if m['signals'] != ['无明显冷门信号'])
 dir_cnt = sum(1 for m in MATCHES if m['dir_applied'])
 lam_mean = sum(m['lam_total'] for m in MATCHES) / len(MATCHES)
@@ -369,7 +372,7 @@ strategy_sec = f'''
 <h2>五、核心策略与风险提示</h2>
 
 <div class="summary-grid">
-  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">{max(m['stars'] for m in MATCHES)}★</strong>（{stars_dist.get(3,0)}场3★ / {stars_dist.get(2,0)}场2★），无4-5★场次——冷门信号普遍存在，串关按实际评级从严组串。</p></div>
+  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">{top_star}★</strong>（{dist_desc}），{hi_note}冷门信号普遍存在，串关按实际评级从严组串。</p></div>
   <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">{cold_cnt}</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
