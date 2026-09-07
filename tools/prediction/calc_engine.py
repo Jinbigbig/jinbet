@@ -263,7 +263,11 @@ def fit_platt_params(force=False):
     gf, ga, zr = {}, {}, {}
     lg_tot, lg_hist = {}, {}
     MAXG = 8
-    mix_w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.3))
+    # 与 mix_score_matrix 同源（实际值取 league_profile.json 的 score_mix.w，当前 0.5）。
+    # 历史遗留：此处字面量曾为 0.3，是 w=0.3 时代的 fallback，2026-09-06 改 w=0.5 时漏同步；
+    # 因实际读档案值故从未生效，仅为代码卫生对齐，无功能影响。
+    # 注意：实跑已启用自适应衰减(w_eff 随 λ比)，此处仍是固定 w —— 轻微不同源，影响有限。
+    mix_w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
     k_shrink = float(LEAGUE_PROFILE.get("score_mix", {}).get("k_shrink", 50))
     shrink_w = float(LEAGUE_PROFILE.get("shrink", {}).get("w", 0.25))
     samples = []
