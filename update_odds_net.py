@@ -184,6 +184,16 @@ RESULT_TEAM_NAME_MAP = {
     '狼队': '狼队', '伍尔弗汉普顿': '狼队', '伍尔弗': '狼队',
     # 英超/社区盾：曼城/曼彻斯特城 统一
     '曼城': '曼城', '曼彻斯特城': '曼城',
+    # 【欧冠/西甲】皇家马德里 → 皇马（2026-09-08 修复）
+    # 现象：体彩顺序行返回官方全名"皇家马德里"（2041xxx，常无赔率），
+    #       SCHEDULE/外部源用短名"皇马"（5502xxx，带赔率），两者未归一 →
+    #       ODDS 里同场次出现两个键，UI 三处列表（赛果录入/赛果预测/添加记录）重复渲染一条 008。
+    '皇家马德里': '皇马',
+    # 沙职：胡巴尔卡德西亚 → 胡巴卡德（2026-09-08，同 008 类别名行问题）
+    '胡巴尔卡德西亚': '胡巴卡德',
+    # 同理：巴塞罗那 → 巴萨（预置，避免同日欧冠/西甲再出别名行）
+    '巴塞罗那': '巴萨',
+    '马德里竞技': '马竞',
     # === 从原 TEAM_NAME_MAP 合并的有用变体映射（国家队/联赛，消除变体差异） ===
     '民主刚果': '刚果（金）', '刚果金': '刚果（金）', '刚果(金)': '刚果（金）',
     '乌兹别克': '乌兹别克斯坦', '乌兹别克斯坦': '乌兹别克斯坦',
@@ -646,6 +656,107 @@ def update_html_schedule(html_content, new_schedule):
     html_content = re.sub(schedule_pattern, schedule_str, html_content)
     
     return html_content
+
+
+def prune_empty_odds_aliases(odds_data, schedule=None):
+    """清理 ODDS 中的重复条目（canonical 铁律的最后一道防线）。
+
+    两类重复都会让前端三处列表（赛果录入/赛果预测/添加记录）多渲染一行：
+    A. 空赔率别名行：体彩顺序行（2041xxx，官方全名，常无赔率）与外部源行
+       （5502xxx，短名，带赔率）指向同一场 ⇒ 两个键，一个空一个满。
+    B. 主客写反的孪生行：同一场比赛被存成 `A_B` 与 `B_A` 两条，且都带赔率
+       （2026-08-31 ~ 09-07 的存量数据即如此，ODDS 条目数正好是赛程的 2 倍）。
+
+    判定优先级（同 (日期, matchNumStr) 分组内）：
+      1. 若 SCHEDULE 定义了该编号 ⇒ 只保留主客方向与之一致的键（canonical 队名比较）
+      2. 否则若组内既有带赔率又有空赔率 ⇒ 删除所有空赔率的
+      3. 否则（无法安全判定）⇒ 原样保留，不动
+    返回被删除的 key 列表。
+    """
+    schedule = schedule or {}
+
+    def _has_odds(v):
+        return bool(v.get('胜') or v.get('平') or v.get('负')
+                    or v.get('比分') or v.get('总进球') or v.get('半全场'))
+
+    def _split_key(key):
+        """'2026-09-08_皇马_国际米兰' -> ('2026-09-08', '皇马', '国际米兰')"""
+        parts = key.split('_')
+        if len(parts) < 3:
+            return None, None, None
+        return parts[0], parts[1], '_'.join(parts[2:])
+
+    # 预建：日期+编号 -> (主, 客) 的 canonical 方向表
+    sched_dir = {}
+    for date, games in schedule.items():
+        for g in games:
+            num = g.get('matchNumStr') or ''
+            if not num:
+                continue
+            sched_dir[(date, num)] = (canonical_team_name(g.get('home', '')),
+                                      canonical_team_name(g.get('away', '')))
+
+    groups = {}
+    for key, v in odds_data.items():
+        date, _home, _away = _split_key(key)
+        num = v.get('matchNumStr') or ''
+        if not date or not num:
+            continue
+        groups.setdefault((date, num), []).append(key)
+
+    removed = []
+    for (date, num), keys in groups.items():
+        if len(keys) < 2:
+            continue
+
+        keep = None
+        # 规则 1：以 SCHEDULE 的主客方向为准
+        want = sched_dir.get((date, num))
+        if want:
+            matched = [k for k in keys
+                       if (canonical_team_name(_split_key(k)[1] or ''),
+                           canonical_team_name(_split_key(k)[2] or '')) == want]
+            if matched:
+                keep = set(matched)
+
+        # 规则 2：保留带赔率的，删掉空赔率的
+        if keep is None:
+            with_odds = [k for k in keys if _has_odds(odds_data[k])]
+            if with_odds and len(with_odds) < len(keys):
+                keep = set(with_odds)
+
+        # 规则 3：无法安全判定 → 不动
+        if keep is None:
+            continue
+
+        for k in keys:
+            if k not in keep:
+                odds_data.pop(k, None)
+                removed.append(k)
+
+    # 兜底：按 (日期, canonical 队名无序对) 再扫一遍
+    # 覆盖"别名行没有 matchNumStr"的情况（如 胡巴尔卡德西亚/胡巴卡德），
+    # 同一个 canonical 对只保留：有编号的优先，其次有赔率的。
+    pair_groups = {}
+    for key in list(odds_data.keys()):
+        date, home, away = _split_key(key)
+        if not (date and home and away):
+            continue
+        ch, ca = canonical_team_name(home), canonical_team_name(away)
+        pair_groups.setdefault((date, frozenset([ch, ca])), []).append(key)
+
+    for (_date, _pair), keys in pair_groups.items():
+        if len(keys) < 2:
+            continue
+        def _score(k):
+            v = odds_data[k]
+            return (1 if v.get('matchNumStr') else 0, 1 if _has_odds(v) else 0)
+        best = max(keys, key=_score)
+        for k in keys:
+            if k != best and k not in removed:
+                odds_data.pop(k, None)
+                removed.append(k)
+    return removed
 
 
 def update_html_odds(html_content, schedule, odds_data):
@@ -1737,6 +1848,15 @@ def main():
             has_odds = bool(matched_odds.get(key, {}).get('胜'))
             icon = '✅' if has_odds else '⬜'
             print(f'  {date} {game["home"]} vs {game["away"]}: {icon}')
+
+    # 清理 ODDS 中的空赔率别名行（同一日期+编号下，保留带赔率的正名行）
+    removed_alias_keys = prune_empty_odds_aliases(merged_odds, schedule)
+    if removed_alias_keys:
+        print(f'\n[ODDS 去重] 移除 {len(removed_alias_keys)} 条空赔率别名行：')
+        for rk in removed_alias_keys:
+            print(f'    - {rk}')
+    else:
+        print('\n[ODDS 去重] 未发现空赔率别名行')
 
     print('\n[4/4] 更新 index.html...')
     new_html = update_html_schedule(html_content, schedule)
