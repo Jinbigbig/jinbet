@@ -34,24 +34,6 @@ body {
 .hero h1 { font-weight: 700; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
 .hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
 .hero .disclaimer { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block; }
-
-/* ===== 目录导航：Hero 下方居中悬浮 ===== */
-.toc-nav {
-  position: sticky; top: 0; z-index: 999;
-  display: flex; justify-content: center; flex-wrap: wrap; gap: 0.4rem;
-  padding: 0.7rem 1rem; margin: -1.2rem auto 1.5rem;
-  background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
-  border: 1px solid var(--rule); border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
-  max-width: 980px;
-}
-.toc-nav a {
-  text-decoration: none; color: var(--ink); font-size: 0.82rem; font-weight: 600;
-  padding: 0.35rem 0.8rem; border-radius: 20px; background: var(--bg);
-  border: 1px solid var(--rule); transition: all 0.2s; white-space: nowrap;
-}
-.toc-nav a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-
 h2 { font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
 h3 { font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink); }
 h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem; }
@@ -65,7 +47,6 @@ h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: u
 .match-teams .vs { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; }
 .match-teams .home { color: var(--home); }
 .match-teams .away { color: var(--away); }
-.match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1; color: var(--muted); margin-top: 0.18rem; text-align: right; opacity: 0.9; }
 .odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
 .odds-item { text-align: center; padding: 0.75rem 0.5rem; background: var(--bg); border-radius: 8px; }
 .odds-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
@@ -106,27 +87,30 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
 .summary-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 10px; padding: 1.25rem; }
 .summary-card .s-match { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
-.summary-card .s-pred { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent); }
-.summary-card .s-confidence { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
 .league-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
 .league-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; }
+.calibration-box { background: var(--bg2); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--rule); margin: 1rem 0; }
+.cal-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.85rem; }
+.cal-item:last-child { border-bottom: none; }
+.parlay-section { margin: 1rem 0; }
+.parlay-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.parlay-table th { background: var(--bg); padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; }
+.parlay-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
+.parlay-table tr.parlay-confident { background: rgba(46,204,113,0.1); }
+.parlay-table tr.parlay-upset { background: rgba(230,126,34,0.1); }
+.parlay-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.75rem; padding: 0.5rem; background: var(--bg); border-radius: 6px; }
 .footer { background: var(--bg2); border-top: 1px solid var(--rule); padding: 2rem 0; margin-top: 3rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
-.footer .sources { text-align: left; max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
-.footer .sources h3 { font-size: 1rem; margin-bottom: 0.75rem; }
-.footer .sources ol { padding-left: 1.2rem; font-size: 0.8rem; color: var(--muted); }
-.footer .sources li { margin-bottom: 0.45rem; overflow-wrap: break-word; word-break: break-all; }
-.footer .sources .src-title { color: var(--ink); word-break: normal; }
-.footer .sources .src-url { display: block; margin-top: 0.1rem; font-size: 0.78rem; color: var(--accent); word-break: break-all; }
-.footer .sources a { word-break: break-all; }
-.chart-container { width: 100%; height: 420px; margin: 1rem 0; }
+.chart-container { width: 100%; height: 400px; margin: 1rem 0; }
 @media (max-width: 768px) {
   .hero h1 { font-size: 1.5rem; }
   .match-teams { font-size: 1.1rem; gap: 0.75rem; }
   .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
   .container { padding: 0 1rem; }
-  .toc-nav { border-radius: 0; margin: 0 0 1rem; }
-  .toc-nav a { font-size: 0.74rem; padding: 0.25rem 0.6rem; }
 }
+</style>
+<style>
+  .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
+    color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
 </style>
 </head>
 <body>
@@ -135,48 +119,27 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 <div class="hero">
   <div class="container">
     <h1>2026-09-08 竞彩足球深度分析报告</h1>
-    <div class="subtitle">周二 · 12场比赛全面覆盖：英超/西甲/意甲/德甲欧冠新赛制首轮 · 韩职 · 英冠 · 荷甲 · 沙特联 · 英联杯 · 解放者杯1/4决赛</div>
-    <div class="subtitle">数据更新时间: 2026-09-08（北京时间） · 赔率取自网易竞彩</div>
+    <div class="subtitle">AI泊松模型V2.2 · H2H方向性再分配 · 零封修正动态校准 · 12场比赛全面覆盖</div>
+    <div class="subtitle">数据更新时间: 2026-09-08 14:06 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
 
-<!-- 目录导航 -->
-<nav class="toc-nav">
-  <a href="#overview">一、比赛总览</a>
-  <a href="#confidence">二、市场信心指数</a>
-  <a href="#deep">三、逐场深度分析</a>
-  <a href="#scores">四、比分预测汇总</a>
-  <a href="#strategy">五、核心策略与风险提示</a>
-  <a href="#league-info">六、联赛杯赛附加信息</a>
-</nav>
-
 <div class="container">
 
-<h2 id="overview">一、比赛总览</h2>
+
+<h2>一、比赛总览</h2>
 <div class="card">
   <div class="table-wrap">
     <table>
-      <thead><tr><th>编号</th><th>联赛</th><th>时间</th><th>主队</th><th>VS</th><th>客队</th><th>胜/平/负</th><th>让球</th><th>倾向</th></tr></thead>
-      <tbody>
-        <tr><td><span class="tag tag-blue">周二001</span></td><td>韩职</td><td>18:30</td><td>蔚山现代<sub class="rank-tag">[3]</sub></td><td style="text-align:center;color:var(--muted);">VS</td><td>首尔FC<sub class="rank-tag">[1]</sub></td><td style="font-family:monospace;">3.21/3.5/1.88</td><td style="font-family:monospace;">+1</td><td><span class="tag tag-red">客队不败</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二002</span></td><td>欧冠</td><td>00:45</td><td>雅典AEK</td><td style="text-align:center;color:var(--muted);">VS</td><td>LASK林茨</td><td style="font-family:monospace;">1.62/3.75/4.08</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二003</span></td><td>欧冠</td><td>00:45</td><td>布鲁日</td><td style="text-align:center;color:var(--muted);">VS</td><td>维拉</td><td style="font-family:monospace;">2.41/3.35/2.41</td><td style="font-family:monospace;">+1</td><td><span class="tag tag-green">主队不败</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二004</span></td><td>荷甲</td><td>00:45</td><td>奈梅亨<sub class="rank-tag">[10]</sub></td><td style="text-align:center;color:var(--muted);">VS</td><td>SBV精英<sub class="rank-tag">[5]</sub></td><td style="font-family:monospace;">1.48/4.3/4.55</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二005</span></td><td>沙职</td><td>02:00</td><td>胡巴卡德<sub class="rank-tag">[5]</sub></td><td style="text-align:center;color:var(--muted);">VS</td><td>吉达国民<sub class="rank-tag">[4]</sub></td><td style="font-family:monospace;">1.75/3.8/3.4</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-yellow">客队受让</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二006</span></td><td>英冠</td><td>02:45</td><td>南安普敦<sub class="rank-tag">[19]</sub></td><td style="text-align:center;color:var(--muted);">VS</td><td>斯旺西<sub class="rank-tag">[1]</sub></td><td style="font-family:monospace;">1.68/3.6/3.9</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主队不败</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二007</span></td><td>英联赛杯</td><td>02:45</td><td>桑德兰</td><td style="text-align:center;color:var(--muted);">VS</td><td>赫尔城</td><td style="font-family:monospace;">1.53/3.65/5.0</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二008</span></td><td>欧冠</td><td>03:00</td><td>皇马</td><td style="text-align:center;color:var(--muted);">VS</td><td>国际米兰</td><td style="font-family:monospace;">1.42/4.4/5.05</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜防平</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二009</span></td><td>欧冠</td><td>03:00</td><td>多特蒙德</td><td style="text-align:center;color:var(--muted);">VS</td><td>比利亚雷</td><td style="font-family:monospace;">1.57/4.0/4.15</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二010</span></td><td>欧冠</td><td>03:00</td><td>里尔</td><td style="text-align:center;color:var(--muted);">VS</td><td>贝蒂斯</td><td style="font-family:monospace;">1.9/3.3/3.33</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主队不败</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二011</span></td><td>欧冠</td><td>03:00</td><td>波尔图</td><td style="text-align:center;color:var(--muted);">VS</td><td>曼城</td><td style="font-family:monospace;">4.85/4.05/1.48</td><td style="font-family:monospace;">+1</td><td><span class="tag tag-red">客胜防平</span></td></tr>
-        <tr><td><span class="tag tag-blue">周二012</span></td><td>解放者杯</td><td>06:00</td><td>弗鲁米嫩</td><td style="text-align:center;color:var(--muted);">VS</td><td>普拉滕斯</td><td style="font-family:monospace;">1.51/3.3/6.1</td><td style="font-family:monospace;">-1</td><td><span class="tag tag-green">主胜</span></td></tr>
-      </tbody>
+      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th><th>总进球倾向</th></tr></thead>
+      <tbody><tr><td><span class="tag tag-blue">周二001</span></td><td>韩职</td><td>蔚山现代</td><td style="text-align:center;color:var(--muted);">VS</td><td>首尔FC</td><td style="font-family:monospace;">3.36</td><td style="font-family:monospace;">3.58</td><td style="font-family:monospace;">1.81</td><td><span class="tag tag-red">客胜</span></td><td><span class="tag tag-red" title="λ总分3.02，≥3球58%">大球倾向 58%</span></td></tr><tr><td><span class="tag tag-blue">周二002</span></td><td>欧冠</td><td>雅典AEK</td><td style="text-align:center;color:var(--muted);">VS</td><td>LASK林茨</td><td style="font-family:monospace;">1.59</td><td style="font-family:monospace;">3.85</td><td style="font-family:monospace;">4.15</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.35，≥3球65%">大球倾向 65%</span></td></tr><tr><td><span class="tag tag-blue">周二003</span></td><td>欧冠</td><td>布鲁日</td><td style="text-align:center;color:var(--muted);">VS</td><td>维拉</td><td style="font-family:monospace;">2.41</td><td style="font-family:monospace;">3.35</td><td style="font-family:monospace;">2.41</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.33，≥3球65%">大球倾向 65%</span></td></tr><tr><td><span class="tag tag-blue">周二004</span></td><td>荷甲</td><td>奈梅亨</td><td style="text-align:center;color:var(--muted);">VS</td><td>SBV精英</td><td style="font-family:monospace;">1.48</td><td style="font-family:monospace;">4.3</td><td style="font-family:monospace;">4.55</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.10，≥3球60%">大球倾向 60%</span></td></tr><tr><td><span class="tag tag-blue">周二005</span></td><td>沙职</td><td>胡巴卡德</td><td style="text-align:center;color:var(--muted);">VS</td><td>吉达国民</td><td style="font-family:monospace;">1.75</td><td style="font-family:monospace;">3.8</td><td style="font-family:monospace;">3.4</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.21，≥3球62%">大球倾向 62%</span></td></tr><tr><td><span class="tag tag-blue">周二006</span></td><td>英冠</td><td>南安普敦<sub class="rank-tag">[19]</sub></td><td style="text-align:center;color:var(--muted);">VS</td><td>斯旺西<sub class="rank-tag">[1]</sub></td><td style="font-family:monospace;">1.67</td><td style="font-family:monospace;">3.6</td><td style="font-family:monospace;">3.95</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.43，≥3球44%">均势总量 44%</span></td></tr><tr><td><span class="tag tag-blue">周二007</span></td><td>英联赛杯</td><td>桑德兰</td><td style="text-align:center;color:var(--muted);">VS</td><td>赫尔城</td><td style="font-family:monospace;">1.53</td><td style="font-family:monospace;">3.65</td><td style="font-family:monospace;">5</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-green" title="λ总分2.27，≥3球40%">小球倾向 40%</span></td></tr><tr><td><span class="tag tag-blue">周二008</span></td><td>欧冠</td><td>皇马</td><td style="text-align:center;color:var(--muted);">VS</td><td>国际米兰</td><td style="font-family:monospace;">1.42</td><td style="font-family:monospace;">4.4</td><td style="font-family:monospace;">5.05</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.50，≥3球68%">大球倾向 68%</span></td></tr><tr><td><span class="tag tag-blue">周二009</span></td><td>欧冠</td><td>多特蒙德</td><td style="text-align:center;color:var(--muted);">VS</td><td>比利亚雷</td><td style="font-family:monospace;">1.57</td><td style="font-family:monospace;">4</td><td style="font-family:monospace;">4.15</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.30，≥3球64%">大球倾向 64%</span></td></tr><tr><td><span class="tag tag-blue">周二010</span></td><td>欧冠</td><td>里尔</td><td style="text-align:center;color:var(--muted);">VS</td><td>贝蒂斯</td><td style="font-family:monospace;">1.9</td><td style="font-family:monospace;">3.3</td><td style="font-family:monospace;">3.33</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.72，≥3球51%">均势总量 51%</span></td></tr><tr><td><span class="tag tag-blue">周二011</span></td><td>欧冠</td><td>波尔图</td><td style="text-align:center;color:var(--muted);">VS</td><td>曼城</td><td style="font-family:monospace;">4.85</td><td style="font-family:monospace;">4.05</td><td style="font-family:monospace;">1.48</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.12，≥3球60%">大球倾向 60%</span></td></tr><tr><td><span class="tag tag-blue">周二012</span></td><td>解放者杯</td><td>弗鲁米嫩</td><td style="text-align:center;color:var(--muted);">VS</td><td>普拉滕斯</td><td style="font-family:monospace;">1.55</td><td style="font-family:monospace;">3.2</td><td style="font-family:monospace;">5.85</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-green" title="λ总分2.31，≥3球41%">小球倾向 41%</span></td></tr></tbody>
     </table>
   </div>
 </div>
 
-<h2 id="confidence">二、市场信心指数</h2>
+
+<h2>二、市场信心指数对比</h2>
 <div class="card">
   <div id="confidenceChart" class="chart-container"></div>
 </div>
@@ -184,11 +147,11 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 <script>
 var chart = echarts.init(document.getElementById('confidenceChart'));
 var matchLabels = ["周二001", "周二002", "周二003", "周二004", "周二005", "周二006", "周二007", "周二008", "周二009", "周二010", "周二011", "周二012"];
-var homeWinProbs = [29.5, 57.0, 37.5, 62.0, 51.5, 53.5, 58.0, 63.5, 57.0, 47.0, 19.0, 59.0];
-var drawProbs    = [28.5, 24.5, 28.5, 21.5, 25.0, 26.0, 26.0, 22.0, 24.0, 29.0, 27.0, 27.0];
-var awayWinProbs = [42.0, 18.5, 34.0, 16.5, 23.5, 20.5, 16.0, 14.5, 19.0, 24.0, 54.0, 14.0];
+var homeWinProbs = [26.9, 51.2, 49.7, 34.7, 52.1, 50.3, 54.3, 47.6, 52.0, 45.6, 40.6, 50.7];
+var drawProbs = [31.5, 22.7, 23.2, 32.1, 23.5, 29.2, 30.3, 23.5, 23.0, 25.6, 24.9, 29.3];
+var awayWinProbs = [41.6, 26.1, 27.1, 33.2, 24.4, 20.5, 15.5, 28.9, 25.0, 28.8, 34.5, 20.1];
 chart.setOption({
-  title: { text: '市场赔率隐含胜平负概率（基于赔率1/odds归一化）', left: 'center', textStyle: { fontSize: 14 } },
+  title: { text: '模型V2.2胜平负概率分布', left: 'center', textStyle: { fontSize: 14 } },
   tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
   legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
   grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
@@ -203,590 +166,1035 @@ chart.setOption({
 window.addEventListener('resize', function() { chart.resize(); });
 </script>
 
-<h2 id="deep">三、逐场深度分析</h2>
+<h2>三、逐场深度分析</h2>
 
-<!-- 周二001 -->
 <div class="card" id="match-周二001">
   <div class="card-header">
     <span class="match-id">周二001</span>
-    <span class="match-league">韩职 第28轮</span>
-    <span class="match-time">2026-09-08 18:30</span>
+    <span class="match-league">韩职</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">蔚山现代<sub class="team-rank">联赛第3 · 41分</sub></span>
+    <span class="home">蔚山现代</span>
     <span class="vs">VS</span>
-    <span class="away">首尔FC<sub class="team-rank">联赛第1 · 59分</sub></span>
+    <span class="away">首尔FC</span>
   </div>
+
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">3.21</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.50</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.88</div></div>
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">3.36</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.58</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.81</div></div>
   </div>
+
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">+1（主1.70/平3.75/客3.65）</div></div>
-    <div class="insight-card"><div class="insight-label">积分形势</div><div class="insight-value">首尔领先蔚山18分</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">蔚山头号射手亚戈·卡里路停赛</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近3次</div><div class="insight-value">蔚山1胜0平2负（客胜3-1/主负1-4）</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 韩职</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 韩职</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">4.50 球</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">
-    蔚山现代近10场4胜1平5负，近6轮仅2胜1平3负，主场13战6胜1平6负（胜率不足五成）；上轮客场0-0闷平济州止住下滑。首尔FC豪取联赛五连胜，近7轮5胜2平保持不败，客场14战10胜3平1负（进31失11），攻防两端均为联盟顶尖，27轮轰53球仅失21球。
-  </p>
-  <h4>历史交锋（近3次）</h4>
+
+  <h4>历史交锋（近2场）</h4>
   <div class="table-wrap">
     <table class="history-table">
       <thead><tr><th>比分</th><th>赛果</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--loss);">主1-4客</td><td>首尔客胜</td></tr>
-        <tr><td style="color:var(--win);">主3-1客</td><td>蔚山客胜</td></tr>
-        <tr><td style="color:var(--loss);">主0-1客</td><td>首尔客胜</td></tr>
-      </tbody>
+      <tbody><tr><td style="color:var(--win);">3-1</td><td>主胜</td></tr><tr><td style="color:var(--loss);">1-4</td><td>客胜</td></tr></tbody>
     </table>
   </div>
-  <h4>主客场对比</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">蔚山主：</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot l">负</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">首尔客：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span></div>
-  <h4>伤停与赛前动态</h4>
+
+  <h4>伤停与赛前分析</h4>
   <p style="font-size:0.9rem;line-height:1.8;">蔚山头号射手亚戈·卡里路（本赛季13球，联赛射手榜首位）上轮红牌停赛，进攻核心缺失；主力后卫亚赞解禁复出。李东炅（9球8助）将担纲进攻重任，但难以填补空缺。首尔FC阵容齐整，锋线克里马拉（10球）领衔，郑承原、林加德均有得分能力。</p>
-  <div class="warning"><strong>盘口异常提示：</strong>竞彩仅给首尔客让平半（让球+1），面对领先18分、五连胜、客场几乎无敌的榜首球队，让球定位偏浅，存在"制造主队可期假象"之嫌；但蔚山主场历史曾1-4惨败首尔，心理层面劣势明显。</div>
+
+  
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">首尔FC客场不败（首选客胜）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">1-2</span><span class="pred-value"> | 0-1 | 1-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(14.2%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">1-2 (8.9%) | 0-1 (8.4%)（Top3合计 32%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 58% · ≥4球 36% · 最可能3球 (λ总3.02)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.44进/1.18失 客2.64进/0.81失,主1.47客2.05) → 无xG数据(无xG数据，沿用进球λ,主1.47客2.05) → 联赛收缩(向韩职基线2.40收缩25% (总3.52→3.24),主1.35客1.88) → H2H调整(H2H数据不足3场(仅2场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.35客1.88) → 市场混合(35%,市场隐含主0.74/客1.38,主1.14客1.71) → 动态校准(×1.06(韩职),主1.21客1.81) → 零封修正(P0主×0.8(零封20%)/客×1.0(零封30%)) → 最终λ 主1.21 客1.81 → Platt校准(1X2: 平局26.9%→31.5%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.21/客1.81（总3.02） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封30%→P(0)×1.0
+    </div>
   </div>
 </div>
 
-<!-- 周二002 -->
+
 <div class="card" id="match-周二002">
   <div class="card-header">
     <span class="match-id">周二002</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 00:45</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">雅典AEK<sub class="team-rank">希超冠军</sub></span>
+    <span class="home">雅典AEK</span>
     <span class="vs">VS</span>
-    <span class="away">LASK林茨<sub class="team-rank">奥甲双冠</sub></span>
+    <span class="away">LASK林茨</span>
   </div>
+
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.62</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.75</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.08</div></div>
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.59</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.85</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.15</div></div>
   </div>
+
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.82/平3.65/客2.00）</div></div>
-    <div class="insight-card"><div class="insight-label">阵容市值</div><div class="insight-value">AEK€84.7M vs LASK€43.9M</div></div>
-    <div class="insight-card"><div class="insight-label">欧战背景</div><div class="insight-value">AEK时隔8年回归正赛</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">LASK三名主力缺阵</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">雅典AEK近期整体17胜10平3负，主场表现强势；主帅尼科利奇续约至2029，战术延续性稳定，主场场均15.7次射门、控球率54.8%，8年来首场欧冠主场，OPAP竞技场气氛加成明显。LASK林茨近18胜6平6负，上季双冠+欧战淘汰凯尔特人，但队史首次欧冠正赛，且本场伤员集中在中后场。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">AEK：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">LASK：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot d">平</span></div>
-  <h4>伤停与赛前动态</h4>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
   <p style="font-size:0.9rem;line-height:1.8;">LASK确认3名关键球员缺阵（含中卫Boateng级别的防守主力），欧战经验匮乏且客场作战；AEK阵容齐整，主场气势高昂，志在拿下开门红。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.08&gt;1.0(客胜有价值)</strong>；</div>
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">AEK主胜</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-0</span><span class="pred-value"> | 1-0 | 2-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(9.0%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-0 (8.4%) | 2-1 (8.0%)（Top3合计 25%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 65% · ≥4球 43% · 最可能3球 (λ总3.35)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.94进/0.80失 客2.16进/1.92失,主2.22客1.64) → 无xG数据(无xG数据，沿用进球λ,主2.22客1.64) → 联赛收缩(向欧冠基线3.20收缩25% (总3.86→3.70),主2.13客1.57) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.13客1.57) → 市场混合(35%,市场隐含主1.57/客0.60,主1.93客1.23) → 动态校准(×1.06(欧冠),主2.05客1.30) → 零封修正(P0主×1.2(零封50%)/客×1.2(零封50%)) → 最终λ 主2.05 客1.30 → Platt校准(1X2: 平局19.5%→22.7%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主2.05/客1.30（总3.35） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封50%→P(0)×1.2 | 客队近10场零封50%→P(0)×1.2
+    </div>
   </div>
 </div>
 
-<!-- 周二003 -->
-<div class="card" id="match-周三003">
+
+<div class="card" id="match-周二003">
   <div class="card-header">
     <span class="match-id">周二003</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 00:45</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">布鲁日<sub class="team-rank">比甲冠军</sub></span>
+    <span class="home">布鲁日</span>
     <span class="vs">VS</span>
-    <span class="away">维拉<sub class="team-rank">英超</sub></span>
+    <span class="away">维拉</span>
   </div>
+
   <div class="odds-grid">
     <div class="odds-item"><div class="label">主胜</div><div class="value win">2.41</div></div>
     <div class="odds-item"><div class="label">平局</div><div class="value draw">3.35</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.41</div></div>
   </div>
+
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">+1（主1.42/平4.30/客5.20）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近3次</div><div class="insight-value">布鲁日1胜2负</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">维拉5人伤缺</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均2.65/3.58/2.54 平手盘</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">布鲁日近10场5胜1平4负，新赛季比甲5轮仅失2球为联赛最佳防线，近两场连续零封，超杯1-1圣吉联合点球夺冠；唯一欧冠回避的对阵中主场1-0曾击败维拉。维拉英超开局3轮0进球（0-1阿森纳、0-4布莱顿、0-0赫尔城），且失5球，近10场仅2胜1平7负，状态冰点。</p>
-  <h4>历史交锋（近3次）</h4>
+
+  <h4>历史交锋（近0场）</h4>
   <div class="table-wrap">
     <table class="history-table">
       <thead><tr><th>比分</th><th>赛果</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--win);">主1-0客</td><td>布鲁日主胜</td></tr>
-        <tr><td style="color:var(--loss);">主1-3客</td><td>维拉客胜</td></tr>
-        <tr><td style="color:var(--loss);">主0-1客</td><td>维拉主胜</td></tr>
-      </tbody>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
     </table>
   </div>
-  <h4>伤停与赛前动态</h4>
+
+  <h4>伤停与赛前分析</h4>
   <p style="font-size:0.9rem;line-height:1.8;">维拉伤病严重：锋线贝利、爱德华（Hub）、马乔，中场奥纳纳（十字韧带）、曼赞比共5人无法登场，前场终结能力大幅削弱；布鲁日后卫奥多涅斯伤缺但整体框架完整。</p>
-  <div class="warning"><strong>风险提示：</strong>这是近两赛季欧冠赛场第四次交手，维拉虽状态低迷但欧战底蕴与身价仍在，布鲁日小胜基本盘下存在冷平可能。</div>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.20&gt;1.0(主胜有价值)</strong>；</div>
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">布鲁日主场不败（首选主胜）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">1-0</span><span class="pred-value"> | 2-1 | 0-0</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(9.9%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-1 (8.5%) | 2-0 (7.8%)（Top3合计 26%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 65% · ≥4球 43% · 最可能3球 (λ总3.33)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主2.38进/2.62失 客1.42进/1.00失,主2.34客1.55) → 无xG数据(无xG数据，沿用进球λ,主2.34客1.55) → 联赛收缩(向欧冠基线3.20收缩25% (总3.89→3.72),主2.23客1.48) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.23客1.48) → 市场混合(35%,市场隐含主1.04/客1.04,主1.82客1.33) → 动态校准(×1.06(欧冠),主1.92客1.40) → 零封修正(P0主×0.6(零封0%)/客×1.0(零封30%)) → 最终λ 主1.92 客1.40 → Platt校准(1X2: 平局19.9%→23.2%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.92/客1.40（总3.33） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封0%→P(0)×0.6 | 客队近10场零封30%→P(0)×1.0
+    </div>
   </div>
 </div>
 
-<!-- 周二004 -->
+
 <div class="card" id="match-周二004">
   <div class="card-header">
     <span class="match-id">周二004</span>
-    <span class="match-league">荷甲 第7轮</span>
-    <span class="match-time">2026-09-09 00:45</span>
+    <span class="match-league">荷甲</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">奈梅亨<sub class="team-rank">联赛第9 · 6分</sub></span>
+    <span class="home">奈梅亨</span>
     <span class="vs">VS</span>
-    <span class="away">SBV精英<sub class="team-rank">联赛第7 · 6分</sub></span>
+    <span class="away">SBV精英</span>
   </div>
+
   <div class="odds-grid">
     <div class="odds-item"><div class="label">主胜</div><div class="value win">1.48</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.30</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.3</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.55</div></div>
   </div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.35/平3.90/客2.24）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近3次</div><div class="insight-value">奈梅亨3胜0负 进10失0</div></div>
-    <div class="insight-card"><div class="insight-label">近期火力</div><div class="insight-value">奈梅亨近4场进9失7</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均主流1.53平手偏主</div></div>
-  </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">奈梅亨近期9胜9平12负（近4场2胜0平2负，进9失7），开季进攻端尚可但防守偏漏；SBV精英14胜7平9负，开季2胜1负进7失3防守稳健、近期状态在线。两队同积6分，奈梅亨H2H碾压（近3次全胜且零封）为主要拉力。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">奈梅亨：</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot d">平</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">精英：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot d">平</span></div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">双方暂无重大伤停消息；奈梅亨主场对阵SBV精英心理优势巨大（历史交锋3连胜零封），机构对其取胜信心充足（主胜1.48），但近期主场开季曾连续输球，需防大热。</p>
-  <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">奈梅亨主胜</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-0</span><span class="pred-value"> | 2-1 | 1-0</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></div>
-  </div>
-</div>
 
-<!-- 周二005 -->
-<div class="card" id="match-周二005">
-  <div class="card-header">
-    <span class="match-id">周二005</span>
-    <span class="match-league">沙职 第6轮</span>
-    <span class="match-time">2026-09-09 02:00</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">胡巴卡德<sub class="team-rank">联赛第5 · 6分</sub></span>
-    <span class="vs">VS</span>
-    <span class="away">吉达国民<sub class="team-rank">联赛第4 · 6分</sub></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.75</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.80</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.40</div></div>
-  </div>
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主3.10/平3.85/客1.83）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近6次</div><div class="insight-value">吉达国民4胜1平1负</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">胡巴卡德锋线基尼奥内斯缺阵</div></div>
-    <div class="insight-card"><div class="insight-label">积分形势</div><div class="insight-value">同积6分 争冠集团</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 荷甲</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 荷甲</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">胡巴卡德（胡拜尔库迪西亚）新赛季前5轮4胜1负，四连胜期间进10球仅失2球，近10场6胜2平2负（进20失5），防守联赛顶尖；但唯一失利正是主场0-1负于吉达联合，且锋线王牌基尼奥内斯（9球）确认缺阵。吉达国民前5轮3胜2负，上轮主场5-0大胜利雅得体育，伊万·托尼5场6球领跑，但客场3战1胜2负（进2失6）攻防反差大。</p>
-  <h4>历史交锋（近2次）</h4>
+
+  <h4>历史交锋（近0场）</h4>
   <div class="table-wrap">
     <table class="history-table">
       <thead><tr><th>比分</th><th>赛果</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--loss);">主1-5客</td><td>吉达国民超级杯客胜</td></tr>
-        <tr><td style="color:var(--win);">主3-2客</td><td>胡巴卡德主胜（2026.3）</td></tr>
-      </tbody>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
     </table>
   </div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">胡巴卡德锋线王牌基尼奥内斯（9球）确认伤缺，进攻依赖雷特吉（5场3球）；吉达国民后防核心阿巴斯卡尔确认缺阵。历史交锋吉达国民占优（近6次4胜1平1负，客让盘路清晰）。</p>
-  <div class="warning"><strong>风险提示：</strong>竞彩主胜1.75看似主队被看好，但让球-1下客队受让1.83低赔——机构对胡巴卡德打穿一球信心不足，同时其头号射手缺阵，警惕主场爆冷或小胜。</div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">双方暂无重大伤停消息；奈梅亨主场对阵SBV精英心理优势巨大（历史交锋3连胜零封），机构对其取胜信心充足（主胜1.48），但近期主场开季曾连续输球，需防大热。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.51&gt;1.0(客胜有价值)</strong>；</div>
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">吉达国民受让（客队+1不败）方向</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">1-1</span><span class="pred-value"> | 1-2 | 2-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(12.0%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-2 (9.2%) | 1-2 (8.5%)（Top3合计 30%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 60% · ≥4球 37% · 最可能3球 (λ总3.10)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.18进/2.06失 客2.22进/1.19失,主1.36客1.96) → 无xG数据(无xG数据，沿用进球λ,主1.36客1.96) → 联赛收缩(向荷甲基线3.21收缩25% (总3.32→3.29),主1.35客1.95) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.35客1.95) → 市场混合(35%,市场隐含主1.69/客0.55,主1.47客1.46) → 动态校准(×1.06(荷甲),主1.55客1.54) → 零封修正(P0主×0.8(零封20%)/客×0.6(零封0%)) → 最终λ 主1.55 客1.54 → Platt校准(1X2: 平局27.3%→32.1%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.55/客1.54（总3.10） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封0%→P(0)×0.6
+    </div>
   </div>
 </div>
 
-<!-- 周二006 -->
+
+<div class="card" id="match-周二005">
+  <div class="card-header">
+    <span class="match-id">周二005</span>
+    <span class="match-league">沙职</span>
+    <span class="match-time">2026-09-08</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">胡巴卡德</span>
+    <span class="vs">VS</span>
+    <span class="away">吉达国民</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.75</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.8</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.4</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 沙职</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 沙职</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">5.00 球</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  <h4>历史交锋（近1场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td style="color:var(--win);">3-2</td><td>主胜</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">胡巴卡德锋线王牌基尼奥内斯（9球）确认伤缺，进攻依赖雷特吉（5场3球）；吉达国民后防核心阿巴斯卡尔确认缺阵。历史交锋吉达国民占优（近6次4胜1平1负，客让盘路清晰）。</p>
+
+  
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(10.7%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-1 (9.4%) | 1-0 (8.0%)（Top3合计 28%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 62% · ≥4球 40% · 最可能3球 (λ总3.21)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主2.15进/0.62失 客2.00进/1.40失,主2.26客1.49) → 无xG数据(无xG数据，沿用进球λ,主2.26客1.49) → 联赛收缩(向沙职基线3.16收缩25% (总3.75→3.60),主2.17客1.43) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.17客1.43) → 市场混合(35%,市场隐含主1.43/客0.74,主1.91客1.19) → 动态校准(×1.04(沙职),主1.98客1.23) → 零封修正(P0主×0.6(零封10%)/客×1.0(零封30%)) → 最终λ 主1.98 客1.23 → Platt校准(1X2: 平局20.2%→23.5%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.98/客1.23（总3.21） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封10%→P(0)×0.6 | 客队近10场零封30%→P(0)×1.0
+    </div>
+  </div>
+</div>
+
+
 <div class="card" id="match-周二006">
   <div class="card-header">
     <span class="match-id">周二006</span>
-    <span class="match-league">英冠 第7轮</span>
-    <span class="match-time">2026-09-09 02:45</span>
+    <span class="match-league">英冠</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
     <span class="home">南安普敦<sub class="team-rank">联赛第19</sub></span>
     <span class="vs">VS</span>
     <span class="away">斯旺西<sub class="team-rank">联赛第1</sub></span>
   </div>
-  <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.68</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.60</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.90</div></div>
-  </div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主3.10/平3.60/客1.89）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近4次</div><div class="insight-value">南安3胜1平不败</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均1.90/3.65/3.76 半球盘</div></div>
-    <div class="insight-card"><div class="insight-label">近况对比</div><div class="insight-value">南安18胜9平3负 vs 斯旺西14胜7平9负</div></div>
-  </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">南安普敦上赛季英超降入英冠，整体实力强于英冠绝大多数球队（近30场18胜9平3负），主场表现尤为稳定；斯旺西暂居英冠榜首但客场稳定性一般。竞彩主胜1.68+让一球（客受让1.89低赔）提示：市场认为主队赢面大但赢两球存疑。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">南安：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot l">负</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">斯旺西：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot d">平</span></div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">南安普敦主场对阵斯旺西历史交锋3胜1平保持不败，心理优势明显；机构半球盘下主队水位较低，但英冠榜首客场不容小觑，存在逼平可能。</p>
-  <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">南安普敦主场不败（首选主胜）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-1</span><span class="pred-value"> | 1-0 | 1-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></div>
-  </div>
-</div>
 
-<!-- 周二007 -->
-<div class="card" id="match-周二007">
-  <div class="card-header">
-    <span class="match-id">周二007</span>
-    <span class="match-league">英联赛杯 第3轮</span>
-    <span class="match-time">2026-09-09 02:45</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">桑德兰<sub class="team-rank">英超 · 第12 · 4分</sub></span>
-    <span class="vs">VS</span>
-    <span class="away">赫尔城<sub class="team-rank">英超 · 第3 · 7分</sub></span>
-  </div>
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.53</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.65</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.00</div></div>
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.67</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.6</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.95</div></div>
   </div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.82/平3.25/客2.15）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近5次</div><div class="insight-value">桑德兰2胜2平1负</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">赫尔城伤病名单长</div></div>
-    <div class="insight-card"><div class="insight-label">杯赛属性</div><div class="insight-value">双方或大幅轮换</div></div>
-  </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">桑德兰英超3轮1胜1平1负（4分，第12），上轮客场1-1逼平布伦特福德，主场唯一联赛战告捷，新援福法纳状态出色；但中场哈比卜·迪亚拉腿筋伤（休6-8周），主帅勒布里斯确认本场9-10人大轮换。赫尔城英超3轮2胜1平（7分）高居第3，且联赛零失球（3场全零封），防守体系出色；但伤病严重——门将巴特兰、中场赞布拉诺、马塔佐、吉亚比、后卫休斯等悉数伤停，新援前锋安萨脊柱问题缺阵6周，且杯赛轮换意愿强，优先保障联赛。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">桑德兰：</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot w">胜</span><span class="form-dot d">平</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">赫尔城：</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span></div>
-  <h4>赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">联赛杯第3轮（对阵表中标注"英联赛杯"），桑德兰通过欧战资格直接进入第3轮；桑德兰随后接连迎战阿森纳（英超）与阿尔克马尔（欧联），赫尔城则力保联赛不败金身，双方杯赛投入度均存疑。历史近20次交手桑德兰9胜6平5负占优。</p>
-  <div class="warning"><strong>风险提示：</strong>杯赛大轮换是最大变量，赫尔城虽伤病严重但替补班底仍有竞争力，平局进加时/点球的概率显著上升，谨慎防冷平。</div>
-  <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">桑德兰主场不败（首选主胜）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">1-0</span><span class="pred-value"> | 2-1 | 1-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
-  </div>
-</div>
 
-<!-- 周二008 -->
-<div class="card" id="match-周二008">
-  <div class="card-header">
-    <span class="match-id">周二008</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 03:00</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">皇马<sub class="team-rank">西甲 · 第2 · 9分</sub></span>
-    <span class="vs">VS</span>
-    <span class="away">国际米兰<sub class="team-rank">意甲 · 榜首</sub></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.42</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.40</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.05</div></div>
-  </div>
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.25/平3.75/客2.40）</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均1.61/4.40/4.86 半球/一球</div></div>
-    <div class="insight-card"><div class="insight-label">皇马伤停</div><div class="insight-value">B席/居莱尔/卡马文加停赛，米利唐/门迪等伤</div></div>
-    <div class="insight-card"><div class="insight-label">国米状态</div><div class="insight-value">意甲3连胜，逆转那不勒斯</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">19 / 英冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">1 / 英冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">皇马西甲前4轮3胜1负（进10失3），上轮客场0-1贝蒂斯遭遇赛季首败（20射8正、xG约3.16却零进球），暴露终结与中场衔接问题；本场伤停极为严重——B席、居莱尔、卡马文加上赛季欧冠累计停赛，楚阿梅尼大概率替补，米利唐、门迪、阿森西奥有伤，罗德里戈膝伤长期缺，一线队伤停接近10人，中场可用主力仅剩巴尔韦德。穆里尼奥方案：巴尔韦德+贝林厄姆双后腰，迪奥曼德、迪亚斯、维尼修斯+姆巴佩。国际米兰意甲开局3连胜，上轮0-2落后那不勒斯连扳3球逆转（劳塔罗两球、皮奥1球1助），士气正热；迪马尔科小伤缺席由奥古斯托顶替。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">皇马：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot d">平</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">国米：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span></div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">皇马约10人伤停（停赛：B席/居莱尔/卡马文加；伤：米利唐/门迪/罗德里戈/阿森西奥；存疑：楚阿梅尼/皮塔奇/恩德里克）；国米仅迪马尔科小伤。皇马中场断层是最大隐患，姆巴佩与维尼修斯仍具杀伤力；国米三中卫防线稳固，劳塔罗+小图拉姆反击犀利。媒体普遍预测1-1或皇马2-1。</p>
-  <div class="warning"><strong>盘口提示：</strong>欧赔换算半球/一球转一球，澳彩一球盘国米受让水位低（1.85），市场对皇马"让一球打出"存疑；皇马伤兵满营+国米状态爆棚，让球方向风险显著。</div>
-  <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">皇马小胜概率最高，但让球不稳（首选胜/平双保险）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-1</span><span class="pred-value"> | 1-1 | 1-0</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
-  </div>
-</div>
 
-<!-- 周二009 -->
-<div class="card" id="match-周二009">
-  <div class="card-header">
-    <span class="match-id">周二009</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 03:00</span>
-  </div>
-  <div class="match-teams">
-    <span class="home">多特蒙德<sub class="team-rank">德甲 · 第2</sub></span>
-    <span class="vs">VS</span>
-    <span class="away">比利亚雷<sub class="team-rank">西甲</sub></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.57</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.00</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.15</div></div>
-  </div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.62/平3.75/客2.08）</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近3次</div><div class="insight-value">多特1胜1平1负</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均1.79/4.11/3.98 半球/一球</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">多特施洛特贝克伤；黄潜福伊特伤</div></div>
-  </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">多特蒙德近6场4胜1平1负（进16失8），德甲开局两连胜居第2，上轮客场3-2逆转霍芬海姆，逆风作战能力强；主场伊杜纳信号公园威斯特法伦是魔鬼主场，上赛季欧冠主场曾4-0大胜比利亚雷。比利亚雷近6场2胜2平2负（进9失9），西甲开局不佳（1-3负拉科、0-1负阿拉维斯），客场3战不胜，后防福伊特、罗梅罗伤缺。</p>
-  <h4>历史交锋（近3次）</h4>
+  <h4>历史交锋（近0场）</h4>
   <div class="table-wrap">
     <table class="history-table">
       <thead><tr><th>比分</th><th>赛果</th></tr></thead>
-      <tbody>
-        <tr><td style="color:var(--win);">主4-0客</td><td>多特主胜</td></tr>
-        <tr><td style="color:var(--draw);">主2-2客</td><td>平局</td></tr>
-        <tr><td style="color:var(--loss);">主0-2客</td><td>黄潜客胜</td></tr>
-      </tbody>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
     </table>
   </div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">多特蒙德伤兵：施洛特贝克（韧带伤）、埃姆雷·詹（膝伤长期缺）、马内（肌肉）、康斯坦泰利亚斯（膝）等；比利亚雷福伊特、罗梅罗伤缺。多特主场火力+黄潜客场疲软，主胜具备基本面。</p>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">南安普敦主场对阵斯旺西历史交锋3胜1平保持不败，心理优势明显；机构半球盘下主队水位较低，但英冠榜首客场不容小觑，存在逼平可能。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>排名背离(客1位优于主19位却赔率更高)</strong>；</div>
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">多特蒙德主胜</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-1</span><span class="pred-value"> | 2-0 | 1-0</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(11.7%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">1-0 (11.1%) | 2-1 (10.6%)（Top3合计 33%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-yellow" style="margin-right:0.5rem;">均势总量</span>
+      <span class="pred-value">≥3球 44% · ≥4球 23% · 最可能2球 (λ总2.43)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.46进/0.95失 客1.05进/0.85失,主1.50客0.92) → 无xG数据(无xG数据，沿用进球λ,主1.50客0.92) → 联赛收缩(向英冠基线2.67收缩25% (总2.43→2.49),主1.54客0.95) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.54客0.95) → 市场混合(35%,市场隐含主1.50/客0.63,主1.52客0.84) → 动态校准(×1.03(英冠),主1.57客0.86) → 零封修正(P0主×0.6(零封10%)/客×1.0(零封30%)) → 最终λ 主1.57 客0.86 → Platt校准(1X2: 平局25.1%→29.2%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.57/客0.86（总2.43） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封10%→P(0)×0.6 | 客队近10场零封30%→P(0)×1.0
+    </div>
   </div>
 </div>
 
-<!-- 周二010 -->
+
+<div class="card" id="match-周二007">
+  <div class="card-header">
+    <span class="match-id">周二007</span>
+    <span class="match-league">英联赛杯</span>
+    <span class="match-time">2026-09-08</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">桑德兰</span>
+    <span class="vs">VS</span>
+    <span class="away">赫尔城</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.53</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.65</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 英联赛杯</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 英联赛杯</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;"></p>
+
+  
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value">(15.4%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">1-1 (13.1%) | 2-0 (11.0%)（Top3合计 40%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-green" style="margin-right:0.5rem;">小球倾向</span>
+      <span class="pred-value">≥3球 40% · ≥4球 20% · 最可能2球 (λ总2.27)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.11进/1.29失 客0.84进/0.33失,主1.05客0.86) → 无xG数据(无xG数据，沿用进球λ,主1.05客0.86) → 联赛收缩(向英联赛杯基线2.89收缩25% (总1.91→2.15),主1.19客0.97) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.19客0.97) → 市场混合(35%,市场隐含主1.63/客0.50,主1.34客0.80) → 动态校准(×1.06(英联赛杯),主1.42客0.85) → 零封修正(P0主×0.8(零封20%)/客×1.0(零封40%)) → 最终λ 主1.42 客0.85 → Platt校准(1X2: 平局26.3%→30.3%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.42/客0.85（总2.27） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封40%→P(0)×1.0
+    </div>
+  </div>
+</div>
+
+
+<div class="card" id="match-周二008">
+  <div class="card-header">
+    <span class="match-id">周二008</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">皇马</span>
+    <span class="vs">VS</span>
+    <span class="away">国际米兰</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.42</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4.4</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.05</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">皇马约10人伤停（停赛：B席/居莱尔/卡马文加；伤：米利唐/门迪/罗德里戈/阿森西奥；存疑：楚阿梅尼/皮塔奇/恩德里克）；国米仅迪马尔科小伤。皇马中场断层是最大隐患，姆巴佩与维尼修斯仍具杀伤力；国米三中卫防线稳固，劳塔罗+小图拉姆反击犀利。媒体普遍预测1-1或皇马2-1。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.46&gt;1.0(客胜有价值)</strong>；</div>
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(9.8%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-1 (8.9%) | 1-2 (7.5%)（Top3合计 26%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 68% · ≥4球 46% · 最可能3球 (λ总3.50)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主2.16进/0.79失 客2.59进/1.07失,主2.17客1.93) → 无xG数据(无xG数据，沿用进球λ,主2.17客1.93) → 联赛收缩(向欧冠基线3.20收缩25% (总4.10→3.88),主2.06客1.82) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.06客1.82) → 市场混合(35%,市场隐含主1.76/客0.50,主1.95客1.36) → 动态校准(×1.06(欧冠),主2.07客1.44) → 零封修正(P0主×0.8(零封20%)/客×0.6(零封0%)) → 最终λ 主2.07 客1.44 → Platt校准(1X2: 平局20.1%→23.5%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主2.07/客1.44（总3.50） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封0%→P(0)×0.6
+    </div>
+  </div>
+</div>
+
+
+<div class="card" id="match-周二009">
+  <div class="card-header">
+    <span class="match-id">周二009</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">多特蒙德</span>
+    <span class="vs">VS</span>
+    <span class="away">比利亚雷</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.57</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">4</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.15</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">多特蒙德伤兵：施洛特贝克（韧带伤）、埃姆雷·詹（膝伤长期缺）、马内（肌肉）、康斯坦泰利亚斯（膝）等；比利亚雷福伊特、罗梅罗伤缺。多特主场火力+黄潜客场疲软，主胜具备基本面。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.04&gt;1.0(客胜有价值)</strong>；</div>
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(9.9%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-1 (9.0%) | 2-0 (7.7%)（Top3合计 27%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 64% · ≥4球 42% · 最可能3球 (λ总3.30)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.96进/1.09失 客1.90进/1.85失,主2.22客1.53) → 无xG数据(无xG数据，沿用进球λ,主2.22客1.53) → 联赛收缩(向欧冠基线3.20收缩25% (总3.75→3.62),主2.14客1.47) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.14客1.47) → 市场混合(35%,市场隐含主1.59/客0.60,主1.95客1.17) → 动态校准(×1.06(欧冠),主2.07客1.24) → 零封修正(P0主×0.8(零封20%)/客×0.8(零封20%)) → 最终λ 主2.07 客1.24 → Platt校准(1X2: 平局19.8%→23.0%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主2.06/客1.24（总3.30） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封20%→P(0)×0.8
+    </div>
+  </div>
+</div>
+
+
 <div class="card" id="match-周二010">
   <div class="card-header">
     <span class="match-id">周二010</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 03:00</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">里尔<sub class="team-rank">法甲</sub></span>
+    <span class="home">里尔</span>
     <span class="vs">VS</span>
-    <span class="away">贝蒂斯<sub class="team-rank">西甲</sub></span>
+    <span class="away">贝蒂斯</span>
   </div>
+
   <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.90</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.30</div></div>
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.9</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.3</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.33</div></div>
   </div>
+
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主3.75/平3.70/客1.69）</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均2.26/3.43/3.16 平手/半球</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">贝蒂斯4主力缺阵</div></div>
-    <div class="insight-card"><div class="insight-label">欧战背景</div><div class="insight-value">贝蒂斯重返欧冠（2005/06后首次）</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">里尔近14胜8平8负，法甲开局1胜1平，新帅达维德·安切洛蒂执教，场均2.0球进/1.0球失，中场安德烈解禁复出、吉鲁膝伤无碍确定首发。贝蒂斯近13胜9平8负（含客胜皇马高光），但伤停严重：洛塞尔索、埃兹·阿布德、莫兰特、冈萨洛·佩蒂特4人缺阵，阵容被大幅削弱；欧战经验断层（20年后重返欧冠正赛）。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">里尔：</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot d">平</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">贝蒂斯：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span><span class="form-dot d">平</span><span class="form-dot w">胜</span></div>
-  <h4>伤停与赛前动态</h4>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
   <p style="font-size:0.9rem;line-height:1.8;">贝蒂斯4名主力缺阵削弱中前场深度；里尔主场皮埃尔-莫鲁瓦球馆氛围强，但竞彩仅主让半球（让-1客受让1.69低赔）提示主胜可以但打穿一球难度大。</p>
+
+  
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">里尔主场不败（首选主胜）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-1</span><span class="pred-value"> | 1-0 | 1-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(11.9%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">2-1 (9.4%) | 1-2 (7.8%)（Top3合计 29%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-yellow" style="margin-right:0.5rem;">均势总量</span>
+      <span class="pred-value">≥3球 51% · ≥4球 29% · 最可能2球 (λ总2.72)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.36进/0.63失 客1.49进/1.37失,主1.57客1.15) → 无xG数据(无xG数据，沿用进球λ,主1.57客1.15) → 联赛收缩(向欧冠基线3.20收缩25% (总2.71→2.84),主1.64客1.20) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.64客1.20) → 市场混合(35%,市场隐含主1.32/客0.75,主1.52客1.04) → 动态校准(×1.06(欧冠),主1.61客1.10) → 零封修正(P0主×0.8(零封20%)/客×0.6(零封0%)) → 最终λ 主1.61 客1.10 → Platt校准(1X2: 平局21.9%→25.6%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.61/客1.10（总2.72） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封0%→P(0)×0.6
+    </div>
   </div>
 </div>
 
-<!-- 周二011 -->
+
 <div class="card" id="match-周二011">
   <div class="card-header">
     <span class="match-id">周二011</span>
-    <span class="match-league">欧冠 联赛阶段第1轮</span>
-    <span class="match-time">2026-09-09 03:00</span>
+    <span class="match-league">欧冠</span>
+    <span class="match-time">2026-09-08</span>
   </div>
+
   <div class="match-teams">
-    <span class="home">波尔图<sub class="team-rank">葡超 · 第1</sub></span>
+    <span class="home">波尔图</span>
     <span class="vs">VS</span>
-    <span class="away">曼城<sub class="team-rank">英超 · 第1</sub></span>
+    <span class="away">曼城</span>
   </div>
+
   <div class="odds-grid">
     <div class="odds-item"><div class="label">主胜</div><div class="value win">4.85</div></div>
     <div class="odds-item"><div class="label">平局</div><div class="value draw">4.05</div></div>
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.48</div></div>
   </div>
+
+  <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">+1（主2.26/平3.65/客2.42）</div></div>
-    <div class="insight-card"><div class="insight-label">欧赔参考</div><div class="insight-value">欧均4.67/4.00/1.70 客让半球/一球</div></div>
-    <div class="insight-card"><div class="insight-label">H2H近4次</div><div class="insight-value">曼城3胜1平，2020主场0-0</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">波尔图中轴残缺</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">波尔图葡超卫冕冠军、新赛季9胜1负领跑，巨龙球场近14个欧战主场仅1负，主场战意与氛围极强；但中场核心弗罗霍尔特脑震荡缺阵、后卫贝德纳雷克停赛，中轴被迫重组。曼城英超3战全胜领跑，近5客场3胜1平1负，但边路多库伤缺、新援恩佐磨合有限，欧冠客场历来慢热，70分钟后体能拐点明显。近4次正式交锋曼城3胜1平不败。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">波尔图：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot l">负</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">曼城：</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span></div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">波尔图弗罗霍尔特（脑震荡）缺阵、贝德纳雷克停赛；曼城多库伤缺、恩佐磨合中。盘口水位正常，机构对曼城客场取胜信心较足但防范"赢球输盘"，让球盘口建议关注客队赢球输盘，重点提防平局。</p>
-  <div class="warning"><strong>盘口提示：</strong>澳门初盘曼城客让0.75球，水位0.88-0.91；竞彩让球+1下主2.26/客2.42——机构对曼城打穿一球存疑，波尔图主场面对英超强队虽历史胜率偏低，但中轴残缺下防守反击拿平并非不可能。</div>
+
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">波尔图弗罗霍尔特（脑震荡）缺阵、贝德纳雷克停赛；曼城多库伤缺、恩佐磨合中。盘口水位正常，机构对曼城客场取胜信心较足但防范&quot;赢球输盘&quot;，让球盘口建议关注客队赢球输盘，重点提防平局。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.97&gt;1.0(主胜有价值)</strong>；</div>
   <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">曼城小胜（防平，客队让球不稳）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">0-1</span><span class="pred-value"> | 1-2 | 1-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(11.1%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">1-2 (8.8%) | 2-1 (8.5%)（Top3合计 28%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-red" style="margin-right:0.5rem;">大球倾向</span>
+      <span class="pred-value">≥3球 60% · ≥4球 38% · 最可能3球 (λ总3.12)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主2.03进/0.54失 客1.80进/1.05失,主2.05客1.34) → 无xG数据(无xG数据，沿用进球λ,主2.05客1.34) → 联赛收缩(向欧冠基线3.20收缩25% (总3.39→3.34),主2.02客1.32) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.02客1.32) → 市场混合(35%,市场隐含主0.52/客1.69,主1.49客1.45) → 动态校准(×1.06(欧冠),主1.58客1.54) → 零封修正(P0主×0.6(零封10%)/客×0.6(零封10%)) → 最终λ 主1.58 客1.54 → Platt校准(1X2: 平局21.2%→24.9%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.58/客1.53（总3.12） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封10%→P(0)×0.6 | 客队近10场零封10%→P(0)×0.6
+    </div>
   </div>
 </div>
 
-<!-- 周二012 -->
+
 <div class="card" id="match-周二012">
   <div class="card-header">
     <span class="match-id">周二012</span>
-    <span class="match-league">解放者杯 1/4决赛</span>
-    <span class="match-time">2026-09-09 06:00</span>
+    <span class="match-league">解放者杯</span>
+    <span class="match-time">2026-09-08</span>
   </div>
-  <div class="match-teams">
-    <span class="home">弗鲁米嫩<sub class="team-rank">巴甲</sub></span>
-    <span class="vs">VS</span>
-    <span class="away">普拉滕斯<sub class="team-rank">阿甲</sub></span>
-  </div>
-  <div class="odds-grid">
-    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.51</div></div>
-    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.30</div></div>
-    <div class="odds-item"><div class="label">客胜</div><div class="value loss">6.10</div></div>
-  </div>
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">让球盘</div><div class="insight-value">-1（主2.85/平3.15/客2.17）</div></div>
-    <div class="insight-card"><div class="insight-label">赛事背景</div><div class="insight-value">解放者杯1/4决赛</div></div>
-    <div class="insight-card"><div class="insight-label">关键伤停</div><div class="insight-value">弗鲁米嫩阵容不整</div></div>
-    <div class="insight-card"><div class="insight-label">近况对比</div><div class="insight-value">弗鲁米嫩11胜13平6负 vs 普拉滕斯6胜14平10负</div></div>
-  </div>
-  <h4>近期状态</h4>
-  <p style="font-size:0.9rem;">弗鲁米嫩小组第2出线（2胜2平2负，进失各7球），16强两回合0-0/1-1点球5-4淘汰独立里瓦达维亚；近期近5场场均进球近2个（1-0胜瓦斯科、3-3平巴拉纳竞技、2-1胜雷莫），控球主导但终结不稳导致平局多。普拉滕斯阿甲客队，16强1-1/0-0点球7-6淘汰科金博，风格极度依赖紧凑防守、控球与进攻组织薄弱，近期状态差（1-1平里斯特拉、0-1负防卫者、1-1平Instituto）。</p>
-  <h4>近期状态（近5场）</h4>
-  <div class="form-row" style="margin-bottom:0.5rem;"><span style="font-size:0.8rem;color:var(--muted);">弗鲁米嫩：</span><span class="form-dot w">胜</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot w">胜</span><span class="form-dot d">平</span></div>
-  <div class="form-row"><span style="font-size:0.8rem;color:var(--muted);">普拉滕斯：</span><span class="form-dot d">平</span><span class="form-dot l">负</span><span class="form-dot d">平</span><span class="form-dot w">胜</span><span class="form-dot l">负</span></div>
-  <h4>伤停与赛前动态</h4>
-  <p style="font-size:0.9rem;line-height:1.8;">弗鲁米嫩关键球员缺阵使这场1/4决赛更具悬念；普拉滕斯靠摆大巴+点球韧性走到8强，淘汰赛客场可能延续防反策略。主胜赔率1.51合理但让一球难，需警惕球队大巴带来的小胜格局。</p>
-  <div class="prediction">
-    <div class="pred-title">🎯 综合预测</div>
-    <div class="pred-row"><span class="pred-label">推荐方向:</span><span class="pred-value">弗鲁米嫩主胜（让球谨慎）</span></div>
-    <div class="pred-row"><span class="pred-label">候选比分:</span><span class="pred-score">2-0</span><span class="pred-value"> | 1-0 | 2-1</span></div>
-    <div class="pred-row"><span class="pred-label">信心评级:</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></div>
-  </div>
-</div>
 
-<h2 id="scores">四、比分预测汇总</h2>
-<div class="card">
+  <div class="match-teams">
+    <span class="home">弗鲁米嫩</span>
+    <span class="vs">VS</span>
+    <span class="away">普拉滕斯</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.55</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.2</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.85</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 解放者杯</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 解放者杯</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  <h4>历史交锋（近0场）</h4>
   <div class="table-wrap">
-    <table>
-      <thead><tr><th>编号</th><th>对阵</th><th>推荐方向</th><th>首选比分</th><th>候选</th></tr></thead>
-      <tbody>
-        <tr><td><span class="tag tag-blue">周二001</span></td><td>蔚山现代 vs 首尔FC</td><td><span class="tag tag-red">客队不败</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">1-2</td><td style="font-family:monospace;">0-1 / 1-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二002</span></td><td>雅典AEK vs LASK林茨</td><td><span class="tag tag-green">主胜</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-0</td><td style="font-family:monospace;">1-0 / 2-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二003</span></td><td>布鲁日 vs 维拉</td><td><span class="tag tag-green">主队不败</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">1-0</td><td style="font-family:monospace;">2-1 / 0-0</td></tr>
-        <tr><td><span class="tag tag-blue">周二004</span></td><td>奈梅亨 vs SBV精英</td><td><span class="tag tag-green">主胜</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-0</td><td style="font-family:monospace;">2-1 / 1-0</td></tr>
-        <tr><td><span class="tag tag-blue">周二005</span></td><td>胡巴卡德 vs 吉达国民</td><td><span class="tag tag-yellow">客队受让</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">1-1</td><td style="font-family:monospace;">1-2 / 2-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二006</span></td><td>南安普敦 vs 斯旺西</td><td><span class="tag tag-green">主队不败</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-1</td><td style="font-family:monospace;">1-0 / 1-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二007</span></td><td>桑德兰 vs 赫尔城</td><td><span class="tag tag-green">主队不败</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">1-0</td><td style="font-family:monospace;">2-1 / 1-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二008</span></td><td>皇马 vs 国际米兰</td><td><span class="tag tag-green">主胜防平</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-1</td><td style="font-family:monospace;">1-1 / 1-0</td></tr>
-        <tr><td><span class="tag tag-blue">周二009</span></td><td>多特蒙德 vs 比利亚雷</td><td><span class="tag tag-green">主胜</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-1</td><td style="font-family:monospace;">2-0 / 1-0</td></tr>
-        <tr><td><span class="tag tag-blue">周二010</span></td><td>里尔 vs 贝蒂斯</td><td><span class="tag tag-green">主队不败</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-1</td><td style="font-family:monospace;">1-0 / 1-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二011</span></td><td>波尔图 vs 曼城</td><td><span class="tag tag-red">客胜防平</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">0-1</td><td style="font-family:monospace;">1-2 / 1-1</td></tr>
-        <tr><td><span class="tag tag-blue">周二012</span></td><td>弗鲁米嫩 vs 普拉滕斯</td><td><span class="tag tag-green">主胜</span></td><td style="color:var(--accent);font-weight:700;font-family:monospace;">2-0</td><td style="font-family:monospace;">1-0 / 2-1</td></tr>
-      </tbody>
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
     </table>
   </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;">弗鲁米嫩关键球员缺阵使这场1/4决赛更具悬念；普拉滕斯靠摆大巴+点球韧性走到8强，淘汰赛客场可能延续防反策略。主胜赔率1.51合理但让一球难，需警惕球队大巴带来的小胜格局。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.17&gt;1.0(客胜有价值)</strong>；</div>
+  <div class="prediction">
+    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-row">
+      <span class="pred-label">首选比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">(14.5%)</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">次选/三选:</span>
+      <span class="pred-value">1-0 (14.1%) | 2-0 (10.9%)（Top3合计 40%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-green" style="margin-right:0.5rem;">小球倾向</span>
+      <span class="pred-value">≥3球 41% · ≥4球 20% · 最可能2球 (λ总2.31)</span>
+    </div>
+    <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
+      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+    </div>
+    <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
+      基础λ(指数衰减0.85^i,主1.24进/1.14失 客1.05进/0.95失,主1.35客0.96) → 无xG数据(无xG数据，沿用进球λ,主1.35客0.96) → 联赛收缩(向解放者杯基线2.11收缩25% (总2.31→2.26),主1.32客0.94) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.32客0.94) → 市场混合(35%,市场隐含主1.61/客0.43,主1.42客0.76) → 动态校准(×1.06(解放者杯),主1.50客0.81) → 零封修正(P0主×0.8(零封20%)/客×1.0(零封33%)) → 最终λ 主1.50 客0.81 → Platt校准(1X2: 平局25.2%→29.3%)
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.50/客0.81（总2.31） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封20%→P(0)×0.8 | 客队近10场零封33%→P(0)×1.0
+    </div>
+  </div>
 </div>
 
-<h2 id="strategy">五、核心策略与风险提示</h2>
+
+<h2>四、预测汇总</h2>
+<p style="font-size:0.85rem;color:var(--muted);">三种玩法口径分开看：<b>胜负</b>看方向（Platt 校准概率）、<b>比分</b>看组合覆盖（Top3 合计，勿单押首选）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。</p>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.1 胜负预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">概率经 Platt 校准（修正泊松平局低估）。倾向 = 三者中概率最高者；"倾向内首选比分" = 该结果象限中概率最高的比分（若跟方向玩法，配这个比分）。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>倾向内首选比分</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周二001</span></td><td>蔚山现代</td><td>首尔FC</td><td>26.9%</td><td>31.5%</td><td>41.6%</td><td><span class="tag tag-red">客胜 41.6%</span></td><td style="font-family:monospace;">1:2 <span style='color:var(--muted);font-size:0.8rem;'>(8.9%)</span></td></tr><tr><td><span class="tag tag-blue">周二002</span></td><td>雅典AEK</td><td>LASK林茨</td><td>51.2%</td><td>22.7%</td><td>26.1%</td><td><span class="tag tag-green">主胜 51.2%</span></td><td style="font-family:monospace;">2:0 <span style='color:var(--muted);font-size:0.8rem;'>(8.4%)</span></td></tr><tr><td><span class="tag tag-blue">周二003</span></td><td>布鲁日</td><td>维拉</td><td>49.7%</td><td>23.2%</td><td>27.1%</td><td><span class="tag tag-green">主胜 49.7%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(8.5%)</span></td></tr><tr><td><span class="tag tag-blue">周二004</span></td><td>奈梅亨</td><td>SBV精英</td><td>34.7%</td><td>32.1%</td><td>33.2%</td><td><span class="tag tag-green">主胜 34.7%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(8.3%)</span></td></tr><tr><td><span class="tag tag-blue">周二005</span></td><td>胡巴卡德</td><td>吉达国民</td><td>52.1%</td><td>23.5%</td><td>24.4%</td><td><span class="tag tag-green">主胜 52.1%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(9.4%)</span></td></tr><tr><td><span class="tag tag-blue">周二006</span></td><td>南安普敦<sub class="rank-tag">[19]</sub></td><td>斯旺西<sub class="rank-tag">[1]</sub></td><td>50.3%</td><td>29.2%</td><td>20.5%</td><td><span class="tag tag-green">主胜 50.3%</span></td><td style="font-family:monospace;">1:0 <span style='color:var(--muted);font-size:0.8rem;'>(11.1%)</span></td></tr><tr><td><span class="tag tag-blue">周二007</span></td><td>桑德兰</td><td>赫尔城</td><td>54.3%</td><td>30.3%</td><td>15.5%</td><td><span class="tag tag-green">主胜 54.3%</span></td><td style="font-family:monospace;">1:0 <span style='color:var(--muted);font-size:0.8rem;'>(15.4%)</span></td></tr><tr><td><span class="tag tag-blue">周二008</span></td><td>皇马</td><td>国际米兰</td><td>47.6%</td><td>23.5%</td><td>28.9%</td><td><span class="tag tag-green">主胜 47.6%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(8.9%)</span></td></tr><tr><td><span class="tag tag-blue">周二009</span></td><td>多特蒙德</td><td>比利亚雷</td><td>52.0%</td><td>23.0%</td><td>25.0%</td><td><span class="tag tag-green">主胜 52.0%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(9.0%)</span></td></tr><tr><td><span class="tag tag-blue">周二010</span></td><td>里尔</td><td>贝蒂斯</td><td>45.6%</td><td>25.6%</td><td>28.8%</td><td><span class="tag tag-green">主胜 45.6%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(9.4%)</span></td></tr><tr><td><span class="tag tag-blue">周二011</span></td><td>波尔图</td><td>曼城</td><td>40.6%</td><td>24.9%</td><td>34.5%</td><td><span class="tag tag-green">主胜 40.6%</span></td><td style="font-family:monospace;">2:1 <span style='color:var(--muted);font-size:0.8rem;'>(8.5%)</span></td></tr><tr><td><span class="tag tag-blue">周二012</span></td><td>弗鲁米嫩</td><td>普拉滕斯</td><td>50.7%</td><td>29.3%</td><td>20.1%</td><td><span class="tag tag-green">主胜 50.7%</span></td><td style="font-family:monospace;">1:0 <span style='color:var(--muted);font-size:0.8rem;'>(14.1%)</span></td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.2 比分预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">首选比分为单一比分众数（天然偏小，≈11~14%）；押比分建议 Top3 组合覆盖，勿单押首选。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周二001</span></td><td>蔚山现代</td><td>首尔FC</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>14.2%</td><td style="font-family:monospace;">1-2 (8.9%)</td><td>31.5%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周二002</span></td><td>雅典AEK</td><td>LASK林茨</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>9.0%</td><td style="font-family:monospace;">2-0 (8.4%)</td><td>25.4%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.08&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二003</span></td><td>布鲁日</td><td>维拉</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>9.9%</td><td style="font-family:monospace;">2-1 (8.5%)</td><td>26.2%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.20&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二004</span></td><td>奈梅亨</td><td>SBV精英</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>12.0%</td><td style="font-family:monospace;">2-2 (9.2%)</td><td>29.7%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.51&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二005</span></td><td>胡巴卡德</td><td>吉达国民</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>10.7%</td><td style="font-family:monospace;">2-1 (9.4%)</td><td>28.1%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周二006</span></td><td>南安普敦<sub class="rank-tag">[19]</sub></td><td>斯旺西<sub class="rank-tag">[1]</sub></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>11.7%</td><td style="font-family:monospace;">1-0 (11.1%)</td><td>33.4%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">排名背离(客1位优于主19位却赔率更高)</td></tr><tr><td><span class="tag tag-blue">周二007</span></td><td>桑德兰</td><td>赫尔城</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td>15.4%</td><td style="font-family:monospace;">1-1 (13.1%)</td><td>39.5%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周二008</span></td><td>皇马</td><td>国际米兰</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>9.8%</td><td style="font-family:monospace;">2-1 (8.9%)</td><td>26.2%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.46&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二009</span></td><td>多特蒙德</td><td>比利亚雷</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>9.9%</td><td style="font-family:monospace;">2-1 (9.0%)</td><td>26.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.04&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二010</span></td><td>里尔</td><td>贝蒂斯</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>11.9%</td><td style="font-family:monospace;">2-1 (9.4%)</td><td>29.1%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周二011</span></td><td>波尔图</td><td>曼城</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>11.1%</td><td style="font-family:monospace;">1-2 (8.8%)</td><td>28.4%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.97&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周二012</span></td><td>弗鲁米嫩</td><td>普拉滕斯</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td>14.5%</td><td style="font-family:monospace;">1-0 (14.1%)</td><td>39.5%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.17&gt;1.0(客胜有价值)</td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.3 进球数预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周二001</span></td><td>蔚山现代</td><td>首尔FC</td><td><span class="tag tag-red" title="λ总分3.02">大球倾向</span></td><td>58%</td><td>36%</td><td>3 球</td><td style="font-family:monospace;">3.02</td></tr><tr><td><span class="tag tag-blue">周二002</span></td><td>雅典AEK</td><td>LASK林茨</td><td><span class="tag tag-red" title="λ总分3.35">大球倾向</span></td><td>65%</td><td>43%</td><td>3 球</td><td style="font-family:monospace;">3.35</td></tr><tr><td><span class="tag tag-blue">周二003</span></td><td>布鲁日</td><td>维拉</td><td><span class="tag tag-red" title="λ总分3.33">大球倾向</span></td><td>65%</td><td>43%</td><td>3 球</td><td style="font-family:monospace;">3.33</td></tr><tr><td><span class="tag tag-blue">周二004</span></td><td>奈梅亨</td><td>SBV精英</td><td><span class="tag tag-red" title="λ总分3.10">大球倾向</span></td><td>60%</td><td>37%</td><td>3 球</td><td style="font-family:monospace;">3.10</td></tr><tr><td><span class="tag tag-blue">周二005</span></td><td>胡巴卡德</td><td>吉达国民</td><td><span class="tag tag-red" title="λ总分3.21">大球倾向</span></td><td>62%</td><td>40%</td><td>3 球</td><td style="font-family:monospace;">3.21</td></tr><tr><td><span class="tag tag-blue">周二006</span></td><td>南安普敦<sub class="rank-tag">[19]</sub></td><td>斯旺西<sub class="rank-tag">[1]</sub></td><td><span class="tag tag-yellow" title="λ总分2.43">均势总量</span></td><td>44%</td><td>23%</td><td>2 球</td><td style="font-family:monospace;">2.43</td></tr><tr><td><span class="tag tag-blue">周二007</span></td><td>桑德兰</td><td>赫尔城</td><td><span class="tag tag-green" title="λ总分2.27">小球倾向</span></td><td>40%</td><td>20%</td><td>2 球</td><td style="font-family:monospace;">2.27</td></tr><tr><td><span class="tag tag-blue">周二008</span></td><td>皇马</td><td>国际米兰</td><td><span class="tag tag-red" title="λ总分3.50">大球倾向</span></td><td>68%</td><td>46%</td><td>3 球</td><td style="font-family:monospace;">3.50</td></tr><tr><td><span class="tag tag-blue">周二009</span></td><td>多特蒙德</td><td>比利亚雷</td><td><span class="tag tag-red" title="λ总分3.30">大球倾向</span></td><td>64%</td><td>42%</td><td>3 球</td><td style="font-family:monospace;">3.30</td></tr><tr><td><span class="tag tag-blue">周二010</span></td><td>里尔</td><td>贝蒂斯</td><td><span class="tag tag-yellow" title="λ总分2.72">均势总量</span></td><td>51%</td><td>29%</td><td>2 球</td><td style="font-family:monospace;">2.72</td></tr><tr><td><span class="tag tag-blue">周二011</span></td><td>波尔图</td><td>曼城</td><td><span class="tag tag-red" title="λ总分3.12">大球倾向</span></td><td>60%</td><td>38%</td><td>3 球</td><td style="font-family:monospace;">3.12</td></tr><tr><td><span class="tag tag-blue">周二012</span></td><td>弗鲁米嫩</td><td>普拉滕斯</td><td><span class="tag tag-green" title="λ总分2.31">小球倾向</span></td><td>41%</td><td>20%</td><td>2 球</td><td style="font-family:monospace;">2.31</td></tr></tbody>
+</table></div></div>
+
+
+<h2>五、核心策略与风险提示</h2>
+
 <div class="summary-grid">
-  <div class="summary-card"><div class="s-match">周二001 蔚山 vs 首尔</div><span class="s-pred">1-2</span><div class="s-confidence">首尔客胜★★★☆☆；让球+1蔚山受让下，首选比分为小负防平，避免深追</div></div>
-  <div class="summary-card"><div class="s-match">周二002 AEK vs LASK</div><span class="s-pred">2-0</span><div class="s-confidence">AEK主胜★★★☆☆；LASK欧战首秀+伤停，可博让球-1</div></div>
-  <div class="summary-card"><div class="s-match">周二003 布鲁日 vs 维拉</div><span class="s-pred">1-0</span><div class="s-confidence">布鲁日不败★★★☆☆；维拉0进球5伤缺，主队小球胜面大</div></div>
-  <div class="summary-card"><div class="s-match">周二004 奈梅亨 vs 精英</div><span class="s-pred">2-0</span><div class="s-confidence">奈梅亨主胜★★★★☆；H2H碾压+机构强信心</div></div>
-  <div class="summary-card"><div class="s-match">周二005 胡巴卡德 vs 吉达</div><span class="s-pred">1-1</span><div class="s-confidence">吉达受让★★★☆☆；头号射手缺阵+客队历史优势</div></div>
-  <div class="summary-card"><div class="s-match">周二006 南安 vs 斯旺西</div><span class="s-pred">2-1</span><div class="s-confidence">南安不败★★★★☆；H2H优势+主场稳定，防榜首逼平</div></div>
-  <div class="summary-card"><div class="s-match">周二007 桑德兰 vs 赫尔城</div><span class="s-pred">1-0</span><div class="s-confidence">桑德兰不败★★★☆☆；杯赛大幅轮换变量大，防平</div></div>
-  <div class="summary-card"><div class="s-match">周二008 皇马 vs 国米</div><span class="s-pred">2-1</span><div class="s-confidence">皇马小胜防平★★★☆☆；伤停10人，让球不稳建议双选胜/平</div></div>
-  <div class="summary-card"><div class="s-match">周二009 多特 vs 黄潜</div><span class="s-pred">2-1</span><div class="s-confidence">多特主胜★★★★☆；魔鬼主场+黄潜客场疲软</div></div>
-  <div class="summary-card"><div class="s-match">周二010 里尔 vs 贝蒂斯</div><span class="s-pred">2-1</span><div class="s-confidence">里尔不败★★★☆☆；贝蒂斯4主力伤缺但反击凶</div></div>
-  <div class="summary-card"><div class="s-match">周二011 波尔图 vs 曼城</div><span class="s-pred">0-1</span><div class="s-confidence">曼城小胜防平★★★☆☆；客让半球/一球不稳，重点提防平局</div></div>
-  <div class="summary-card"><div class="s-match">周二012 弗鲁米嫩 vs 普拉滕斯</div><span class="s-pred">2-0</span><div class="s-confidence">弗鲁米嫩主胜★★★☆☆；大巴球队难打穿，小胜/让球谨防</div></div>
-</div>
-<div class="warning">
-  <strong>核心策略：</strong>本日12场以欧冠新赛制首轮为主体（6场），强强对话多、轮换与伤停信息影响大，建议控制单场仓位、以"胆+防"组合为主。确定性最高的三场：周二004奈梅亨主胜、周二009多特主胜、周二006南安不败；风险最高三场：周二008皇马让球（伤停严重）、周二011曼城让球（波尔图主场韧性）、周二005胡巴卡德让球（锋线核心缺阵）。欧冠瑞士轮首轮无"垃圾时间"，各队态度需重点参考伤停与轮换名单，尽量在开赛前1小时确认首发后再定投。
+  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">5★</strong>（1场5★ / 1场4★ / 4场3★ / 5场2★），共2场高信心场次，冷门信号普遍存在，串关按实际评级从严组串。</p></div>
+  <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">8</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
+  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>2.97</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">0</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
+  <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
+  <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
 </div>
 
-<h2 id="league-info">六、联赛杯赛附加信息</h2>
+<div class="warning">
+  <strong>风险提示：</strong>足球比赛存在较大不确定性，伤病、红牌、点球、VAR等因素均可能影响比赛结果。本报告基于历史数据和AI模型分析，仅供参考，不构成投注建议。请理性购彩，量力而行。
+</div>
+
+<div class="parlay-section">
+  <h3>比分串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    <tr class="parlay-confident"><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取模型首选比分稳胆打底</span></td><td>[周二007]桑德兰vs赫尔城 1-0 × [周二001]蔚山现代vs首尔FC 1-1</td><td style="font-family:monospace;font-weight:700;">46.90</td><td>2.19%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取模型首选比分稳胆打底</span></td><td>[周二012]弗鲁米嫩vs普拉滕斯 1-1 × [周二004]奈梅亨vsSBV精英 1-1</td><td style="font-family:monospace;font-weight:700;">68.88</td><td>1.74%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周二012]弗鲁米嫩vs普拉滕斯 1-1 × [周二004]奈梅亨vsSBV精英 1-1</td><td style="font-family:monospace;font-weight:700;">68.88</td><td>1.74%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周二006]南安普敦vs斯旺西 1-1 × [周二011]波尔图vs曼城 1-1</td><td style="font-family:monospace;font-weight:700;">64.00</td><td>1.30%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td></tr>
+  </table>
+  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
+</div>
+
+<h2>六、当日赛事联赛形势</h2>
 <div class="league-overview-grid">
   <div class="league-card">
-    <h4>欧冠 2026/27 新赛制（联赛阶段）</h4>
-    <p style="font-size:0.85rem;">36队同一大积分榜，每队踢8场（4主4客），8个对手各不同。联赛阶段结束：前8名直接进16强；第9-24名踢两回合附加赛争剩余8席；第25-36名直接淘汰（无欧联席位）。16强2027年3月开打，决赛2027年6月5日于马德里大都会球场。每场都关系积分与附加赛对手档次，无垃圾时间。</p>
+    <h4>韩职 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二001 蔚山现代 vs 首尔FC — 总进球λ 3.02，首选 1:1（14.2%）</li>
+    </ul>
   </div>
   <div class="league-card">
-    <h4>韩职（K联）第28轮</h4>
-    <p style="font-size:0.85rem;">首尔FC 27轮18胜5平4负积59分高居榜首，领先第二名全北现代17分，基本锁定争冠资格；蔚山现代12胜5平10负积41分列第3，与亚冠资格区争夺胶着，本场3分对维持三甲至关重要。</p>
+    <h4>欧冠 (6场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二002 雅典AEK vs LASK林茨 — 总进球λ 3.35，首选 1:1（9.0%）</li>
+      <li>周二003 布鲁日 vs 维拉 — 总进球λ 3.33，首选 1:1（9.9%）</li>
+      <li>周二008 皇马 vs 国际米兰 — 总进球λ 3.50，首选 1:1（9.8%）</li>
+      <li>周二009 多特蒙德 vs 比利亚雷 — 总进球λ 3.30，首选 1:1（9.9%）</li>
+      <li>周二010 里尔 vs 贝蒂斯 — 总进球λ 2.72，首选 1:1（11.9%）</li>
+      <li>周二011 波尔图 vs 曼城 — 总进球λ 3.12，首选 1:1（11.1%）</li>
+    </ul>
   </div>
   <div class="league-card">
-    <h4>英冠 第7轮</h4>
-    <p style="font-size:0.85rem;">斯旺西暂列英冠榜首，志在直接升级；南安普敦上赛季英超降入英冠，身处中下游急需抢分止血，主队战意值得信任。</p>
+    <h4>荷甲 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二004 奈梅亨 vs SBV精英 — 总进球λ 3.10，首选 1:1（12.0%）</li>
+    </ul>
   </div>
   <div class="league-card">
-    <h4>沙职 第6轮</h4>
-    <p style="font-size:0.85rem;">胡巴卡德与吉达国民同积6分，处于争冠集团中段（胡巴卡德列第5、吉达国民列第4），本场直接对话将显著影响亚冠与争冠形势，双方均全力一搏。</p>
+    <h4>沙职 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二005 胡巴卡德 vs 吉达国民 — 总进球λ 3.21，首选 1:1（10.7%）</li>
+    </ul>
   </div>
   <div class="league-card">
-    <h4>英联赛杯 第3轮</h4>
-    <p style="font-size:0.85rem;">桑德兰与赫尔城均为英超球队通过欧战资格直接进入第3轮；杯赛采用90分钟打平即加时/点球规则。两队后续均有联赛硬仗（桑德兰vs阿森纳、欧联vs阿尔克马尔；赫尔城力保联赛不败），轮换预期强烈。</p>
+    <h4>英冠 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二006 南安普敦<sub class="rank-tag">[19]</sub> vs 斯旺西<sub class="rank-tag">[1]</sub> — 总进球λ 2.43，首选 1:1（11.7%）</li>
+    </ul>
   </div>
   <div class="league-card">
-    <h4>解放者杯 1/4决赛</h4>
-    <p style="font-size:0.85rem;">弗鲁米嫩（巴甲）与普拉滕斯（阿甲）均经点球大战晋级八强，两回合淘汰赛首回合主队抢分意愿强；晋级路径：16强弗鲁米嫩点球5-4淘汰独立里瓦达维亚、普拉滕斯点球7-6淘汰科金博。</p>
+    <h4>英联赛杯 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二007 桑德兰 vs 赫尔城 — 总进球λ 2.27，首选 1:0（15.4%）</li>
+    </ul>
+  </div>
+  <div class="league-card">
+    <h4>解放者杯 (1场)</h4>
+    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
+      <li>周二012 弗鲁米嫩 vs 普拉滕斯 — 总进球λ 2.31，首选 1:1（14.5%）</li>
+    </ul>
   </div>
 </div>
 
+<h2>📊 动态校准与历史命中率</h2>
+<div class="calibration-box">
+  <div class="cal-item">
+    <span>近5期预测总进球均值</span>
+    <span><strong>2.67球</strong> | 实际均值: <strong>2.74球</strong></span>
+  </div>
+  <div class="cal-item">
+    <span>系统偏差比</span>
+    <span><strong style="color:var(--accent3);">0.91</strong> → 模型系统性低估 → λ×<strong>1.06</strong> 已应用</span>
+  </div>
+  <div class="cal-item">
+    <span>H2H方向性再分配 (V2.2)</span>
+    <span><strong style="color:var(--accent2);">0</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
+  </div>
+  <div class="cal-item">
+    <span>零封修正效果</span>
+    <span>零封频率≤15%→P(0)×0.6，16-25%→×0.8，26-40%→×1.0，&gt;40%→×1.2，逐场已应用</span>
+  </div>
+  <div class="cal-item"><span>2026-09-07（9场）</span><span>预测均值 <strong>2.67</strong> | 实际均值 <strong>1.67</strong> | 偏差比 <strong>0.63</strong></span></div><div class="cal-item"><span>2026-09-06（24场）</span><span>预测均值 <strong>2.64</strong> | 实际均值 <strong>3.58</strong> | 偏差比 <strong>1.36</strong></span></div><div class="cal-item"><span>2026-09-05（29场）</span><span>预测均值 <strong>3.42</strong> | 实际均值 <strong>2.97</strong> | 偏差比 <strong>0.87</strong></span></div><div class="cal-item"><span>2026-09-04（14场）</span><span>预测均值 <strong>2.93</strong> | 实际均值 <strong>3.36</strong> | 偏差比 <strong>1.15</strong></span></div><div class="cal-item"><span>2026-09-03（7场）</span><span>预测均值 <strong>2.26</strong> | 实际均值 <strong>2.29</strong> | 偏差比 <strong>1.01</strong></span></div><div class="cal-item"><span>2026-09-02（13场）</span><span>预测均值 <strong>2.50</strong> | 实际均值 <strong>2.69</strong> | 偏差比 <strong>1.08</strong></span></div><div class="cal-item"><span>2026-09-01（10场）</span><span>预测均值 <strong>2.28</strong> | 实际均值 <strong>2.60</strong> | 偏差比 <strong>1.14</strong></span></div>
 </div>
 
-<!-- Footer 数据来源 -->
+
+</div>
+
 <div class="footer">
-  <div class="sources">
-    <h3>数据来源说明</h3>
-    <ol>
-      <li><span class="src-title">P0 · 盘口与赔率</span><span class="src-url">竞彩官方赔率(胜平负/让球)取自网易彩票 https://sports.163.com/caipiao/bet/football</span></li>
-      <li><span class="src-title">P1 · 基本面数据</span><span class="src-url">积分排名/近期战绩/历史交锋/伤停信息取自网易单场数据页、7m.com.cn 数据平台 https://data.7m.com.cn/database/ 及 https://data.7m.com.cn/fixture_data/default_gb.shtml</span></li>
-      <li><span class="src-title">P2 · 赛前动态与市场分析</span><span class="src-url">援引搜狐/新浪/今日头条/球迷屋/中国足彩网/唯彩看球/The Football Faithful 等公开预测与盘口解读，仅供交叉验证</span></li>
-    </ol>
+  <div class="container">
+    <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V2.2 · 指数衰减加权 · xG融合 · H2H总量因子+方向性再分配 · 市场混合 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">报告生成时间: 2026-09-08 | 仅供数据分析参考，不构成投注建议</p>
   </div>
-  <div style="margin-top:1rem;">生成时间: 2026-09-08 · 本报告仅供数据分析参考，不构成任何投注建议 · 理性购彩，量力而行</div>
 </div>
-
 </body>
 </html>
