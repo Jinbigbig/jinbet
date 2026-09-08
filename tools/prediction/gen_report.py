@@ -288,39 +288,34 @@ def match_card(m):
 
 deep_sec = '<h2>三、逐场深度分析</h2>\n' + '\n'.join(match_card(m) for m in MATCHES)
 
-# ---------- 四、预测汇总（胜负 / 比分 / 进球数 三张分表）----------
-rows41 = rows42 = rows43 = ''
+# ---------- 四、预测汇总（胜负+比分合并表 / 进球数）----------
+DIR_TAG = {'主胜': 'tag-green', '平局': 'tag-yellow', '客胜': 'tag-red'}
+rowsA = rowsB = ''
 for m in MATCHES:
     ts = m['top_scores']
     s1, p1 = first_score(m)
-    second = f'{dash(ts[1]["score"])} ({ts[1]["prob"]:.1f}%)' if len(ts) > 1 else '-'
     top3 = sum(t['prob'] for t in ts[:3])
     cold = esc(m['signals'][0]) if m['signals'] and m['signals'] != ['无明显冷门信号'] else '-'
     tg = total_goals_info(m)
     pr = m['prob']
     num_cell = f'<td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
     pair = f'<td>{rank_tag(m["home"], m["home_rank"])}</td><td>{rank_tag(m["away"], m["away_rank"])}</td>'
-    # 4.1 胜负预测
-    best = max([('home', '主胜', 'tag-green'), ('draw', '平局', 'tag-yellow'), ('away', '客胜', 'tag-red')], key=lambda x: pr[x[0]])
-    qt = m.get('quad_top', {}).get(best[0], {})
-    quad_s = f"{esc(qt.get('score', '-'))} <span style='color:var(--muted);font-size:0.8rem;'>({qt.get('prob', 0):.1f}%)</span>" if qt else '-'
-    rows41 += (f'<tr>{num_cell}{pair}'
-               f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
-               f'<td><span class="tag {best[2]}">{best[1]} {pr[best[0]]:.1f}%</span></td>'
-               f'<td style="font-family:monospace;">{quad_s}</td></tr>')
-    # 4.2 比分预测
+    # 4.1 胜负与比分（1X2 三率 + 方向首选 + 众数 合并一表）
     dlabel2, dkey2, ds2, dp2, op2 = direction_pick(m)
-    rows42 += (f'<tr>{num_cell}{pair}'
-               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}</td>'
-               f'<td>{dlabel2} {op2*100:.0f}% · {dp2*100:.1f}%</td>'
-               f'<td style="font-family:monospace;">{dash(s1)}</td>'
-               f'<td>{p1*100:.1f}%</td>'
-               f'<td style="font-family:monospace;">{esc(second)}</td>'
-               f'<td>{top3:.1f}%</td>'
-               f'<td>{stars_html(m["stars"])}</td>'
-               f'<td style="font-size:0.78rem;">{cold}</td></tr>')
-    # 4.3 进球数预测
-    rows43 += (f'<tr>{num_cell}{pair}'
+    second = next((f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in ts[1:4] if dash(t['score']) != dash(ds2)), '-')
+    rowsA += (f'<tr>{num_cell}{pair}'
+              f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
+              f'<td><span class="tag {DIR_TAG.get(dlabel2, "tag-blue")}">{dlabel2} {op2*100:.1f}%</span></td>'
+              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}'
+              f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({dp2*100:.1f}%)</span></td>'
+              f'<td style="font-family:monospace;">{dash(s1)}'
+              f' <span style="color:var(--muted);font-size:0.8rem;">({p1*100:.1f}%)</span></td>'
+              f'<td style="font-family:monospace;">{esc(second)}</td>'
+              f'<td>{top3:.1f}%</td>'
+              f'<td>{stars_html(m["stars"])}</td>'
+              f'<td style="font-size:0.78rem;">{cold}</td></tr>')
+    # 4.2 进球数预测
+    rowsB += (f'<tr>{num_cell}{pair}'
                f'<td><span class="tag {tg["cls"]}" title="λ总分{tg["lt"]:.2f}">{tg["tag"]}</span></td>'
                f'<td>{tg["ge3"]*100:.0f}%</td>'
                f'<td>{tg["ge4"]*100:.0f}%</td>'
@@ -336,13 +331,11 @@ def _sub_table(title, note, head, body):
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">三种玩法口径分开看：<b>胜负</b>看方向（Platt 校准概率）、<b>比分</b>看组合覆盖（Top3 合计，勿单押首选）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。</p>
-{_sub_table('4.1 胜负预测', '概率经 Platt 校准（修正泊松平局低估）。倾向 = 三者中概率最高者；"倾向内首选比分" = 该结果象限中概率最高的比分（若跟方向玩法，配这个比分）。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>倾向内首选比分</th>', rows41)}
-{_sub_table('4.2 比分预测', '方向首选 = Platt 校准后最可能赛果象限内的众数比分（跟方向玩法参考它）；全局众数在均衡场次恒为 1:1（≈11~14%）；押比分建议 Top3 组合覆盖，勿单押首选。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>方向首选</th><th>倾向·概率</th><th>全局众数</th><th>众数概率</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rows42)}
-{_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rows43)}
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。单比分的概率上限只有 8~15%，勿单押。</p>
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它）；<b>全局众数</b>在均衡场次恒为 1:1（≈11~14%），仅作参考；押比分建议 Top3 组合覆盖。',
+            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>全局众数</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rowsA)}
+{_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
+            '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 '''
 
 # ---------- 五、核心策略与风险提示 ----------
