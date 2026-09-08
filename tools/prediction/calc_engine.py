@@ -17,7 +17,16 @@ from collections import Counter
 BASE = os.path.dirname(os.path.abspath(__file__))
 # 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
 TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else datetime.date.today().isoformat()
-DECAY = 0.85
+# 【2026-09-08 回测调优】基础λ的历史窗口与衰减
+# 依据 window_sweep.py（2961 场 walk-forward，泊松对数似然）：
+#   现行 N=10/DECAY=0.85 → 场均 logL -3.1314, 进球 MSE 1.6451
+#   最优 N=30/DECAY=1.00 → -3.1029, MSE 1.5996（+0.91%）
+#   平台区 N=20~30 × DECAY=0.95~1.00（+0.024~0.029），取保守值 N=25/DECAY=0.96
+# 说明：长窗口降低估计噪声的收益 > 时效性的损失；DECAY=1.0 虽最优但完全丢弃近期
+#       变化（换帅/转会/伤停），故保留轻微衰减 0.96（有效样本约 25 场）。
+# 注意：RECENT_N 需与 _build_today_extras.py 的 recent 切片长度保持一致。
+RECENT_N = 25
+DECAY = 0.96
 HOME_BOOST = 1.15   # 动态主客场系数回退默认值
 AWAY_DISCOUNT = 0.90
 ALPHA_H2H = 0.35    # B部分 H2H 权重上限
@@ -275,10 +284,11 @@ def fit_platt_params(force=False):
         H, A, lg = r["home"], r["away"], r["lg"]
         gh, ga_ = gf.get(H, []), ga.get(A, [])
         if len(gh) >= 3 and len(gf.get(A, [])) >= 3 and len(ga.get(H, [])) >= 3 and len(ga_) >= 3:
-            h_gf = statistics.mean(gh[-5:])
-            h_ga = statistics.mean(ga[H][-5:])
-            a_gf = statistics.mean(gf[A][-5:])
-            a_ga = statistics.mean(ga_[-5:])
+            # 【2026-09-08】与实跑同源：近 RECENT_N 场 + DECAY 加权（原为近 5 场简单均值）
+            h_gf = recent_avg(gh)
+            h_ga = recent_avg(ga[H])
+            a_gf = recent_avg(gf[A])
+            a_ga = recent_avg(ga_)
             lh = h_gf * 0.75 + a_ga * 0.25
             la = a_gf * 0.75 + h_ga * 0.25
             base = league_baseline(lg)
@@ -364,6 +374,15 @@ def wavg(vals):
     """指数衰减加权平均，vals[0] 为最近一场。"""
     w = [DECAY ** i for i in range(len(vals))]
     return sum(v * wi for v, wi in zip(vals, w)) / sum(w)
+
+
+def recent_avg(seq_oldest_first):
+    """历史场均（由旧到新的序列）→ 取最近 RECENT_N 场做 DECAY 加权。
+
+    【2026-09-08】Platt 拟合原本写死近 5 场简单均值，与实跑（近 N 场 + 指数衰减）
+    不同源；统一走此函数，保证校准拟合与实跑分布一致。
+    """
+    return wavg(list(seq_oldest_first)[-RECENT_N:][::-1])
 
 
 # ------------------------------------------------- V3 自适应校准路线图

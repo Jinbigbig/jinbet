@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "purpose": "球队历史荣誉/赛事底蕴档案。用于报告展示层（历史战绩对比），暂不参与概率计算。",
+    "why_not_in_probability": "2026-09-08 回测结论：荣誉属公开慢变量，已被市场赔率与长期战绩充分定价；且赛事专属样本不足（皇马欧冠仅7场、贝蒂斯/波尔图/里尔 0 场），无法验证增量。待积累足够样本后重新评估。",
+    "collected_at": "2026-09-08",
+    "source": "联网核查（UEFA / 俱乐部官网 / Wiki），标 confidence=low 者需复核",
+    "fields": {
+      "ucl_titles": "欧冠(含冠军杯)夺冠次数",
+      "ucl_seasons_last10": "近10季(2016-17~2025-26)参加欧冠正赛的赛季数 0-10",
+      "cont_titles": "洲际赛事冠军总数(欧冠/欧联/亚冠/解放者杯等)",
+      "league_titles": "本国顶级联赛冠军次数",
+      "tier": "elite / strong / regular / minnow",
+      "note": "一句话底蕴概括"
+    }
+  },
+  "teams": {
+    "皇马": {"ucl_titles": 15, "ucl_finals": 18, "ucl_seasons_last10": 10, "cont_titles": 15, "league_titles": 36, "tier": "elite", "note": "欧冠15冠历史第一，近10季全勤"},
+    "国际米兰": {"ucl_titles": 3, "ucl_finals": 7, "ucl_seasons_last10": 8, "cont_titles": 6, "league_titles": 21, "tier": "strong", "note": "3夺欧冠，近季两入决赛", "confidence": "low"},
+    "多特蒙德": {"ucl_titles": 1, "ucl_finals": 3, "ucl_seasons_last10": 10, "cont_titles": 2, "league_titles": 8, "tier": "strong", "note": "1997欧冠冠军，欧冠常客", "confidence": "low"},
+    "比利亚雷": {"ucl_titles": 0, "ucl_finals": 0, "ucl_seasons_last10": 2, "cont_titles": 1, "league_titles": 0, "tier": "regular", "note": "2021欧联冠军，欧冠稀客", "confidence": "low"},
+    "里尔": {"ucl_titles": 0, "ucl_finals": 0, "ucl_seasons_last10": 3, "cont_titles": 0, "league_titles": 4, "tier": "regular", "note": "法甲4冠，近年偶入欧冠", "confidence": "low"},
+    "贝蒂斯": {"ucl_titles": 0, "ucl_finals": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 1, "tier": "regular", "note": "西甲1冠，欧冠正赛新军", "confidence": "low"},
+    "波尔图": {"ucl_titles": 2, "ucl_finals": 2, "ucl_seasons_last10": 9, "cont_titles": 4, "league_titles": 31, "tier": "strong", "note": "2夺欧冠，葡超豪门", "confidence": "low"},
+    "曼城": {"ucl_titles": 1, "ucl_finals": 2, "ucl_seasons_last10": 10, "cont_titles": 2, "league_titles": 10, "tier": "elite", "note": "2023欧冠冠军，近10季全勤"},
+    "布鲁日": {"ucl_titles": 0, "ucl_finals": 1, "ucl_seasons_last10": 10, "cont_titles": 0, "league_titles": 20, "tier": "regular", "note": "比甲豪门，欧冠正赛常客", "confidence": "low"},
+    "维拉": {"ucl_titles": 1, "ucl_finals": 1, "ucl_seasons_last10": 1, "cont_titles": 1, "league_titles": 7, "tier": "regular", "note": "1982欧冠冠军，重返欧冠"},
+    "雅典AEK": {"ucl_titles": 0, "ucl_finals": 0, "ucl_seasons_last10": 2, "cont_titles": 0, "league_titles": 14, "tier": "regular", "note": "希腊传统豪门，欧战边缘", "confidence": "low"},
+    "LASK林茨": {"ucl_titles": 0, "ucl_finals": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 2, "tier": "minnow", "note": "奥甲2冠，欧战新面孔", "confidence": "low"},
+
+    "蔚山现代": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 2, "league_titles": 5, "tier": "elite", "note": "K联赛五冠，两夺亚冠"},
+    "首尔FC": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 6, "tier": "elite", "note": "K联赛六冠传统豪门"},
+    "奈梅亨": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "regular", "note": "荷甲中游，无顶级荣誉"},
+    "SBV精英": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "minnow", "note": "荷甲升降机，无冠军"},
+    "胡巴卡德": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 1, "league_titles": 0, "tier": "strong", "note": "沙特新贵，阿美注资"},
+    "吉达国民": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 1, "league_titles": 3, "tier": "elite", "note": "2025亚冠冠军，沙特豪门", "confidence": "low"},
+    "南安普敦": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "cup_titles": 1, "tier": "strong", "note": "1976足总杯冠军，2025降级"},
+    "斯旺西": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "cup_titles": 1, "tier": "regular", "note": "2013联赛杯冠军，曾七季英超"},
+    "桑德兰": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 6, "tier": "strong", "note": "6次英格兰顶级联赛冠军，2025升超"},
+    "赫尔城": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "regular", "note": "英超升降机，2026升超"},
+    "弗鲁米嫩": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 2, "league_titles": 4, "libertadores_titles": 1, "tier": "elite", "note": "巴甲四冠，2023解放者杯冠军"},
+    "普拉滕斯": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 1, "libertadores_titles": 0, "tier": "regular", "note": "2026阿甲首冠，解放者杯新军", "confidence": "low"},
+
+    "阿森纳": {"ucl_titles": 0, "ucl_seasons_last10": 4, "cont_titles": 1, "league_titles": 14, "tier": "elite", "note": "14次英格兰顶级联赛冠军", "confidence": "low"},
+    "切尔西": {"ucl_titles": 2, "ucl_seasons_last10": 6, "cont_titles": 8, "league_titles": 6, "tier": "elite", "note": "2欧冠+6联赛的欧洲豪门", "confidence": "low"},
+    "诺丁汉": {"ucl_titles": 2, "ucl_seasons_last10": 0, "cont_titles": 3, "league_titles": 1, "tier": "strong", "note": "2座欧冠在身，联赛仅1冠"},
+    "纽卡斯尔": {"ucl_titles": 0, "ucl_seasons_last10": 2, "cont_titles": 0, "league_titles": 4, "tier": "strong", "note": "4次联赛冠军的传统劲旅", "confidence": "low"},
+    "利物浦": {"ucl_titles": 6, "ucl_seasons_last10": 9, "cont_titles": 13, "league_titles": 20, "tier": "elite", "note": "20冠+6欧冠，英格兰欧战之最", "confidence": "low"},
+    "热刺": {"ucl_titles": 0, "ucl_seasons_last10": 7, "cont_titles": 4, "league_titles": 2, "tier": "strong", "note": "2联赛+4欧战，英格兰首支欧战冠军", "confidence": "low"},
+    "水晶宫": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "minnow", "note": "无联赛无欧战，底蕴薄弱"},
+    "利兹联": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 3, "tier": "strong", "note": "3次联赛冠军的昔日劲旅"},
+    "布伦特": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "minnow", "note": "升班马背景，无顶级荣誉"},
+    "西汉姆联": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 1, "league_titles": 0, "tier": "regular", "note": "1座优胜者杯，无联赛冠军"},
+    "富勒姆": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "minnow", "note": "长期中游，无顶级荣誉"},
+    "伯恩茅斯": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 0, "tier": "minnow", "note": "小球会，无顶级联赛荣誉"},
+    "埃弗顿": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 1, "league_titles": 9, "tier": "strong", "note": "9次联赛冠军的老牌劲旅"},
+    "狼队": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 3, "tier": "regular", "note": "1950年代3冠，欧战无冠"},
+    "伯恩利": {"ucl_titles": 0, "ucl_seasons_last10": 0, "cont_titles": 0, "league_titles": 2, "tier": "regular", "note": "2次联赛冠军的英格兰老牌队"}
+  }
+}

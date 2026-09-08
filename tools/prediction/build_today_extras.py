@@ -77,8 +77,10 @@ for i, (name, pos) in enumerate(home_spans):
 n_h2h = n_recent = n_rank = n_news = 0
 for m in matches:
     home, away = m["home"], m["away"]
-    hr = team_idx.get(home, [])[:10]
-    ar = team_idx.get(away, [])[:10]
+    # 【2026-09-08】窗口 10 → RECENT_N(25)，与 _calc_engine 的 RECENT_N/DECAY 保持一致。
+    # 依据 window_sweep.py 回测：近 25 场 + 0.96 衰减 优于 近 10 场 + 0.85（logL +0.026/场, MSE -0.041）
+    hr = team_idx.get(home, [])[:25]
+    ar = team_idx.get(away, [])[:25]
     m["home_recent"] = [{"gf": g, "ga": a} for _, g, a in hr]
     m["away_recent"] = [{"gf": g, "ga": a} for _, g, a in ar]
     if hr and ar:

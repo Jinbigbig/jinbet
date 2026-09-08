@@ -28,6 +28,22 @@ try:
 except FileNotFoundError:
     pass
 
+# ---------- 球队历史底蕴档案（展示层，不参与概率计算）----------
+# 数据：club_pedigree.json（联网核查的荣誉档案）
+# 说明：荣誉属公开慢变量，已被市场赔率与长期战绩定价；此处仅作定性背景展示。
+def _find(name):
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    for p in (os.path.join(here, name), os.path.join(here, '..', name), name,
+              os.path.join(here, 'tools', 'prediction', name)):
+        if os.path.exists(p):
+            return p
+    return None
+
+
+_p = _find('club_pedigree.json')
+PED = json.load(open(_p, encoding='utf-8')).get('teams', {}) if _p else {}
+
 OLD = open('_old_0905.html', encoding='utf-8').read()
 CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
 # 追加：队名右下角排名小字（CSS 变量兜底，兼容浅/深色）
@@ -185,6 +201,47 @@ window.addEventListener('resize', function() {{ chart.resize(); }});
 '''
 
 # ---------- 三、逐场深度分析 ----------
+TIER_CN = {'elite': '顶级豪门', 'strong': '传统劲旅', 'regular': '中坚力量', 'minnow': '底蕴薄弱'}
+
+
+def pedigree_block(m):
+    """球队历史底蕴对比表（展示层，不改概率）。欧冠/欧战场次突出欧战荣誉。"""
+    h, a = m['home'], m['away']
+    ph, pa = PED.get(h), PED.get(a)
+    if not ph and not pa:
+        return ''
+    euro = m.get('league', '') in ('欧冠', '欧罗巴', '欧协联')
+    dims = ([('欧冠冠军', 'ucl_titles'), ('近10季欧冠正赛', 'ucl_seasons_last10'),
+             ('洲际冠军合计', 'cont_titles'), ('本国联赛冠军', 'league_titles')] if euro
+            else [('洲际冠军', 'cont_titles'), ('本国联赛冠军', 'league_titles'),
+                  ('本国杯赛冠军', 'cup_titles')])
+
+    def cell(p, key):
+        if not p:
+            return '<td style="color:var(--muted);">-</td>'
+        v = p.get(key)
+        return f'<td>{v if v is not None else "-"}</td>'
+
+    rows = ''.join(f'<tr><td>{lb}</td>{cell(ph, k)}{cell(pa, k)}</tr>' for lb, k in dims)
+    rows += (f'<tr><td>底蕴定位</td>'
+             f'<td>{TIER_CN.get((ph or {}).get("tier", ""), "-")}</td>'
+             f'<td>{TIER_CN.get((pa or {}).get("tier", ""), "-")}</td></tr>')
+    notes = ' · '.join(x for x in [f'{h}：{ph.get("note")}' if ph and ph.get('note') else '',
+                                   f'{a}：{pa.get("note")}' if pa and pa.get('note') else ''] if x)
+    tag = '（欧冠/欧战场次，突出欧战荣誉）' if euro else ''
+    return f'''
+  <h4>历史底蕴对比{tag}</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>荣誉维度</th><th>{esc(h)}</th><th>{esc(a)}</th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">{esc(notes)}
+  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+'''
+
+
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     olabel, okey, dscore, dprob, oprob = direction_pick(m)
@@ -238,6 +295,7 @@ def match_card(m):
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">{esc(factor_str)}</div></div>
   </div>
 
+  {pedigree_block(m)}
   <h4>历史交锋（近{n_h2h}场）</h4>
   <div class="table-wrap">
     <table class="history-table">
