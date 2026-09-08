@@ -80,6 +80,18 @@ def first_score(m):
     ts = m['top_scores']
     return (ts[0]['score'], ts[0]['prob']/100) if ts else ('1:1', 0.0)
 
+def direction_pick(m):
+    """方向首选：Platt 校准后最可能赛果象限内的众数比分。
+
+    全局众数在均衡场次几乎恒为 1:1（P≈11~14%），对跟方向的用户无信息量；
+    象限条件口径把「胜平负倾向」与「该倾向下最可能比分」分开表达。
+    返回 (倾向中文, 倾向key, 方向比分, 方向比分概率0-1, 倾向概率0-1)。
+    """
+    pr = m['prob']
+    okey, olabel = max([('home', '主胜'), ('draw', '平局'), ('away', '客胜')], key=lambda x: pr[x[0]])
+    qt = (m.get('quad_top') or {}).get(okey) or {}
+    return olabel, okey, qt.get('score', '1:1'), (qt.get('prob') or 0)/100, pr[okey]/100
+
 def total_goals_info(m):
     """总进球倾向：λ主/客独立泊松相加，算 P(≥3球)/P(≥4球) 与总量众数。
 
@@ -175,7 +187,8 @@ window.addEventListener('resize', function() {{ chart.resize(); }});
 # ---------- 三、逐场深度分析 ----------
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
-    s1, p1 = first_score(m)
+    olabel, okey, dscore, dprob, oprob = direction_pick(m)
+    ms, mp = first_score(m)
     tg = total_goals_info(m)
     others = ' | '.join(f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in m['top_scores'][1:3]) or '-'
     hm = h2h_mean(m)
@@ -240,13 +253,13 @@ def match_card(m):
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">首选比分:</span>
-      <span class="pred-score">{dash(s1)}</span>
-      <span class="pred-value">({p1*100:.1f}%)</span>
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">{dash(dscore)}</span>
+      <span class="pred-value">({dprob*100:.1f}% ｜ {olabel}{oprob*100:.1f}% 倾向内最可能比分)</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">次选/三选:</span>
-      <span class="pred-value">{esc(others)}（Top3合计 {sum(t['prob'] for t in m['top_scores'][:3]):.0f}%）</span>
+      <span class="pred-label">全局众数:</span>
+      <span class="pred-value">{dash(ms)} ({mp*100:.1f}%) ｜ 次选/三选: {esc(others)}（Top3合计 {sum(t['prob'] for t in m['top_scores'][:3]):.0f}%）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -258,7 +271,7 @@ def match_card(m):
       <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：首选比分为单一比分众数（天然偏小），判断大球/小球以上方「总进球倾向」为准。
+      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       {esc(m['chain'])}
@@ -296,8 +309,11 @@ for m in MATCHES:
                f'<td><span class="tag {best[2]}">{best[1]} {pr[best[0]]:.1f}%</span></td>'
                f'<td style="font-family:monospace;">{quad_s}</td></tr>')
     # 4.2 比分预测
+    dlabel2, dkey2, ds2, dp2, op2 = direction_pick(m)
     rows42 += (f'<tr>{num_cell}{pair}'
-               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(s1)}</td>'
+               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}</td>'
+               f'<td>{dlabel2} {op2*100:.0f}% · {dp2*100:.1f}%</td>'
+               f'<td style="font-family:monospace;">{dash(s1)}</td>'
                f'<td>{p1*100:.1f}%</td>'
                f'<td style="font-family:monospace;">{esc(second)}</td>'
                f'<td>{top3:.1f}%</td>'
@@ -323,8 +339,8 @@ summary4_sec = f'''
 <p style="font-size:0.85rem;color:var(--muted);">三种玩法口径分开看：<b>胜负</b>看方向（Platt 校准概率）、<b>比分</b>看组合覆盖（Top3 合计，勿单押首选）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。</p>
 {_sub_table('4.1 胜负预测', '概率经 Platt 校准（修正泊松平局低估）。倾向 = 三者中概率最高者；"倾向内首选比分" = 该结果象限中概率最高的比分（若跟方向玩法，配这个比分）。',
             '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>倾向内首选比分</th>', rows41)}
-{_sub_table('4.2 比分预测', '首选比分为单一比分众数（天然偏小，≈11~14%）；押比分建议 Top3 组合覆盖，勿单押首选。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>首选比分</th><th>概率</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rows42)}
+{_sub_table('4.2 比分预测', '方向首选 = Platt 校准后最可能赛果象限内的众数比分（跟方向玩法参考它）；全局众数在均衡场次恒为 1:1（≈11~14%）；押比分建议 Top3 组合覆盖，勿单押首选。',
+            '<th>编号</th><th>主队</th><th>客队</th><th>方向首选</th><th>倾向·概率</th><th>全局众数</th><th>众数概率</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rows42)}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rows43)}
 '''
@@ -337,7 +353,8 @@ cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s or 
 def make_group(ms):
     legs, odds_prod, prob_prod = [], 1.0, 1.0
     for m in ms:
-        s, p = first_score(m)
+        _ol, _ok, ds, dp, _op = direction_pick(m)
+        s, p = ds, dp
         odd = score_odd(m, s)
         legs.append(f"[{m['matchNumStr']}]{m['home']}vs{m['away']} {dash(s)}")
         if odd:
@@ -360,7 +377,7 @@ for i in range(n_conf_groups):
     if len(legs) < 2:
         break
     parlays.append(('信心', GROUP_NAME[i], make_group(legs), min(m['stars'] for m in legs),
-                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取模型首选比分稳胆打底"))
+                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取方向首选比分（倾向内最可能）"))
 
 cold_sorted = sorted(cold_pool, key=lambda m: (-len(m['signals']), -first_score(m)[1]))
 need = n_cold_groups * legs_per_group
@@ -412,7 +429,7 @@ strategy_sec = f'''
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
   </table>
-  <div class="parlay-note">注：综合概率为各场首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
+  <div class="parlay-note">注：综合概率为各场方向首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
 '''
 

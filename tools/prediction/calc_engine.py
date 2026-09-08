@@ -562,6 +562,8 @@ def dump_prediction_snapshot(out_matches, date=None):
             "prob_home": (m.get("prob") or {}).get("home"),
             "prob_draw": (m.get("prob") or {}).get("draw"),
             "prob_away": (m.get("prob") or {}).get("away"),
+            "top_scores": m.get("top_scores"),
+            "quad_top": m.get("quad_top"),
         })
     data = {"date": d, "count": len(rows), "engine": "poisson-v2.2", "matches": rows}
     json.dump(data, open(os.path.join(folder, "pred_snapshot.json"), "w", encoding="utf-8"),
