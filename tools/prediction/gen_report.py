@@ -513,7 +513,7 @@ def match_card(m):
       <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.5%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= 该倾向象限内概率最高的比分，供跟单场方向的玩法使用（回测命中 11.5%）；判断大球/小球以「总进球倾向」为准。<b>V3.3 起本比分组已与上方发布的胜/平/负对齐</b>（此前两处口径最多相差 9.9pp）。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       {esc(m['chain'])}
@@ -573,8 +573,8 @@ def _sub_table(title, note, head, body):
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：2577 场回测，单比分命中上限仅 <b>13.2%</b>，Top3 组 <b>31.8%</b>，Top5 组 <b>47.7%</b>——单比分的「最可能值」在多达 66.8% 的场次里都是 1-1，这是独立泊松联合众数的数学性质，不代表模型没有区分度；真正的区分度体现在比分组的构成与覆盖上。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 9.9%）。<b>已移除「全局众数」列</b>：独立泊松联合众数恒为 (⌊λ主⌋,⌊λ客⌋)，λ∈[1,2) 时必为 1-1（回测 66.8% 场次），无区分度。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测命中 31.8% / 47.7%）。',
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：2577 场回测（V3.3 生产口径），单比分命中上限 <b>13.5%</b>，Top3 组 <b>33.3%</b>，Top5 组 <b>49.1%</b>——单比分的「最可能值」在多达 66.8% 的场次里都是 1-1，这是独立泊松联合众数的数学性质，不代表模型没有区分度；真正的区分度体现在比分组的构成与覆盖上。</p>
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 11.5%）。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN）：矩阵三象限的质量缩放到与「胜率/平率/负率」两列完全一致，象限内形状不变；此前两处口径最多相差 9.9pp（同一页自相矛盾），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp，Top5 覆盖变化在噪声内。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测 33.3% / 49.1%）。',
             '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
@@ -674,6 +674,7 @@ strategy_sec = f'''
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
   <div class="summary-card"><h4>🎲 冷门风险分布 (V3.3)</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">{_upset_mean:.1f}%</strong>：低风险 <strong>{_lvl.get('低',0)}</strong> 场 · 中 <strong>{_lvl.get('中',0)}</strong> 场 · 高 <strong>{_lvl.get('高',0)}</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
   <div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
+  <div class="summary-card"><h4>🎯 比分口径一致性 (V3.3)</h4><p style="font-size:0.9rem;">比分概率组的分布已与同页发布的胜/平/负<b>完全对齐</b>（此前因市场混合/联赛形状混合/Platt 三步都只作用在 1X2 上，两处口径最多相差 <strong>9.9pp</strong>）。对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp；Top5 覆盖变化在噪声内（±0.2pp）。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
@@ -710,7 +711,7 @@ calib_sec = f'''
     <span><strong style="color:var(--accent3);">{CALIB['ratio']:.2f}</strong> → 模型系统性低估 → λ×<strong>{CALIB['factor']:.2f}</strong> 已应用</span>
   </div>
   <div class="cal-item">
-    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 (V3.3)</span>
+    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 + 比分矩阵对齐 (V3.3)</span>
     <span><strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
   </div>
   <div class="cal-item">
@@ -741,7 +742,7 @@ page = f'''<!DOCTYPE html>
 <div class="hero">
   <div class="container">
     <h1>{TODAY} 竞彩足球深度分析报告</h1>
-    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 让球盘联合校准 · 冷门风险分层 · H2H方向性再分配 · 主客场分拆λ · {len(MATCHES)}场比赛全面覆盖</div>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · H2H方向性再分配 · 主客场分拆λ · {len(MATCHES)}场比赛全面覆盖</div>
     <div class="subtitle">数据更新时间: {now} (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
@@ -762,7 +763,7 @@ page = f'''<!DOCTYPE html>
 <div class="footer">
   <div class="container">
     <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
-    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 让球盘联合校准 · 冷门风险分层 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>

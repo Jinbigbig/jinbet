@@ -68,6 +68,22 @@ ADAPTIVE_MIX_FLOOR = 0.35  # 衰减下限，保留一部分经验形状修正
 MARKET_W = 0.80            # 市场去水概率的混合权重
 MARKET_BLEND_MODE = "prob"  # "prob"=概率空间混合（当前）；"lambda"=旧 λ 空间（已弃用）
 
+# ---------------------------------------------------------------- 比分矩阵与 1X2 对齐（V3.3）
+# 起因（用户 2026-09-10）：「发动机把 λ 混了市场、又把 1X2 做了 Platt，那预测的比分也应该跟着变」。
+# 事实：第四步（市场混合）改了 λ、第七步B（联赛经验频率混合）改了形状、第七步C（Platt）
+# 又移了象限质量——但这三步都只作用在 1X2 上，而报告头条的「比分概率组 Top5 / 方向首选」
+# 是从**未对齐的比分矩阵**里取的。实测 09-10 七场：矩阵的胜/平/负边际与同页发布的
+# 1X2 最多差 **9.9pp**（周四006：矩阵客 51.5% vs 发布客 58.2%）＝报告自相矛盾。
+# 做法：把矩阵三个象限的**质量**缩放到**已发布的**（Platt 后）1X2，象限内形状不变
+#      （只需一步精确投影，无需迭代；不引入新参数、不需要外部数据）。
+# 时间外验证（_probe_score_align.py，3599 场带完整比分盘+总进球盘，逐场配对）：
+#   比分 LogLoss 2.7909 → 2.7779（Δ−0.0131，t=−4.15，2551 场改善 / 1048 场恶化）
+#   1X2 Brier   0.5914 → 0.5830（−1.4%）｜方向命中 52.3% → 52.8%（+0.47pp）
+#   Top5 覆盖   53.7% → 53.5%（−0.64pp，噪声内；Top3 +0.22pp）
+#   对照（均更差，已否决）：市场比分盘混合 w=0.2~0.5（ΔLL +0.003~+0.017）、
+#   总进球盘 IPF 约束（+0.020）、纯市场比分盘（+0.068）、对齐到 pre-Platt（−0.007，弱于对齐发布值）
+SCORE_ALIGN = True          # 比分矩阵象限质量对齐到发布的 1X2
+
 # ---------------------------------------------------------------- 联赛进球环境画像
 # 来源：results_history/ 全量赛果离线标定（7174 场）
 # 用途：作为「先验收缩」目标，降低球队近5场小样本噪声
@@ -821,6 +837,14 @@ V3_CONFIG = {
                             "模型-市场分歧/|让球|/λ和/市场熵。时间外 Brier 0.2342 vs 常数基线 0.2498；"
                             "低风险1/3翻车22.98% vs 高风险1/3 44.10%（5个月中4个月同向）。"
                             "用途：高风险场次不进信心串关 + 报告显式标注"},
+    "SCORE_ALIGN": {"enabled": True, "min_samples": 0,
+                    "note": "比分矩阵对齐发布的 1X2 已启用(V3.3)：把矩阵三象限质量缩放到 Platt 后的"
+                            "发布概率（象限内形状不变，一步精确投影）。修复「报告一边说客胜58%，"
+                            "比分组却按客胜51%排」的自相矛盾（实测最大差 9.9pp）。"
+                            "时间外 3599 场逐场配对：比分 LogLoss −0.0131(t=−4.15)、1X2 Brier −1.4%、"
+                            "方向命中 +0.47pp、Top5 覆盖 −0.64pp(噪声内)。"
+                            "市场比分盘混合/总进球盘 IPF 约束/对齐 pre-Platt 均实测更差，已否决。"
+                            "见 _probe_score_align.py / tools/prediction/score_align_probe.py"},
     "REST_DAYS": {"enabled": False, "min_samples": 0, "rejected": True,
                   "note": "❌ 2026-09-10 验证否决：休息天数对净胜球看似有 −0.6 球效应（多休反而更差），"
                           "但用市场赔率控制实力后残差仅 +0.09/−0.13 且符号不一致；"
@@ -1370,6 +1394,31 @@ def calc_match(m, calib):
     p_home, p_draw, p_away = apply_platt(p_home, p_draw, p_away)
     platt_applied = abs(p_draw - p_draw_raw) > 1e-6
 
+    # ---------- 第七步D：比分矩阵对齐发布的 1X2（SCORE_ALIGN，V3.3）----------
+    # 第七步B 混入联赛经验频率、第七步C 做 Platt，都会移动象限质量，但只作用在 1X2 上；
+    # 而报告头条的「比分概率组 / 方向首选」取自比分矩阵 → 两者会自相矛盾（实测最多 9.9pp）。
+    # 这里把三象限的质量缩放到**发布值**（象限内条件分布不变，一步精确投影，无需迭代）。
+    align_ratio = None
+    if SCORE_ALIGN:
+        _gm = [p_home_raw, p_draw_raw, p_away_raw]
+        _gt = [p_home, p_draw, p_away]
+        _fq = [_gt[i] / _gm[i] if _gm[i] > 1e-9 else 1.0 for i in range(3)]
+        align_ratio = _fq
+        grid = {k: v * _fq[0 if k[0] > k[1] else (1 if k[0] == k[1] else 2)]
+                for k, v in grid.items()}
+        _gn = sum(grid.values())
+        if _gn > 0:
+            grid = {k: v / _gn for k, v in grid.items()}
+        # 矩阵口径的 1X2 现在与 prob 完全一致（校验用；不等则说明对齐失效）
+        ranked = sorted(grid.items(), key=lambda x: -x[1])[:6]
+        quad_top = {}
+        for qname, qfilter in (("home", lambda k: k[0] > k[1]),
+                               ("draw", lambda k: k[0] == k[1]),
+                               ("away", lambda k: k[0] < k[1])):
+            qcells = [(k, v) for k, v in grid.items() if qfilter(k)]
+            (bk, bv) = max(qcells, key=lambda x: x[1])
+            quad_top[qname] = {"score": f"{bk[0]}:{bk[1]}", "prob": round(bv * 100, 1)}
+
     # ---------- 第八步：二级盘校准 + 冷门风险（V3.3）----------
     # 输入用**未混市场**的模型 λ（lam_h_B/lam_a_B）：市场信息已由各自的市场概率单独承载，
     # 若这里再用混过市场的 λ 会造成双重计数（也与 market_calib_fit.py 的拟合口径脱节）。
@@ -1425,6 +1474,9 @@ def calc_match(m, calib):
     chain += f" → 最终λ 主{lam_h:.2f} 客{lam_a:.2f}"
     if platt_applied:
         chain += (f" → Platt校准(1X2: 平局{p_draw_raw*100:.1f}%→{p_draw*100:.1f}%)")
+    if align_ratio:
+        chain += (f" → 比分矩阵对齐发布1X2(主×{align_ratio[0]:.2f}/平×{align_ratio[1]:.2f}"
+                  f"/客×{align_ratio[2]:.2f})")
     if rq_out:
         chain += (f" → 让球盘校准(建议{rq_out['best']['pick']}"
                   f" EV{rq_out['best']['ev']:.2f} 置信{rq_out['conf']})")
@@ -1447,6 +1499,9 @@ def calc_match(m, calib):
         "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
                  "away": round(p_away * 100, 1)},
         "quad_top": quad_top,
+        "score_align": ({"ratio": [round(x, 4) for x in align_ratio],
+                         "raw": [round(p_home_raw * 100, 1), round(p_draw_raw * 100, 1),
+                                 round(p_away_raw * 100, 1)]} if align_ratio else None),
         "zero": {"home_rate": round(zr_h, 3), "away_rate": round(zr_a, 3),
                  "f_home": f_h, "f_away": f_a},
         "signals": signals,
