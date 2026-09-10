@@ -562,6 +562,10 @@ V3_CONFIG = {
                                   "方向收益与覆盖损失相抵且覆盖是报告头条 → 不采纳。见 market_scoreblend_probe.py"},
     "MARKET_HANDICAP": {"enabled": False, "min_samples": 500,
                         "note": "让球盘/半全场：与1X2同源的再表达，信息重复度高，未验证出额外增益"},
+    "REST_DAYS": {"enabled": False, "min_samples": 0, "rejected": True,
+                  "note": "❌ 2026-09-10 验证否决：休息天数对净胜球看似有 −0.6 球效应（多休反而更差），"
+                          "但用市场赔率控制实力后残差仅 +0.09/−0.13 且符号不一致；"
+                          "「休息少」实为「强队参赛密」的代理。见 rest_days_probe.py"},
     "BRIER_OPT": {"enabled": False, "min_samples": 500,
                   "note": "周期寻优衰减0.85/xG权重/H2H权重/clamp边界，walk-forward防过拟合"},
     "HEDGE_ENSEMBLE": {"enabled": False, "min_samples": 500,
@@ -1228,9 +1232,10 @@ def main():
               f"总分{r['lam_total']:.2f} | {top['score']}({top['prob']}%) "
               f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}")
 
+    # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
     json.dump({"today": TODAY, "calibration": calib, "matches": out},
               open(os.path.join(BASE, "_calc_result.json"), "w", encoding="utf-8"),
-              ensure_ascii=False, indent=2)
+              ensure_ascii=False, indent=2, sort_keys=True)
     snap = dump_prediction_snapshot(out)
     print(f"\n共 {len(out)} 场，已写入 _calc_result.json")
     if snap:
