@@ -2,7 +2,7 @@
 """JinBet 泊松模型 V2.2 计算引擎。
 
 实现 ANALYSIS_GUIDE.md 2.3 节的完整七步流程：
-  基础λ(指数衰减) → xG融合 → H2H(A总量+B方向再分配) → 市场混合 → 动态校准 → 零封修正 → 泊松
+  基础λ(指数衰减) → xG融合 → H2H(A总量+B方向再分配) → 市场概率混合(总量守恒) → 动态校准 → 零封修正 → 泊松
 输出: _calc_result.json
 """
 import glob
@@ -48,6 +48,24 @@ MAX_SINGLE = 3.20
 # 公式：w_eff = w0 * max(FLOOR, 1 - K*(λ比-1))，λ比 = max(λh,λa)/min(λh,λa)
 ADAPTIVE_MIX_K = 0.20      # 衰减斜率：λ比=2 → w0×0.80；λ比=3 → w0×0.60
 ADAPTIVE_MIX_FLOOR = 0.35  # 衰减下限，保留一部分经验形状修正
+
+# ---------------------------------------------------------------- 市场混合（V3.2）
+# 【2026-09-10】由「λ 空间线性混合」改为「概率空间混合」，权重 0.35 → 0.80。
+# 旧实现：市场λ = 1/赔率×2.5（只用胜/负两个赔率），再与模型 λ 线性插值。
+#   问题：该粗映射系统性低估总进球，权重一提高就把进球数预测带崩
+#        （80% 权重：预测总量 2.270 vs 实际 3.005，偏差 −0.735 球）。
+# 新实现：模型 1X2 与「市场去水 1X2」在概率空间加权，再反解 λ（**总量守恒**）。
+#   因此方向信息向市场靠拢，而进球总量仍由模型决定。
+# 回测（market_blend_probe.py，401 场带完整 1X2 赔率，walk-forward）：
+#   1X2 Brier  0.5940 → 0.5739    方向Top1 53.4% → 55.1%
+#   总进球偏差 −0.422 → −0.178（P(≥3) Brier 0.2435 → 0.2363）
+#   对照：同权重 λ 空间混合 Brier 0.5710 略优，但总量偏差 −0.735、P(≥3) 劣化至 0.2687
+# 【关键】Platt 必须在「混合后」的分布上拟合，否则校准与实跑脱节：
+#   market_platt_order.py 样本外（121 场）：
+#     不校准 0.5247 ｜ 用纯模型拟合再应用（旧逻辑）0.5596 ← 反而变差
+#     ｜ 在混合后分布上拟合 0.5231 ｜ 纯市场 0.5221
+MARKET_W = 0.80            # 市场去水概率的混合权重
+MARKET_BLEND_MODE = "prob"  # "prob"=概率空间混合（当前）；"lambda"=旧 λ 空间（已弃用）
 
 # ---------------------------------------------------------------- 联赛进球环境画像
 # 来源：results_history/ 全量赛果离线标定（7174 场）
@@ -178,6 +196,63 @@ def clamp(v, lo, hi):
     return max(lo, min(hi, v))
 
 
+def pois_1x2(lam_h, lam_a, kmax=12):
+    """独立泊松的 1X2 概率（含 12 球尾部，供市场混合使用）。"""
+    ph = [pmf(k, lam_h) for k in range(kmax + 1)]
+    pa = [pmf(k, lam_a) for k in range(kmax + 1)]
+    ch = []
+    acc = 0.0
+    for x in ph:
+        acc += x
+        ch.append(acc)
+    win = drw = los = 0.0
+    for j in range(kmax + 1):
+        win += pa[j] * (1.0 - ch[j])
+        drw += pa[j] * ph[j]
+        los += pa[j] * (ch[j - 1] if j > 0 else 0.0)
+    tot = win + drw + los
+    return (win / tot, drw / tot, los / tot) if tot > 0 else (0.0, 0.0, 0.0)
+
+
+def devig_1x2(oh, od, oa):
+    """1X2 赔率去水 → 隐含概率。"""
+    s = 1.0 / oh + 1.0 / od + 1.0 / oa
+    return (1.0 / oh / s, 1.0 / od / s, 1.0 / oa / s)
+
+
+def prob_to_lambda(pb, total):
+    """把目标 1X2 概率 pb 反解为 (λh, λa)，且 λ 总量固定为 total。
+
+    用法：市场混合后需保持进球总量不变（总量由模型负责，方向交给市场）。
+    一维扫描 λh ∈ (0, total)，取与 pb 平方误差最小的解，再局部细化。
+    """
+    best, bl = None, 9.9
+    n = 180
+    for i in range(1, n):
+        lh = total * i / n
+        la = total - lh
+        if la <= 1e-6:
+            break
+        P = pois_1x2(lh, la)
+        e = (P[0] - pb[0]) ** 2 + (P[1] - pb[1]) ** 2 + (P[2] - pb[2]) ** 2
+        if e < bl:
+            bl, best = e, (lh, la)
+    if best is None:
+        return total / 2.0, total / 2.0
+    bh = best[0]
+    step = total / 180.0
+    for k in range(-30, 31):
+        lh = bh + k * step / 30.0
+        la = total - lh
+        if lh <= 0 or la <= 0:
+            continue
+        P = pois_1x2(lh, la)
+        e = (P[0] - pb[0]) ** 2 + (P[1] - pb[1]) ** 2 + (P[2] - pb[2]) ** 2
+        if e < bl:
+            bl, best = e, (lh, la)
+    return best
+
+
 # ---------------------------------------------------------------- Platt 概率校准（PLATT_ISOTONIC，V3.1）
 # 病灶：泊松独立性导致平局全桶系统性低估（预测 22.6% vs 实际 26.6%，各概率桶 -3~-7pp）。
 # 方案：胜/平/负三类各自做一维逻辑回归（特征=logit(p)），牛顿法拟合，缓存 platt_params.json。
@@ -274,7 +349,9 @@ def fit_platt_params(force=False):
             except ValueError:
                 continue
             recs.append({"lg": v.get("league") or "其他", "home": v.get("home"),
-                         "away": v.get("away"), "hg": hg, "ag": ag})
+                         "away": v.get("away"), "hg": hg, "ag": ag,
+                         # 市场混合需与实跑同源：带入当时的 1X2 赔率
+                         "oh": v.get("胜"), "od": v.get("平"), "oa": v.get("负")})
     recs.sort(key=lambda r: r.get("date", ""))
     gf, ga, zr = {}, {}, {}
     # 分主客场观测：与 calc_match 第一步B 同源（否则校准分布与实跑脱节）
@@ -315,6 +392,20 @@ def fit_platt_params(force=False):
             t = (lh + la) * (1 - shrink_w) + base * shrink_w
             if lh + la > 0:
                 lh, la = lh * t / (lh + la), la * t / (lh + la)
+            # 【2026-09-10】市场概率混合（与 calc_match 第四步同源）
+            # Platt 必须在「混合后」分布上拟合，否则校准与实跑脱节：
+            # 样本外测试显示错配会把混合收益吃掉一半（0.5247 → 0.5596）。
+            _oh, _od, _oa = r.get("oh"), r.get("od"), r.get("oa")
+            if _oh and _od and _oa:
+                try:
+                    _pv = devig_1x2(float(_oh), float(_od), float(_oa))
+                    _pm = pois_1x2(lh, la)
+                    _pb = [(1 - MARKET_W) * _pm[i] + MARKET_W * _pv[i] for i in range(3)]
+                    _st = sum(_pb)
+                    _pb = [x / _st for x in _pb]
+                    lh, la = prob_to_lambda(_pb, lh + la)
+                except (ValueError, ZeroDivisionError):
+                    pass
             zh = zr.get(H, [])
             za = zr.get(A, [])
             f_h = (0.6 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.15 else
@@ -461,8 +552,18 @@ V3_CONFIG = {
     "DIXON_COLES_TAU": {"enabled": False, "min_samples": 0, "rejected": True,
                         "note": "❌ 2026-09-06 验证不通过：全局ρ网格搜索最优-0.12，Brier仅-0.09%，"
                                 "且0-0校准恶化(9.5%→10.7%，实际6.5%)。由 LEAGUE_DIST_SHAPE 经验混合替代"},
+    "MARKET_BLEND_PROB": {"enabled": True, "min_samples": 0,
+                          "note": "市场概率混合已启用(V3.2)：模型1X2 与 市场去水1X2 按 0.8 加权后"
+                                  "反解λ（总量守恒）。1X2 Brier 0.5940→0.5739，方向Top1 53.4%→55.1%，"
+                                  "进球总量零损失（旧λ空间混合同权重下总量偏差−0.735，已弃用）"},
+    "MARKET_SCORE_DIST": {"enabled": False, "min_samples": 0, "rejected": True,
+                          "note": "❌ 2026-09-10 验证否决：比分盘去水分布并入网格可再降 1X2 Brier "
+                                  "(0.5902→0.5800@w=0.5)，但比分 Top5 覆盖 48.4%→47.1%、Top3 34.7%→34.2%，"
+                                  "方向收益与覆盖损失相抵且覆盖是报告头条 → 不采纳。见 market_scoreblend_probe.py"},
+    "MARKET_HANDICAP": {"enabled": False, "min_samples": 500,
+                        "note": "让球盘/半全场：与1X2同源的再表达，信息重复度高，未验证出额外增益"},
     "BRIER_OPT": {"enabled": False, "min_samples": 500,
-                  "note": "周期寻优衰减0.85/xG权重/H2H权重/市场混合α/clamp边界，walk-forward防过拟合"},
+                  "note": "周期寻优衰减0.85/xG权重/H2H权重/clamp边界，walk-forward防过拟合"},
     "HEDGE_ENSEMBLE": {"enabled": False, "min_samples": 500,
                        "note": "泊松/DC/Elo/市场多专家Hedge加权 w∝exp(-ηL)"},
     "KALMAN_STRENGTH": {"enabled": False, "min_samples": 200,
@@ -873,20 +974,47 @@ def calc_match(m, calib):
 
     steps.append(("H2H调整", f"{h2h_info}|{dir_info}", lam_h_B, lam_a_B))
 
-    # ---------- 第四步：市场隐含λ混合 ----------
-    oh, oa = odds.get("胜"), odds.get("负")
-    if oh and oa:
+    # ---------- 第四步：市场概率混合（MARKET_BLEND_PROB，V3.2）----------
+    # 模型 1X2 与市场去水 1X2 在概率空间加权，再反解 λ（总量守恒）。
+    # 方向向市场靠拢，进球总量仍由模型决定（旧 λ 空间混合会把总量带崩，见常量区注释）。
+    _oh, _od, _oa = odds.get("胜"), odds.get("平"), odds.get("负")
+    if _oh and _od and _oa:
         try:
-            mh, ma = 1 / float(oh) * 2.5, 1 / float(oa) * 2.5
-            lam_h = 0.65 * lam_h_B + 0.35 * mh
-            lam_a = 0.65 * lam_a_B + 0.35 * ma
-            steps.append(("市场混合", f"35%,市场隐含主{mh:.2f}/客{ma:.2f}", lam_h, lam_a))
+            pv = devig_1x2(float(_oh), float(_od), float(_oa))
+            total_b = lam_h_B + lam_a_B
+            pm = pois_1x2(lam_h_B, lam_a_B)
+            pb = [(1 - MARKET_W) * pm[i] + MARKET_W * pv[i] for i in range(3)]
+            st = sum(pb)
+            pb = [x / st for x in pb]
+            lam_h, lam_a = prob_to_lambda(pb, total_b)
+            steps.append(("市场混合",
+                          f"{MARKET_W:.0%}概率混合(总量守恒),市场去水主{pv[0]*100:.0f}%"
+                          f"/平{pv[1]*100:.0f}%/客{pv[2]*100:.0f}%",
+                          lam_h, lam_a))
+        except (ValueError, ZeroDivisionError):
+            lam_h, lam_a = lam_h_B, lam_a_B
+            steps.append(("市场混合", "赔率异常,跳过", lam_h, lam_a))
+    elif _oh and _oa:
+        # 仅胜/负（无平赔）：仍做概率混合，平局概率由两路归一化后补足
+        try:
+            oh, oa = float(_oh), float(_oa)
+            s2 = 1 / oh + 1 / oa
+            pv = (1 / oh / s2, 0.0, 1 / oa / s2)
+            total_b = lam_h_B + lam_a_B
+            pm = pois_1x2(lam_h_B, lam_a_B)
+            pb = [(1 - MARKET_W) * pm[i] + MARKET_W * pv[i] for i in range(3)]
+            st = sum(pb)
+            pb = [x / st for x in pb]
+            lam_h, lam_a = prob_to_lambda(pb, total_b)
+            steps.append(("市场混合", f"{MARKET_W:.0%}概率混合(仅胜/负)", lam_h, lam_a))
         except (ValueError, ZeroDivisionError):
             lam_h, lam_a = lam_h_B, lam_a_B
             steps.append(("市场混合", "赔率异常,跳过", lam_h, lam_a))
     else:
         lam_h, lam_a = lam_h_B, lam_a_B
         steps.append(("市场混合", "无赔率数据,跳过", lam_h, lam_a))
+    # 供后续冷门信号/排名信号复用（保持旧变量名，避免大范围改动）
+    oh, oa = _oh, _oa
 
     # ---------- 第五步：动态校准 + 总量合理性约束 ----------
     lg_factor = calib.get("league_factors", {}).get(league, calib["factor"])

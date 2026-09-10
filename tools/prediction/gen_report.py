@@ -201,7 +201,7 @@ var homeWinProbs = {ph};
 var drawProbs = {pd_};
 var awayWinProbs = {pa};
 chart.setOption({{
-  title: {{ text: '模型V2.2胜平负概率分布', left: 'center', textStyle: {{ fontSize: 14 }} }},
+  title: {{ text: '模型V3.2胜平负概率分布', left: 'center', textStyle: {{ fontSize: 14 }} }},
   tooltip: {{ trigger: 'axis', axisPointer: {{ type: 'shadow' }} }},
   legend: {{ data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 }},
   grid: {{ left: '3%', right: '4%', bottom: '12%', containLabel: true }},
@@ -325,7 +325,7 @@ def match_card(m):
 
   {sig_html}
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">{esc(score_group(m, 5))}</span>
@@ -523,7 +523,7 @@ calib_sec = f'''
     <span><strong style="color:var(--accent3);">{CALIB['ratio']:.2f}</strong> → 模型系统性低估 → λ×<strong>{CALIB['factor']:.2f}</strong> 已应用</span>
   </div>
   <div class="cal-item">
-    <span>H2H方向性再分配 (V2.2)</span>
+    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2)</span>
     <span><strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
   </div>
   <div class="cal-item">
@@ -554,7 +554,7 @@ page = f'''<!DOCTYPE html>
 <div class="hero">
   <div class="container">
     <h1>{TODAY} 竞彩足球深度分析报告</h1>
-    <div class="subtitle">AI泊松模型V2.2 · H2H方向性再分配 · 零封修正动态校准 · {len(MATCHES)}场比赛全面覆盖</div>
+    <div class="subtitle">AI泊松模型V3.2 · 市场概率混合(总量守恒) · H2H方向性再分配 · 主客场分拆λ · 零封修正动态校准 · {len(MATCHES)}场比赛全面覆盖</div>
     <div class="subtitle">数据更新时间: {now} (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
@@ -575,7 +575,7 @@ page = f'''<!DOCTYPE html>
 <div class="footer">
   <div class="container">
     <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
-    <p style="margin-top:0.5rem;">AI泊松模型V2.2 · 指数衰减加权 · xG融合 · H2H总量因子+方向性再分配 · 市场混合 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.2 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>
