@@ -103,7 +103,7 @@ def score_group(m, k=5):
       独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)；λ 落在 [1,2) 时两者 floor 均为 1
       → 众数恒为 1:1。生产口径（含联赛形状混合）下 66.8% 的场次众数=1:1，
         纯泊松口径也达 49.3%。这是数学性质，不是模型没算。
-      回测命中率：单比分 13.15% / Top3 覆盖 31.78% / Top5 覆盖 47.69%。
+      回测命中率（V3.3 生产口径，2577 场）：单比分 13.5% / Top3 覆盖 33.3% / Top5 覆盖 49.1%。
     """
     ts = m['top_scores'][:k]
     return ' · '.join(f"{dash(t['score'])} {t['prob']:.1f}%" for t in ts)
@@ -495,13 +495,13 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 {coverage(m,3):.1f}% · Top5 {coverage(m,5):.1f}%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">方向首选:</span>
       <span class="pred-score">{dash(dscore)}</span>
       <span class="pred-value">({dprob*100:.1f}% ｜ {olabel}{oprob*100:.1f}% 倾向内最可能比分
-        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 11.5%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
