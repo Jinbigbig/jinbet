@@ -597,10 +597,13 @@ for r in rows:
                 "spread": max(mk.values()) - min(mk.values())})
 
 n_up = sum(u["y"] for u in ups)
+seg_hot = [u for u in ups if u["mk_top"] >= 0.50]
+seg_cold = [u for u in ups if u["mk_top"] < 0.50]
+n_draw = sum(1 for u in ups if u["r"]["hg"] == u["r"]["ag"])
 print(f"\n  市场首选未命中（= 冷门/平局）整体频率：{n_up / len(ups) * 100:.2f}%  (n={len(ups)})")
-print(f"  其中：平局 {sum(1 for u in ups if u['lvl'] == '平') / len(ups) * 100:.2f}%"
-      f" ｜ 市场看好(≥50%)仍翻车 {sum(1 for u in ups if u['lvl'] == '冷') / len(ups) * 100:.2f}%"
-      f" ｜ 市场摇摆(<50%)未中 {sum(1 for u in ups if u['lvl'] == '次') / len(ups) * 100:.2f}%")
+print(f"  全部平局场次占比：{n_draw / len(ups) * 100:.2f}%")
+print(f"  市场看好（首选≥0.50）子集 n={len(seg_hot)}  翻车率 {sum(u['y'] for u in seg_hot) / len(seg_hot) * 100:.2f}%")
+print(f"  市场摇摆（首选<0.50）子集 n={len(seg_cold)}  翻车率 {sum(u['y'] for u in seg_cold) / len(seg_cold) * 100:.2f}%")
 
 print("\n  【按市场首选概率分档】")
 bins = [(0.28, 0.34), (0.34, 0.40), (0.40, 0.46), (0.46, 0.52), (0.52, 0.60), (0.60, 0.72), (0.72, 1.0)]
