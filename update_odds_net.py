@@ -2625,6 +2625,14 @@ def archive_results(results_data, days=7):
             if key in existing and not is_weekday_match(date, existing[key].get('matchNumStr', '')):
                 print(f'    [AUDIT][FIX] 归档文件内旧条目同样冲突，剔除后再写: key={key}')
                 existing.pop(key, None)
+            # 防复发：同一 matchId 只允许一条记录（历史上「主客反序双写」曾让归档里
+            # 每场留下方向相反的两条，把主客优势互相抵消 → 见 tools/prediction/dedup_results_history.py）
+            _mid = str(r.get('matchId') or '')
+            if _mid:
+                for _k in [k for k, v in existing.items()
+                           if str(v.get('matchId') or '') == _mid and k != key]:
+                    print(f'    [AUDIT][FIX] 归档内同 matchId 重复条目剔除: {_k}')
+                    existing.pop(_k, None)
             existing[key] = r
             with open(archive_file, 'w', encoding='utf-8') as f:
                 json.dump(existing, f, ensure_ascii=False, indent=2)
