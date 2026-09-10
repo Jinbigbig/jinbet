@@ -147,6 +147,162 @@ def total_goals_info(m):
 def score_odd(m, score):
     return m['odds'].get('比分', {}).get(score)
 
+
+# ---------- V3.3 二级盘：让球盘偏差 + 冷门风险 ----------
+RQ_LABEL = {'W': '让球胜', 'D': '让球平', 'L': '让球负'}
+UPSET_CLS = {'低': 'tag-green', '中': 'tag-yellow', '高': 'tag-red'}
+
+
+def rq_block(m):
+    """让球盘偏差提示卡：市场去水 → 纯模型 → 联合校准 → EV 建议。
+
+    依据（market_calib_fit.py 月度时间外）：纯模型 EV>1.10 每场1注 498注 +4.78%(t=0.76)，
+    联合校准 197注 +16.86% —— 模型在 1X2 无 alpha，但在让球盘「过滤」上有 alpha。
+    """
+    rq = m.get('rq')
+    if not rq:
+        return ''
+    b = rq['best']
+    lo = rq['handicap']
+    hcap_show = ('主队受让' + lo[1:] if lo.startswith('+')
+                 else ('主队让' + lo[1:] if lo.startswith('-') else '平手'))
+    ev_cls = 'var(--accent3)' if b['ev'] >= 1.10 else ('var(--accent2)' if b['ev'] >= 1.00 else 'var(--muted)')
+    rows = ''
+    for k in ('W', 'D', 'L'):
+        rows += (f'<tr><td>{RQ_LABEL[k]}</td>'
+                 f'<td style="font-family:monospace;">{esc(rq["odds"][k])}</td>'
+                 f'<td>{rq["market"][k]:.1f}%</td>'
+                 f'<td>{rq["model"][k]:.1f}%</td>'
+                 f'<td><strong>{rq["calibrated"][k]:.1f}%</strong></td>'
+                 f'<td style="font-family:monospace;color:{ev_cls};font-weight:700;">{rq["ev"][k]:.2f}</td></tr>')
+    warn_html = ''
+    if rq.get('warns'):
+        warn_html = ('<br><span style="color:var(--accent3);">⚠️ ' +
+                     '；'.join(esc(w) for w in rq['warns']) + ' —— 低置信，仅观察</span>')
+    return f'''
+  <h4>让球盘偏差（{esc(hcap_show)} {esc(lo)} · |让球|={rq['abs']} · 最大分歧 {rq['div_pp']:.0f}pp · 置信度{rq['conf']}）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody>{rows}</tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag {'tag-red' if b['ev'] >= 1.10 and rq['conf'] != '低' else ('tag-yellow' if b['ev'] >= 1.00 else 'tag-blue')}">{esc(b['pick'])} @{esc(b['odds'])}</span>
+    EV <strong style="color:{ev_cls};">{b['ev']:.2f}</strong>（校准概率 {b['prob']:.1f}%），
+    模型−市场分歧 {rq['calibrated'][b['key']]-rq['market'][b['key']]:+.1f}pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 {'达标' if b['ev'] >= 1.10 and rq['conf'] != '低' else '不达标（仅观察）'}。</span>{warn_html}
+  </p>
+'''
+
+
+def upset_block(m):
+    """冷门风险提示：风险概率 + 影响因素分解。"""
+    u = m.get('upset')
+    if not u:
+        return ''
+    cls = UPSET_CLS.get(u['level'], 'tag-blue')
+    extra = ''
+    if u['level'] == '高':
+        extra = ' <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong>'
+    return (f'<div class="warning" style="border-left-color:var(--accent3);">'
+            f'🎲 <b>冷门风险 {u["prob"]:.1f}%</b> '
+            f'<span class="tag {cls}">{u["level"]}风险</span>{extra}<br>'
+            f'<span style="font-size:0.8rem;">市场首选「{esc(u["market_top"])}」隐含 {u["market_top_prob"]:.1f}%'
+            f'（历史同档翻车率均值 {u["base_rate"]:.1f}%）；'
+            f'模型−市场分歧 {u["div_pp"]:+.1f}pp、|让球|{u["abs_handicap"]:g}、'
+            f'λ和 {u["lam_sum"]:.2f}、市场熵 {u["entropy"]:.3f}。'
+            f'基于 {u["n_samples"]} 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>')
+
+
+def upset_pct(m):
+    u = m.get('upset')
+    return u['prob'] if u else None
+
+
+def upset_table():
+    """4.4 冷门风险明细（按风险概率降序）。"""
+    rows = [(upset_pct(m), m) for m in MATCHES if upset_pct(m) is not None]
+    if not rows:
+        return ''
+    rows.sort(key=lambda x: -x[0])
+    body = ''
+    for p, m in rows:
+        u = m['upset']
+        cls = UPSET_CLS.get(u['level'], 'tag-blue')
+        body += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
+                 f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
+                 f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
+                 f'<td><span class="tag {cls}">{u["level"]}</span></td>'
+                 f'<td style="font-family:monospace;font-weight:700;">{u["prob"]:.1f}%</td>'
+                 f'<td>{esc(u["market_top"])} {u["market_top_prob"]:.1f}%</td>'
+                 f'<td>{u["div_pp"]:+.1f}pp</td><td>{u["abs_handicap"]:g}</td>'
+                 f'<td>{u["lam_sum"]:.2f}</td><td>{u["entropy"]:.3f}</td></tr>')
+    return _sub_table(
+        '4.4 冷门风险明细（V3.3 新增 · 次数概率 + 影响因素）',
+        f'冷门定义 = <b>市场首选方向未命中</b>（含平局）。训练基础率 <b>{rows[0][1]["upset"]["base_rate"]:.1f}%</b>'
+        f'（{rows[0][1]["upset"]["n_samples"]} 场）。模型 <code>P=σ(β·x)</code>，'
+        '特征 = 市场首选概率(−)、模型−市场分歧(−)、|让球|(−)、λ和(−)、市场熵(+)；'
+        '时间外 Brier <b>0.2342</b> vs 常数基线 0.2498，低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。'
+        '<b>用法</b>：高风险场次不进信心串关（可小注博冷）；中风险场次少押单场方向。'
+        '⚠️ 2026-09 样本仅 46 场、分层不显著，模型随样本自动向基础率收缩。'
+        '<br><b>与星级的关系（重要）</b>：星级 = 首选比分概率，与冷门风险<b>不是同一件事</b>'
+        '（相关 ≈ 0，且呈倒 U）：4★ 档（首选比分 0.12–0.15，占样本 29%）实测翻车率 <b>54.6% 最高</b>，'
+        '而 5★ 档（≥0.15，λ 极低）降到 40.9%。<b>高星级 ≠ 低冷门</b>，两者要分开看。',
+        '<th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th>'
+        '<th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th>', body)
+
+
+def market_dev_section(matches):
+    """4.3 让球盘市场偏差清单（按 EV 排序）。"""
+    rows = []
+    for m in matches:
+        rq = m.get('rq')
+        if not rq:
+            continue
+        b = rq['best']
+        rows.append((b['ev'], m, rq, b))
+    if not rows:
+        return ''
+    rows.sort(key=lambda x: -x[0])
+    body = ''
+    for ev, m, rq, b in rows:
+        if ev >= 1.10 and rq['conf'] == '高':
+            cls, hit = 'tag-red', '✅ 达标(高置信)'
+        elif ev >= 1.10 and rq['conf'] == '中':
+            cls, hit = 'tag-yellow', '⚠️ 中置信'
+        elif ev >= 1.10:
+            cls, hit = 'tag-blue', '❌ 低置信(勿跟)'
+        elif ev >= 1.00:
+            cls, hit = 'tag-yellow', '观察'
+        else:
+            cls, hit = 'tag-blue', '—'
+        up = upset_pct(m)
+        up_str = f'{up:.0f}%' if up is not None else '-'
+        body += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
+                 f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
+                 f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
+                 f'<td>{esc(rq["handicap"])}</td>'
+                 f'<td><span class="tag {cls}">{esc(b["pick"])}</span></td>'
+                 f'<td style="font-family:monospace;">{esc(b["odds"])}</td>'
+                 f'<td>{rq["market"][b["key"]]:.1f}%</td>'
+                 f'<td>{rq["model"][b["key"]]:.1f}%</td>'
+                 f'<td><strong>{rq["calibrated"][b["key"]]:.1f}%</strong></td>'
+                 f'<td style="font-family:monospace;font-weight:700;">{ev:.2f}</td>'
+                 f'<td>{rq["div_pp"]:.0f}pp</td>'
+                 f'<td>{esc(rq["conf"])}</td><td>{hit}</td>'
+                 f'<td>{up_str}</td></tr>')
+    return _sub_table(
+        '4.3 让球盘市场偏差清单（V3.3 新玩法 · 按 EV 降序）',
+        '模型在 <b>1X2 概率值</b>上没有 alpha（纯市场 Brier 0.5504 &lt; 纯模型 0.6134，且要付 12% 抽水），'
+        '但在 <b>让球盘「过滤」</b>上有 alpha：联合校准 <code>logit(P)=a+b1·logit(p_mkt)+b2·logit(p_model)</code> '
+        '后，月度时间外「每场只买 EV 最高的一注」197 注 ROI <b>+16.86%</b>（纯模型同口径 498 注 +4.78%，t=0.76）。'
+        '⚠️ <b>EV&gt;1.10 才算有偏离</b>；|让球|=1 置信高（样本 3429）、=2 中（170）、≥3 低（样本不足）。'
+        '该玩法月度 ROI 波动大（+81%/+53%/−27%/−14%），只用小注。<b>不要用它替换 1X2 判断</b>。',
+        '<th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>价值方向</th><th>赔率</th>'
+        '<th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>状态</th><th>冷门风险</th>',
+        body)
+
 def h2h_mean(m):
     hh = H2H.get(m['matchNumStr']) or []
     if not hh: return None
@@ -201,7 +357,7 @@ var homeWinProbs = {ph};
 var drawProbs = {pd_};
 var awayWinProbs = {pa};
 chart.setOption({{
-  title: {{ text: '模型V3.2胜平负概率分布', left: 'center', textStyle: {{ fontSize: 14 }} }},
+    title: {{ text: '模型V3.3胜平负概率分布', left: 'center', textStyle: {{ fontSize: 14 }} }},
   tooltip: {{ trigger: 'axis', axisPointer: {{ type: 'shadow' }} }},
   legend: {{ data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 }},
   grid: {{ left: '3%', right: '4%', bottom: '12%', containLabel: true }},
@@ -283,6 +439,10 @@ def match_card(m):
     if m['signals'] and m['signals'] != ['无明显冷门信号']:
         sig_items = ''.join(f'<strong>{esc(s)}</strong>；' for s in m['signals'])
         sig_html = f'<div class="warning">⚠️ 冷门信号：{sig_items}</div>'
+    _u = m.get('upset')
+    upset_tag = (f' <span class="tag {UPSET_CLS.get(_u["level"], "tag-blue")}" '
+                 f'style="margin-left:0.6rem;">冷门风险 {_u["prob"]:.0f}%（{_u["level"]}）</span>'
+                 ) if _u else ''
     return f'''
 <div class="card" id="match-{esc(m["matchNumStr"])}">
   <div class="card-header">
@@ -324,8 +484,10 @@ def match_card(m):
   <p style="font-size:0.9rem;line-height:1.8;">{esc(m["news"])}</p>
 
   {sig_html}
+  {upset_block(m)}
+  {rq_block(m)}
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">{esc(score_group(m, 5))}</span>
@@ -343,7 +505,7 @@ def match_card(m):
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      {stars_html(m['stars'])}
+      {stars_html(m['stars'])}{upset_tag}
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -416,11 +578,16 @@ summary4_sec = f'''
             '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
+{market_dev_section(MATCHES)}
+{upset_table()}
 '''
 
 # ---------- 五、核心策略与风险提示 ----------
 by_stars = sorted(MATCHES, key=lambda m: (-m['stars'], -first_score(m)[1]))
-conf_pool = [m for m in by_stars if m['stars'] >= 3]
+conf_pool_all = [m for m in by_stars if m['stars'] >= 3]
+# V3.3：高冷门风险场次不进信心串关（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）
+_hi_risk = [m for m in conf_pool_all if (m.get('upset') or {}).get('level') == '高']
+conf_pool = [m for m in conf_pool_all if m not in _hi_risk]
 cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s or '爆冷' in s or '防平防冷' in s or '双平' in s) for s in m['signals'])]
 
 def make_group(ms):
@@ -444,13 +611,22 @@ n_conf_groups = min(3, max(2, N // 8))     # 24场→3组，16场→2组，8场�
 n_cold_groups = min(3, max(2, N // 10))    # 30场→3组，24场→2组，20场以下→2组
 GROUP_NAME = ['A', 'B', 'C', 'D']
 
+# 信心池不足时按冷门风险升序回补高冷门场次（保证组数，并在文案中显式说明）
+_need_conf = n_conf_groups * legs_per_group
+_conf_backfill = []
+if len(conf_pool) < _need_conf:
+    _pool = sorted(_hi_risk, key=lambda m: upset_pct(m) or 0)
+    _conf_backfill = _pool[:_need_conf - len(conf_pool)]
+    conf_pool = conf_pool + _conf_backfill
+
 parlays = []
 for i in range(n_conf_groups):
     legs = conf_pool[i*legs_per_group:(i+1)*legs_per_group]
     if len(legs) < 2:
         break
     parlays.append(('信心', GROUP_NAME[i], make_group(legs), min(m['stars'] for m in legs),
-                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取方向首选比分（倾向内最可能）"))
+                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取方向首选比分（倾向内最可能）"
+                    + ("；已剔除高冷门风险场次" if _hi_risk and not _conf_backfill else "")))
 
 cold_sorted = sorted(cold_pool, key=lambda m: (-len(m['signals']), -first_score(m)[1]))
 need = n_cold_groups * legs_per_group
@@ -479,6 +655,15 @@ hi_note = '无4★以上场次——' if top_star < 4 else (f"共{stars_dist.get
 cold_cnt = sum(1 for m in MATCHES if m['signals'] != ['无明显冷门信号'])
 dir_cnt = sum(1 for m in MATCHES if m['dir_applied'])
 lam_mean = sum(m['lam_total'] for m in MATCHES) / len(MATCHES)
+_lvl = Counter((m.get('upset') or {}).get('level') for m in MATCHES if m.get('upset'))
+_upsets = [m['upset']['prob'] for m in MATCHES if m.get('upset')]
+_upset_mean = sum(_upsets) / len(_upsets) if _upsets else 0
+_rq_val = [m for m in MATCHES if m.get('rq') and m['rq']['best']['ev'] >= 1.10
+           and m['rq']['conf'] in ('高', '中')]
+_rq_void = [m for m in MATCHES if m.get('rq') and m['rq']['best']['ev'] >= 1.10
+            and m['rq']['conf'] == '低']
+_rq_hit = '、'.join(f"{m['matchNumStr']} {m['rq']['best']['pick']}"
+                    for m in sorted(_rq_val, key=lambda x: -x['rq']['best']['ev'])[:4])
 
 strategy_sec = f'''
 <h2>五、核心策略与风险提示</h2>
@@ -487,6 +672,8 @@ strategy_sec = f'''
   <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">{top_star}★</strong>（{dist_desc}），{hi_note}冷门信号普遍存在，串关按实际评级从严组串。</p></div>
   <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">{cold_cnt}</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>🎲 冷门风险分布 (V3.3)</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">{_upset_mean:.1f}%</strong>：低风险 <strong>{_lvl.get('低',0)}</strong> 场 · 中 <strong>{_lvl.get('中',0)}</strong> 场 · 高 <strong>{_lvl.get('高',0)}</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
+  <div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
@@ -523,7 +710,7 @@ calib_sec = f'''
     <span><strong style="color:var(--accent3);">{CALIB['ratio']:.2f}</strong> → 模型系统性低估 → λ×<strong>{CALIB['factor']:.2f}</strong> 已应用</span>
   </div>
   <div class="cal-item">
-    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2)</span>
+    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 (V3.3)</span>
     <span><strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
   </div>
   <div class="cal-item">
@@ -554,7 +741,7 @@ page = f'''<!DOCTYPE html>
 <div class="hero">
   <div class="container">
     <h1>{TODAY} 竞彩足球深度分析报告</h1>
-    <div class="subtitle">AI泊松模型V3.2 · 市场概率混合(总量守恒) · H2H方向性再分配 · 主客场分拆λ · 零封修正动态校准 · {len(MATCHES)}场比赛全面覆盖</div>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 让球盘联合校准 · 冷门风险分层 · H2H方向性再分配 · 主客场分拆λ · {len(MATCHES)}场比赛全面覆盖</div>
     <div class="subtitle">数据更新时间: {now} (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
@@ -575,7 +762,7 @@ page = f'''<!DOCTYPE html>
 <div class="footer">
   <div class="container">
     <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
-    <p style="margin-top:0.5rem;">AI泊松模型V3.2 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 让球盘联合校准 · 冷门风险分层 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>

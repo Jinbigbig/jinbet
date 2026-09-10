@@ -6,6 +6,7 @@
 输出: _calc_result.json
 """
 import glob
+import importlib.util
 import json
 import math
 import os
@@ -481,9 +482,259 @@ def apply_platt(p_home, p_draw, p_away):
     return tuple(v / tot for v in out)
 
 
+# ---------------------------------------------------------------- 二级盘校准（V3.3）
+# 【2026-09-10 实装】用户方法论：①市场 vs 赛果得偏差 → ②模型再跑得三方偏差 →
+# ③学出修正函数让预测向赛果趋同（数据越多偏差越小）→ ④冷门路线（次数概率+影响因素）。
+# 三条路线的判决（tri_calib_probe.py，3941 场 × 3 方向，自写 IRLS 逻辑回归）：
+#   · 偏差查表 + 收缩 = **证伪**（全局最优 0.19226 仍劣于纯市场 0.19217，且 K 越大越好）
+#   · 1X2 联合校准 = **无增量**（样本外 0.19130 ≈ 生产@0.80 0.19141；分月 b2 由 +0.39 跳到 −0.16）
+#   · 让球盘联合校准 = **有效**（样本外对比见下）
+#   · 冷门分层 = **成立**（时间外低风险 1/3 翻车 22.98% vs 高风险 1/3 44.10%）
+# → 结论：模型在 1X2 的**概率值**上没有 alpha，硬校准跑不赢纯市场（还要付 12% 抽水）；
+#   但在**条件事件**（"哪盘口有价值"、"这场会不会翻车"）上有 alpha。
+#   因此本引擎 **一律不动 1X2 概率**，只在下面两处接入修正函数 —— 只做过滤，不做加权。
+#
+# ① 让球盘联合校准： logit(P) = a + b1·logit(p_mkt) + b2·logit(p_model)
+#    月度时间外（每月用 <M 月样本拟合，在 M 月实测，每场只买 EV 最高的一注）：
+#      纯模型同口径 498 注 +4.78%(t=0.76) → 联合校准 197 注 **+16.86%**（滚动6月窗口）
+#    注意：月度 ROI 波动大（+81%/+53%/−27%/−14%），属小样本高赔玩法，只用小注。
+# ② 冷门风险：P(市场首选翻车) = sigmoid(β·x)，x=[1, 市场首选概率, 模型−市场分歧,
+#    |让球|, λ和, 市场熵]。时间外 Brier 0.2342 vs 常数基线 0.2498；低风险 1/3 翻车
+#    约 25%、高风险 1/3 约 44%（5 个月 4 个月同向，2026-09 仅 46 场不显著）。
+#    用途：高风险场次降串关权重（不参与信心串关）、并在报告里显式标注。
+#
+# 参数由 market_calib_fit.py 拟合 → market_calib.json。滚动策略 = **按月滚动**
+# （fitted_month 与当前月不同即重拟合；窗口长度由月度时间外验证选出，当前 6 个月）
+# + **样本量收缩** beta_used = (n·beta_fit + K·beta_prior)/(n+K)（让球 K=300、
+# 冷门 K=300；样本越少越靠近"纯市场/常数基线"先验，即"数据越多偏差越小"）。
+MARKET_CALIB = None
+MARKET_CALIB_FILE = "market_calib.json"
+UPSET_THRESHOLDS = ((0.40, "低"), (0.52, "中"), (2.0, "高"))
+
+
+def _find_repo_file(name):
+    """在脚本目录及其上两级目录查找文件。"""
+    here = BASE
+    for _ in range(3):
+        p = os.path.join(here, name)
+        if os.path.exists(p):
+            return p
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return None
+
+
+def _fit_module():
+    """载入 market_calib_fit.py（仓库根或 tools/prediction/）。"""
+    for c in (os.path.join(BASE, "_market_calib_fit.py"),
+              os.path.join(BASE, "market_calib_fit.py"),
+              os.path.join(BASE, "tools", "prediction", "market_calib_fit.py")):
+        if os.path.exists(c):
+            spec = importlib.util.spec_from_file_location("mkcal_fit", c)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return mod
+    return None
+
+
+def load_market_calib(force=False):
+    """读取 market_calib.json；缺失或已跨月（按月滚动）则自动重拟合。
+
+    重拟合失败不阻断流水线（退回旧参数或 None → 报告侧自动隐藏该模块）。
+    """
+    global MARKET_CALIB
+    p = _find_repo_file(MARKET_CALIB_FILE)
+    if p and not force:
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+            fitted = d.get("_meta", {}).get("fitted_month")
+            if fitted and fitted >= TODAY[:7]:
+                MARKET_CALIB = d
+                return MARKET_CALIB
+        except Exception:  # noqa: BLE001
+            pass
+    mod = _fit_module()
+    if not mod:
+        if p:
+            try:
+                MARKET_CALIB = json.load(open(p, encoding="utf-8"))
+            except Exception:  # noqa: BLE001
+                MARKET_CALIB = None
+        return MARKET_CALIB
+    try:
+        rows = mod.build_rows()
+        mw = mod.ROLL_MONTHS
+        # 窗口长度按 --valid 的月度时间外结果取，若缓存的 roll_months 已验证过则沿用
+        if p and MARKET_CALIB is None:
+            try:
+                prev = json.load(open(p, encoding="utf-8"))
+                mw = prev.get("_meta", {}).get("roll_months", mw)
+            except Exception:  # noqa: BLE001
+                pass
+        MARKET_CALIB = {
+            "_meta": {"source": "market_calib_fit.py",
+                      "fitted_month": mod.month_of(rows[-1]["date"]),
+                      "built_at": datetime.date.today().isoformat(),
+                      "roll_months": mw, "sample_rows": len(rows)},
+            "handicap": mod.fit_handicap(rows, months=mw),
+            "upset": mod.fit_upset(rows, months=mw),
+        }
+        out = p or os.path.join(BASE, MARKET_CALIB_FILE)
+        json.dump(MARKET_CALIB, open(out, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1, sort_keys=True)
+    except Exception as e:  # noqa: BLE001
+        print(f"[warn] market_calib 重拟合失败({e})，本轮跳过二级盘模块")
+    return MARKET_CALIB
+
+
+def _rq_line(handicap):
+    """让球字符串 → 整数（竞彩让球恒为整数，"+1" = 主队受让 1 球）。"""
+    try:
+        return int(str(handicap).replace("+", ""))
+    except (TypeError, ValueError):
+        return 0
+
+
+def rq_model_probs(lam_h, lam_a, handicap, kmax=12):
+    """纯模型（**未混市场**的 λ）在让球盘上的 W/D/L 概率。
+
+    用未混市场的 λ 是刻意的：市场信息已由 p_mkt 单独进入修正函数，
+    若这里也混市场会造成双重计数（且与拟合脚本口径不一致）。
+    """
+    h = _rq_line(handicap)
+    ph = [pmf(i, lam_h) for i in range(kmax + 1)]
+    pa = [pmf(j, lam_a) for j in range(kmax + 1)]
+    d = {"W": 0.0, "D": 0.0, "L": 0.0}
+    for i in range(kmax + 1):
+        pi = ph[i]
+        if pi < 1e-12:
+            continue
+        for j in range(kmax + 1):
+            dd = i - j + h
+            d["W" if dd > 0 else ("L" if dd < 0 else "D")] += pi * pa[j]
+    t = sum(d.values())
+    return {k: v / t for k, v in d.items()} if t > 0 else d
+
+
+def _logit1(p):
+    p = clamp(p, 1e-4, 1 - 1e-4)
+    return math.log(p / (1 - p))
+
+
+def _sigmoid1(z):
+    if z >= 0:
+        return 1.0 / (1.0 + math.exp(-clamp(z, -30, 30)))
+    e = math.exp(clamp(z, -30, 30))
+    return e / (1.0 + e)
+
+
+def handicap_analysis(odds, lam_mh, lam_ma, has_1x2=None):
+    """让球盘：市场去水 vs 纯模型 vs 联合校准 → EV 与建议。
+
+    返回 None 表示无让球盘（当日该场未开盘）。
+
+    【置信度门槛】2026-09-10 实测发现两类"假价值"：
+      ① 无 1X2 市场锚点（赔率缺失）时 λ 完全由模型决定，而模型有已知的
+         「跨联赛实力差未校准」缺陷（曼联vs萨巴赫：模型 λ2.11/1.75，让球−2 给
+         让球负 74.6% vs 市场 22.9%）；
+      ② 模型−市场分歧过大本身就是在提示模型错了（同一缺陷的另一表现）。
+    因此 conf 同时受 |让球| 与最大分歧约束，低置信只作观察、不参与串关。
+    """
+    if not MARKET_CALIB or not MARKET_CALIB.get("handicap"):
+        return None
+    rq = odds.get("让球")
+    if not (isinstance(rq, list) and rq and isinstance(rq[0], dict)):
+        return None
+    it = rq[0]
+    try:
+        o = {"W": float(it.get("胜")), "D": float(it.get("平")), "L": float(it.get("负"))}
+    except (TypeError, ValueError):
+        return None
+    if min(o.values()) <= 1.0:
+        return None
+    s = sum(1.0 / v for v in o.values())
+    mkt = {k: (1.0 / v) / s for k, v in o.items()}
+    mod = rq_model_probs(lam_mh, lam_ma, it.get("handicap"))
+    b = MARKET_CALIB["handicap"]["beta"]
+    cal = {}
+    for k in ("W", "D", "L"):
+        z = b[0] + b[1] * _logit1(mkt[k]) + b[2] * _logit1(max(mod[k], 1e-4))
+        cal[k] = _sigmoid1(z)
+    tot = sum(cal.values())
+    cal = {k: v / tot for k, v in cal.items()}
+    ev = {k: cal[k] * o[k] for k in ("W", "D", "L")}
+    best = max(ev, key=lambda k: ev[k])
+    lb = {"W": "让球胜", "D": "让球平", "L": "让球负"}[best]
+    # 置信度分级：|让球| 决定样本量（=1 有 3429 场、=2 仅 170、≥3 样本不足），
+    # 模型−市场分歧决定"模型是否可能错了"。
+    h = abs(_rq_line(it.get("handicap")))
+    div_pp = max(abs(mod[k] - mkt[k]) for k in ("W", "D", "L")) * 100
+    warns = []
+    if h >= 3:
+        warns.append(f"|让球|={h} 历史样本不足")
+    if div_pp > 25:
+        warns.append(f"模型−市场分歧 {div_pp:.0f}pp 超阈值（跨联赛实力差为已知缺陷）")
+    if has_1x2 is False:
+        warns.append("无 1X2 市场锚点，λ 未经市场混合")
+    if h == 1 and div_pp <= 12 and has_1x2 is not False:
+        conf = "高"
+    elif h <= 2 and div_pp <= 25 and has_1x2 is not False:
+        conf = "中"
+    else:
+        conf = "低"
+    return {
+        "handicap": str(it.get("handicap")), "abs": h, "conf": conf,
+        "div_pp": round(div_pp, 1), "warns": warns,
+        "odds": o,
+        "market": {k: round(mkt[k] * 100, 1) for k in ("W", "D", "L")},
+        "model": {k: round(mod[k] * 100, 1) for k in ("W", "D", "L")},
+        "calibrated": {k: round(cal[k] * 100, 1) for k in ("W", "D", "L")},
+        "ev": {k: round(ev[k], 3) for k in ("W", "D", "L")},
+        "best": {"pick": lb, "key": best, "ev": round(ev[best], 3),
+                 "odds": o[best], "prob": round(cal[best] * 100, 1)},
+        "n_samples": MARKET_CALIB["handicap"].get("n_samples"),
+    }
+
+
+def upset_analysis(odds, lam_mh, lam_ma):
+    """冷门风险：P(市场首选翻车) + 等级 + 影响因素分解。"""
+    if not MARKET_CALIB or not MARKET_CALIB.get("upset"):
+        return None
+    oh, od, oa = odds.get("胜"), odds.get("平"), odds.get("负")
+    try:
+        mkt = devig_1x2(float(oh), float(od), float(oa))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
+    mod = pois_1x2(lam_mh, lam_ma)
+    top = max(range(3), key=lambda i: mkt[i])
+    ent = -sum(p * math.log(max(p, 1e-6)) for p in mkt)
+    rq = odds.get("让球")
+    hc = 1.5
+    if isinstance(rq, list) and rq and isinstance(rq[0], dict):
+        try:
+            hc = abs(int(str(rq[0].get("handicap")).replace("+", "")))
+        except (TypeError, ValueError):
+            hc = 1.5
+    x = [1.0, mkt[top], mod[top] - mkt[top], float(hc), lam_mh + lam_ma, ent]
+    b = MARKET_CALIB["upset"]["beta"]
+    p = _sigmoid1(sum(b[i] * x[i] for i in range(len(b))))
+    level = next(lb for th, lb in UPSET_THRESHOLDS if p < th)
+    return {
+        "prob": round(p * 100, 1), "level": level,
+        "market_top": ["主胜", "平局", "客胜"][top],
+        "market_top_prob": round(mkt[top] * 100, 1),
+        "div_pp": round((mod[top] - mkt[top]) * 100, 1),
+        "abs_handicap": hc, "lam_sum": round(lam_mh + lam_ma, 2),
+        "entropy": round(ent, 3),
+        "base_rate": round(MARKET_CALIB["upset"].get("base_rate", 0) * 100, 1),
+        "n_samples": MARKET_CALIB["upset"].get("n_samples"),
+    }
+
+
 def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
-
 
 def wavg(vals):
     """指数衰减加权平均，vals[0] 为最近一场。"""
@@ -560,8 +811,16 @@ V3_CONFIG = {
                           "note": "❌ 2026-09-10 验证否决：比分盘去水分布并入网格可再降 1X2 Brier "
                                   "(0.5902→0.5800@w=0.5)，但比分 Top5 覆盖 48.4%→47.1%、Top3 34.7%→34.2%，"
                                   "方向收益与覆盖损失相抵且覆盖是报告头条 → 不采纳。见 market_scoreblend_probe.py"},
-    "MARKET_HANDICAP": {"enabled": False, "min_samples": 500,
-                        "note": "让球盘/半全场：与1X2同源的再表达，信息重复度高，未验证出额外增益"},
+    "MARKET_HANDICAP": {"enabled": True, "min_samples": 0,
+                        "note": "让球盘联合校准已启用(V3.3)：logit(P)=a+b1·logit(p_mkt)+b2·logit(p_mod)，"
+                                "月度时间外每月重拟合：EV>1.10 每场1注 197注 ROI +16.86%"
+                                "（纯模型同口径 498注 +4.78% t=0.76）。价值在过滤不在加权。"
+                                "参数 market_calib.json（按月滚动 + 样本量收缩 K=300）"},
+    "UPSET_ROUTE": {"enabled": True, "min_samples": 0,
+                    "note": "冷门风险已启用(V3.3)：P(市场首选翻车) logistic，特征=市场首选概率/"
+                            "模型-市场分歧/|让球|/λ和/市场熵。时间外 Brier 0.2342 vs 常数基线 0.2498；"
+                            "低风险1/3翻车22.98% vs 高风险1/3 44.10%（5个月中4个月同向）。"
+                            "用途：高风险场次不进信心串关 + 报告显式标注"},
     "REST_DAYS": {"enabled": False, "min_samples": 0, "rejected": True,
                   "note": "❌ 2026-09-10 验证否决：休息天数对净胜球看似有 −0.6 球效应（多休反而更差），"
                           "但用市场赔率控制实力后残差仅 +0.09/−0.13 且符号不一致；"
@@ -733,6 +992,13 @@ def dump_prediction_snapshot(out_matches, date=None):
             "prob_away": (m.get("prob") or {}).get("away"),
             "top_scores": m.get("top_scores"),
             "quad_top": m.get("quad_top"),
+            # V3.3 二级盘（供后续结算/CLV 追踪）
+            "rq_handicap": (m.get("rq") or {}).get("handicap"),
+            "rq_best_pick": ((m.get("rq") or {}).get("best") or {}).get("pick"),
+            "rq_best_ev": ((m.get("rq") or {}).get("best") or {}).get("ev"),
+            "rq_best_odds": ((m.get("rq") or {}).get("best") or {}).get("odds"),
+            "upset_prob": (m.get("upset") or {}).get("prob"),
+            "upset_level": (m.get("upset") or {}).get("level"),
         })
     data = {"date": d, "count": len(rows), "engine": "poisson-v2.2", "matches": rows}
     json.dump(data, open(os.path.join(folder, "pred_snapshot.json"), "w", encoding="utf-8"),
@@ -1104,6 +1370,13 @@ def calc_match(m, calib):
     p_home, p_draw, p_away = apply_platt(p_home, p_draw, p_away)
     platt_applied = abs(p_draw - p_draw_raw) > 1e-6
 
+    # ---------- 第八步：二级盘校准 + 冷门风险（V3.3）----------
+    # 输入用**未混市场**的模型 λ（lam_h_B/lam_a_B）：市场信息已由各自的市场概率单独承载，
+    # 若这里再用混过市场的 λ 会造成双重计数（也与 market_calib_fit.py 的拟合口径脱节）。
+    rq_out = handicap_analysis(odds, lam_h_B, lam_a_B,
+                               has_1x2=bool(odds.get("胜") and odds.get("平") and odds.get("负")))
+    upset_out = upset_analysis(odds, lam_h_B, lam_a_B)
+
     # ---------- 冷门信号 ----------
     signals = []
     try:
@@ -1152,6 +1425,11 @@ def calc_match(m, calib):
     chain += f" → 最终λ 主{lam_h:.2f} 客{lam_a:.2f}"
     if platt_applied:
         chain += (f" → Platt校准(1X2: 平局{p_draw_raw*100:.1f}%→{p_draw*100:.1f}%)")
+    if rq_out:
+        chain += (f" → 让球盘校准(建议{rq_out['best']['pick']}"
+                  f" EV{rq_out['best']['ev']:.2f} 置信{rq_out['conf']})")
+    if upset_out:
+        chain += f" → 冷门风险{upset_out['prob']:.0f}%({upset_out['level']})"
 
     return {
         "matchNumStr": m["matchNumStr"], "league": league,
@@ -1173,6 +1451,8 @@ def calc_match(m, calib):
                  "f_home": f_h, "f_away": f_a},
         "signals": signals,
         "stars": stars,
+        "rq": rq_out,
+        "upset": upset_out,
         "news": m.get("news", ""),
         "xg": {"home": xg_h, "away": xg_a},
     }
@@ -1186,6 +1466,21 @@ def main():
     if pp:
         print(f"=== Platt 概率校准 === 样本 {pp['n_samples']} 场 | "
               f"home={pp['params']['home']} draw={pp['params']['draw']} away={pp['params']['away']}")
+    # 二级盘校准参数（按月滚动，跨月自动重拟合）
+    mc = load_market_calib()
+    if mc:
+        _h, _u = mc.get("handicap"), mc.get("upset")
+        print(f"=== 二级盘校准 V3.3 === 拟合月份 {mc['_meta'].get('fitted_month')} "
+              f"| 窗口 {mc['_meta'].get('roll_months')} 月 | 样本 {mc['_meta'].get('sample_rows')} 场")
+        if _h:
+            print(f"  让球盘 logit(P)=a+b1·logit(p_mkt)+b2·logit(p_mod)  "
+                  f"a={_h['beta'][0]:+.3f} b1={_h['beta'][1]:+.3f} b2={_h['beta'][2]:+.3f}  "
+                  f"(拟合 b2={_h['beta_fit'][2]:+.3f} t={_h['beta_fit'][2]/_h['se'][2]:+.1f}, n={_h['n_samples']})")
+        if _u:
+            print(f"  冷门风险 P(首选翻车) 基础率 {_u['base_rate']*100:.1f}%  "
+                  f"β={[round(v,3) for v in _u['beta']]}  n={_u['n_samples']}")
+    else:
+        print("=== 二级盘校准 V3.3 === 未启用（无 market_calib.json）")
     _lp = LEAGUE_PROFILE
     print("=== 联赛进球环境画像 ===")
     print(f"来源 {_lp.get('_meta', {}).get('source', '?')} | "
@@ -1228,9 +1523,14 @@ def main():
         out.append(r)
         top = r["top_scores"][0]
         flag = "B✓" if r["dir_applied"] else "B✗"
+        _rqx = ""
+        if r.get("rq"):
+            _b = r["rq"]["best"]
+            _rqx = f" | 让球{r['rq']['handicap']} {_b['pick']} EV{_b['ev']:.2f}({r['rq']['conf']})"
+        _upx = f" | 冷门{r['upset']['prob']:.0f}%({r['upset']['level']})" if r.get("upset") else ""
         print(f"{num} {r['home']}vs{r['away']:<10} λ{r['lam_home']:.2f}/{r['lam_away']:.2f} "
               f"总分{r['lam_total']:.2f} | {top['score']}({top['prob']}%) "
-              f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}")
+              f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}{_rqx}{_upx}")
 
     # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
     json.dump({"today": TODAY, "calibration": calib, "matches": out},
