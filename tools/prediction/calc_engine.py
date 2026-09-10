@@ -950,7 +950,9 @@ def calc_match(m, calib):
     _lam_lo, _lam_hi = min(lam_h, lam_a), max(lam_h, lam_a)
     _lam_ratio = (_lam_hi / _lam_lo) if _lam_lo > 1e-9 else 99.0
     grid = mix_score_matrix(grid, league, _lam_ratio)
-    ranked = sorted(grid.items(), key=lambda x: -x[1])[:4]
+    # 取 6 个：报告以「概率排序比分组 + 累计覆盖」呈现（单比分众数结构性退化为 1:1，
+    # 见 score_mode_audit.py；用户需要的是覆盖率而非单点）
+    ranked = sorted(grid.items(), key=lambda x: -x[1])[:6]
 
     # 胜平负概率（由修正后的分布求和）
     p_home = sum(p for (k1, k2), p in grid.items() if k1 > k2)

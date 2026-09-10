@@ -96,6 +96,23 @@ def first_score(m):
     ts = m['top_scores']
     return (ts[0]['score'], ts[0]['prob']/100) if ts else ('1:1', 0.0)
 
+def score_group(m, k=5):
+    """概率排序比分组：单比分众数结构性退化，改为给出前 k 个比分与累计覆盖。
+
+    退化根因（score_mode_audit.py，2577 场 walk-forward）：
+      独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)；λ 落在 [1,2) 时两者 floor 均为 1
+      → 众数恒为 1:1。生产口径（含联赛形状混合）下 66.8% 的场次众数=1:1，
+        纯泊松口径也达 49.3%。这是数学性质，不是模型没算。
+      回测命中率：单比分 13.15% / Top3 覆盖 31.78% / Top5 覆盖 47.69%。
+    """
+    ts = m['top_scores'][:k]
+    return ' · '.join(f"{dash(t['score'])} {t['prob']:.1f}%" for t in ts)
+
+
+def coverage(m, k):
+    return sum(t['prob'] for t in m['top_scores'][:k])
+
+
 def direction_pick(m):
     """方向首选：Platt 校准后最可能赛果象限内的众数比分。
 
@@ -245,9 +262,8 @@ def pedigree_block(m):
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     olabel, okey, dscore, dprob, oprob = direction_pick(m)
-    ms, mp = first_score(m)
     tg = total_goals_info(m)
-    others = ' | '.join(f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in m['top_scores'][1:3]) or '-'
+    # 注：不再展示「全局众数」（结构性退化为 1:1），改由 score_group / coverage 呈现
     hm = h2h_mean(m)
     hm_str = f'{hm:.2f} 球' if hm else '数据不足'
     factor_str = f'{m["h2h_factor"]:.2f}' + ('（含方向再分配）' if m['dir_applied'] else '')
@@ -311,13 +327,19 @@ def match_card(m):
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">{dash(dscore)}</span>
-      <span class="pred-value">({dprob*100:.1f}% ｜ {olabel}{oprob*100:.1f}% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">{esc(score_group(m, 5))}</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">{dash(ms)} ({mp*100:.1f}%) ｜ 次选/三选: {esc(others)}（Top3合计 {sum(t['prob'] for t in m['top_scores'][:3]):.0f}%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 {coverage(m,3):.1f}% · Top5 {coverage(m,5):.1f}%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">{dash(dscore)}</span>
+      <span class="pred-value">({dprob*100:.1f}% ｜ {olabel}{oprob*100:.1f}% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -329,7 +351,7 @@ def match_card(m):
       <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       {esc(m['chain'])}
@@ -351,7 +373,6 @@ DIR_TAG = {'主胜': 'tag-green', '平局': 'tag-yellow', '客胜': 'tag-red'}
 rowsA = rowsB = ''
 for m in MATCHES:
     ts = m['top_scores']
-    s1, p1 = first_score(m)
     top3 = sum(t['prob'] for t in ts[:3])
     cold = esc(m['signals'][0]) if m['signals'] and m['signals'] != ['无明显冷门信号'] else '-'
     tg = total_goals_info(m)
@@ -360,16 +381,17 @@ for m in MATCHES:
     pair = f'<td>{rank_tag(m["home"], m["home_rank"])}</td><td>{rank_tag(m["away"], m["away_rank"])}</td>'
     # 4.1 胜负与比分（1X2 三率 + 方向首选 + 众数 合并一表）
     dlabel2, dkey2, ds2, dp2, op2 = direction_pick(m)
-    second = next((f'{dash(t["score"])} ({t["prob"]:.1f}%)' for t in ts[1:4] if dash(t['score']) != dash(ds2)), '-')
+    _secs = [f'{dash(t["score"])} ({t["prob"]:.1f}%)'
+             for t in ts[1:4] if dash(t['score']) != dash(ds2)][:2]
+    second = ' · '.join(_secs) or '-'
     rowsA += (f'<tr>{num_cell}{pair}'
               f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
               f'<td><span class="tag {DIR_TAG.get(dlabel2, "tag-blue")}">{dlabel2} {op2*100:.1f}%</span></td>'
               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}'
               f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({dp2*100:.1f}%)</span></td>'
-              f'<td style="font-family:monospace;">{dash(s1)}'
-              f' <span style="color:var(--muted);font-size:0.8rem;">({p1*100:.1f}%)</span></td>'
               f'<td style="font-family:monospace;">{esc(second)}</td>'
               f'<td>{top3:.1f}%</td>'
+              f'<td>{sum(t["prob"] for t in ts[:5]):.1f}%</td>'
               f'<td>{stars_html(m["stars"])}</td>'
               f'<td style="font-size:0.78rem;">{cold}</td></tr>')
     # 4.2 进球数预测
@@ -389,9 +411,9 @@ def _sub_table(title, note, head, body):
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。单比分的概率上限只有 8~15%，勿单押。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它）；<b>全局众数</b>在均衡场次恒为 1:1（≈11~14%），仅作参考；押比分建议 Top3 组合覆盖。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>全局众数</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th>', rowsA)}
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：2577 场回测，单比分命中上限仅 <b>13.2%</b>，Top3 组 <b>31.8%</b>，Top5 组 <b>47.7%</b>——单比分的「最可能值」在多达 66.8% 的场次里都是 1-1，这是独立泊松联合众数的数学性质，不代表模型没有区分度；真正的区分度体现在比分组的构成与覆盖上。</p>
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 9.9%）。<b>已移除「全局众数」列</b>：独立泊松联合众数恒为 (⌊λ主⌋,⌊λ客⌋)，λ∈[1,2) 时必为 1-1（回测 66.8% 场次），无区分度。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测命中 31.8% / 47.7%）。',
+            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 '''
