@@ -253,6 +253,56 @@ def upset_table():
         '<th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th>', body)
 
 
+BIG_CLS = {'高': 'tag-red', '中': 'tag-yellow', '低': 'tag-blue'}
+
+
+def big_goals_table():
+    """4.5 大比分（总进球 6+ / 7+）观察 —— 回答「哪场最像出大比分」。"""
+    rows = [(m['big']['cal6'], m) for m in MATCHES if m.get('big')]
+    if not rows:
+        return ''
+    rows.sort(key=lambda x: -x[0])
+    body = ''
+    for _p, m in rows:
+        b = m['big']
+        cls = BIG_CLS.get(b['level'], 'tag-blue')
+        body += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
+                 f'<td>{rank_tag(m["home"], m["home_rank"])}</td>'
+                 f'<td>{rank_tag(m["away"], m["away_rank"])}</td>'
+                 f'<td>{b["market6"]:.1f}%</td>'
+                 f'<td><strong>{b["cal6"]:.1f}%</strong></td>'
+                 f'<td>{b["cal7"]:.1f}%</td>'
+                 f'<td>{b["cal6"] - b["cal7"]:.1f}%</td>'
+                 f'<td style="font-family:monospace;">{b["odd6"]:g}</td>'
+                 f'<td style="font-family:monospace;">{b["odd7"]:g}</td>'
+                 f'<td style="font-family:monospace;">{b["ev7"]:.2f}</td>'
+                 f'<td><span class="tag {cls}">{b["level"]}</span></td></tr>')
+    top = rows[0][1]
+    tb = top['big']
+    p_any = (1 - math.prod(1 - m['big']['cal6'] / 100 for _p, m in rows)) * 100
+    exp_n = sum(m['big']['cal6'] for _p, m in rows) / 100
+    n_s = tb.get('n_samples') or 0
+    return _sub_table(
+        '4.5 大比分（总进球 6+ / 7+）观察（2026-09-10 新增）',
+        f'口径：市场<b>总进球盘</b>去水 → logit 校准 → 诚实概率（总进球盘的「6」与「7+」是两个独立档位，'
+        f'6+ = 两者之和）。今日最像的一场：'
+        f'<b>{esc(top["matchNumStr"])} {esc(top["home"])} vs {esc(top["away"])}</b>'
+        f'（市场隐含 {tb["market6"]:.1f}% → 校准 {tb["cal6"]:.1f}%）；7 场里「至少一场 6+」≈'
+        f'<b>{p_any:.0f}%</b>，期望 {exp_n:.2f} 场。'
+        '<br><b>为什么必须校准</b>：市场对高进球系统性定价偏高 —— 4217 场实测，去水后 P(6+) 均值 '
+        '<b>9.41% vs 实际 6.28%</b>、P(7+) <b>4.09% vs 2.37%</b>，且概率越高越离谱'
+        '（去水 ≥18% 的档：21.95% 对 15.45%）。'
+        '<br><b>结论（反直觉但要记住）</b>：「最近天天有 6+」是<b>基础率 × 每天场次数</b>的必然，不是异象 —— '
+        '每场 6+ 基础率 6.5%，一天 15 场时「至少一场 6+」本来就有 <b>62%</b>、30 场时 <b>88%</b>'
+        '（实测分档 61.9% / 87.8%，与理论吻合）。全量 4599 场里 6+ 只占 6.50%、7+ 占 2.54%。'
+        '直接按赔率回测：买「恰好 6 球」ROI <b>−41.1%</b>、买「7+ 球」ROI <b>−54.1%</b>'
+        '（所有赔率区间全负）。<b>所以本表只用于「哪场最像」，不构成投注建议</b>；'
+        '要参与请只当小注娱乐。',
+        '<th>编号</th><th>主队</th><th>客队</th><th>市场隐含P(6+)</th><th>校准P(6+)</th>'
+        '<th>校准P(7+)</th><th>其中正好6球</th><th>6档赔率</th><th>7+档赔率</th>'
+        '<th>校准EV(7+)</th><th>等级</th>', body)
+
+
 def market_dev_section(matches):
     """4.3 让球盘市场偏差清单（按 EV 排序）。"""
     rows = []
@@ -580,6 +630,7 @@ summary4_sec = f'''
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
 {upset_table()}
+{big_goals_table()}
 '''
 
 # ---------- 五、核心策略与风险提示 ----------
@@ -664,6 +715,22 @@ _rq_void = [m for m in MATCHES if m.get('rq') and m['rq']['best']['ev'] >= 1.10
             and m['rq']['conf'] == '低']
 _rq_hit = '、'.join(f"{m['matchNumStr']} {m['rq']['best']['pick']}"
                     for m in sorted(_rq_val, key=lambda x: -x['rq']['best']['ev'])[:4])
+_bigs = sorted([m for m in MATCHES if m.get('big')], key=lambda m: -m['big']['cal6'])
+_big_top = _bigs[0] if _bigs else None
+_big_any = (1 - math.prod(1 - m['big']['cal6'] / 100 for m in _bigs)) * 100 if _bigs else 0
+_big_card = ''
+if _big_top:
+    _bt = _big_top['big']
+    _big_card = (
+        '<div class="summary-card"><h4>🎯 大比分（6+）观察 (2026-09-10 新增)</h4>'
+        '<p style="font-size:0.9rem;">今日最像出 6+ 的一场：<strong style="color:var(--accent2);">'
+        f'{esc(_big_top["matchNumStr"])} {esc(_big_top["home"])}vs{esc(_big_top["away"])}</strong>'
+        f'（校准 P(6+)≈<strong>{_bt["cal6"]:.1f}%</strong>，市场隐含 {_bt["market6"]:.1f}%）；'
+        f'7 场「至少一场 6+」≈ <strong>{_big_any:.0f}%</strong>。'
+        '<b>但别押大球</b>：市场对高进球系统性定价偏高（4217 场去水 P(6+) 均值 9.41% vs 实际 6.28%），'
+        '直接按赔率回测买「恰好 6 球」ROI <b>−41.1%</b>、买「7+」ROI <b>−54.1%</b>。'
+        '「最近天天有大球」是基础率 × 场次数的必然（一天 15 场时本来就有 62% 概率出至少一场），'
+        '不是可押的规律。</p></div>\n  ')
 
 strategy_sec = f'''
 <h2>五、核心策略与风险提示</h2>
@@ -673,7 +740,7 @@ strategy_sec = f'''
   <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">{cold_cnt}</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
   <div class="summary-card"><h4>🎲 冷门风险分布 (V3.3)</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">{_upset_mean:.1f}%</strong>：低风险 <strong>{_lvl.get('低',0)}</strong> 场 · 中 <strong>{_lvl.get('中',0)}</strong> 场 · 高 <strong>{_lvl.get('高',0)}</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
-  <div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
+  {_big_card}<div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
   <div class="summary-card"><h4>🎯 比分口径一致性 (V3.3)</h4><p style="font-size:0.9rem;">比分概率组的分布已与同页发布的胜/平/负<b>完全对齐</b>（此前因市场混合/联赛形状混合/Platt 三步都只作用在 1X2 上，两处口径最多相差 <strong>9.9pp</strong>）。对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp；Top5 覆盖变化在噪声内（±0.2pp）。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
@@ -711,7 +778,7 @@ calib_sec = f'''
     <span><strong style="color:var(--accent3);">{CALIB['ratio']:.2f}</strong> → 模型系统性低估 → λ×<strong>{CALIB['factor']:.2f}</strong> 已应用</span>
   </div>
   <div class="cal-item">
-    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 + 比分矩阵对齐 (V3.3)</span>
+    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 + 比分矩阵对齐 + 大比分观察 (V3.3)</span>
     <span><strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
   </div>
   <div class="cal-item">
@@ -742,7 +809,7 @@ page = f'''<!DOCTYPE html>
 <div class="hero">
   <div class="container">
     <h1>{TODAY} 竞彩足球深度分析报告</h1>
-    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · H2H方向性再分配 · 主客场分拆λ · {len(MATCHES)}场比赛全面覆盖</div>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · {len(MATCHES)}场比赛全面覆盖</div>
     <div class="subtitle">数据更新时间: {now} (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
@@ -763,7 +830,7 @@ page = f'''<!DOCTYPE html>
 <div class="footer">
   <div class="container">
     <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
-    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>

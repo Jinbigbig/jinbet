@@ -596,6 +596,8 @@ def load_market_calib(force=False):
                       "roll_months": mw, "sample_rows": len(rows)},
             "handicap": mod.fit_handicap(rows, months=mw),
             "upset": mod.fit_upset(rows, months=mw),
+            "total_goals": (mod.fit_big(rows, months=mw)
+                            if hasattr(mod, "fit_big") else None),
         }
         out = p or os.path.join(BASE, MARKET_CALIB_FILE)
         json.dump(MARKET_CALIB, open(out, "w", encoding="utf-8"),
@@ -749,6 +751,56 @@ def upset_analysis(odds, lam_mh, lam_ma):
     }
 
 
+TOT_GOALS_KEYS = ("0", "1", "2", "3", "4", "5", "6", "7+")
+BIG_THRESHOLDS = ((20.0, "高"), (10.0, "中"), (0.0, "低"))
+
+
+def big_goals_analysis(odds):
+    """大比分（总进球 6+ / 7+）：市场去水 → 校准概率 → 赔率 EV。
+
+    为什么要校准：市场对 6+/7+ 系统性定价偏高 —— 4217 场实测，总进球盘去水后
+    P(6+) 均值 9.41% vs 实际 6.28%（−3.13pp）、P(7+) 4.09% vs 2.37%（−1.72pp），
+    且概率越高越离谱（去水 ≥18% 档：21.95% vs 15.45%）。直接按赔率回测：
+    买「恰好 6 球」ROI −41.1%、买「7+」ROI −54.1%（所有赔率区间全负）。
+    故本模块只用于「哪场最像出大比分」的观察排序，**不构成投注建议**。
+    """
+    if not MARKET_CALIB or not MARKET_CALIB.get("total_goals"):
+        return None
+    tot = odds.get("总进球")
+    if isinstance(tot, list) and tot and isinstance(tot[0], dict):
+        tot = tot[0]
+    if not isinstance(tot, dict):
+        return None
+    raw = {}
+    for k in TOT_GOALS_KEYS:
+        try:
+            o = float(tot.get(k))
+        except (TypeError, ValueError):
+            return None
+        if o <= 1.0:
+            return None
+        raw[k] = 1.0 / o
+    s = sum(raw.values())
+    pmk = {k: v / s for k, v in raw.items()}
+    p6m, p7m = pmk["6"] + pmk["7+"], pmk["7+"]
+    tb = MARKET_CALIB["total_goals"]
+    p6 = _sigmoid1(tb["p6"]["beta"][0] + tb["p6"]["beta"][1] * _logit1(max(p6m, 1e-4)))
+    p7 = _sigmoid1(tb["p7"]["beta"][0] + tb["p7"]["beta"][1] * _logit1(max(p7m, 1e-4)))
+    p6 = min(max(p6, p7), 0.999)
+    o6, o7 = float(tot["6"]), float(tot["7+"])
+    return {
+        "market6": round(p6m * 100, 2), "market7": round(p7m * 100, 2),
+        "cal6": round(p6 * 100, 2), "cal7": round(p7 * 100, 2),
+        "p_eq6": round(max(p6 - p7, 0.0) * 100, 2),
+        "odd6": o6, "odd7": o7,
+        "ev6": round(max(p6 - p7, 0.0) * o6, 3), "ev7": round(p7 * o7, 3),
+        "lam_mkt": round(sum((7 if k == "7+" else int(k)) * v for k, v in pmk.items()), 2),
+        "level": next(lb for th, lb in BIG_THRESHOLDS if p6 * 100 >= th),
+        "overround": round(s, 3),
+        "n_samples": tb.get("n_samples"),
+    }
+
+
 def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
 
@@ -837,6 +889,12 @@ V3_CONFIG = {
                             "模型-市场分歧/|让球|/λ和/市场熵。时间外 Brier 0.2342 vs 常数基线 0.2498；"
                             "低风险1/3翻车22.98% vs 高风险1/3 44.10%（5个月中4个月同向）。"
                             "用途：高风险场次不进信心串关 + 报告显式标注"},
+    "BIG_GOALS": {"enabled": True, "min_samples": 0,
+                  "note": "大比分(总进球6+/7+)观察模块启用(2026-09-10)：市场总进球盘去水 → "
+                          "logit 校准（P(6+) a=−0.4288 b=+0.9858；P(7+) a=−0.2273 b=+1.0838）→ EV。"
+                          "校准动机：市场系统性高估大比分 —— 4217 场去水 P(6+) 均值 9.41% vs 实际 6.28%、"
+                          "P(7+) 4.09% vs 2.37%；直接按赔率回测买「恰好6球」ROI −41.1%、买「7+」−54.1%。"
+                          "仅用于「哪场最像出大比分」排序，不构成投注建议。"},
     "SCORE_ALIGN": {"enabled": True, "min_samples": 0,
                     "note": "比分矩阵对齐发布的 1X2 已启用(V3.3)：把矩阵三象限质量缩放到 Platt 后的"
                             "发布概率（象限内形状不变，一步精确投影）。修复「报告一边说客胜58%，"
@@ -1425,6 +1483,7 @@ def calc_match(m, calib):
     rq_out = handicap_analysis(odds, lam_h_B, lam_a_B,
                                has_1x2=bool(odds.get("胜") and odds.get("平") and odds.get("负")))
     upset_out = upset_analysis(odds, lam_h_B, lam_a_B)
+    big_out = big_goals_analysis(odds)
 
     # ---------- 冷门信号 ----------
     signals = []
@@ -1508,6 +1567,7 @@ def calc_match(m, calib):
         "stars": stars,
         "rq": rq_out,
         "upset": upset_out,
+        "big": big_out,
         "news": m.get("news", ""),
         "xg": {"home": xg_h, "away": xg_a},
     }
@@ -1583,9 +1643,11 @@ def main():
             _b = r["rq"]["best"]
             _rqx = f" | 让球{r['rq']['handicap']} {_b['pick']} EV{_b['ev']:.2f}({r['rq']['conf']})"
         _upx = f" | 冷门{r['upset']['prob']:.0f}%({r['upset']['level']})" if r.get("upset") else ""
+        _bgx = (f" | 大比分6+ 市场{r['big']['market6']:.1f}%→校准{r['big']['cal6']:.1f}%"
+                f"({r['big']['level']}) EV7+{r['big']['ev7']:.2f}") if r.get("big") else ""
         print(f"{num} {r['home']}vs{r['away']:<10} λ{r['lam_home']:.2f}/{r['lam_away']:.2f} "
               f"总分{r['lam_total']:.2f} | {top['score']}({top['prob']}%) "
-              f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}{_rqx}{_upx}")
+              f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}{_rqx}{_upx}{_bgx}")
 
     # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
     json.dump({"today": TODAY, "calibration": calib, "matches": out},

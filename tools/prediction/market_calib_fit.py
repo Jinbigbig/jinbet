@@ -451,6 +451,108 @@ def apply_upset_beta(beta, feat):
 
 
 # ================================================================ 月度时间外验证
+# ================================================================ 大比分（总进球 6+ / 7+）
+TOT_KEYS = ("0", "1", "2", "3", "4", "5", "6", "7+")
+K_BIG = 400          # 样本量收缩常数（先验 = 纯市场，即 a=0, b=1）
+
+BIG_SEP = "=" * 84
+
+
+def devig_tot(tot):
+    """总进球盘（8 档）按赔率倒数归一化去水，返回 (概率, 水位)。"""
+    if not isinstance(tot, dict):
+        return None
+    raw = {}
+    for k in TOT_KEYS:
+        o = num(tot.get(k))
+        if not o or o <= 1.0:
+            return None
+        raw[k] = 1.0 / o
+    s = sum(raw.values())
+    return {k: v / s for k, v in raw.items()}, s
+
+
+def big_samples_of(rows):
+    """每场：市场 P(6+) / P(7+)、赔率、实际是否 6+/7+。
+
+    口径要点：竞彩比分盘/总进球盘里「6」与「7+」是独立档位，
+    6+ = P(6档) + P(7+档)；而比分盘的「胜其他/平其他/负其他」
+    实测 100% 落在 6+（已列举全部 ≤5 球的比分）。
+    """
+    out = []
+    for r in rows:
+        tot = r["rec"].get("总进球")
+        dt = devig_tot(tot)
+        if not dt:
+            continue
+        p = dt[0]
+        g = r["hg"] + r["ag"]
+        out.append({"date": r["date"], "k": r["k"],
+                    "p6": p["6"] + p["7+"], "p7": p["7+"],
+                    "o6": num(tot.get("6")) or 0.0, "o7": num(tot.get("7+")) or 0.0,
+                    "y6": 1 if g >= 6 else 0, "y7": 1 if g >= 7 else 0,
+                    "lam_mkt": sum((7 if k == "7+" else int(k)) * v for k, v in p.items())})
+    return out
+
+
+def apply_big_beta(beta, p):
+    return sigmoid(beta[0] + beta[1] * logit(p))
+
+
+def fit_big(rows, months=ROLL_MONTHS, kshrink=K_BIG):
+    """市场 P(6+) / P(7+) 的 logit 校准。
+
+    动机：市场对极端高进球（6+/7+）系统性定价偏高——去水后预测均值 9.41%
+    而实际 6.28%（−3.13pp），7+ 档 4.09% vs 2.37%（−1.72pp），概率越高越离谱
+    （去水 P≥18% 的档：预测 21.95% vs 实际 15.45%）。校准把概率压回诚实区间。
+    """
+    ss = big_samples_of(rows)
+    if len(ss) < 300:
+        return None
+    res = {"n_samples": len(ss), "k_shrink": float(kshrink), "months": months}
+    for tag, pk, yk in (("p6", "p6", "y6"), ("p7", "p7", "y7")):
+        X = [[1.0, logit(s[pk])] for s in ss]
+        y = [s[yk] for s in ss]
+        bf, se = fit_logit(X, y, l2=2.0)
+        beta = shrink_beta(bf, [0.0, 1.0], len(ss), kshrink)
+        cut = int(len(ss) * 0.6)
+        bo, _ = fit_logit(X[:cut], y[:cut], l2=2.0)
+        ps_cal = [apply_big_beta(bo, ss[i][pk]) for i in range(cut, len(ss))]
+        ps_raw = [ss[i][pk] for i in range(cut, len(ss))]
+        ys = y[cut:]
+        base = sum(ys) / len(ys)
+        res[tag] = {
+            "beta_fit": [round(x, 5) for x in bf],
+            "beta": [round(x, 5) for x in beta],
+            "se": [round(x, 5) for x in se],
+            "prior": [0.0, 1.0],
+            "oos_n": len(ys),
+            "oos_brier": round(brier(ps_cal, ys), 5),
+            "oos_brier_raw": round(brier(ps_raw, ys), 5),
+            "oos_brier_base": round(brier([base] * len(ys), ys), 5),
+            "base_rate": round(sum(y) / len(y), 5),
+        }
+    return res
+
+
+def big_roi_check(rows, verbose=True):
+    """直接按赔率回测买「6 球档」「7+ 档」的 ROI（不依赖去水假设，最硬）。"""
+    ss = big_samples_of(rows)
+    if not ss:
+        return None
+    res = {}
+    for tag, ok, win, lab in (("eq6", "o6", lambda s: bool(s["y6"] and not s["y7"]), "买「恰好 6 球」档"),
+                              ("ge7", "o7", lambda s: bool(s["y7"]), "买「7+ 球」档")):
+        seg = [s for s in ss if s[ok]]
+        if not seg:
+            continue
+        pnl = sum((s[ok] - 1.0) if win(s) else -1.0 for s in seg)
+        res[tag] = {"n": len(seg), "roi": round(pnl / len(seg) * 100, 2)}
+        if verbose:
+            print(f"  {lab:<16} n={len(seg):5d}  ROI {pnl / len(seg) * 100:+7.2f}%")
+    return res
+
+
 def monthly_oos(rows, months_list=(None, 6, 3)):
     """对每个候选窗口做月度时间外验证：用 <M 月的样本拟合，在 M 月实测。"""
     mos = sorted({month_of(r["date"]) for r in rows})
@@ -517,6 +619,7 @@ def main():
     mw = None if pick == "expanding" else int(pick.rstrip("m"))
     fh = fit_handicap(rows, months=mw)
     fu = fit_upset(rows, months=mw)
+    fb = fit_big(rows, months=mw)
 
     print("\n【让球盘联合校准】logit(P) = a + b1·logit(p_mkt) + b2·logit(p_model)")
     if fh:
@@ -536,6 +639,19 @@ def main():
                   f"   → 收缩后 {fu['beta'][i]:+9.5f}")
         print(f"  样本 {fu['n_samples']} 场  基础翻车率 {fu['base_rate']*100:.2f}%  K={fu['k_shrink']:.0f}")
 
+    print("\n【大比分（6+/7+）市场校准】logit(P_true) = a + b·logit(P_市场)")
+    if fb:
+        for tag, lab in (("p6", "P(总进球≥6)"), ("p7", "P(总进球≥7)")):
+            d = fb[tag]
+            t = d["beta_fit"][1] / d["se"][1] if d["se"][1] else float("nan")
+            print(f"  {lab:<12} 拟合 a {d['beta_fit'][0]:+8.4f}  b {d['beta_fit'][1]:+8.4f}"
+                  f" (t={t:+5.1f})   → 收缩后 a {d['beta'][0]:+8.4f}  b {d['beta'][1]:+8.4f}")
+            print(f"      时间外 n={d['oos_n']}  基础率 {d['base_rate']*100:.2f}%  |  Brier 校准后 "
+                  f"{d['oos_brier']:.5f}  原始市场 {d['oos_brier_raw']:.5f}  "
+                  f"常数基线 {d['oos_brier_base']:.5f}")
+        print("  直接按赔率回测（不依赖去水假设，最硬的口径）：")
+        big_roi_check(rows)
+
     if want_valid:
         _print_extra_valid(rows, fh, fu)
         _print_star_check(rows)
@@ -549,10 +665,11 @@ def main():
             "sample_rows": len(rows),
             "oos": {k: {kk: (round(vv, 5) if isinstance(vv, float) else vv)
                         for kk, vv in v.items()} for k, v in oos.items()},
-            "note": "只校准让球盘与冷门风险；1X2 概率值不校准（模型在 1X2 无 alpha）",
+            "note": "只校准让球盘、冷门风险与大比分(6+/7+)概率；1X2 概率值不校准（模型在 1X2 无 alpha）",
         },
         "handicap": fh,
         "upset": fu,
+        "total_goals": fb,
     }
     p = os.path.join(ROOT, "market_calib.json")
     json.dump(out, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1, sort_keys=True)
