@@ -1,0 +1,111 @@
+{
+ "_meta": {
+  "built_at": "2026-09-10",
+  "fitted_month": "2026-09",
+  "note": "只校准让球盘与冷门风险；1X2 概率值不校准（模型在 1X2 无 alpha）",
+  "oos": {
+   "3m": {
+    "bet_n": 203,
+    "bet_roi": 17.39901,
+    "handicap_brier": 0.19733,
+    "handicap_n": 4461,
+    "upset_base_brier": 0.24997,
+    "upset_brier": 0.23536,
+    "upset_n": 1726
+   },
+   "6m": {
+    "bet_n": 206,
+    "bet_roi": 17.0534,
+    "handicap_brier": 0.19756,
+    "handicap_n": 4461,
+    "upset_base_brier": 0.24976,
+    "upset_brier": 0.23419,
+    "upset_n": 1726
+   },
+   "expanding": {
+    "bet_n": 197,
+    "bet_roi": 16.85787,
+    "handicap_brier": 0.19756,
+    "handicap_n": 4461,
+    "upset_base_brier": 0.24975,
+    "upset_brier": 0.23443,
+    "upset_n": 1726
+   }
+  },
+  "roll_label": "6m",
+  "roll_months": 6,
+  "sample_rows": 4162,
+  "source": "market_calib_fit.py"
+ },
+ "handicap": {
+  "beta": [
+   0.05167,
+   0.78764,
+   0.27426
+  ],
+  "beta_fit": [
+   0.05303,
+   0.78205,
+   0.28147
+  ],
+  "k_shrink": 300.0,
+  "months": 6,
+  "n_samples": 11412,
+  "prior": [
+   0.0,
+   1.0,
+   0.0
+  ],
+  "se": [
+   0.03119,
+   0.04456,
+   0.02565
+  ]
+ },
+ "upset": {
+  "base_rate": 0.48059,
+  "beta": [
+   -0.1377,
+   -2.12297,
+   -1.42348,
+   -0.33487,
+   -0.15231,
+   1.9153
+  ],
+  "beta_fit": [
+   -0.14227,
+   -2.28458,
+   -1.53184,
+   -0.36036,
+   -0.16391,
+   2.0611
+  ],
+  "features": [
+   "截距",
+   "市场首选概率",
+   "模型-市场分歧",
+   "|让球|",
+   "λ和",
+   "市场熵"
+  ],
+  "k_shrink": 300.0,
+  "months": 6,
+  "n_samples": 3941,
+  "prior": [
+   -0.07768,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "se": [
+   0.76848,
+   0.47164,
+   0.19776,
+   0.16069,
+   0.05211,
+   0.50282
+  ]
+ }
+}

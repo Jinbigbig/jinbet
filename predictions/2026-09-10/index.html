@@ -119,8 +119,8 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 <div class="hero">
   <div class="container">
     <h1>2026-09-10 竞彩足球深度分析报告</h1>
-    <div class="subtitle">AI泊松模型V3.2 · 市场概率混合(总量守恒) · H2H方向性再分配 · 主客场分拆λ · 零封修正动态校准 · 7场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-09-10 16:39 (北京时间)</div>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 让球盘联合校准 · 冷门风险分层 · H2H方向性再分配 · 主客场分拆λ · 7场比赛全面覆盖</div>
+    <div class="subtitle">数据更新时间: 2026-09-10 17:12 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -151,7 +151,7 @@ var homeWinProbs = [27.3, 58.7, 59.3, 40.4, 49.0, 15.0, 32.0];
 var drawProbs = [24.7, 22.1, 21.0, 22.9, 23.5, 26.8, 33.1];
 var awayWinProbs = [47.9, 19.2, 19.7, 36.7, 27.5, 58.2, 34.9];
 chart.setOption({
-  title: { text: '模型V3.2胜平负概率分布', left: 'center', textStyle: { fontSize: 14 } },
+    title: { text: '模型V3.3胜平负概率分布', left: 'center', textStyle: { fontSize: 14 } },
   tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
   legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
   grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
@@ -208,8 +208,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 53.4%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 47.9%（历史同档翻车率均值 48.1%）；模型−市场分歧 -3.8pp、|让球|1、λ和 2.93、市场熵 1.053。基于 3941 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队受让1 +1 · |让球|=1 · 最大分歧 4pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.72</td><td>51.5%</td><td>56.0%</td><td><strong>53.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.92</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.55</td><td>24.9%</td><td>21.5%</td><td><strong>23.5%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.83</td></tr><tr><td>让球负</td><td style="font-family:monospace;">3.75</td><td>23.6%</td><td>22.5%</td><td><strong>22.8%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.85</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球胜 @1.72</span>
+    EV <strong style="color:var(--muted);">0.92</strong>（校准概率 53.7%），
+    模型−市场分歧 +2.2pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-1 10.8% · 1-2 10.2% · 2-1 7.1% · 2-2 6.2% · 0-2 6.1%</span>
@@ -227,7 +243,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 53%（高）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -238,7 +254,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主1.35进/0.67失 客2.19进/1.00失 | 主客场分拆(主3场1.05/客13场1.46, n_eff=2.9, K=4),主1.29客1.56) → 无xG数据(无xG数据，沿用进球λ,主1.29客1.56) → 联赛收缩(向欧冠基线3.20收缩25% (总2.85→2.93),主1.33客1.61) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.33客1.61) → 市场混合(80%概率混合(总量守恒),市场去水主27%/平25%/客48%,主1.25客1.68) → 动态校准(×1.10(欧冠),主1.38客1.86) → 零封修正(P0主×0.8(零封17%)/客×0.6(零封4%)) → 最终λ 主1.38 客1.86 → Platt校准(1X2: 平局21.8%→24.7%)
+      基础λ(指数衰减0.96^i,主1.35进/0.67失 客2.19进/1.00失 | 主客场分拆(主3场1.05/客13场1.46, n_eff=2.9, K=4),主1.29客1.56) → 无xG数据(无xG数据，沿用进球λ,主1.29客1.56) → 联赛收缩(向欧冠基线3.20收缩25% (总2.85→2.93),主1.33客1.61) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.33客1.61) → 市场混合(80%概率混合(总量守恒),市场去水主27%/平25%/客48%,主1.25客1.68) → 动态校准(×1.10(欧冠),主1.38客1.86) → 零封修正(P0主×0.8(零封17%)/客×0.6(零封4%)) → 最终λ 主1.38 客1.86 → Platt校准(1X2: 平局21.8%→24.7%) → 让球盘校准(建议让球胜 EV0.92 置信高) → 冷门风险53%(高)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主1.38/客1.86（总3.24） → 校准后 λ×1.00
@@ -290,8 +306,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 44.3%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 55.7%（历史同档翻车率均值 48.1%）；模型−市场分歧 -2.2pp、|让球|1、λ和 3.34、市场熵 0.994。基于 3941 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 3pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">2.79</td><td>31.7%</td><td>31.5%</td><td><strong>31.6%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.88</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.62</td><td>24.5%</td><td>22.0%</td><td><strong>23.3%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.84</td></tr><tr><td>让球负</td><td style="font-family:monospace;">2.02</td><td>43.8%</td><td>46.5%</td><td><strong>45.2%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.91</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球负 @2.02</span>
+    EV <strong style="color:var(--muted);">0.91</strong>（校准概率 45.2%），
+    模型−市场分歧 +1.4pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-1 9.2% · 2-1 9.1% · 1-2 7.2% · 2-2 6.3% · 3-1 6.3%</span>
@@ -309,7 +341,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span> <span class="tag tag-yellow" style="margin-left:0.6rem;">冷门风险 44%（中）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -320,7 +352,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主2.05进/0.92失 客1.83进/1.50失 | 主客场分拆(主11场1.98/客11场1.30, n_eff=9.0, K=4),主2.05客1.35) → 无xG数据(无xG数据，沿用进球λ,主2.05客1.35) → 联赛收缩(向欧冠基线3.20收缩25% (总3.39→3.34),主2.02客1.33) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.02客1.33) → 市场混合(80%概率混合(总量守恒),市场去水主56%/平22%/客22%,主2.07客1.28) → 动态校准(×1.10(欧冠),主2.29客1.41) → 零封修正(P0主×0.8(零封16%)/客×0.6(零封10%)) → 最终λ 主2.29 客1.41 → Platt校准(1X2: 平局20.4%→22.1%)
+      基础λ(指数衰减0.96^i,主2.05进/0.92失 客1.83进/1.50失 | 主客场分拆(主11场1.98/客11场1.30, n_eff=9.0, K=4),主2.05客1.35) → 无xG数据(无xG数据，沿用进球λ,主2.05客1.35) → 联赛收缩(向欧冠基线3.20收缩25% (总3.39→3.34),主2.02客1.33) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.02客1.33) → 市场混合(80%概率混合(总量守恒),市场去水主56%/平22%/客22%,主2.07客1.28) → 动态校准(×1.10(欧冠),主2.29客1.41) → 零封修正(P0主×0.8(零封16%)/客×0.6(零封10%)) → 最终λ 主2.29 客1.41 → Platt校准(1X2: 平局20.4%→22.1%) → 让球盘校准(建议让球负 EV0.91 置信高) → 冷门风险44%(中)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主2.29/客1.41（总3.70） → 校准后 λ×1.00
@@ -372,8 +404,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  
+  
+  <h4>让球盘偏差（主队让3 -3 · |让球|=3 · 最大分歧 38pp · 置信度低）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">2.13</td><td>41.6%</td><td>11.1%</td><td><strong>31.7%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">0.68</td></tr><tr><td>让球平</td><td style="font-family:monospace;">4.9</td><td>18.1%</td><td>11.1%</td><td><strong>15.5%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">0.76</td></tr><tr><td>让球负</td><td style="font-family:monospace;">2.2</td><td>40.3%</td><td>77.8%</td><td><strong>52.8%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">1.16</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-yellow">让球负 @2.2</span>
+    EV <strong style="color:var(--accent3);">1.16</strong>（校准概率 52.8%），
+    模型−市场分歧 +12.5pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span><br><span style="color:var(--accent3);">⚠️ |让球|=3 历史样本不足；模型−市场分歧 37pp 超阈值（跨联赛实力差为已知缺陷）；无 1X2 市场锚点，λ 未经市场混合 —— 低置信，仅观察</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">2-1 8.1% · 1-1 7.8% · 1-2 6.9% · 2-2 6.5% · 3-1 6.1%</span>
@@ -402,7 +450,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主3.13进/1.22失 客2.63进/0.88失 | 主客场分拆(主15场3.02/客13场1.95, n_eff=10.3, K=4),主3.01客1.98) → 无xG数据(无xG数据，沿用进球λ,主3.01客1.98) → 联赛收缩(向欧冠基线3.20收缩25% (总4.98→4.54),主2.74客1.80) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.74客1.80) → 市场混合(无赔率数据,跳过,主2.74客1.80) → 动态校准(×1.10(欧冠),总量约束→4.2,主2.53客1.67) → 零封修正(P0主×0.6(零封4%)/客×0.6(零封8%)) → 最终λ 主2.53 客1.67 → Platt校准(1X2: 平局19.6%→21.0%)
+      基础λ(指数衰减0.96^i,主3.13进/1.22失 客2.63进/0.88失 | 主客场分拆(主15场3.02/客13场1.95, n_eff=10.3, K=4),主3.01客1.98) → 无xG数据(无xG数据，沿用进球λ,主3.01客1.98) → 联赛收缩(向欧冠基线3.20收缩25% (总4.98→4.54),主2.74客1.80) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.74客1.80) → 市场混合(无赔率数据,跳过,主2.74客1.80) → 动态校准(×1.10(欧冠),总量约束→4.2,主2.53客1.67) → 零封修正(P0主×0.6(零封4%)/客×0.6(零封8%)) → 最终λ 主2.53 客1.67 → Platt校准(1X2: 平局19.6%→21.0%) → 让球盘校准(建议让球负 EV1.16 置信低)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主2.53/客1.67（总4.20） → 校准后 λ×1.00
@@ -454,8 +502,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.00&gt;1.0(主胜有价值)</strong>；</div>
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 52.4%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 37.2%（历史同档翻车率均值 48.1%）；模型−市场分歧 +7.1pp、|让球|1、λ和 4.12、市场熵 1.089。基于 3941 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队受让1 +1 · |让球|=1 · 最大分歧 9pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.43</td><td>61.9%</td><td>55.7%</td><td><strong>61.9%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.89</td></tr><tr><td>让球平</td><td style="font-family:monospace;">4.2</td><td>21.1%</td><td>18.6%</td><td><strong>19.8%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.83</td></tr><tr><td>让球负</td><td style="font-family:monospace;">5.2</td><td>17.0%</td><td>25.7%</td><td><strong>18.4%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.95</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球负 @5.2</span>
+    EV <strong style="color:var(--muted);">0.95</strong>（校准概率 18.4%），
+    模型−市场分歧 +1.4pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-2 8.4% · 1-1 8.0% · 2-1 6.9% · 2-2 6.8% · 3-2 5.1%</span>
@@ -473,7 +537,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      <span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 52%（高）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -484,7 +548,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主2.00进/4.00失 客2.10进/1.39失 | 主客场分拆(主1场1.93/客11场2.42, n_eff=1.0, K=4),主2.09客2.34) → 无xG数据(无xG数据，沿用进球λ,主2.09客2.34) → 联赛收缩(向欧冠基线3.20收缩25% (总4.43→4.12),主1.94客2.18) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.94客2.18) → 市场混合(80%概率混合(总量守恒),市场去水主36%/平27%/客37%,主2.02客2.10) → 动态校准(×1.10(欧冠),总量约束→4.2,主2.06客2.14) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封14%)) → 最终λ 主2.06 客2.14 → Platt校准(1X2: 平局20.6%→22.9%)
+      基础λ(指数衰减0.96^i,主2.00进/4.00失 客2.10进/1.39失 | 主客场分拆(主1场1.93/客11场2.42, n_eff=1.0, K=4),主2.09客2.34) → 无xG数据(无xG数据，沿用进球λ,主2.09客2.34) → 联赛收缩(向欧冠基线3.20收缩25% (总4.43→4.12),主1.94客2.18) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.94客2.18) → 市场混合(80%概率混合(总量守恒),市场去水主36%/平27%/客37%,主2.02客2.10) → 动态校准(×1.10(欧冠),总量约束→4.2,主2.06客2.14) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封14%)) → 最终λ 主2.06 客2.14 → Platt校准(1X2: 平局20.6%→22.9%) → 让球盘校准(建议让球负 EV0.95 置信高) → 冷门风险52%(高)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主2.06/客2.14（总4.20） → 校准后 λ×1.00
@@ -536,8 +600,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  
+  
+  <h4>让球盘偏差（主队让2 -2 · |让球|=2 · 最大分歧 52pp · 置信度低）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.52</td><td>58.2%</td><td>11.6%</td><td><strong>45.8%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">0.70</td></tr><tr><td>让球平</td><td style="font-family:monospace;">4.7</td><td>18.8%</td><td>13.7%</td><td><strong>17.5%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">0.82</td></tr><tr><td>让球负</td><td style="font-family:monospace;">3.86</td><td>22.9%</td><td>74.6%</td><td><strong>36.7%</strong></td><td style="font-family:monospace;color:var(--accent3);font-weight:700;">1.42</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-yellow">让球负 @3.86</span>
+    EV <strong style="color:var(--accent3);">1.42</strong>（校准概率 36.7%），
+    模型−市场分歧 +13.8pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span><br><span style="color:var(--accent3);">⚠️ 模型−市场分歧 52pp 超阈值（跨联赛实力差为已知缺陷）；无 1X2 市场锚点，λ 未经市场混合 —— 低置信，仅观察</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-1 9.0% · 1-2 8.2% · 2-1 8.2% · 2-2 6.8% · 3-2 5.2%</span>
@@ -566,7 +646,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主1.90进/1.35失 客2.03进/0.51失 | 主客场分拆(主9场2.21/客3场1.56, n_eff=2.9, K=4),主1.96客1.62) → 无xG数据(无xG数据，沿用进球λ,主1.96客1.62) → 联赛收缩(向欧冠基线3.20收缩25% (总3.59→3.49),主1.91客1.58) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.91客1.58) → 市场混合(无赔率数据,跳过,主1.91客1.58) → 动态校准(×1.10(欧冠),主2.11客1.75) → 零封修正(P0主×0.6(零封11%)/客×0.6(零封0%)) → 最终λ 主2.11 客1.75 → Platt校准(1X2: 平局21.1%→23.5%)
+      基础λ(指数衰减0.96^i,主1.90进/1.35失 客2.03进/0.51失 | 主客场分拆(主9场2.21/客3场1.56, n_eff=2.9, K=4),主1.96客1.62) → 无xG数据(无xG数据，沿用进球λ,主1.96客1.62) → 联赛收缩(向欧冠基线3.20收缩25% (总3.59→3.49),主1.91客1.58) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.91客1.58) → 市场混合(无赔率数据,跳过,主1.91客1.58) → 动态校准(×1.10(欧冠),主2.11客1.75) → 零封修正(P0主×0.6(零封11%)/客×0.6(零封0%)) → 最终λ 主2.11 客1.75 → Platt校准(1X2: 平局21.1%→23.5%) → 让球盘校准(建议让球负 EV1.42 置信低)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主2.11/客1.75（总3.86） → 校准后 λ×1.00
@@ -618,8 +698,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 47.0%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 59.8%（历史同档翻车率均值 48.1%）；模型−市场分歧 -20.0pp、|让球|1、λ和 3.11、市场熵 0.947。基于 3941 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队受让1 +1 · |让球|=1 · 最大分歧 21pp · 置信度中）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">2.25</td><td>39.4%</td><td>60.1%</td><td><strong>45.6%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">1.03</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.1</td><td>28.6%</td><td>20.0%</td><td><strong>25.9%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.80</td></tr><tr><td>让球负</td><td style="font-family:monospace;">2.76</td><td>32.1%</td><td>19.9%</td><td><strong>28.5%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.79</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-yellow">让球胜 @2.25</span>
+    EV <strong style="color:var(--accent2);">1.03</strong>（校准概率 45.6%），
+    模型−市场分歧 +6.2pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-1 9.8% · 1-2 9.5% · 0-1 8.6% · 2-2 8.4% · 0-2 7.4%</span>
@@ -637,7 +733,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span> <span class="tag tag-yellow" style="margin-left:0.6rem;">冷门风险 47%（中）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -648,7 +744,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主1.41进/2.02失 客1.71进/1.46失 | 主客场分拆(主7场1.51/客14场1.66, n_eff=6.2, K=4),主1.56客1.64) → 无xG数据(无xG数据，沿用进球λ,主1.56客1.64) → 联赛收缩(向葡超基线2.87收缩25% (总3.20→3.11),主1.52客1.60) → H2H调整(H2H数据不足3场(仅2场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.52客1.60) → 市场混合(80%概率混合(总量守恒),市场去水主17%/平23%/客60%,主1.15客1.97) → 动态校准(×1.02(葡超),主1.17客2.00) → 零封修正(P0主×1.0(零封40%)/客×0.6(零封8%)) → 最终λ 主1.17 客2.00 → Platt校准(1X2: 平局23.6%→26.8%)
+      基础λ(指数衰减0.96^i,主1.41进/2.02失 客1.71进/1.46失 | 主客场分拆(主7场1.51/客14场1.66, n_eff=6.2, K=4),主1.56客1.64) → 无xG数据(无xG数据，沿用进球λ,主1.56客1.64) → 联赛收缩(向葡超基线2.87收缩25% (总3.20→3.11),主1.52客1.60) → H2H调整(H2H数据不足3场(仅2场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.52客1.60) → 市场混合(80%概率混合(总量守恒),市场去水主17%/平23%/客60%,主1.15客1.97) → 动态校准(×1.02(葡超),主1.17客2.00) → 零封修正(P0主×1.0(零封40%)/客×0.6(零封8%)) → 最终λ 主1.17 客2.00 → Platt校准(1X2: 平局23.6%→26.8%) → 让球盘校准(建议让球胜 EV1.03 置信中) → 冷门风险47%(中)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主1.17/客2.00（总3.17） → 校准后 λ×1.00
@@ -700,8 +796,24 @@ window.addEventListener('resize', function() { chart.resize(); });
   <p style="font-size:0.9rem;line-height:1.8;"></p>
 
   
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 57.6%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 34.7%（历史同档翻车率均值 48.1%）；模型−市场分歧 +16.0pp、|让球|1、λ和 2.37、市场熵 1.098。基于 3941 场拟合，时间外低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 12pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">6.7</td><td>13.2%</td><td>7.6%</td><td><strong>10.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.72</td></tr><tr><td>让球平</td><td style="font-family:monospace;">4.18</td><td>21.2%</td><td>15.3%</td><td><strong>18.8%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.79</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.35</td><td>65.6%</td><td>77.1%</td><td><strong>70.5%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.95</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球负 @1.35</span>
+    EV <strong style="color:var(--muted);">0.95</strong>（校准概率 70.5%），
+    模型−市场分歧 +4.9pp。
+    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 不达标（仅观察）。</span>
+  </p>
+
   <div class="prediction">
-    <div class="pred-title">🎯 AI泊松模型V3.2预测</div>
+    <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">1-1 16.9% · 1-2 9.4% · 1-0 9.1% · 0-1 8.6% · 2-1 8.1%</span>
@@ -719,7 +831,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
-      <span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 58%（高）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">总进球倾向:</span>
@@ -730,7 +842,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
-      基础λ(指数衰减0.96^i,主1.00进/0.00失 客2.23进/0.32失 | 主客场分拆(主1场0.85/客5场1.66, n_eff=1.0, K=4),主0.93客1.54) → 无xG数据(无xG数据，沿用进球λ,主0.93客1.54) → 联赛收缩(向解放者杯基线2.08收缩25% (总2.47→2.37),主0.90客1.48) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.90客1.48) → 市场混合(80%概率混合(总量守恒),市场去水主33%/平32%/客35%,主1.12客1.25) → 动态校准(×1.04(解放者杯),主1.16客1.30) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封0%)) → 最终λ 主1.16 客1.30 → Platt校准(1X2: 平局27.3%→33.1%)
+      基础λ(指数衰减0.96^i,主1.00进/0.00失 客2.23进/0.32失 | 主客场分拆(主1场0.85/客5场1.66, n_eff=1.0, K=4),主0.93客1.54) → 无xG数据(无xG数据，沿用进球λ,主0.93客1.54) → 联赛收缩(向解放者杯基线2.08收缩25% (总2.47→2.37),主0.90客1.48) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.90客1.48) → 市场混合(80%概率混合(总量守恒),市场去水主33%/平32%/客35%,主1.12客1.25) → 动态校准(×1.04(解放者杯),主1.16客1.30) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封0%)) → 最终λ 主1.16 客1.30 → Platt校准(1X2: 平局27.3%→33.1%) → 让球盘校准(建议让球负 EV0.95 置信高) → 冷门风险58%(高)
     </div>
     <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
       λ=主1.16/客1.30（总2.46） → 校准后 λ×1.00
@@ -756,6 +868,18 @@ window.addEventListener('resize', function() { chart.resize(); });
   <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th></tr></thead>
   <tbody><tr><td><span class="tag tag-blue">周四001</span></td><td>费内巴切</td><td>罗马</td><td><span class="tag tag-red" title="λ总分3.24">大球倾向</span></td><td>63%</td><td>41%</td><td>3 球</td><td style="font-family:monospace;">3.24</td></tr><tr><td><span class="tag tag-blue">周四002</span></td><td>科莫</td><td>莱红牛</td><td><span class="tag tag-red" title="λ总分3.70">大球倾向</span></td><td>71%</td><td>51%</td><td>3 球</td><td style="font-family:monospace;">3.70</td></tr><tr><td><span class="tag tag-blue">周四003</span></td><td>拜仁</td><td>博德闪耀</td><td><span class="tag tag-red" title="λ总分4.20">大球倾向</span></td><td>79%</td><td>60%</td><td>4 球</td><td style="font-family:monospace;">4.20</td></tr><tr><td><span class="tag tag-blue">周四004</span></td><td>斯拉维亚</td><td>朗斯</td><td><span class="tag tag-red" title="λ总分4.20">大球倾向</span></td><td>79%</td><td>60%</td><td>4 球</td><td style="font-family:monospace;">4.20</td></tr><tr><td><span class="tag tag-blue">周四005</span></td><td>曼联</td><td>萨巴赫</td><td><span class="tag tag-red" title="λ总分3.86">大球倾向</span></td><td>74%</td><td>54%</td><td>3 球</td><td style="font-family:monospace;">3.86</td></tr><tr><td><span class="tag tag-blue">周四006</span></td><td>阿马多拉</td><td>布拉迪斯</td><td><span class="tag tag-red" title="λ总分3.17">大球倾向</span></td><td>61%</td><td>39%</td><td>3 球</td><td style="font-family:monospace;">3.17</td></tr><tr><td><span class="tag tag-blue">周四007</span></td><td>德尔瓦耶独立</td><td>弗拉门戈</td><td><span class="tag tag-yellow" title="λ总分2.46">均势总量</span></td><td>45%</td><td>23%</td><td>2 球</td><td style="font-family:monospace;">2.46</td></tr></tbody>
 </table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.3 让球盘市场偏差清单（V3.3 新玩法 · 按 EV 降序）</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">模型在 <b>1X2 概率值</b>上没有 alpha（纯市场 Brier 0.5504 &lt; 纯模型 0.6134，且要付 12% 抽水），但在 <b>让球盘「过滤」</b>上有 alpha：联合校准 <code>logit(P)=a+b1·logit(p_mkt)+b2·logit(p_model)</code> 后，月度时间外「每场只买 EV 最高的一注」197 注 ROI <b>+16.86%</b>（纯模型同口径 498 注 +4.78%，t=0.76）。⚠️ <b>EV&gt;1.10 才算有偏离</b>；|让球|=1 置信高（样本 3429）、=2 中（170）、≥3 低（样本不足）。该玩法月度 ROI 波动大（+81%/+53%/−27%/−14%），只用小注。<b>不要用它替换 1X2 判断</b>。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>价值方向</th><th>赔率</th><th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>状态</th><th>冷门风险</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周四005</span></td><td>曼联</td><td>萨巴赫</td><td>-2</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">3.86</td><td>22.9%</td><td>74.6%</td><td><strong>36.7%</strong></td><td style="font-family:monospace;font-weight:700;">1.42</td><td>52pp</td><td>低</td><td>❌ 低置信(勿跟)</td><td>-</td></tr><tr><td><span class="tag tag-blue">周四003</span></td><td>拜仁</td><td>博德闪耀</td><td>-3</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">2.2</td><td>40.3%</td><td>77.8%</td><td><strong>52.8%</strong></td><td style="font-family:monospace;font-weight:700;">1.16</td><td>38pp</td><td>低</td><td>❌ 低置信(勿跟)</td><td>-</td></tr><tr><td><span class="tag tag-blue">周四006</span></td><td>阿马多拉</td><td>布拉迪斯</td><td>+1</td><td><span class="tag tag-yellow">让球胜</span></td><td style="font-family:monospace;">2.25</td><td>39.4%</td><td>60.1%</td><td><strong>45.6%</strong></td><td style="font-family:monospace;font-weight:700;">1.03</td><td>21pp</td><td>中</td><td>观察</td><td>47%</td></tr><tr><td><span class="tag tag-blue">周四004</span></td><td>斯拉维亚</td><td>朗斯</td><td>+1</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">5.2</td><td>17.0%</td><td>25.7%</td><td><strong>18.4%</strong></td><td style="font-family:monospace;font-weight:700;">0.95</td><td>9pp</td><td>高</td><td>—</td><td>52%</td></tr><tr><td><span class="tag tag-blue">周四007</span></td><td>德尔瓦耶独立</td><td>弗拉门戈</td><td>-1</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">1.35</td><td>65.6%</td><td>77.1%</td><td><strong>70.5%</strong></td><td style="font-family:monospace;font-weight:700;">0.95</td><td>12pp</td><td>高</td><td>—</td><td>58%</td></tr><tr><td><span class="tag tag-blue">周四001</span></td><td>费内巴切</td><td>罗马</td><td>+1</td><td><span class="tag tag-blue">让球胜</span></td><td style="font-family:monospace;">1.72</td><td>51.5%</td><td>56.0%</td><td><strong>53.7%</strong></td><td style="font-family:monospace;font-weight:700;">0.92</td><td>4pp</td><td>高</td><td>—</td><td>53%</td></tr><tr><td><span class="tag tag-blue">周四002</span></td><td>科莫</td><td>莱红牛</td><td>-1</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">2.02</td><td>43.8%</td><td>46.5%</td><td><strong>45.2%</strong></td><td style="font-family:monospace;font-weight:700;">0.91</td><td>3pp</td><td>高</td><td>—</td><td>44%</td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.4 冷门风险明细（V3.3 新增 · 次数概率 + 影响因素）</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">冷门定义 = <b>市场首选方向未命中</b>（含平局）。训练基础率 <b>48.1%</b>（3941 场）。模型 <code>P=σ(β·x)</code>，特征 = 市场首选概率(−)、模型−市场分歧(−)、|让球|(−)、λ和(−)、市场熵(+)；时间外 Brier <b>0.2342</b> vs 常数基线 0.2498，低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。<b>用法</b>：高风险场次不进信心串关（可小注博冷）；中风险场次少押单场方向。⚠️ 2026-09 样本仅 46 场、分层不显著，模型随样本自动向基础率收缩。<br><b>与星级的关系（重要）</b>：星级 = 首选比分概率，与冷门风险<b>不是同一件事</b>（相关 ≈ 0，且呈倒 U）：4★ 档（首选比分 0.12–0.15，占样本 29%）实测翻车率 <b>54.6% 最高</b>，而 5★ 档（≥0.15，λ 极低）降到 40.9%。<b>高星级 ≠ 低冷门</b>，两者要分开看。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th><th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周四007</span></td><td>德尔瓦耶独立</td><td>弗拉门戈</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">57.6%</td><td>客胜 34.7%</td><td>+16.0pp</td><td>1</td><td>2.37</td><td>1.098</td></tr><tr><td><span class="tag tag-blue">周四001</span></td><td>费内巴切</td><td>罗马</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">53.4%</td><td>客胜 47.9%</td><td>-3.8pp</td><td>1</td><td>2.93</td><td>1.053</td></tr><tr><td><span class="tag tag-blue">周四004</span></td><td>斯拉维亚</td><td>朗斯</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">52.4%</td><td>客胜 37.2%</td><td>+7.1pp</td><td>1</td><td>4.12</td><td>1.089</td></tr><tr><td><span class="tag tag-blue">周四006</span></td><td>阿马多拉</td><td>布拉迪斯</td><td><span class="tag tag-yellow">中</span></td><td style="font-family:monospace;font-weight:700;">47.0%</td><td>客胜 59.8%</td><td>-20.0pp</td><td>1</td><td>3.11</td><td>0.947</td></tr><tr><td><span class="tag tag-blue">周四002</span></td><td>科莫</td><td>莱红牛</td><td><span class="tag tag-yellow">中</span></td><td style="font-family:monospace;font-weight:700;">44.3%</td><td>主胜 55.7%</td><td>-2.2pp</td><td>1</td><td>3.34</td><td>0.994</td></tr></tbody>
+</table></div></div>
 
 
 <h2>五、核心策略与风险提示</h2>
@@ -764,6 +888,8 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">5★</strong>（1场5★ / 4场3★ / 1场2★），共1场高信心场次，冷门信号普遍存在，串关按实际评级从严组串。</p></div>
   <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">1</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>3.55</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>🎲 冷门风险分布 (V3.3)</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">50.9%</strong>：低风险 <strong>0</strong> 场 · 中 <strong>2</strong> 场 · 高 <strong>3</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
+  <div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">0</strong> 场；另有 <strong>2</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">0</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
@@ -777,7 +903,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h3>比分串关推荐</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
-    <tr class="parlay-confident"><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取方向首选比分（倾向内最可能）</span></td><td>[周四007]德尔瓦耶独立vs弗拉门戈 1-2 × [周四001]费内巴切vs罗马 1-2</td><td style="font-family:monospace;font-weight:700;">69.38</td><td>0.96%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取方向首选比分（倾向内最可能）</span></td><td>[周四006]阿马多拉vs布拉迪斯 1-2 × [周四002]科莫vs莱红牛 2-1</td><td style="font-family:monospace;font-weight:700;">51.47</td><td>0.86%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周四004]斯拉维亚vs朗斯 2-1 × [周四007]德尔瓦耶独立vs弗拉门戈 1-2</td><td style="font-family:monospace;font-weight:700;">80.94</td><td>0.65%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周四001]费内巴切vs罗马 1-2 × [周四006]阿马多拉vs布拉迪斯 1-2</td><td style="font-family:monospace;font-weight:700;">54.38</td><td>0.97%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr>
+    <tr class="parlay-confident"><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取方向首选比分（倾向内最可能）</span></td><td>[周四006]阿马多拉vs布拉迪斯 1-2 × [周四002]科莫vs莱红牛 2-1</td><td style="font-family:monospace;font-weight:700;">51.47</td><td>0.86%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，均取方向首选比分（倾向内最可能）</span></td><td>[周四005]曼联vs萨巴赫 2-1 × [周四001]费内巴切vs罗马 1-2</td><td style="font-family:monospace;font-weight:700;">90.00</td><td>0.84%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周四004]斯拉维亚vs朗斯 2-1 × [周四006]阿马多拉vs布拉迪斯 1-2</td><td style="font-family:monospace;font-weight:700;">63.44</td><td>0.66%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周四002]科莫vs莱红牛 2-1 × [周四005]曼联vs萨巴赫 2-1</td><td style="font-family:monospace;font-weight:700;">85.20</td><td>0.75%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td></tr>
   </table>
   <div class="parlay-note">注：综合概率为各场方向首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
@@ -819,7 +945,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <span><strong style="color:var(--accent3);">0.94</strong> → 模型系统性低估 → λ×<strong>1.04</strong> 已应用</span>
   </div>
   <div class="cal-item">
-    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2)</span>
+    <span>H2H方向性再分配 (V2.2) · 市场概率混合 (V3.2) · 让球盘联合校准 + 冷门风险 (V3.3)</span>
     <span><strong style="color:var(--accent2);">0</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
   </div>
   <div class="cal-item">
@@ -835,7 +961,7 @@ window.addEventListener('resize', function() { chart.resize(); });
 <div class="footer">
   <div class="container">
     <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
-    <p style="margin-top:0.5rem;">AI泊松模型V3.2 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 让球盘联合校准 · 冷门风险分层 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: 2026-09-10 | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>
