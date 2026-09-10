@@ -29,6 +29,13 @@ RECENT_N = 25
 DECAY = 0.96
 HOME_BOOST = 1.15   # 动态主客场系数回退默认值
 AWAY_DISCOUNT = 0.90
+# 【2026-09-10】主客场分拆：基础λ 的观测改用「该队作为主队/客队」的分主客口径，
+# 主客效应已含在观测里故不再乘 HOME_BOOST/AWAY_DISCOUNT，再按有效样本量向
+# 不分主客口径收缩（经验贝叶斯）。分主客场次少（均值约 6 场），必须收缩。
+# 回测依据：venue_probe.py（泊松 logL +1.32%，进球 MSE −4.3%）
+#           venue_brier_check.py（1X2 Brier 0.6292→0.6247，Z=+5.41，5/5 段改善）
+# K 越大越保守（K→∞ 退化为不分主客）；K=4 为 logL 最优点。
+VENUE_SHRINK_K = 4.0
 ALPHA_H2H = 0.35    # B部分 H2H 权重上限
 LIMIT_PCT = 0.25    # 单侧调整限幅
 # 合理性约束：多重因子复合放大后需守住足球统计的合理区间
@@ -270,6 +277,8 @@ def fit_platt_params(force=False):
                          "away": v.get("away"), "hg": hg, "ag": ag})
     recs.sort(key=lambda r: r.get("date", ""))
     gf, ga, zr = {}, {}, {}
+    # 分主客场观测：与 calc_match 第一步B 同源（否则校准分布与实跑脱节）
+    gfH, gaH, gfA, gaA = {}, {}, {}, {}
     lg_tot, lg_hist = {}, {}
     MAXG = 8
     # 与 mix_score_matrix 同源（实际值取 league_profile.json 的 score_mix.w，当前 0.5）。
@@ -291,6 +300,17 @@ def fit_platt_params(force=False):
             a_ga = recent_avg(ga_)
             lh = h_gf * 0.75 + a_ga * 0.25
             la = a_gf * 0.75 + h_ga * 0.25
+            # 主客场分拆（与 calc_match 第一步B 同源：观测已含主客效应，不乘系数）
+            _gh, _ga = gfH.get(H), gaA.get(A)
+            if _gh and _ga:
+                _ne = min(eff_n(len(_gh)), eff_n(len(_ga)))
+                lh = (_ne * (recent_avg(_gh) * 0.75 + recent_avg(_ga) * 0.25)
+                      + VENUE_SHRINK_K * lh) / (_ne + VENUE_SHRINK_K)
+            _gf, _gh2 = gfA.get(A), gaH.get(H)
+            if _gf and _gh2:
+                _ne = min(eff_n(len(_gf)), eff_n(len(_gh2)))
+                la = (_ne * (recent_avg(_gf) * 0.75 + recent_avg(_gh2) * 0.25)
+                      + VENUE_SHRINK_K * la) / (_ne + VENUE_SHRINK_K)
             base = league_baseline(lg)
             t = (lh + la) * (1 - shrink_w) + base * shrink_w
             if lh + la > 0:
@@ -328,6 +348,10 @@ def fit_platt_params(force=False):
             gf.setdefault(team, []).append(gs)
             ga.setdefault(team, []).append(gc)
             zr.setdefault(team, []).append(1 if gc == 0 else 0)
+        gfH.setdefault(H, []).append(r["hg"])
+        gaH.setdefault(H, []).append(r["ag"])
+        gfA.setdefault(A, []).append(r["ag"])
+        gaA.setdefault(A, []).append(r["hg"])
         lg_tot.setdefault(lg, []).append(r["hg"] + r["ag"])
         lg_hist.setdefault(lg, []).append((r["hg"], r["ag"]))
     if len(samples) < 300:
@@ -385,6 +409,15 @@ def recent_avg(seq_oldest_first):
     return wavg(list(seq_oldest_first)[-RECENT_N:][::-1])
 
 
+def eff_n(n):
+    """指数衰减口径下的「有效样本量」= Σ DECAY^i。
+
+    分主客观测样本很少（各队约 6 场），收缩时必须用有效样本量而非原始场次，
+    否则会低估噪声、让收缩权重失真。
+    """
+    return sum(DECAY ** i for i in range(min(n, RECENT_N)))
+
+
 # ------------------------------------------------- V3 自适应校准路线图
 # 说明：每个模块登记"是否启用 + 启用所需样本量"。运行时 roadmap_status() 打印进度，
 # 达到样本量却仍未启用的会标记为 READY，提醒及时接入，避免改进项被遗忘。
@@ -401,6 +434,18 @@ V3_CONFIG = {
                                     "实测MAE 1.2892→1.2538(-2.75%)，配对Z=5.06；5折时序CV各折一致改善(-2.19%)。"
                                     "数据: league_profile.json（7174场/44联赛）。"
                                     "警告: 禁止改成 index 直接相乘——实测恶化+2.69%"},
+    # ---- V3.2 主客场分拆（2026-09-10 实装，用户提议）----
+    "VENUE_SPLIT_LAMBDA": {"enabled": True, "min_samples": 0, "k": 4.0,
+                           "note": "基础λ观测改用分主客口径（主队作为主队的进球/客队作为客队的失球），"
+                                   "不再乘 HOME_BOOST/AWAY_DISCOUNT，按有效样本量向不分主客口径收缩 K=4。"
+                                   "实测：泊松logL -3.1076→-3.0665(+1.32%)、进球MSE 1.6101→1.5404(-4.3%)、"
+                                   "1X2 Brier 0.6292→0.6247(Z=+5.41)、5/5时序段改善。"
+                                   "数据: scripts/matches_data.json 的 home_recent_home/away_recent_away。"
+                                   "警告: 分主客场次均值仅约6场，K 不可调小（K=2 虽 Brier 略优但噪声大）"},
+    "VENUE_H2H": {"enabled": False, "min_samples": 0, "rejected": True,
+                  "note": "❌ 2026-09-10 验证不可行：同一主客方向的交手记录 ≥3 场占比 0.00%"
+                          "（1496场样本中一场都没有；任意方向H2H≥3也仅0.33%）。"
+                          "赛果库仅覆盖2026年，待跨赛季数据后再评估"},
     "H2H_LEAGUE_NORM": {"enabled": True, "min_samples": 0,
                         "note": "H2H分档阈值按联赛基线归一(1.41/1.06/0.88/0.71×)，"
                                 "解决德甲3.0球≠韩职3.0球的问题。弱验证(样本80场)，需持续观察"},
@@ -708,6 +753,27 @@ def calc_match(m, calib):
         lam_h = (h_gf * 0.75 + a_ga * 0.25) * HOME_BOOST
         lam_a = (a_gf * 0.75 + h_ga * 0.25) * AWAY_DISCOUNT
         note = f"主{h_gf:.2f}进/{h_ga:.2f}失 客{a_gf:.2f}进/{a_ga:.2f}失"
+        # ---------- 第一步B：主客场分拆（2026-09-10 新增）----------
+        # 观测换成：主队「作为主队」的进球 + 客队「作为客队」的失球 → λ_home
+        #           客队「作为客队」的进球 + 主队「作为主队」的失球 → λ_away
+        # 观测本身已含主客效应，故不再乘 HOME_BOOST/AWAY_DISCOUNT；
+        # 再按有效样本量向不分主客口径收缩 K，样本不足时自动退回原口径。
+        hrh = m.get("home_recent_home") or []
+        ara = m.get("away_recent_away") or []
+        if hrh and ara:
+            vh_gf = wavg([x["gf"] for x in hrh])
+            vh_ga = wavg([x["ga"] for x in hrh])
+            va_gf = wavg([x["gf"] for x in ara])
+            va_ga = wavg([x["ga"] for x in ara])
+            lam_h_v = vh_gf * 0.75 + va_ga * 0.25
+            lam_a_v = va_gf * 0.75 + vh_ga * 0.25
+            _ne = min(eff_n(len(hrh)), eff_n(len(ara)))
+            lam_h = (_ne * lam_h_v + VENUE_SHRINK_K * lam_h) / (_ne + VENUE_SHRINK_K)
+            lam_a = (_ne * lam_a_v + VENUE_SHRINK_K * lam_a) / (_ne + VENUE_SHRINK_K)
+            note += (f" | 主客场分拆(主{len(hrh)}场{lam_h_v:.2f}/客{len(ara)}场{lam_a_v:.2f}, "
+                     f"n_eff={_ne:.1f}, K={VENUE_SHRINK_K:g})")
+        else:
+            note += " | 无主客场分拆数据"
     else:
         oh, oa = odds.get("胜"), odds.get("负")
         # 【V3.1】赔率反推的锚点改用联赛基线均值，而非硬编码全局 2.5

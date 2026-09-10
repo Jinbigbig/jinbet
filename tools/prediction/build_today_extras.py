@@ -24,8 +24,14 @@ matches = md["matches"]
 results = json.load(open(os.path.join(BASE, "results_data.json"), encoding="utf-8"))
 
 # ---------- 1. 赛果索引 ----------
-# 按队索引：team -> [(date, gf, ga)]
+# 按队索引：team -> [(date, gf, ga)]        （不分主客，现行基础λ口径）
+# 分主客索引：team -> [(date, gf, ga)]      （该队作为主队 / 作为客队的战绩）
+# 【2026-09-10】主客场分拆：同一支球队在主场与客场的进球/失球能力差异显著，
+# 分主客观测比「不分主客 + 固定系数 1.15/0.90」更准。回测见 venue_probe.py /
+# venue_brier_check.py（1X2 Brier 0.6292→0.6247，Z=+5.41，5/5 时序段改善）。
 team_idx = {}
+home_idx = {}   # 作为主队
+away_idx = {}   # 作为客队
 for key, v in results.items():
     d, h, a = key.split("_", 2) if key.count("_") >= 2 else (None, None, None)
     fs = v.get("fullScore") or ""
@@ -35,8 +41,14 @@ for key, v in results.items():
     hg, ag = int(m.group(1)), int(m.group(2))
     team_idx.setdefault(h, []).append((d, hg, ag))
     team_idx.setdefault(a, []).append((d, ag, hg))
+    home_idx.setdefault(h, []).append((d, hg, ag))
+    away_idx.setdefault(a, []).append((d, ag, hg))
 for t in team_idx:
     team_idx[t].sort(key=lambda x: x[0], reverse=True)  # 最新在前
+for t in home_idx:
+    home_idx[t].sort(key=lambda x: x[0], reverse=True)
+for t in away_idx:
+    away_idx[t].sort(key=lambda x: x[0], reverse=True)
 
 # ---------- 2. 旧报告解析：排名 + 伤停新闻（当日已生成过报告才有，缺失则跳过） ----------
 rank_map = {}
@@ -74,7 +86,7 @@ for i, (name, pos) in enumerate(home_spans):
             news_map[name] = txt
 
 # ---------- 3. 逐场注入 ----------
-n_h2h = n_recent = n_rank = n_news = 0
+n_h2h = n_recent = n_rank = n_news = n_venue = 0
 for m in matches:
     home, away = m["home"], m["away"]
     # 【2026-09-08】窗口 10 → RECENT_N(25)，与 _calc_engine 的 RECENT_N/DECAY 保持一致。
@@ -83,8 +95,17 @@ for m in matches:
     ar = team_idx.get(away, [])[:25]
     m["home_recent"] = [{"gf": g, "ga": a} for _, g, a in hr]
     m["away_recent"] = [{"gf": g, "ga": a} for _, g, a in ar]
+    # 分主客观测：home_recent_home = 今日主队「作为主队」时的近期战绩
+    #             away_recent_away = 今日客队「作为客队」时的近期战绩
+    # 引擎据此计算分主客 λ，缺失时自动回退到不分主客口径。
+    hrh = home_idx.get(home, [])[:25]
+    ara = away_idx.get(away, [])[:25]
+    m["home_recent_home"] = [{"gf": g, "ga": a} for _, g, a in hrh]
+    m["away_recent_away"] = [{"gf": g, "ga": a} for _, g, a in ara]
     if hr and ar:
         n_recent += 1
+    if hrh and ara:
+        n_venue += 1
 
     # H2H：两队交手记录（任意主客），home_goals 归一为今日主队视角，最新在前
     h2h = []
@@ -127,8 +148,9 @@ for m in matches:
         n_news += 1
 
     print(f"{m['matchNumStr']} {home}vs{away}: h2h={len(h2h)} recent={len(hr)}/{len(ar)} "
-          f"rank={rk_h}/{rk_a} news={'Y' if nw else '-'}")
+          f"venue={len(hrh)}/{len(ara)} rank={rk_h}/{rk_a} news={'Y' if nw else '-'}")
 
 json.dump(md, open(os.path.join(BASE, "scripts", "matches_data.json"), "w",
                    encoding="utf-8"), ensure_ascii=False, indent=2)
-print(f"\n注入完成：H2H≥3场 {n_h2h}/24 | 近期状态 {n_recent}/24 | 排名 {n_rank}/24 | 新闻 {n_news}/24")
+print(f"\n注入完成：H2H≥3场 {n_h2h}/24 | 近期状态 {n_recent}/24 | 主客场分拆 {n_venue}/24 "
+      f"| 排名 {n_rank}/24 | 新闻 {n_news}/24")
