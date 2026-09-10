@@ -659,7 +659,7 @@ def update_html_schedule(html_content, new_schedule):
     return html_content
 
 
-def prune_empty_odds_aliases(odds_data, schedule=None):
+def prune_empty_odds_aliases(odds_data, schedule=None, results_dir=None):
     """清理 ODDS 中的重复条目（canonical 铁律的最后一道防线）。
 
     两类重复都会让前端三处列表（赛果录入/赛果预测/添加记录）多渲染一行：
@@ -673,8 +673,13 @@ def prune_empty_odds_aliases(odds_data, schedule=None):
       2. 否则若组内既有带赔率又有空赔率 ⇒ 删除所有空赔率的
       3. 否则（无法安全判定）⇒ 原样保留，不动
     返回被删除的 key 列表。
+
+    参数 results_dir: 可选，「(日期, 无序队名 frozenset) -> (官方主队, 官方客队)」方向表，
+      由赛果库（已校准为官方方向）生成。用于给 SCHEDULE 不覆盖的历史日期兜底定方向，
+      避免历史遗留的反向孪生键在无编号/无赛程时被随机保留。
     """
     schedule = schedule or {}
+    results_dir = results_dir or {}
 
     def _has_odds(v):
         return bool(v.get('胜') or v.get('平') or v.get('负')
@@ -689,13 +694,16 @@ def prune_empty_odds_aliases(odds_data, schedule=None):
 
     # 预建：日期+编号 -> (主, 客) 的 canonical 方向表
     sched_dir = {}
+    sched_dir_pair = {}
     for date, games in schedule.items():
         for g in games:
+            h = canonical_team_name(g.get('home', ''))
+            a = canonical_team_name(g.get('away', ''))
             num = g.get('matchNumStr') or ''
-            if not num:
-                continue
-            sched_dir[(date, num)] = (canonical_team_name(g.get('home', '')),
-                                      canonical_team_name(g.get('away', '')))
+            if num:
+                sched_dir[(date, num)] = (h, a)
+            if h and a:
+                sched_dir_pair[(date, frozenset((h, a)))] = (h, a)
 
     groups = {}
     for key, v in odds_data.items():
@@ -752,10 +760,27 @@ def prune_empty_odds_aliases(odds_data, schedule=None):
         def _score(k):
             v = odds_data[k]
             return (1 if v.get('matchNumStr') else 0, 1 if _has_odds(v) else 0)
-        best = max(keys, key=_score)
+        # 优先按官方方向（SCHEDULE → 已校准赛果库）定夺；否则退化为完整度选键
+        off = sched_dir_pair.get((_date, _pair)) or results_dir.get((_date, _pair))
+        best = None
+        if off:
+            want = (canonical_team_name(off[0]), canonical_team_name(off[1]))
+            cands = [k for k in keys
+                     if (canonical_team_name(_split_key(k)[1] or ''),
+                         canonical_team_name(_split_key(k)[2] or '')) == want]
+            if cands:
+                best = max(cands, key=_score)
+        if best is None:
+            best = max(keys, key=_score)
         for k in keys:
             if k != best and k not in removed:
-                odds_data.pop(k, None)
+                # 丢弃前把 kept 缺失的非空字段补上，避免丢数据
+                d = odds_data.pop(k, None)
+                if isinstance(d, dict):
+                    tgt = odds_data[best]
+                    for f, val in d.items():
+                        if val and not tgt.get(f):
+                            tgt[f] = val
                 removed.append(k)
     return removed
 
@@ -2187,23 +2212,7 @@ def fetch_163_results(days_back=7):
             continue
         score = full_score
 
-        # 反序：让球符号取反（提前计算，rev_key 分支及 rev_rq_list 均用到）
-        rev_handicap = handicap
-        if handicap:
-            try:
-                h_int = int(handicap)
-                if h_int > 0:
-                    rev_handicap = str(-h_int)         # +1 → -1
-                elif h_int < 0:
-                    rev_handicap = '+' + str(-h_int)   # -1 → +1
-                else:
-                    rev_handicap = '0'
-            except Exception:
-                rev_handicap = handicap
-        # 胜负标志 H/A 对调，D 不变（提前计算）
-        rev_win_flag = 'A' if win_flag == 'H' else ('H' if win_flag == 'A' else 'D')
-
-        # 让球数组结构（正序）：若 handicap 非 0 且有 rq 三项则生成单元素数组
+        # 让球数组结构：若 handicap 非 0 且有 rq 三项则生成单元素数组
         rq_list = []
         if handicap and str(handicap) != '0' and rq_win and rq_draw and rq_loss:
             rq_list = [{
@@ -2212,36 +2221,6 @@ def fetch_163_results(days_back=7):
                 '平': float(rq_draw) if isinstance(rq_draw, (int, float)) and rq_draw > 0 else rq_draw,
                 '负': float(rq_loss) if isinstance(rq_loss, (int, float)) and rq_loss > 0 else rq_loss,
             }]
-        # 反序让球数组：让球符号取反，胜/负赔率对调
-        rev_rq_list = []
-        if rev_handicap and str(rev_handicap) != '0' and rq_win and rq_draw and rq_loss:
-            rev_rq_list = [{
-                'handicap': str(rev_handicap),
-                '胜': float(rq_loss) if isinstance(rq_loss, (int, float)) and rq_loss > 0 else rq_loss,
-                '平': float(rq_draw) if isinstance(rq_draw, (int, float)) and rq_draw > 0 else rq_draw,
-                '负': float(rq_win) if isinstance(rq_win, (int, float)) and rq_win > 0 else rq_win,
-            }]
-        # 反序比分、总进球、半全场：比分对调（W↔L，"胜其他"↔"负其他"）
-        rev_bf_odds = {}
-        for score, v in bf_odds.items():
-            if score in ('胜其他', '平其他', '负其他'):
-                rev_score = '负其他' if score == '胜其他' else ('胜其他' if score == '负其他' else '平其他')
-            elif ':' in score:
-                try:
-                    a, b = score.split(':')
-                    rev_score = f"{b}:{a}"
-                except Exception:
-                    rev_score = score
-            else:
-                rev_score = score
-            rev_bf_odds[rev_score] = v
-        # 反序半全场：首位对调（胜胜→负负，胜平→负平，胜负→负胜，平胜→平负，平平→平平，平负→平胜，负胜→胜负，负平→胜平，负负→胜胜）
-        rev_bqc_odds = {}
-        _bqc_map = {'胜胜':'负负','胜平':'负平','胜负':'负胜','平胜':'平负','平平':'平平','平负':'平胜','负胜':'胜负','负平':'胜平','负负':'胜胜'}
-        for k, v in bqc_odds.items():
-            rev_bqc_odds[_bqc_map.get(k, k)] = v
-        # 总进球不涉及主客，rev=直接复制
-        rev_zjq_odds = dict(zjq_odds)
 
         # 完整赛果条目：兼容新格式（score/halfScore）与历史 sporttery 格式（fullScore/handicap/胜/平/负/winFlag/leagueAbbr）
         # 注意：顶层「胜/平/负」 = 体彩标准"胜平负(让球0)"赔率 = HDA，前端 SPF 0行使用；
@@ -2275,44 +2254,13 @@ def fetch_163_results(days_back=7):
             '半全场': bqc_odds,
         }
         matches[key] = result_entry
-        # 主客场反序双写（SCHEDULE 的主客场顺序可能和网易页面相反）
-        rev_key = f"{date_str}_{away}_{home}"
-        if rev_key not in matches and rev_key != key:
-            matches[rev_key] = {
-                'home': away,
-                'away': home,
-                'score': f"{guestScore}:{homeScore}",
-                'halfScore': half_score,
-                'fullScore': f"{guestScore}:{homeScore}",
-                'winFlag': rev_win_flag,
-                'handicap': rev_handicap,
-                'league': league,
-                'leagueAbbr': league,
-                'matchId': matchId,
-                'matchNumStr': jcNum,
-                'matchNo': matchNo_int,
-                'status': '2',
-                '胜': hda_loss,  # 反序后主胜 = 原普通客胜 (HDA)
-                '平': hda_draw,
-                '负': hda_win,   # 反序后主负 = 原普通主胜 (HDA)
-                'hda胜': hda_loss,
-                'hda平': hda_draw,
-                'hda负': hda_win,
-                'hhda胜': rq_loss,   # 反序后让球主胜 = 原让球客胜
-                'hhda平': rq_draw,
-                'hhda负': rq_win,
-                '让球': rev_rq_list,
-                '比分': rev_bf_odds,
-                '总进球': rev_zjq_odds,
-                '半全场': rev_bqc_odds,
-            }
 
     uniq_pairs = set()
     for k in matches:
         parts = k.split('_', 2)
         if len(parts) == 3:
             uniq_pairs.add((parts[0], tuple(sorted(parts[1:]))))
-    print(f'  🎯 网易API赛果: 解析到 {len(uniq_pairs)} 场已完赛比赛 (正反序key共{len(matches)}条)')
+    print(f'  🎯 网易API赛果: 解析到 {len(uniq_pairs)} 场已完赛比赛（{len(matches)} 条 key）')
     shown = 0
     seen_pairs = set()
     for k, v in sorted(matches.items()):
@@ -2872,10 +2820,22 @@ def fetch_and_save_results(days_back=7, archive_days=7):
         print(f'  [CLEAN] canonical 归一化 {canon_dedup_count} 条队名变体 key')
     merged_results = canon_merged
 
-    # === matchId 去重：同一比赛(相同matchId)只保留一条，消除正反序双 key ===
-    # 根因：fetch_163_results 主动写正序 + 反序两条 key(同 matchId)，
-    # 导致 RESULTS / 赛果录入 / 赛果归档 / 赔率管理页面出现重复比赛。
-    # 修复：按 matchId 分组，同 matchId 只保留一条(优先有真实数字比分且赔率完整的)。
+    # === matchId 去重：同一比赛(相同matchId)只保留一条 ===
+    # 注意：fetch_163_results 自 2026-09-10 起不再写「主客反序」孪生 key（该双写曾导致
+    # 赛果库 100% 方向颠倒，已全量修复）。此处仅用于清理历史遗留的同 matchId 多 key。
+    # 选键优先按 SCHEDULE（体彩官方 homeTeamAllName，方向权威）对齐，再比比分/赔率完整度。
+    _sched_dir = {}
+    try:
+        _m = re.search(r'const SCHEDULE = (\{[\s\S]*?\n\});', html_content)
+        if _m:
+            _obj = json.loads(parse_js_obj_to_json(_m.group(1)))
+            if isinstance(_obj, dict):
+                for _d, _games in _obj.items():
+                    for _g in (_games or []):
+                        if isinstance(_g, dict) and _g.get('home') and _g.get('away'):
+                            _sched_dir[(_d, frozenset((_g['home'], _g['away'])))] = (_g['home'], _g['away'])
+    except Exception as _e:
+        print(f'  [warn] SCHEDULE 方向表解析失败({_e})，去重退化为按完整度选键')
     by_match_id = {}
     no_id_keys = []
     for k, rec in merged_results.items():
@@ -2890,13 +2850,16 @@ def fetch_and_save_results(days_back=7, archive_days=7):
         if len(keys) == 1:
             deduped[keys[0]] = merged_results[keys[0]]
         else:
-            # 多条同 matchId → 选最佳：优先有真实数字比分 + 有赔率字段
+            # 多条同 matchId → 选最佳：①与 SCHEDULE 官方方向一致 ②有真实数字比分 ③赔率字段完整
             def _score_rank(k):
                 rec = merged_results[k]
                 s = rec.get('score') or rec.get('fullScore') or ''
                 has_real = s not in ('', '胜其他', '平其他', '负其他')
                 odds_rich = sum(1 for f in ('胜','平','负','让球','比分','总进球','半全场') if rec.get(f))
-                return (has_real, odds_rich)
+                p = k.split('_', 2)
+                official = _sched_dir.get((p[0], frozenset(p[1:]))) if len(p) == 3 else None
+                agrees = bool(official) and (rec.get('home'), rec.get('away')) == official
+                return (agrees, has_real, odds_rich)
             best_key = max(keys, key=_score_rank)
             deduped[best_key] = merged_results[best_key]
             rev_dedup_count += len(keys) - 1
@@ -3082,6 +3045,17 @@ def fetch_and_save_results(days_back=7, archive_days=7):
             canon_odds[new_key2] = odds
     existing_odds = canon_odds
     print(f'  ✅ 从赛果回填 ODDS：新增 {added_from_results} 条, 更新 {updated_from_results} 条 (canonical归一化 {canon_dedup_count_odds} 条, 共 {len(existing_odds)} 条)')
+
+    # 反向孪生键清理：历史遗留的 `A_B` / `B_A` 双键（旧版曾把赛果方向整库写反）。
+    # 以已校准的赛果库方向表定夺，避免同一场比赛在 ODDS 里出现两行、污染盘口口径。
+    _results_dir = {}
+    for _k, _rec in merged_results.items():
+        _p = _k.split('_', 2)
+        if len(_p) == 3 and isinstance(_rec, dict) and _rec.get('home') and _rec.get('away'):
+            _results_dir[(_p[0], frozenset((_rec['home'], _rec['away'])))] = (_rec['home'], _rec['away'])
+    _removed_twins = prune_empty_odds_aliases(existing_odds, None, _results_dir)
+    if _removed_twins:
+        print(f'  [DEDUP] ODDS 反向孪生键清理: 移除 {len(_removed_twins)} 条（保留官方方向键）')
 
     # 写回 index.html 的 ODDS 内联常量
     odds_js = json.dumps(existing_odds, ensure_ascii=False, indent=2)
