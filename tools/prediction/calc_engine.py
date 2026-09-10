@@ -716,7 +716,7 @@ def calc_match(m, calib):
         lam_h = (1 / float(oh) * _anchor) if oh else _anchor * 0.5
         lam_a = (1 / float(oa) * _anchor) if oa else _anchor * 0.4
         note = f"无近期战绩，按{league}基线{_anchor:.2f}赔率反推"
-    steps.append(("基础λ", f"指数衰减0.85^i,{note}", lam_h, lam_a))
+    steps.append(("基础λ", f"指数衰减{DECAY:g}^i,{note}", lam_h, lam_a))
 
     # ---------- 第二步：xG融合 ----------
     xg_h, xg_a = xg.get("home"), xg.get("away")
