@@ -120,7 +120,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-09-10 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V2.2 · H2H方向性再分配 · 零封修正动态校准 · 7场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-09-10 14:52 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-09-10 15:35 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -211,13 +211,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">(9.3% ｜ 客胜43.4% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 10.7% · 1-2 9.3% · 2-1 7.5% · 0-2 6.9% · 0-1 5.6%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (10.7%) ｜ 次选/三选: 1-2 (9.3%) | 2-1 (7.5%)（Top3合计 28%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 27.5% · Top5 40.0%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value">(9.3% ｜ 客胜43.4% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -229,7 +235,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 60% · ≥4球 38% · 最可能3球 (λ总3.13)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.35进/0.67失 客2.19进/1.00失 | 主客场分拆(主3场1.47/客13场1.94, n_eff=2.9, K=4),主1.46客1.76) → 无xG数据(无xG数据，沿用进球λ,主1.46客1.76) → 联赛收缩(向欧冠基线3.20收缩25% (总3.22→3.22),主1.46客1.76) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.46客1.76) → 市场混合(35%,市场隐含主0.76/客1.35,主1.21客1.61) → 动态校准(×1.10(欧冠),主1.34客1.78) → 零封修正(P0主×0.8(零封17%)/客×0.6(零封4%)) → 最终λ 主1.34 客1.78 → Platt校准(1X2: 平局20.7%→24.4%)
@@ -287,13 +293,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">(8.8% ｜ 主胜45.1% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 10.0% · 2-1 8.8% · 1-2 7.8% · 2-0 6.4% · 2-2 5.6%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (10.0%) ｜ 次选/三选: 2-1 (8.8%) | 1-2 (7.8%)（Top3合计 27%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 26.6% · Top5 38.6%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value">(8.8% ｜ 主胜45.1% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -305,7 +317,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 66% · ≥4球 45% · 最可能3球 (λ总3.42)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.05进/0.92失 客1.83进/1.50失 | 主客场分拆(主14场1.83/客9场1.92, n_eff=7.7, K=4),主1.95客1.76) → 无xG数据(无xG数据，沿用进球λ,主1.95客1.76) → 联赛收缩(向欧冠基线3.20收缩25% (总3.71→3.58),主1.89客1.70) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.89客1.70) → 市场混合(35%,市场隐含主1.57/客0.62,主1.78客1.32) → 动态校准(×1.10(欧冠),主1.96客1.46) → 零封修正(P0主×0.8(零封16%)/客×0.6(零封10%)) → 最终λ 主1.96 客1.46 → Platt校准(1X2: 平局20.4%→24.0%)
@@ -363,13 +375,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">(7.3% ｜ 主胜40.3% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 8.3% · 1-2 7.8% · 2-1 7.3% · 2-2 5.7% · 2-0 5.5%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (8.3%) ｜ 次选/三选: 1-2 (7.8%) | 2-1 (7.3%)（Top3合计 23%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 23.4% · Top5 34.6%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value">(7.3% ｜ 主胜40.3% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -381,7 +399,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 79% · ≥4球 60% · 最可能4球 (λ总4.20)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主3.13进/1.22失 客2.63进/0.88失 | 主客场分拆(主17场2.24/客13场2.57, n_eff=10.3, K=4),主2.44客2.43) → 无xG数据(无xG数据，沿用进球λ,主2.44客2.43) → 联赛收缩(向欧冠基线3.20收缩25% (总4.87→4.45),主2.23客2.22) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.23客2.22) → 市场混合(无赔率数据,跳过,主2.23客2.22) → 动态校准(×1.10(欧冠),总量约束→4.2,主2.11客2.09) → 零封修正(P0主×0.6(零封4%)/客×0.6(零封8%)) → 最终λ 主2.11 客2.09 → Platt校准(1X2: 平局19.4%→23.2%)
@@ -439,13 +457,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">(7.7% ｜ 主胜38.1% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 9.3% · 1-2 8.5% · 2-1 7.7% · 2-2 5.8% · 2-0 5.6%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (9.3%) ｜ 次选/三选: 1-2 (8.5%) | 2-1 (7.7%)（Top3合计 26%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 25.5% · Top5 36.9%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value">(7.7% ｜ 主胜38.1% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -457,7 +481,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 73% · ≥4球 52% · 最可能3球 (λ总3.77)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.00进/4.00失 客2.10进/1.39失 | 无主客场分拆数据,主2.13客2.32) → 无xG数据(无xG数据，沿用进球λ,主2.13客2.32) → 联赛收缩(向欧冠基线3.20收缩25% (总4.44→4.13),主1.98客2.16) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.98客2.16) → 市场混合(35%,市场隐含主1.01/客1.05,主1.64客1.77) → 动态校准(×1.10(欧冠),主1.81客1.96) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封14%)) → 最终λ 主1.81 客1.96 → Platt校准(1X2: 平局20.1%→23.8%)
@@ -515,13 +539,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">(9.1% ｜ 客胜42.2% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 9.7% · 1-2 9.1% · 2-1 7.4% · 2-2 5.8% · 0-2 5.6%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (9.7%) ｜ 次选/三选: 1-2 (9.1%) | 2-1 (7.4%)（Top3合计 26%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 26.2% · Top5 37.6%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value">(9.1% ｜ 客胜42.2% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -533,7 +563,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 70% · ≥4球 49% · 最可能3球 (λ总3.61)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.90进/1.35失 客2.03进/0.51失 | 主客场分拆(主10场0.95/客3场2.12, n_eff=2.9, K=4),主1.43客1.86) → 无xG数据(无xG数据，沿用进球λ,主1.43客1.86) → 联赛收缩(向欧冠基线3.20收缩25% (总3.29→3.27),主1.42客1.85) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.42客1.85) → 市场混合(无赔率数据,跳过,主1.42客1.85) → 动态校准(×1.10(欧冠),主1.57客2.04) → 零封修正(P0主×0.6(零封11%)/客×0.6(零封0%)) → 最终λ 主1.57 客2.04 → Platt校准(1X2: 平局20.2%→23.9%)
@@ -591,13 +621,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">0-1</span>
-      <span class="pred-value">(9.8% ｜ 客胜46.7% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 10.2% · 2-2 10.0% · 0-1 9.8% · 1-2 8.9% · 2-1 7.1%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (10.2%) ｜ 次选/三选: 2-2 (10.0%) | 0-1 (9.8%)（Top3合计 30%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 30.0% · Top5 46.0%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-value">(9.8% ｜ 客胜46.7% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -609,7 +645,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 55% · ≥4球 33% · 最可能2球 (λ总2.88)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.41进/2.02失 客1.71进/1.46失 | 主客场分拆(主3场1.24/客14场2.09, n_eff=2.9, K=4),主1.47客1.81) → 无xG数据(无xG数据，沿用进球λ,主1.47客1.81) → 联赛收缩(向葡超基线2.90收缩25% (总3.28→3.19),主1.43客1.76) → H2H调整(H2H数据不足3场(仅2场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.43客1.76) → 市场混合(35%,市场隐含主0.48/客1.69,主1.09客1.73) → 动态校准(×1.02(葡超),主1.11客1.77) → 零封修正(P0主×1.0(零封40%)/客×0.6(零封8%)) → 最终λ 主1.11 客1.77 → Platt校准(1X2: 平局26.7%→29.9%)
@@ -667,13 +703,19 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.1预测</div>
     <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">0-1</span>
-      <span class="pred-value">(10.4% ｜ 客胜38.9% 倾向内最可能比分)</span>
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 17.1% · 0-1 10.4% · 1-0 9.7% · 1-2 8.7% · 0-2 7.7%</span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">全局众数:</span>
-      <span class="pred-value">1-1 (17.1%) ｜ 次选/三选: 0-1 (10.4%) | 1-0 (9.7%)（Top3合计 37%）</span>
+      <span class="pred-label">组合覆盖:</span>
+      <span class="pred-value">Top3 37.2% · Top5 53.6%
+        <span style="color:var(--muted);">（2577场回测命中：Top3 31.8% · Top5 47.7%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">方向首选:</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-value">(10.4% ｜ 客胜38.9% 倾向内最可能比分
+        <span style="color:var(--muted);">· 跟方向时用，回测命中 9.9%</span>)</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -685,7 +727,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 40% · ≥4球 20% · 最可能2球 (λ总2.30)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      注：全局众数在均衡场次恒为 1:1（≈11~14%，天然偏小）；「方向首选」= Platt 校准后最可能赛果象限内的众数比分，跟方向玩法参考它；判断大球/小球以「总进球倾向」为准。
+      注：「最可能单比分」在多数场次恒为 1:1 —— 独立泊松的联合众数 = (⌊λ主⌋, ⌊λ客⌋)，λ 落在 [1,2) 时必然落到 1-1，属数学性质（回测 66.8% 场次如此），<b>不是模型没算</b>。单比分命中上限仅 13.2%，故以「比分概率组 + 组合覆盖」为准。「方向首选」= Platt 校准后最可能赛果象限内的众数比分，供跟单场方向的玩法使用（回测命中 9.9%，低于全局众数 13.2%，因它额外押注了方向判断）；判断大球/小球以「总进球倾向」为准。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.00进/0.00失 客2.23进/0.32失 | 无主客场分拆数据,主0.95客1.51) → 无xG数据(无xG数据，沿用进球λ,主0.95客1.51) → 联赛收缩(向解放者杯基线2.11收缩25% (总2.46→2.37),主0.92客1.45) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.92客1.45) → 市场混合(35%,市场隐含主0.97/客0.96,主0.94客1.28) → 动态校准(×1.04(解放者杯),主0.97客1.33) → 零封修正(P0主×0.6(零封0%)/客×0.6(零封0%)) → 最终λ 主0.97 客1.33 → Platt校准(1X2: 平局26.8%→30.1%)
@@ -701,12 +743,12 @@ window.addEventListener('resize', function() { chart.resize(); });
 
 
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。单比分的概率上限只有 8~15%，勿单押。</p>
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：2577 场回测，单比分命中上限仅 <b>13.2%</b>，Top3 组 <b>31.8%</b>，Top5 组 <b>47.7%</b>——单比分的「最可能值」在多达 66.8% 的场次里都是 1-1，这是独立泊松联合众数的数学性质，不代表模型没有区分度；真正的区分度体现在比分组的构成与覆盖上。</p>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.1 胜负与比分预测</h3>
-<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它）；<b>全局众数</b>在均衡场次恒为 1:1（≈11~14%），仅作参考；押比分建议 Top3 组合覆盖。</p>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 9.9%）。<b>已移除「全局众数」列</b>：独立泊松联合众数恒为 (⌊λ主⌋,⌊λ客⌋)，λ∈[1,2) 时必为 1-1（回测 66.8% 场次），无区分度。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测命中 31.8% / 47.7%）。</p>
 <div class="card"><div class="table-wrap"><table>
-  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>全局众数</th><th>次选比分</th><th>Top3合计</th><th>信心</th><th>冷门</th></tr></thead>
-  <tbody><tr><td><span class="tag tag-blue">周四001</span></td><td>费内巴切</td><td>罗马</td><td>32.2%</td><td>24.4%</td><td>43.4%</td><td><span class="tag tag-red">客胜 43.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.3%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(10.7%)</span></td><td style="font-family:monospace;">2-1 (7.5%)</td><td>27.5%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.06&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四002</span></td><td>科莫</td><td>莱红牛</td><td>45.1%</td><td>24.0%</td><td>30.8%</td><td><span class="tag tag-green">主胜 45.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.8%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(10.0%)</span></td><td style="font-family:monospace;">1-2 (7.8%)</td><td>26.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.25&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四003</span></td><td>拜仁</td><td>博德闪耀</td><td>40.3%</td><td>23.2%</td><td>36.5%</td><td><span class="tag tag-green">主胜 40.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(7.3%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(8.3%)</span></td><td style="font-family:monospace;">1-2 (7.8%)</td><td>23.4%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四004</span></td><td>斯拉维亚</td><td>朗斯</td><td>38.1%</td><td>23.8%</td><td>38.1%</td><td><span class="tag tag-green">主胜 38.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(7.7%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(9.3%)</span></td><td style="font-family:monospace;">1-2 (8.5%)</td><td>25.5%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四005</span></td><td>曼联</td><td>萨巴赫</td><td>33.9%</td><td>23.9%</td><td>42.2%</td><td><span class="tag tag-red">客胜 42.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.1%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(9.7%)</span></td><td style="font-family:monospace;">2-1 (7.4%)</td><td>26.2%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四006</span></td><td>阿马多拉</td><td>布拉迪斯</td><td>23.3%</td><td>29.9%</td><td>46.7%</td><td><span class="tag tag-red">客胜 46.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.8%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(10.2%)</span></td><td style="font-family:monospace;">2-2 (10.0%)</td><td>30.0%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.23&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四007</span></td><td>德尔瓦耶独立</td><td>弗拉门戈</td><td>31.0%</td><td>30.1%</td><td>38.9%</td><td><span class="tag tag-red">客胜 38.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.4%)</span></td><td style="font-family:monospace;">1-1 <span style="color:var(--muted);font-size:0.8rem;">(17.1%)</span></td><td style="font-family:monospace;">1-0 (9.7%)</td><td>37.2%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.01&gt;1.0(客胜有价值)</td></tr></tbody>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周四001</span></td><td>费内巴切</td><td>罗马</td><td>32.2%</td><td>24.4%</td><td>43.4%</td><td><span class="tag tag-red">客胜 43.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.3%)</span></td><td style="font-family:monospace;">2-1 (7.5%) · 0-2 (6.9%)</td><td>27.5%</td><td>40.0%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.06&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四002</span></td><td>科莫</td><td>莱红牛</td><td>45.1%</td><td>24.0%</td><td>30.8%</td><td><span class="tag tag-green">主胜 45.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.8%)</span></td><td style="font-family:monospace;">1-2 (7.8%) · 2-0 (6.4%)</td><td>26.6%</td><td>38.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.25&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四003</span></td><td>拜仁</td><td>博德闪耀</td><td>40.3%</td><td>23.2%</td><td>36.5%</td><td><span class="tag tag-green">主胜 40.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(7.3%)</span></td><td style="font-family:monospace;">1-2 (7.8%) · 2-2 (5.7%)</td><td>23.4%</td><td>34.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四004</span></td><td>斯拉维亚</td><td>朗斯</td><td>38.1%</td><td>23.8%</td><td>38.1%</td><td><span class="tag tag-green">主胜 38.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(7.7%)</span></td><td style="font-family:monospace;">1-2 (8.5%) · 2-2 (5.8%)</td><td>25.5%</td><td>36.9%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四005</span></td><td>曼联</td><td>萨巴赫</td><td>33.9%</td><td>23.9%</td><td>42.2%</td><td><span class="tag tag-red">客胜 42.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.1%)</span></td><td style="font-family:monospace;">2-1 (7.4%) · 2-2 (5.8%)</td><td>26.2%</td><td>37.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周四006</span></td><td>阿马多拉</td><td>布拉迪斯</td><td>23.3%</td><td>29.9%</td><td>46.7%</td><td><span class="tag tag-red">客胜 46.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.8%)</span></td><td style="font-family:monospace;">2-2 (10.0%) · 1-2 (8.9%)</td><td>30.0%</td><td>46.0%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.23&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周四007</span></td><td>德尔瓦耶独立</td><td>弗拉门戈</td><td>31.0%</td><td>30.1%</td><td>38.9%</td><td><span class="tag tag-red">客胜 38.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.4%)</span></td><td style="font-family:monospace;">1-0 (9.7%) · 1-2 (8.7%)</td><td>37.2%</td><td>53.6%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.01&gt;1.0(客胜有价值)</td></tr></tbody>
 </table></div></div>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.2 进球数预测</h3>
 <p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。</p>
