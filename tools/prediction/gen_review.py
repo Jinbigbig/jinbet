@@ -113,6 +113,8 @@ def main():
 
     n = len(rows)
     dir_hit = score_hit = any_hit = 0
+    lam_model_sum = 0.0
+    lam_actual_sum = 0.0
     table = []
     misses = []
     for m, sc in rows:
@@ -132,6 +134,9 @@ def main():
             dir_hit += dh
             score_hit += sh
             any_hit += ah
+            lt = m.get('lam_total') or (float(m.get('lam_home', 0) or 0) + float(m.get('lam_away', 0) or 0))
+            lam_model_sum += float(lt)
+            lam_actual_sum += (sc[0] + sc[1])
             if not dh:
                 misses.append(f'{m.get("id")} {home}vs{away} 预测{pred_dir}实际{actual}')
         table.append(
@@ -143,10 +148,11 @@ def main():
         )
 
     nres = sum(1 for _, sc in rows if sc)
+    lam_bias = (lam_model_sum - lam_actual_sum) / nres if nres else 0.0
     concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
              f'={ (dir_hit/nres*100) if nres else 0:.0f}%，比分双档命中 {score_hit}/{nres}'
              f'={ (score_hit/nres*100) if nres else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
-             f'={ (any_hit/nres*100) if nres else 0:.0f}%。')
+             f'={ (any_hit/nres*100) if nres else 0:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
     miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
 
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
@@ -169,6 +175,9 @@ def main():
     print(concl)
     if misses:
         print(miss_note)
+    print(f'复盘指标: 方向 {dir_hit}/{nres}={(dir_hit/nres*100) if nres else 0:.0f}% | '
+          f'比分双档 {score_hit}/{nres}={(score_hit/nres*100) if nres else 0:.0f}% | '
+          f'λ总进球偏差 {lam_bias:+.2f} 球/场')
 
 
 if __name__ == '__main__':
