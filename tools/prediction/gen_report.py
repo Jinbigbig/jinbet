@@ -148,6 +148,26 @@ def score_odd(m, score):
     return m['odds'].get('比分', {}).get(score)
 
 
+def band_prob(m, score):
+    """参考比分的 ±1 球覆盖概率：P(|H-h0|<=1 且 |A-a0|<=1)，独立泊松。
+
+    单比分是 31 格划分里的单点，命中天花板低（回测 15.4%）；
+    但「落在参考比分上下各 1 球范围」的覆盖率回测 66.4%，
+    这才是跟单场比分时应该看的数字（2026-09-13 lambda_level_probe.py，1591 场）。
+    """
+    try:
+        h0, a0 = (int(x) for x in str(score).split(':'))
+    except ValueError:
+        return None
+    lh, la = m['lam_home'], m['lam_away']
+    pmf = lambda k, lam: math.exp(-lam) * lam ** k / math.factorial(k)
+    pr = 0.0
+    for h in range(max(0, h0 - 1), h0 + 2):
+        for a in range(max(0, a0 - 1), a0 + 2):
+            pr += pmf(h, lh) * pmf(a, la)
+    return pr
+
+
 # ---------- V3.3 二级盘：让球盘偏差 + 冷门风险 ----------
 RQ_LABEL = {'W': '让球胜', 'D': '让球平', 'L': '让球负'}
 UPSET_CLS = {'低': 'tag-green', '中': 'tag-yellow', '高': 'tag-red'}
@@ -596,11 +616,14 @@ for m in MATCHES:
     _secs = [f'{dash(t["score"])} ({t["prob"]:.1f}%)'
              for t in ts[1:4] if dash(t['score']) != dash(ds2)][:2]
     second = ' · '.join(_secs) or '-'
+    _bp = band_prob(m, ds2)
+    _bp_cell = (f'{_bp*100:.0f}%' if _bp is not None else '-')
     rowsA += (f'<tr>{num_cell}{pair}'
               f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
               f'<td><span class="tag {DIR_TAG.get(dlabel2, "tag-blue")}">{dlabel2} {op2*100:.1f}%</span></td>'
               f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}'
               f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({dp2*100:.1f}%)</span></td>'
+              f'<td style="font-family:monospace;">{_bp_cell}</td>'
               f'<td style="font-family:monospace;">{esc(second)}</td>'
               f'<td>{top3:.1f}%</td>'
               f'<td>{sum(t["prob"] for t in ts[:5]):.1f}%</td>'
@@ -624,8 +647,8 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：2577 场回测（V3.3 生产口径），单比分命中上限 <b>13.5%</b>，Top3 组 <b>33.3%</b>，Top5 组 <b>49.1%</b>——单比分的「最可能值」在多达 66.8% 的场次里都是 1-1，这是独立泊松联合众数的数学性质，不代表模型没有区分度；真正的区分度体现在比分组的构成与覆盖上。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 11.5%）。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN）：矩阵三象限的质量缩放到与「胜率/平率/负率」两列完全一致，象限内形状不变；此前两处口径最多相差 9.9pp（同一页自相矛盾），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp，Top5 覆盖变化在噪声内。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测 33.3% / 49.1%）。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th>', rowsA)}
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者；<b>方向首选</b> = 该倾向象限内概率最高的比分（跟方向玩法用它，回测命中 11.5%）。<b>±1球覆盖</b> = 实际比分落在参考比分上下各 1 球范围内的概率（1591 场回测 66.4%，单比分本身仅 15.4%）——跟单场比分请以这一列 + Top3/Top5 覆盖为准，不要按单一比分下注。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN）：矩阵三象限的质量缩放到与「胜率/平率/负率」两列完全一致，象限内形状不变；此前两处口径最多相差 9.9pp（同一页自相矛盾），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp，Top5 覆盖变化在噪声内。押比分请以 <b>Top3/Top5 覆盖</b> 为准（回测 33.3% / 49.1%）。',
+'<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选</th><th>±1球覆盖</th><th>次选/三选</th><th>Top3覆盖</th><th>Top5覆盖</th><th>信心</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
@@ -699,6 +722,42 @@ for typ, gname, (comb, op, pp), st, note in parlays:
                     f'<td style="font-family:monospace;font-weight:700;">{op:.2f}</td>'
                     f'<td>{pp*100:.2f}%</td><td>{stars_html(st)}</td></tr>')
 
+# ---------- 方向串关（主口径，2026-09-13 新增）----------
+# 依据 lambda_level_probe.py（1591 场，198 个比赛日）：以「倾向」为腿的 3 串 1 全中 25.3%、
+# ROI −3.0%；而以「方向首选比分」为腿的 3 串 1 全中仅 0.5%（198 天中 1 天）。
+DIR_ODD_KEY = {'home': '胜', 'draw': '平', 'away': '负'}
+
+
+def make_dir_group(ms):
+    legs, odds_prod, prob_prod = [], 1.0, 1.0
+    for m in ms:
+        olabel, okey, _ds, _dp, op = direction_pick(m)
+        od = (m.get('odds') or {}).get(DIR_ODD_KEY.get(okey, '胜')) or ''
+        legs.append(f"[{m['matchNumStr']}]{m['home']}vs{m['away']} {olabel}")
+        if od:
+            try:
+                odds_prod *= float(od)
+            except ValueError:
+                pass
+        prob_prod *= op
+    return ' × '.join(legs), odds_prod, prob_prod
+
+
+parlay_dir_rows = ''
+for i in range(n_conf_groups):
+    _legs = conf_pool[i*legs_per_group:(i+1)*legs_per_group]
+    if len(_legs) < 2:
+        break
+    _comb, _op, _pp = make_dir_group(_legs)
+    _st = min(m['stars'] for m in _legs)
+    parlay_dir_rows += (f'<tr class="parlay-confident"><td><strong>方向串关 {GROUP_NAME[i]}</strong><br>'
+                        f'<span style="font-size:0.72rem;color:var(--muted);">'
+                        f'{len(_legs)}串1：评级最高（4-5★优先）的{len(_legs)}场，只取「倾向」不押比分'
+                        + ("；已剔除高冷门风险场次" if _hi_risk and not _conf_backfill else "") + '</span></td>'
+                        f'<td>{esc(_comb)}</td>'
+                        f'<td style="font-family:monospace;font-weight:700;">{_op:.2f}</td>'
+                        f'<td>{_pp*100:.1f}%</td><td>{stars_html(_st)}</td></tr>')
+
 stars_dist = Counter(m['stars'] for m in MATCHES)
 top_star = max(stars_dist) if stars_dist else 0
 dist_desc = ' / '.join(f"{stars_dist.get(s,0)}场{s}★" for s in (5, 4, 3, 2) if stars_dist.get(s, 0))
@@ -741,6 +800,7 @@ strategy_sec = f'''
   <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
   <div class="summary-card"><h4>🎲 冷门风险分布 (V3.3)</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">{_upset_mean:.1f}%</strong>：低风险 <strong>{_lvl.get('低',0)}</strong> 场 · 中 <strong>{_lvl.get('中',0)}</strong> 场 · 高 <strong>{_lvl.get('高',0)}</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
   {_big_card}<div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
+  <div class="summary-card"><h4>📈 总进球偏差归因 (2026-09-13)</h4><p style="font-size:0.9rem;">1591 场回测：<b>2026 年 1~8 月模型 λ 场均高估 +0.12 球</b>（实际 2.75~2.91），并非系统性低估；<b>9 月实际场均升到 3.05~3.13</b>（全库口径），属异常高进球期，这才使近期偏差转负（09-11 −0.63 / 09-12 −0.47）。λ 水平系数 k 扫描：k=1.10~1.15 会让 MAE、比分 LogLoss、1X2 Brier <b>全线变差</b>，故<b>不追高</b>；校准窗口 7→14 天在时间外把 MAE 1.1869→1.1850 且显著降低逐日颠簸，为可选优化项。</p></div>
   <div class="summary-card"><h4>🎯 比分口径一致性 (V3.3)</h4><p style="font-size:0.9rem;">比分概率组的分布已与同页发布的胜/平/负<b>完全对齐</b>（此前因市场混合/联赛形状混合/Platt 三步都只作用在 1X2 上，两处口径最多相差 <strong>9.9pp</strong>）。对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp；Top5 覆盖变化在噪声内（±0.2pp）。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
@@ -752,12 +812,21 @@ strategy_sec = f'''
 </div>
 
 <div class="parlay-section">
-  <h3>比分串关推荐</h3>
+  <h3>方向串关推荐（主口径）</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    {parlay_dir_rows}
+  </table>
+  <div class="parlay-note">注：以「倾向」（胜/平/负）为串关腿，不押具体比分。1591 场回测：单腿方向命中 53.8%、3腿全中 <b>25.3%</b>、198 个比赛日 ROI <b>−3.0%</b>（相对比分串关的 0.5% 全中率，这是唯一接近盈亏平衡的串关口径）。组数与腿数与下方比分串关一致。</div>
+</div>
+
+<div class="parlay-section">
+  <h3>比分串关推荐（高赔彩票型 · 命中率 &lt;1%）</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
   </table>
-  <div class="parlay-note">注：综合概率为各场方向首选比分概率连乘（近似独立）。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向，对标里尔爆冷巴黎类场次）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
+  <div class="parlay-note">注：综合概率为各场方向首选比分概率连乘（近似独立）。<b>比分串关的 3 腿全中率仅 0.5%（198 个比赛日仅 1 天命中）</b>，组合概率常低至 0.1%~0.4%——请把它当作买彩票而非投资建议，切勿重注。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
 '''
 
