@@ -120,7 +120,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-09-13 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 24场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-09-13 15:28 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-09-13 15:38 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -227,21 +227,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">1-0</span>
-      <span class="pred-value">（λ 期望 1.42 : 0.98 四舍五入｜模型给该比分 14.8%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 14.8%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-0 14.8% + 2-0 10.8%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>25.6%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-0 14.8% + 1-1 13.9%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>28.7%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.42:0.98）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">61.5%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -250,12 +255,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 39.5% · Top5 57.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.40；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.40 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -269,9 +274,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 43% · ≥4球 22% · 最可能2球 (λ总2.40)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主0.89进/1.22失 客0.61进/2.23失 | 主客场分拆(主5场1.09/客1场0.34, n_eff=1.0, K=4),主1.34客0.62) → 无xG数据(无xG数据，沿用进球λ,主1.34客0.62) → 联赛收缩(向日职基线2.86收缩25% (总1.96→2.18),主1.50客0.69) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.50客0.69) → 市场混合(80%概率混合(总量守恒),市场去水主43%/平29%/客28%,主1.29客0.90) → 动态校准(×1.10(日职),主1.41客0.98) → 零封修正(P0主×0.8(零封22%)/客×1.2(零封60%)) → 最终λ 主1.41 客0.98 → Platt校准(1X2: 平局25.1%→28.7%) → 比分矩阵对齐发布1X2(主×1.09/平×1.14/客×0.68) → 让球盘校准(建议让球胜 EV0.98 置信中) → 冷门风险54%(高)
@@ -345,21 +359,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.92 : 0.88 四舍五入｜模型给该比分 12.4%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 12.5%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 12.4% + 1-0 11.7%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>24.1%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 12.5% + 2-1 12.4%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>24.9%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.92:0.88）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">68.2%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">65.7%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -368,12 +387,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 36.6% · Top5 55.8%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.80；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.80 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -387,9 +406,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 53% · ≥4球 31% · 最可能2球 (λ总2.80)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,无近期战绩，按日乙基线2.84赔率反推,主1.86客0.59) → 无xG数据(无xG数据，沿用进球λ,主1.86客0.59) → 联赛收缩(向日乙基线2.84收缩25% (总2.45→2.55),主1.93客0.62) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.93客0.62) → 市场混合(80%概率混合(总量守恒),市场去水主58%/平24%/客18%,主1.75客0.80) → 动态校准(×1.10(日乙),主1.92客0.88) → 零封修正(P0主×0.8(零封25%)/客×0.8(零封25%)) → 最终λ 主1.92 客0.88 → Platt校准(1X2: 平局21.9%→23.7%) → 比分矩阵对齐发布1X2(主×1.11/平×1.08/客×0.47) → 让球盘校准(建议让球胜 EV0.95 置信高) → 冷门风险40%(中)
@@ -463,21 +491,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.52 : 0.68 四舍五入｜模型给该比分 9.0%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 18.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 9.0% + 1-0 18.7%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>27.7%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-0 18.7% + 2-0 13.5%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>32.2%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.52:0.68｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">69.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">68.4%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -486,12 +519,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 44.9% · Top5 65.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.20；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-green">比分较可信（低λ单点27%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.20 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -505,9 +538,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 38% · ≥4球 18% · 最可能2球 (λ总2.20)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.02进/1.36失 客0.24进/1.73失 | 主客场分拆(主14场0.98/客1场1.01, n_eff=1.0, K=4),主1.30客0.58) → 无xG数据(无xG数据，沿用进球λ,主1.30客0.58) → 联赛收缩(向西甲基线2.73收缩25% (总1.88→2.09),主1.44客0.65) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.44客0.65) → 市场混合(80%概率混合(总量守恒),市场去水主57%/平26%/客18%,主1.44客0.65) → 动态校准(×1.05(西甲),主1.52客0.68) → 零封修正(P0主×1.0(零封28%)/客×1.2(零封75%)) → 最终λ 主1.52 客0.68 → Platt校准(1X2: 平局25.1%→27.7%) → 比分矩阵对齐发布1X2(主×1.11/平×1.11/客×0.50) → 让球盘校准(建议让球负 EV0.90 置信高) → 冷门风险47%(中)
@@ -581,21 +623,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.88 : 1.58 四舍五入｜模型给该比分 9.3%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 12.6%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 9.3% + 2-0 6.5%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>15.8%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 12.6% + 2-1 9.3%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>21.9%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.88:1.58）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">57.2%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">55.9%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -604,12 +651,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 31.1% · Top5 44.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.46；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.46 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -623,9 +670,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 67% · ≥4球 46% · 最可能3球 (λ总3.46)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.86进/1.12失 客1.59进/1.58失 | 主客场分拆(主10场1.49/客6场1.55, n_eff=5.4, K=4),主1.73客1.45) → 无xG数据(无xG数据，沿用进球λ,主1.73客1.45) → 联赛收缩(向瑞超基线3.06收缩25% (总3.18→3.15),主1.71客1.44) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.71客1.44) → 市场混合(无赔率数据,跳过,主1.71客1.44) → 动态校准(×1.10(瑞超),主1.88客1.58) → 零封修正(P0主×0.6(零封12%)/客×0.6(零封8%)) → 最终λ 主1.88 客1.58 → Platt校准(1X2: 平局23.8%→27.5%) → 比分矩阵对齐发布1X2(主×1.03/平×1.15/客×0.84) → 让球盘校准(建议让球负 EV1.20 置信低)
@@ -699,21 +755,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.65 : 1.34 四舍五入｜模型给该比分 10.1%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 14.4%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.1% + 1-0 9.7%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>19.8%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 14.4% + 2-1 10.1%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>24.5%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.65:1.34）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">61.2%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">65.5%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -722,12 +783,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 34.2% · Top5 47.6%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.98；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.98 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -741,9 +802,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 57% · ≥4球 35% · 最可能2球 (λ总2.98)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.42进/1.02失 客1.49进/1.55失 | 主客场分拆(主10场1.30/客8场1.35, n_eff=7.0, K=4),主1.43客1.31) → 无xG数据(无xG数据，沿用进球λ,主1.43客1.31) → 联赛收缩(向芬超基线2.63收缩25% (总2.74→2.71),主1.42客1.30) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.42客1.30) → 市场混合(80%概率混合(总量守恒),市场去水主44%/平26%/客30%,主1.50客1.22) → 动态校准(×1.10(芬超),主1.65客1.34) → 零封修正(P0主×0.8(零封24%)/客×0.8(零封25%)) → 最终λ 主1.65 客1.34 → Platt校准(1X2: 平局24.2%→27.8%) → 比分矩阵对齐发布1X2(主×1.06/平×1.15/客×0.78) → 让球盘校准(建议让球负 EV0.93 置信高) → 冷门风险57%(高)
@@ -817,21 +887,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 2.24 : 1.25 四舍五入｜模型给该比分 10.3%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 10.3%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.3% + 2-0 8.2%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>18.5%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-1 10.3% + 1-1 10.3%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>20.6%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.24:1.25）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">61.3%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -840,12 +915,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 28.8% · Top5 44.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.49；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.49 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -859,9 +934,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 68% · ≥4球 46% · 最可能3球 (λ总3.49)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.40进/2.15失 客1.09进/2.23失 | 主客场分拆(主8场1.58/客12场1.54, n_eff=7.0, K=4),主1.68客1.42) → 无xG数据(无xG数据，沿用进球λ,主1.68客1.42) → 联赛收缩(向荷甲基线3.31收缩25% (总3.10→3.15),主1.71客1.45) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.71客1.45) → 市场混合(80%概率混合(总量守恒),市场去水主62%/平20%/客18%,主2.03客1.13) → 动态校准(×1.11(荷甲),主2.24客1.25) → 零封修正(P0主×0.8(零封23%)/客×1.0(零封30%)) → 最终λ 主2.24 客1.25 → Platt校准(1X2: 平局22.1%→24.6%) → 比分矩阵对齐发布1X2(主×1.11/平×1.11/客×0.61) → 让球盘校准(建议让球负 EV1.02 置信中) → 冷门风险44%(中)
@@ -935,21 +1019,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">0-1</span>
-      <span class="pred-value">（λ 期望 1.33 : 1.32 四舍五入｜模型给该比分 11.1%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 13.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">0-1 11.1% + 1-2 8.0%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>19.1%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 13.7% + 0-1 11.1%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>24.8%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.33:1.32）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">52.5%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">72.4%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -958,12 +1047,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 32.8% · Top5 48.3%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.65；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.65 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -977,9 +1066,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 49% · ≥4球 28% · 最可能2球 (λ总2.65)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主0.78进/1.35失 客1.24进/1.94失 | 主客场分拆(主12场1.18/客2场1.42, n_eff=2.0, K=4),主1.21客1.24) → 无xG数据(无xG数据，沿用进球λ,主1.21客1.24) → 联赛收缩(向意甲基线2.60收缩25% (总2.45→2.49),主1.23客1.25) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.23客1.25) → 市场混合(80%概率混合(总量守恒),市场去水主35%/平31%/客34%,主1.25客1.24) → 动态校准(×1.07(意甲),主1.33客1.32) → 零封修正(P0主×1.2(零封52%)/客×0.6(零封0%)) → 最终λ 主1.33 客1.32 → Platt校准(1X2: 平局24.8%→28.8%) → 比分矩阵对齐发布1X2(主×0.89/平×1.16/客×1.00) → 让球盘校准(建议让球负 EV0.91 置信高) → 冷门风险62%(高)
@@ -1063,21 +1161,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 2.05 : 0.86 四舍五入｜模型给该比分 13.0%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 13.0%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 13.0% + 1-0 9.3%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>22.3%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-1 13.0% + 1-1 12.1%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>25.1%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.05:0.86）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">67.8%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1086,12 +1189,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 34.4% · Top5 50.6%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.92；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.92 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1105,9 +1208,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 56% · ≥4球 33% · 最可能2球 (λ总2.92)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.14进/1.05失 客1.52进/2.10失 | 主客场分拆(主12场1.40/客4场1.18, n_eff=3.8, K=4),主1.50客1.22) → 无xG数据(无xG数据，沿用进球λ,主1.50客1.22) → 联赛收缩(向法甲基线2.68收缩25% (总2.72→2.71),主1.49客1.22) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.49客1.22) → 市场混合(80%概率混合(总量守恒),市场去水主69%/平19%/客12%,主1.91客0.80) → 动态校准(×1.08(法甲),主2.05客0.86) → 零封修正(P0主×1.0(零封33%)/客×0.6(零封12%)) → 最终λ 主2.05 客0.86 → Platt校准(1X2: 平局22.1%→24.5%) → 比分矩阵对齐发布1X2(主×1.12/平×1.11/客×0.58) → 让球盘校准(建议让球负 EV1.09 置信低) → 冷门风险40%(中)
@@ -1181,21 +1293,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 2.45 : 0.94 四舍五入｜模型给该比分 10.3%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 10.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.3% + 2-0 10.7%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>21.0%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-0 10.7% + 2-1 10.3%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>21.0%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.45:0.94｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">63.4%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">51.6%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1204,12 +1321,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 30.4% · Top5 47.6%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.39；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.39 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1223,9 +1340,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 66% · ≥4球 44% · 最可能3球 (λ总3.39)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.77进/1.68失 客1.05进/1.88失 | 主客场分拆(主10场1.46/客8场1.31, n_eff=7.0, K=4),主1.68客1.23) → 无xG数据(无xG数据，沿用进球λ,主1.68客1.23) → 联赛收缩(向德甲基线3.33收缩25% (总2.91→3.01),主1.74客1.27) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.74客1.27) → 市场混合(80%概率混合(总量守恒),市场去水主73%/平16%/客11%,主2.18客0.84) → 动态校准(×1.13(德甲),主2.45客0.94) → 零封修正(P0主×0.6(零封10%)/客×1.0(零封32%)) → 最终λ 主2.45 客0.94 → Platt校准(1X2: 平局18.0%→19.1%) → 比分矩阵对齐发布1X2(主×1.11/平×1.06/客×0.44) → 让球盘校准(建议让球负 EV1.10 置信低) → 冷门风险34%(低)
@@ -1299,21 +1425,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-3</span>
-      <span class="pred-value">（λ 期望 1.09 : 2.66 四舍五入｜模型给该比分 7.9%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 10.2%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-3 7.9% + 1-2 10.2%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>18.1%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-2 10.2% + 1-1 9.4%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>19.6%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-3</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.09:2.66｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">55.3%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">59.0%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1322,12 +1453,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 28.5% · Top5 43.9%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.74；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.74 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1341,9 +1472,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 72% · ≥4球 51% · 最可能3球 (λ总3.74)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.52进/1.36失 客2.78进/0.92失 | 主客场分拆(主11场0.91/客18场2.95, n_eff=9.0, K=4),主1.11客2.72) → 无xG数据(无xG数据，沿用进球λ,主1.11客2.72) → 联赛收缩(向西甲基线2.73收缩25% (总3.83→3.55),主1.03客2.52) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.03客2.52) → 市场混合(无赔率数据,跳过,主1.03客2.52) → 动态校准(×1.05(西甲),主1.09客2.66) → 零封修正(P0主×1.0(零封30%)/客×0.6(零封12%)) → 最终λ 主1.09 客2.66 → Platt校准(1X2: 平局17.5%→18.6%) → 比分矩阵对齐发布1X2(主×0.57/平×1.06/客×1.12) → 让球盘校准(建议让球胜 EV1.03 置信低)
@@ -1417,21 +1557,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 1.43 : 2.44 四舍五入｜模型给该比分 10.6%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 10.6%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-2 10.6% + 1-3 6.5%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>17.1%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-2 10.6% + 1-1 8.5%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>19.1%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.43:2.44）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">56.5%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1440,12 +1585,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 26.1% · Top5 38.3%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.86；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.86 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1459,9 +1604,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 74% · ≥4球 54% · 最可能3球 (λ总3.86)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.14进/1.75失 客2.28进/1.59失 | 主客场分拆(主8场1.21/客7场2.62, n_eff=6.2, K=4),主1.30客2.35) → 无xG数据(无xG数据，沿用进球λ,主1.30客2.35) → 联赛收缩(向挪超基线3.11收缩25% (总3.65→3.52),主1.25客2.27) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.25客2.27) → 市场混合(80%概率混合(总量守恒),市场去水主21%/平21%/客58%,主1.30客2.22) → 动态校准(×1.10(挪超),主1.42客2.44) → 零封修正(P0主×0.8(零封25%)/客×0.6(零封0%)) → 最终λ 主1.42 客2.44 → Platt校准(1X2: 平局19.1%→21.0%) → 比分矩阵对齐发布1X2(主×0.76/平×1.10/客×1.09) → 让球盘校准(建议让球负 EV0.91 置信高) → 冷门风险40%(中)
@@ -1535,21 +1689,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 1.20 : 2.12 四舍五入｜模型给该比分 10.5%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 10.9%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-2 10.5% + 0-2 7.9%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>18.4%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 10.9% + 1-2 10.5%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>21.4%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.20:2.12）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">62.9%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">56.6%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1558,12 +1717,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 29.3% · Top5 44.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.32；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.32 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1577,9 +1736,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 64% · ≥4球 42% · 最可能3球 (λ总3.32)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.28进/0.64失 客2.16进/1.44失 | 主客场分拆(主3场1.03/客10场2.33, n_eff=2.9, K=4),主1.32客1.91) → 无xG数据(无xG数据，沿用进球λ,主1.32客1.91) → 联赛收缩(向法甲基线2.68收缩25% (总3.22→3.08),主1.26客1.83) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.26客1.83) → 市场混合(80%概率混合(总量守恒),市场去水主19%/平22%/客59%,主1.11客1.97) → 动态校准(×1.08(法甲),主1.20客2.13) → 零封修正(P0主×0.8(零封25%)/客×0.6(零封14%)) → 最终λ 主1.20 客2.13 → Platt校准(1X2: 平局21.6%→24.0%) → 比分矩阵对齐发布1X2(主×0.71/平×1.11/客×1.09) → 让球盘校准(建议让球胜 EV0.95 置信高) → 冷门风险44%(中)
@@ -1663,21 +1831,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 1.48 : 1.81 四舍五入｜模型给该比分 9.5%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 14.2%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-2 9.5% + 0-1 5.7%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>15.2%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 14.2% + 1-2 9.5%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>23.7%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.48:1.81）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">59.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">59.2%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1686,12 +1859,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 33.0% · Top5 46.2%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.29；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.29 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1705,9 +1878,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 64% · ≥4球 42% · 最可能3球 (λ总3.29)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.05进/1.25失 客1.90进/0.91失 | 主客场分拆(主10场1.31/客15场1.94, n_eff=8.4, K=4),主1.54客1.82) → 无xG数据(无xG数据，沿用进球λ,主1.54客1.82) → 联赛收缩(向英超基线2.76收缩25% (总3.36→3.21),主1.47客1.74) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.47客1.74) → 市场混合(80%概率混合(总量守恒),市场去水主31%/平24%/客45%,主1.44客1.77) → 动态校准(×1.02(英超),主1.48客1.81) → 零封修正(P0主×0.6(零封10%)/客×0.6(零封8%)) → 最终λ 主1.48 客1.81 → Platt校准(1X2: 平局26.2%→30.6%) → 比分矩阵对齐发布1X2(主×0.89/平×1.17/客×0.98) → 让球盘校准(建议让球胜 EV0.91 置信高) → 冷门风险53%(高)
@@ -1781,21 +1963,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-3</span>
-      <span class="pred-value">（λ 期望 1.64 : 2.56 四舍五入｜模型给该比分 5.5%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 9.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-3 5.5% + 1-2 9.7%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>15.2%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-2 9.7% + 1-1 9.3%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>19.0%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-3</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.64:2.56｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">43.9%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">51.6%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1804,12 +1991,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 26.9% · Top5 40.0%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1823,9 +2010,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 79% · ≥4球 60% · 最可能4球 (λ总4.20)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.12进/1.75失 客3.21进/1.15失 | 主客场分拆(主3场1.25/客16场3.09, n_eff=2.9, K=4),主1.78客2.78) → 无xG数据(无xG数据，沿用进球λ,主1.78客2.78) → 联赛收缩(向德甲基线3.33收缩25% (总4.56→4.25),主1.66客2.60) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.66客2.60) → 市场混合(无赔率数据,跳过,主1.66客2.60) → 动态校准(×1.13(德甲),总量约束→4.2,主1.64客2.56) → 零封修正(P0主×0.6(零封9%)/客×0.6(零封4%)) → 最终λ 主1.64 客2.56 → Platt校准(1X2: 平局21.1%→23.6%) → 比分矩阵对齐发布1X2(主×0.78/平×1.12/客×1.08) → 让球盘校准(建议让球胜 EV1.14 置信低)
@@ -1899,21 +2095,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.62 : 0.92 四舍五入｜模型给该比分 10.5%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 13.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.5% + 1-0 13.7%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>24.2%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-0 13.7% + 1-1 12.8%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>26.5%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.62:0.92｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">67.3%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">59.6%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1922,12 +2123,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 37.3% · Top5 55.3%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.54；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.54 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1941,9 +2142,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 47% · ≥4球 25% · 最可能2球 (λ总2.54)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.38进/1.18失 客1.08进/1.55失 | 主客场分拆(主11场1.30/客16场0.86, n_eff=9.0, K=4),主1.40客0.90) → 无xG数据(无xG数据，沿用进球λ,主1.40客0.90) → 联赛收缩(向意甲基线2.60收缩25% (总2.31→2.38),主1.45客0.93) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.45客0.93) → 市场混合(80%概率混合(总量守恒),市场去水主54%/平26%/客20%,主1.52客0.86) → 动态校准(×1.07(意甲),主1.62客0.92) → 零封修正(P0主×0.8(零封20%)/客×1.0(零封36%)) → 最终λ 主1.62 客0.92 → Platt校准(1X2: 平局23.9%→27.0%) → 比分矩阵对齐发布1X2(主×1.10/平×1.13/客×0.66) → 让球盘校准(建议让球负 EV0.93 置信高) → 冷门风险50%(中)
@@ -2017,21 +2227,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">0-1</span>
-      <span class="pred-value">（λ 期望 1.44 : 1.41 四舍五入｜模型给该比分 8.8%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 15.4%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">0-1 8.8% + 1-2 8.0%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>16.8%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 15.4% + 0-1 8.8%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>24.2%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.44:1.41）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">48.0%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">68.4%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2040,12 +2255,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 32.7% · Top5 47.5%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2059,9 +2274,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 54% · ≥4球 32% · 最可能2球 (λ总2.85)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主0.79进/0.85失 客2.04进/1.27失 | 主客场分拆(主13场0.82/客3场1.99, n_eff=2.9, K=4),主0.95客1.75) → 无xG数据(无xG数据，沿用进球λ,主0.95客1.75) → 联赛收缩(向西甲基线2.73收缩25% (总2.70→2.70),主0.95客1.75) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.95客1.75) → 市场混合(80%概率混合(总量守恒),市场去水主39%/平33%/客28%,主1.37客1.34) → 动态校准(×1.05(西甲),主1.44客1.41) → 零封修正(P0主×1.2(零封43%)/客×0.6(零封0%)) → 最终λ 主1.44 客1.41 → Platt校准(1X2: 平局24.5%→28.4%) → 比分矩阵对齐发布1X2(主×0.95/平×1.16/客×0.94) → 让球盘校准(建议让球负 EV1.00 置信中) → 冷门风险66%(高)
@@ -2135,21 +2359,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 2.31 : 1.14 四舍五入｜模型给该比分 10.7%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 10.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.7% + 1-0 8.8%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>19.5%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-1 10.7% + 1-1 9.3%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>20.0%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.31:1.14）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">62.4%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2158,12 +2387,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 28.8% · Top5 46.1%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.44；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.44 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2177,9 +2406,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 67% · ≥4球 45% · 最可能3球 (λ总3.44)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.80进/0.95失 客0.89进/1.12失 | 主客场分拆(主15场1.76/客5场1.33, n_eff=4.6, K=4),主2.21客1.09) → 无xG数据(无xG数据，沿用进球λ,主2.21客1.09) → 联赛收缩(向葡超基线2.87收缩25% (总3.31→3.20),主2.14客1.06) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.14客1.06) → 市场混合(无赔率数据,跳过,主2.14客1.06) → 动态校准(×1.08(葡超),主2.31客1.14) → 零封修正(P0主×0.6(零封4%)/客×1.0(零封40%)) → 最终λ 主2.31 客1.14 → Platt校准(1X2: 平局21.6%→23.5%) → 比分矩阵对齐发布1X2(主×1.12/平×1.09/客×0.51) → 让球盘校准(建议让球负 EV1.10 置信低)
@@ -2253,21 +2491,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">3-1</span>
-      <span class="pred-value">（λ 期望 2.74 : 1.33 四舍五入｜模型给该比分 8.4%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 10.1%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">3-1 8.4% + 2-1 10.1%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>18.5%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-1 10.1% + 1-1 8.5%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>18.6%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">3-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.74:1.33｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">52.3%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">54.5%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2276,12 +2519,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 27.0% · Top5 41.5%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.07；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.07 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2295,9 +2538,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 77% · ≥4球 58% · 最可能4球 (λ总4.07)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.99进/1.54失 客1.49进/1.42失 | 主客场分拆(主10场2.10/客4场1.13, n_eff=3.8, K=4),主2.56客1.24) → 无xG数据(无xG数据，沿用进球λ,主2.56客1.24) → 联赛收缩(向荷甲基线3.31收缩25% (总3.80→3.68),主2.47客1.20) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主2.47客1.20) → 市场混合(无赔率数据,跳过,主2.47客1.20) → 动态校准(×1.11(荷甲),主2.74客1.33) → 零封修正(P0主×0.6(零封5%)/客×0.8(零封20%)) → 最终λ 主2.74 客1.33 → Platt校准(1X2: 平局20.1%→21.9%) → 比分矩阵对齐发布1X2(主×1.12/平×1.09/客×0.55) → 让球盘校准(建议让球负 EV1.06 置信低)
@@ -2371,21 +2623,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 0.93 : 1.94 四舍五入｜模型给该比分 10.3%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">0-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 12.1%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-2 10.3% + 0-1 12.1%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>22.4%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">0-1 12.1% + 0-2 11.4%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>23.5%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（0.93:1.94｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">67.5%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">52.8%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2394,12 +2651,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 34.6% · Top5 52.1%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.87；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.87 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2413,9 +2670,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 55% · ≥4球 32% · 最可能2球 (λ总2.87)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.15进/1.46失 客1.69进/0.62失 | 主客场分拆(主10场0.69/客12场2.06, n_eff=8.4, K=4),主0.85客1.87) → 无xG数据(无xG数据，沿用进球λ,主0.85客1.87) → 联赛收缩(向意甲基线2.60收缩25% (总2.72→2.69),主0.84客1.85) → H2H调整(H2H数据不足3场(仅2场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.84客1.85) → 市场混合(80%概率混合(总量守恒),市场去水主18%/平23%/客59%,主0.87客1.81) → 动态校准(×1.07(意甲),主0.93客1.93) → 零封修正(P0主×1.0(零封30%)/客×0.8(零封16%)) → 最终λ 主0.93 客1.93 → Platt校准(1X2: 平局21.6%→23.7%) → 比分矩阵对齐发布1X2(主×0.62/平×1.10/客×1.11) → 让球盘校准(建议让球负 EV0.90 置信高) → 冷门风险42%(中)
@@ -2489,21 +2755,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-3</span>
-      <span class="pred-value">（λ 期望 0.88 : 2.57 四舍五入｜模型给该比分 8.9%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 10.7%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-3 8.9% + 1-2 10.7%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>19.6%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-2 10.7% + 0-2 10.1%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>20.8%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-3</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（0.88:2.57｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">57.2%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">62.7%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2512,12 +2783,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 29.7% · Top5 46.6%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.45；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.45 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2531,9 +2802,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 67% · ≥4球 45% · 最可能3球 (λ总3.45)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.38进/1.64失 客2.43进/1.13失 | 主客场分拆(主3场1.05/客17场2.13, n_eff=2.9, K=4),主1.32客2.06) → 无xG数据(无xG数据，沿用进球λ,主1.32客2.06) → 联赛收缩(向法甲基线2.68收缩25% (总3.38→3.20),主1.25客1.95) → H2H调整(H2H数据不足3场(仅1场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.25客1.95) → 市场混合(80%概率混合(总量守恒),市场去水主9%/平14%/客77%,主0.82客2.38) → 动态校准(×1.08(法甲),主0.88客2.57) → 零封修正(P0主×0.8(零封25%)/客×0.6(零封0%)) → 最终λ 主0.88 客2.57 → Platt校准(1X2: 平局17.3%→18.2%) → 比分矩阵对齐发布1X2(主×0.49/平×1.05/客×1.11) → 让球盘校准(建议让球胜 EV1.06 置信低) → 冷门风险22%(低)
@@ -2607,21 +2887,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 1.82 : 2.16 四舍五入｜模型给该比分 8.0%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 11.4%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">1-2 8.0% + 1-3 4.8%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>12.8%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 11.4% + 1-2 8.0%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>19.4%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.82:2.16）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">51.5%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">45.9%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2630,12 +2915,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 26.9% · Top5 39.3%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.98；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.98 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2649,9 +2934,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 76% · ≥4球 56% · 最可能3球 (λ总3.98)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.61进/1.59失 客1.53进/1.69失 | 主客场分拆(主15场1.22/客21场1.64, n_eff=11.4, K=4),主1.39客1.58) → 无xG数据(无xG数据，沿用进球λ,主1.39客1.58) → 联赛收缩(向西甲基线2.73收缩25% (总2.97→2.91),主1.36客1.54) → H2H调整(近3场场均3.67球,总量因子1.300x|方向再分配:加权胜率33%+进球占比45%→优势度0.406,混合占比0.447,总量守恒3.78,主1.69客2.09) → 市场混合(80%概率混合(总量守恒),市场去水主31%/平26%/客43%,主1.73客2.05) → 动态校准(×1.05(西甲),主1.82客2.16) → 零封修正(P0主×0.8(零封16%)/客×0.8(零封16%)) → 最终λ 主1.82 客2.16 → Platt校准(1X2: 平局21.9%→25.0%) → 比分矩阵对齐发布1X2(主×0.95/平×1.14/客×0.97) → 让球盘校准(建议让球负 EV0.93 置信高) → 冷门风险51%(中)
@@ -2725,21 +3019,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
+      <span class="pred-label">命中比分:</span>
       <span class="pred-score">1-2</span>
-      <span class="pred-value">（λ 期望 1.00 : 2.21 四舍五入｜模型给该比分 10.6%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-value">（客胜倾向｜比分矩阵联合众数｜模型给该比分 10.6%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
       <span class="pred-score">1-2 10.6% + 0-1 10.0%</span>
-      <span class="pred-value">（客胜倾向内前两档，合计 <b>20.6%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>20.6%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-2</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.00:2.21）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">65.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2748,12 +3047,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 30.4% · Top5 48.1%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.21；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.21 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2767,9 +3066,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 62% · ≥4球 40% · 最可能3球 (λ总3.21)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主0.87进/1.08失 客2.33进/1.08失 | 主客场分拆(主6场0.87/客12场2.25, n_eff=5.4, K=4),主0.95客2.06) → 无xG数据(无xG数据，沿用进球λ,主0.95客2.06) → 联赛收缩(向葡超基线2.87收缩25% (总3.02→2.98),主0.94客2.04) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主0.94客2.04) → 市场混合(80%概率混合(总量守恒),市场去水主16%/平21%/客63%,主0.93客2.05) → 动态校准(×1.08(葡超),主1.00客2.21) → 零封修正(P0主×1.0(零封36%)/客×0.6(零封12%)) → 最终λ 主1.00 客2.21 → Platt校准(1X2: 平局21.5%→23.4%) → 比分矩阵对齐发布1X2(主×0.59/平×1.09/客×1.11) → 让球盘校准(建议让球胜 EV0.90 置信高) → 冷门风险37%(低)
@@ -2843,21 +3151,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 2.29 : 0.68 四舍五入｜模型给该比分 11.2%｜象限内已修正）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 15.0%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 11.2% + 2-0 15.0%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>26.2%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">2-0 15.0% + 1-0 12.1%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>27.1%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.29:0.68｜象限内已修正）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">67.8%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">59.6%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2866,12 +3179,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 38.3% · Top5 60.3%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.97；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-yellow">比分仅参考（单点16%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.97 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -2885,9 +3198,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 57% · ≥4球 35% · 最可能2球 (λ总2.97)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主2.21进/0.29失 客1.02进/0.60失 | 主客场分拆(主5场1.76/客7场1.04, n_eff=4.6, K=4),主1.91客0.91) → 无xG数据(无xG数据，沿用进球λ,主1.91客0.91) → 联赛收缩(向巴甲基线2.34收缩25% (总2.82→2.70),主1.83客0.87) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.83客0.87) → 市场混合(80%概率混合(总量守恒),市场去水主74%/平18%/客8%,主2.08客0.62) → 动态校准(×1.10(巴甲),主2.29客0.68) → 零封修正(P0主×0.6(零封0%)/客×1.0(零封33%)) → 最终λ 主2.29 客0.68 → Platt校准(1X2: 平局19.1%→19.9%) → 比分矩阵对齐发布1X2(主×1.09/平×1.04/客×0.32) → 让球盘校准(建议让球负 EV1.01 置信中) → 冷门风险30%(低)
@@ -2961,21 +3283,26 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">2-1</span>
-      <span class="pred-value">（λ 期望 1.94 : 1.33 四舍五入｜模型给该比分 10.6%）
-        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+      <span class="pred-label">命中比分:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（主胜倾向｜比分矩阵联合众数｜模型给该比分 12.6%）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 已对齐矩阵的<b>联合众数</b>。给定一个分布，押中最优解唯一就是众数（温度/锐化等单调变换都不改变 argmax，概率大小与命中率无关）。1591 场回测：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
-      <span class="pred-score">2-1 10.6% + 1-0 9.1%</span>
-      <span class="pred-value">（主胜倾向内前两档，合计 <b>19.7%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+      <span class="pred-score">1-1 12.6% + 2-1 10.6%</span>
+      <span class="pred-value">（众数排序前两档，合计 <b>23.2%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档命中 <b>29.9%</b>（单档 16.6%）</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.94:1.33）。这条<b>不为押中</b>，只为告诉你「这场预计几比几的量级」——它的总进球偏差 −0.22 球/场（众数口径 −0.90，因为众数是分布单点、必然低于均值）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">61.6%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+      <span class="pred-score">58.9%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球范围内的概率（回测 <b>66.4%</b>）——跟单场比分时最该看的容错数字</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -2984,12 +3311,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">组合覆盖:</span>
       <span class="pred-value">Top3 32.3% · Top5 44.7%
-        <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
+        <span style="color:var(--muted);">（1591 场回测命中：Top1 16.6% · Top2 29.9% · Top3 <b>39.9%</b> · Top5 <b>56.3%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约13%）</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.27；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
+      <span class="tag tag-red">比分不可照抄（单点13%）</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.27 分档实测（1591 场）——λ≤2.3 单点 27.3% / 双档 43.6%；2.3-3.0 单点 16.0% / 双档 30.1%；&gt;3.0 单点 12.6% / 双档 24.0%。低总进球场次比分最可照抄</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -3003,9 +3330,18 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-value">≥3球 63% · ≥4球 41% · 最可能3球 (λ总3.27)</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
-      <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
+      <b>目标函数说明（2026-09-13 定调：主要优化方向 = 比分准确度，概率大小没有意义）</b>：
+      <b>头条 = 已对齐比分矩阵的联合众数</b>。这条口径不是偏好问题而是数学结论——给定一个比分分布，
+      让「押中场次数」最大的选择<b>唯一</b>就是 argmax（众数）；而任何单调变换（温度展平/锐化、概率缩放）
+      都不改变 argmax，所以<b>「概率高不高」与命中次数无因果关系，只有排序对不对有关</b>
+      （score_hit_probe.py H1 实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同：检验集 117/637）。
+      <b>已试过且无法超越众数的排序来源</b>（1591 场，时间外 637 场检验）：市场比分盘去水众数 17.1%、
+      模型×市场混合 17.3~17.9%、格子级乘性纠偏（训练集实测频率/模型概率，K 收缩）18.8%、
+      分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5% ——
+      <b>全部落在 ±0.4pp 的噪声内</b>，只有众数（18.4%）是真的赢面。
+      <b>可提升的地方在「分布」而不在「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，
+      要提高命中次数只能让 λ/形状更准（或引入新信息源），换选法没有空间。
+      当前实测阶梯：单档 16.6% → 双档 29.9% → Top3 39.9% → ±1球 66.4% → 方向 53.8%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       基础λ(指数衰减0.96^i,主1.65进/1.64失 客0.99进/1.00失 | 主客场分拆(主2场1.37/客2场1.61, n_eff=2.0, K=4),主1.60客1.22) → 无xG数据(无xG数据，沿用进球λ,主1.60客1.22) → 联赛收缩(向美职基线3.42收缩25% (总2.82→2.97),主1.68客1.29) → H2H调整(H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整,主1.68客1.29) → 市场混合(80%概率混合(总量守恒),市场去水主52%/平23%/客25%,主1.77客1.21) → 动态校准(×1.10(美职),主1.94客1.33) → 零封修正(P0主×0.6(零封0%)/客×1.0(零封33%)) → 最终λ 主1.94 客1.33 → Platt校准(1X2: 平局22.9%→25.9%) → 比分矩阵对齐发布1X2(主×1.10/平×1.13/客×0.69) → 让球盘校准(建议让球负 EV0.93 置信高) → 冷门风险50%(中)
@@ -3021,12 +3357,12 @@ window.addEventListener('resize', function() { chart.resize(); });
 
 
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → <b>期望比分</b>）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>头条比分口径已改</b>：不再取概率众数（众数是分布单点，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>），改用 <b>λ 期望进球取整</b> → 总进球偏差降至 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>。1591 场生产口径回测（score_rule_probe.py）：期望比分单点 13.8%、双档（含头条比分）26.0%、Top3 32.2%、±1球 71.0%、方向 53.8%；分档（按新口径重测）只有 λ≤2.0 档显著更好（单点 25.6% / ±1球 85.4%），λ&gt;2.0 后稳定在约 13%。<b>模型本身校准良好</b>：逐格误差 ±1~2pp；P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数 13.73%/自评±1球 60.4%，实际 15.4%/66.4%（两项均偏保守）。</p>
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → <b>按命中次数取众数</b>）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>2026-09-13 口径再定调</b>：用户明确「主要优化方向 = 比分的准确度，概率大小没有意义」→ 头条改用<b>已对齐矩阵的联合众数</b>。这是数学结论而非偏好：给定分布，让「押中场次数」最大的选择唯一就是 argmax（众数），且单调变换不改变 argmax（概率幅值与命中率无因果关系）。1591 场生产口径回测（score_hit_probe.py）：联合众数单点 <b>16.6%</b> ＞ 象限众数 15.4% ＞ 期望值取整 13.8%（McNemar 配对 χ²=4.79，p&lt;0.05 显著）。<b>已试过且无法超越众数的排序源</b>：市场比分盘 14.3~17.1%、模型×市场混合 16.0~17.9%、格子级乘性纠偏 18.8%、分区条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 17.3~18.5%——全在 ±0.4pp 噪声内。λ 期望值口径降级为「<b>量级参考</b>」（无偏：总进球偏差 −0.22 球/场；众数口径 −0.90）。</p>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.1 胜负与比分预测</h3>
-<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>期望比分</b>（头条口径，2026-09-13 起）= λ 期望进球四舍五入并约束在倾向象限内：总进球偏差 −0.22 球/场、±1球覆盖 <b>71.0%</b>（象限众数口径分别为 −0.90 与 66.4%）——单点精确率 13.8%，本口径不为「押中单点」设计。<b>比分双档</b> = 头条期望比分 + 同倾向内概率最高的其余比分（1591 场回测命中 <b>26.0%</b>，单档 13.8%；不含期望比分的「象限前两档」25.5%）。<b>±1球覆盖</b> = 实际比分落在期望比分上下各 1 球范围内的概率（回测 71.0%）——跟单场比分请看「双档 + ±1球覆盖 + Top3/Top5」。<b>比分可信度</b> = 按 λ 总量分档（期望比分口径重测）：λ≤2.0 → 单点 <b>25.6%</b>、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 <b>13%</b>（不再随 λ 单调下降，旧「低λ 23.8%→高λ 13.0%」为象限众数口径的性质）——λ&gt;2.0 的场次请以方向与总量为主。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp。</p>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b>（头条口径，2026-09-13 起）= 已对齐比分矩阵的<b>联合众数</b>：这是「押中次数」目标函数下的唯一最优解（给定分布，argmax 使 P(命中) 最大；温度/锐化等单调变换不改变 argmax → 概率大小与命中率无关）。1591 场回测单点 <b>16.6%</b>（象限众数 15.4%、期望值取整 13.8%）。<b>量级</b>小字 = λ 期望进球取整，<b>不为押中</b>，只为给出「预计几比几的量级」（总进球偏差 −0.22 球/场，众数口径 −0.90，因众数是分布单点、必然低于均值）。<b>比分双档</b> = 众数排序前两档，回测命中 <b>29.9%</b>（单档 16.6%；上一版「期望比分+同倾向次高」为 26.0%，少中 61 场）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（回测 66.4%）——容错口径看这个。<b>比分可信度</b> = 按 λ 总量分档给出<b>实测</b>命中率（1591 场）：λ≤2.3 单点 27.3%/双档 43.6%；2.3-3.0 单点 16.0%/双档 30.1%；&gt;3.0 单点 12.6%/双档 24.0%。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp。</p>
 <div class="card"><div class="table-wrap"><table>
-  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>期望比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th></tr></thead>
-  <tbody><tr><td><span class="tag tag-blue">周日001</span></td><td>东京绿茵</td><td>千叶市原</td><td>54.1%</td><td>28.7%</td><td>17.2%</td><td><span class="tag tag-green">主胜 54.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.42:0.98</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 25.6%</span></td><td style="font-family:monospace;">62%</td><td>39.5%</td><td>57.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.12&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日002</span></td><td>仙台七夕</td><td>札幌冈萨</td><td>68.4%</td><td>23.7%</td><td>7.9%</td><td><span class="tag tag-green">主胜 68.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.92:0.88</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.1%</span></td><td style="font-family:monospace;">68%</td><td>36.6%</td><td>55.8%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.05&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日003</span></td><td>塞尔塔</td><td>马拉加</td><td>63.2%</td><td>27.7%</td><td>9.0%</td><td><span class="tag tag-green">主胜 63.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.0%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.52:0.68 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 27.7%</span></td><td style="font-family:monospace;">69%</td><td>44.9%</td><td>65.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日004</span></td><td>哈马比</td><td>布鲁马波</td><td>44.8%</td><td>27.5%</td><td>27.7%</td><td><span class="tag tag-green">主胜 44.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.88:1.58</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 15.8%</span></td><td style="font-family:monospace;">57%</td><td>31.1%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日005</span></td><td>库奥皮奥</td><td>赫尔辛基</td><td>48.7%</td><td>27.8%</td><td>23.5%</td><td><span class="tag tag-green">主胜 48.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.65:1.34</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.8%</span></td><td style="font-family:monospace;">61%</td><td>34.2%</td><td>47.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日006</span></td><td>海伦芬</td><td>斯达</td><td>61.5%</td><td>24.6%</td><td>13.9%</td><td><span class="tag tag-green">主胜 61.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.24:1.25</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 18.5%</span></td><td style="font-family:monospace;">61%</td><td>28.8%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日007</span></td><td>莱切</td><td>蒙扎</td><td>29.7%</td><td>28.8%</td><td>41.5%</td><td><span class="tag tag-red">客胜 41.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.33:1.32</span></td><td style="font-family:monospace;font-size:0.8rem;">0-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.1%</span></td><td style="font-family:monospace;">52%</td><td>32.8%</td><td>48.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.08&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日008</span></td><td>里尔</td><td>特鲁瓦</td><td>63.2%</td><td>24.5%</td><td>12.4%</td><td><span class="tag tag-green">主胜 63.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.0%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.05:0.86</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 22.3%</span></td><td style="font-family:monospace;">68%</td><td>34.4%</td><td>50.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日009</span></td><td>莱红牛</td><td>汉堡</td><td>74.1%</td><td>19.1%</td><td>6.8%</td><td><span class="tag tag-green">主胜 74.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.45:0.94 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.0%</span></td><td style="font-family:monospace;">63%</td><td>30.4%</td><td>47.6%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日010</span></td><td>莱万特</td><td>巴萨</td><td>11.3%</td><td>18.6%</td><td>70.0%</td><td><span class="tag tag-red">客胜 70.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-3 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(7.9%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.09:2.66 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">1-3+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 18.1%</span></td><td style="font-family:monospace;">55%</td><td>28.5%</td><td>43.9%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日011</span></td><td>汉坎</td><td>莫尔德</td><td>21.4%</td><td>21.0%</td><td>57.7%</td><td><span class="tag tag-red">客胜 57.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.43:2.44</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-3<br><span style="color:var(--muted);font-size:0.72rem;">合计 17.1%</span></td><td style="font-family:monospace;">57%</td><td>26.1%</td><td>38.3%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日012</span></td><td>勒芒</td><td>朗斯</td><td>18.4%</td><td>24.0%</td><td>57.6%</td><td><span class="tag tag-red">客胜 57.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.20:2.12</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 18.4%</span></td><td style="font-family:monospace;">63%</td><td>29.3%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日013</span></td><td>曼联</td><td>曼城</td><td>29.8%</td><td>30.6%</td><td>39.6%</td><td><span class="tag tag-red">客胜 39.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.48:1.81</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 15.2%</span></td><td style="font-family:monospace;">59%</td><td>33.0%</td><td>46.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日014</span></td><td>埃沃斯堡</td><td>拜仁</td><td>22.8%</td><td>23.6%</td><td>53.5%</td><td><span class="tag tag-red">客胜 53.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-3 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(5.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.64:2.56 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">2-3+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 15.2%</span></td><td style="font-family:monospace;">44%</td><td>26.9%</td><td>40.0%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日015</span></td><td>那不勒斯</td><td>博洛尼亚</td><td>57.1%</td><td>27.0%</td><td>15.9%</td><td><span class="tag tag-green">主胜 57.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.62:0.92 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.2%</span></td><td style="font-family:monospace;">67%</td><td>37.3%</td><td>55.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日016</span></td><td>赫塔费</td><td>拉科</td><td>35.6%</td><td>28.4%</td><td>36.0%</td><td><span class="tag tag-red">客胜 36.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.44:1.41</span></td><td style="font-family:monospace;font-size:0.8rem;">0-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 16.8%</span></td><td style="font-family:monospace;">48%</td><td>32.7%</td><td>47.5%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.13&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日017</span></td><td>本菲卡</td><td>吉维森特</td><td>67.0%</td><td>23.5%</td><td>9.5%</td><td><span class="tag tag-green">主胜 67.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.31:1.14</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.5%</span></td><td style="font-family:monospace;">62%</td><td>28.8%</td><td>46.1%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日018</span></td><td>埃因霍温</td><td>鹿斯巴达</td><td>67.2%</td><td>21.9%</td><td>10.9%</td><td><span class="tag tag-green">主胜 67.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">3-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.74:1.33 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">3-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 18.5%</span></td><td style="font-family:monospace;">52%</td><td>27.0%</td><td>41.5%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日019</span></td><td>萨索洛</td><td>尤文图斯</td><td>13.6%</td><td>23.7%</td><td>62.7%</td><td><span class="tag tag-red">客胜 62.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 0.93:1.94 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 22.4%</span></td><td style="font-family:monospace;">67%</td><td>34.6%</td><td>52.1%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日020</span></td><td>布雷斯特</td><td>巴黎圣曼</td><td>8.1%</td><td>18.2%</td><td>73.7%</td><td><span class="tag tag-red">客胜 73.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-3 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.9%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 0.88:2.57 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">1-3+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.6%</span></td><td style="font-family:monospace;">57%</td><td>29.7%</td><td>46.6%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日021</span></td><td>皇家社会</td><td>马竞</td><td>35.8%</td><td>25.0%</td><td>39.1%</td><td><span class="tag tag-red">客胜 39.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(8.0%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.82:2.16</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-3<br><span style="color:var(--muted);font-size:0.72rem;">合计 12.8%</span></td><td style="font-family:monospace;">52%</td><td>26.9%</td><td>39.3%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.02&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日022</span></td><td>法马利康</td><td>里斯本</td><td>11.8%</td><td>23.4%</td><td>64.8%</td><td><span class="tag tag-red">客胜 64.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.00:2.21</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.6%</span></td><td style="font-family:monospace;">65%</td><td>30.4%</td><td>48.1%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日023</span></td><td>弗拉门戈</td><td>科林蒂安</td><td>76.9%</td><td>19.9%</td><td>3.2%</td><td><span class="tag tag-green">主胜 76.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.2%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 2.29:0.68 · 已修正</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 26.2%</span></td><td style="font-family:monospace;">68%</td><td>38.3%</td><td>60.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日024</span></td><td>芝加哥</td><td>新英格兰</td><td>56.0%</td><td>25.9%</td><td>18.1%</td><td><span class="tag tag-green">主胜 56.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ 1.94:1.33</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.7%</span></td><td style="font-family:monospace;">62%</td><td>32.3%</td><td>44.7%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr></tbody>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周日001</span></td><td>东京绿茵</td><td>千叶市原</td><td>54.1%</td><td>28.7%</td><td>17.2%</td><td><span class="tag tag-green">主胜 54.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-0 · λ 1.42:0.98</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 28.7%</span></td><td style="font-family:monospace;">62%</td><td>39.5%</td><td>57.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.12&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日002</span></td><td>仙台七夕</td><td>札幌冈萨</td><td>68.4%</td><td>23.7%</td><td>7.9%</td><td><span class="tag tag-green">主胜 68.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.92:0.88</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.9%</span></td><td style="font-family:monospace;">66%</td><td>36.6%</td><td>55.8%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.05&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日003</span></td><td>塞尔塔</td><td>马拉加</td><td>63.2%</td><td>27.7%</td><td>9.0%</td><td><span class="tag tag-green">主胜 63.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(18.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.52:0.68</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 32.2%</span></td><td style="font-family:monospace;">68%</td><td>44.9%</td><td>65.2%</td><td><span class="tag tag-green">比分较可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日004</span></td><td>哈马比</td><td>布鲁马波</td><td>44.8%</td><td>27.5%</td><td>27.7%</td><td><span class="tag tag-green">主胜 44.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.88:1.58</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.9%</span></td><td style="font-family:monospace;">56%</td><td>31.1%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日005</span></td><td>库奥皮奥</td><td>赫尔辛基</td><td>48.7%</td><td>27.8%</td><td>23.5%</td><td><span class="tag tag-green">主胜 48.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.65:1.34</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.5%</span></td><td style="font-family:monospace;">65%</td><td>34.2%</td><td>47.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日006</span></td><td>海伦芬</td><td>斯达</td><td>61.5%</td><td>24.6%</td><td>13.9%</td><td><span class="tag tag-green">主胜 61.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.24:1.25</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.6%</span></td><td style="font-family:monospace;">61%</td><td>28.8%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日007</span></td><td>莱切</td><td>蒙扎</td><td>29.7%</td><td>28.8%</td><td>41.5%</td><td><span class="tag tag-red">客胜 41.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 0-1 · λ 1.33:1.32</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.8%</span></td><td style="font-family:monospace;">72%</td><td>32.8%</td><td>48.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.08&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日008</span></td><td>里尔</td><td>特鲁瓦</td><td>63.2%</td><td>24.5%</td><td>12.4%</td><td><span class="tag tag-green">主胜 63.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.0%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.05:0.86</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 25.1%</span></td><td style="font-family:monospace;">68%</td><td>34.4%</td><td>50.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日009</span></td><td>莱红牛</td><td>汉堡</td><td>74.1%</td><td>19.1%</td><td>6.8%</td><td><span class="tag tag-green">主胜 74.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.45:0.94</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.0%</span></td><td style="font-family:monospace;">52%</td><td>30.4%</td><td>47.6%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日010</span></td><td>莱万特</td><td>巴萨</td><td>11.3%</td><td>18.6%</td><td>70.0%</td><td><span class="tag tag-red">客胜 70.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.2%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-3 · λ 1.09:2.66</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.6%</span></td><td style="font-family:monospace;">59%</td><td>28.5%</td><td>43.9%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日011</span></td><td>汉坎</td><td>莫尔德</td><td>21.4%</td><td>21.0%</td><td>57.7%</td><td><span class="tag tag-red">客胜 57.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.43:2.44</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.1%</span></td><td style="font-family:monospace;">57%</td><td>26.1%</td><td>38.3%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日012</span></td><td>勒芒</td><td>朗斯</td><td>18.4%</td><td>24.0%</td><td>57.6%</td><td><span class="tag tag-red">客胜 57.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.9%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.20:2.12</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.4%</span></td><td style="font-family:monospace;">57%</td><td>29.3%</td><td>44.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日013</span></td><td>曼联</td><td>曼城</td><td>29.8%</td><td>30.6%</td><td>39.6%</td><td><span class="tag tag-red">客胜 39.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.2%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.48:1.81</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.7%</span></td><td style="font-family:monospace;">59%</td><td>33.0%</td><td>46.2%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日014</span></td><td>埃沃斯堡</td><td>拜仁</td><td>22.8%</td><td>23.6%</td><td>53.5%</td><td><span class="tag tag-red">客胜 53.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-3 · λ 1.64:2.56</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.0%</span></td><td style="font-family:monospace;">52%</td><td>26.9%</td><td>40.0%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日015</span></td><td>那不勒斯</td><td>博洛尼亚</td><td>57.1%</td><td>27.0%</td><td>15.9%</td><td><span class="tag tag-green">主胜 57.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.62:0.92</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 26.5%</span></td><td style="font-family:monospace;">60%</td><td>37.3%</td><td>55.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日016</span></td><td>赫塔费</td><td>拉科</td><td>35.6%</td><td>28.4%</td><td>36.0%</td><td><span class="tag tag-red">客胜 36.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(15.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 0-1 · λ 1.44:1.41</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.2%</span></td><td style="font-family:monospace;">68%</td><td>32.7%</td><td>47.5%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.13&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日017</span></td><td>本菲卡</td><td>吉维森特</td><td>67.0%</td><td>23.5%</td><td>9.5%</td><td><span class="tag tag-green">主胜 67.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.31:1.14</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.0%</span></td><td style="font-family:monospace;">62%</td><td>28.8%</td><td>46.1%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日018</span></td><td>埃因霍温</td><td>鹿斯巴达</td><td>67.2%</td><td>21.9%</td><td>10.9%</td><td><span class="tag tag-green">主胜 67.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 3-1 · λ 2.74:1.33</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 18.6%</span></td><td style="font-family:monospace;">55%</td><td>27.0%</td><td>41.5%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日019</span></td><td>萨索洛</td><td>尤文图斯</td><td>13.6%</td><td>23.7%</td><td>62.7%</td><td><span class="tag tag-red">客胜 62.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 0.93:1.94</span></td><td style="font-family:monospace;font-size:0.8rem;">0-1+0-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.5%</span></td><td style="font-family:monospace;">53%</td><td>34.6%</td><td>52.1%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日020</span></td><td>布雷斯特</td><td>巴黎圣曼</td><td>8.1%</td><td>18.2%</td><td>73.7%</td><td><span class="tag tag-red">客胜 73.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-3 · λ 0.88:2.57</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.8%</span></td><td style="font-family:monospace;">63%</td><td>29.7%</td><td>46.6%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日021</span></td><td>皇家社会</td><td>马竞</td><td>35.8%</td><td>25.0%</td><td>39.1%</td><td><span class="tag tag-red">客胜 39.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.82:2.16</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.4%</span></td><td style="font-family:monospace;">46%</td><td>26.9%</td><td>39.3%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.02&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日022</span></td><td>法马利康</td><td>里斯本</td><td>11.8%</td><td>23.4%</td><td>64.8%</td><td><span class="tag tag-red">客胜 64.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.00:2.21</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.6%</span></td><td style="font-family:monospace;">65%</td><td>30.4%</td><td>48.1%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日023</span></td><td>弗拉门戈</td><td>科林蒂安</td><td>76.9%</td><td>19.9%</td><td>3.2%</td><td><span class="tag tag-green">主胜 76.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(15.0%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.29:0.68</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 27.1%</span></td><td style="font-family:monospace;">60%</td><td>38.3%</td><td>60.3%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日024</span></td><td>芝加哥</td><td>新英格兰</td><td>56.0%</td><td>25.9%</td><td>18.1%</td><td><span class="tag tag-green">主胜 56.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.94:1.33</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.2%</span></td><td style="font-family:monospace;">59%</td><td>32.3%</td><td>44.7%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr></tbody>
 </table></div></div>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.2 进球数预测</h3>
 <p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。</p>
@@ -3065,7 +3401,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">0</strong> 场；另有 <strong>4</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
   <div class="summary-card"><h4>📈 总进球偏差归因 (2026-09-13)</h4><p style="font-size:0.9rem;">1591 场回测：<b>2026 年 1~8 月模型 λ 场均高估 +0.12 球</b>（实际 2.75~2.91），并非系统性低估；<b>9 月实际场均升到 3.05~3.13</b>（全库口径），属异常高进球期，这才使近期偏差转负（09-11 −0.63 / 09-12 −0.47）。λ 水平系数 k 扫描：k=1.10~1.15 会让 MAE、比分 LogLoss、1X2 Brier <b>全线变差</b>，故<b>不追高</b>；校准窗口 7→14 天在时间外把 MAE 1.1869→1.1850 且显著降低逐日颠簸，为可选优化项。</p></div>
   <div class="summary-card"><h4>🎯 比分口径一致性 (V3.3)</h4><p style="font-size:0.9rem;">比分概率组的分布已与同页发布的胜/平/负<b>完全对齐</b>（此前因市场混合/联赛形状混合/Platt 三步都只作用在 1X2 上，两处口径最多相差 <strong>9.9pp</strong>）。对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp；Top5 覆盖变化在噪声内（±0.2pp）。</p></div>
-  <div class="summary-card"><h4>🔬 比分头条口径改版 (2026-09-13)</h4><p style="font-size:0.9rem;">头条比分由「概率众数」改为 <b>λ 期望进球取整</b>。原因是数学的：<b>众数是分布单点，必然低于均值</b>——回测（1591 场）众数口径头条总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35/客 −0.55），这才是「预测 1-0、实际 3-1」的来源。改期望值口径后：总进球偏差 <b>−0.90 → −0.22 球/场</b>，±1球覆盖 <b>66.4% → 71.0%</b>，代价是单点精确率 15.4% → 13.8%（该口径并非为押中单点设计）。<b>模型本身校准良好</b>：逐格校准误差 ±1~2pp（1:1 11.8% vs 13.2%、1:2 5.6% vs 7.7%、2:0 7.2% vs 6.2%）；P(≥3) 52.2% vs 53.4%；模型自认众数 13.73%、自评±1球 60.4%，实际命中 15.4% / 66.4%（<b>两项都偏保守</b>）。温度展平测试（T=1.0~1.35）在时间外让比分 LogLoss 单调变差（2.7635→2.8254）→ <b>引擎比分矩阵不动</b>。口径阶梯：期望比分 <b>13.8%</b> → 双档（含头条比分）<b>26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%；分档（按新口径重测）：λ≤2.0 单点 25.6% / ±1球 85.4%，λ&gt;2.0 后单点稳定在约 13%——旧「低λ 23.8% → 高λ 13.0%」是象限众数口径的性质，改口径后不再成立（卡片已按新分档标注「比分可信度」）。</p></div>
+  <div class="summary-card"><h4>🎯 比分目标函数与口径 (2026-09-13 二次定调)</h4><p style="font-size:0.9rem;">用户明确：<b>主要优化方向 = 比分的准确度；概率大小没有意义；命中次数多了目标函数才好优化</b>。据此头条改为 <b>已对齐矩阵的联合众数</b>——这是数学结论：给定分布，让「押中场次数」最大的选择<b>唯一</b>是 argmax（众数），且任何单调变换（温度展平/锐化）都不改变 argmax，<b>概率幅值与命中率无因果关系</b>（实测 T=0.85/1.00/1.15/1.35 四种变换命中完全相同）。⚖️ 与上一版对比：<b>联合众数 16.6% ＞ 象限众数 15.4% ＞ 期望值取整 13.8%</b>（McNemar χ²=4.79，p&lt;0.05 显著；即上一版头条损失了约 45 场/1591）。双档 29.9%、Top3 <b>39.9%</b>、Top5 <b>56.3%</b>、±1球 66.4%（旧「象限约束」版本对应 25.5%/32.2%/49.1%/66.4%——象限约束会排掉跨象限的次优格，全部更低）。<b>已系统排查且都赢不过众数的排序源</b>：市场比分盘去水 14.3~17.1%、模型×市场混合 16.0~17.9%、格子级乘性纠偏 18.8%、分区(方向×λ档)条件经验重排 18.8%、总进球边缘纠偏 18.7%、Dixon-Coles 低分修正 17.3~18.5%——<b>全在 ±0.4pp 噪声内</b>。λ 期望值口径降级为「量级参考」（无偏：总进球偏差 −0.22 球/场 vs 众数 −0.90）。<b>下一步提升只能来自「分布」而非「选法」</b>：单比分 = 方向命中 53.8% × 方向内命中 31%，要提命中次数必须让 λ/形状更准或引入新信息源（赔率漂移 CLV、阵容/伤停）。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">1</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
@@ -3088,9 +3424,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h3>比分串关推荐（高赔彩票型 · 命中率 &lt;1%）</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
-    <tr class="parlay-confident"><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「期望比分」（λ 期望值取整）</span></td><td>[周日023]弗拉门戈vs科林蒂安 2-1 × [周日009]莱红牛vs汉堡 2-1 × [周日017]本菲卡vs吉维森特 2-1</td><td style="font-family:monospace;font-weight:700;">510.53</td><td>0.12%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「期望比分」（λ 期望值取整）</span></td><td>[周日020]布雷斯特vs巴黎圣曼 1-3 × [周日010]莱万特vs巴萨 1-3 × [周日018]埃因霍温vs鹿斯巴达 3-1</td><td style="font-family:monospace;font-weight:700;">745.20</td><td>0.06%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 C</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「期望比分」（λ 期望值取整）</span></td><td>[周日003]塞尔塔vs马拉加 2-1 × [周日015]那不勒斯vs博洛尼亚 2-1 × [周日008]里尔vs特鲁瓦 2-1</td><td style="font-family:monospace;font-weight:700;">355.25</td><td>0.12%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周日016]赫塔费vs拉科 0-1 × [周日001]东京绿茵vs千叶市原 1-0 × [周日007]莱切vs蒙扎 0-1</td><td style="font-family:monospace;font-weight:700;">364.00</td><td>0.14%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周日002]仙台七夕vs札幌冈萨 2-1 × [周日021]皇家社会vs马竞 1-2 × [周日023]弗拉门戈vs科林蒂安 2-1</td><td style="font-family:monospace;font-weight:700;">405.42</td><td>0.11%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr>
+    <tr class="parlay-confident"><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「命中比分」（矩阵联合众数）</span></td><td>[周日023]弗拉门戈vs科林蒂安 2-0 × [周日009]莱红牛vs汉堡 2-0 × [周日017]本菲卡vs吉维森特 2-1</td><td style="font-family:monospace;font-weight:700;">446.25</td><td>0.17%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「命中比分」（矩阵联合众数）</span></td><td>[周日020]布雷斯特vs巴黎圣曼 1-2 × [周日010]莱万特vs巴萨 1-2 × [周日018]埃因霍温vs鹿斯巴达 2-1</td><td style="font-family:monospace;font-weight:700;">731.25</td><td>0.11%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td><strong>信心串关 C</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：取评级最高（4-5★优先）的3场，比分腿统一用头条口径「命中比分」（矩阵联合众数）</span></td><td>[周日003]塞尔塔vs马拉加 1-0 × [周日015]那不勒斯vs博洛尼亚 1-0 × [周日008]里尔vs特鲁瓦 2-1</td><td style="font-family:monospace;font-weight:700;">282.10</td><td>0.33%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周日016]赫塔费vs拉科 1-1 × [周日001]东京绿茵vs千叶市原 1-0 × [周日007]莱切vs蒙扎 1-1</td><td style="font-family:monospace;font-weight:700;">206.70</td><td>0.31%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr><tr class="parlay-upset"><td><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">3串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td>[周日002]仙台七夕vs札幌冈萨 1-1 × [周日021]皇家社会vs马竞 1-1 × [周日023]弗拉门戈vs科林蒂安 2-0</td><td style="font-family:monospace;font-weight:700;">291.60</td><td>0.21%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td></tr>
   </table>
-  <div class="parlay-note">注：综合概率为各场比分腿概率连乘（近似独立）。比分腿已统一为头条口径<b>「期望比分」</b>（λ 期望值取整），概率取模型给该比分的概率。<b>比分串关的 3 腿全中率仅 0.5%（198 个比赛日仅 1 天命中）</b>，组合概率常低至 0.1%~0.4%——请把它当作买彩票而非投资建议，切勿重注。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
+  <div class="parlay-note">注：综合概率为各场比分腿概率连乘（近似独立）。比分腿已统一为头条口径<b>「命中比分」</b>（矩阵联合众数），概率取模型给该比分的概率。<b>比分串关的 3 腿全中率仅 0.5%（198 个比赛日仅 1 天命中）</b>，组合概率常低至 0.1%~0.4%——请把它当作买彩票而非投资建议，切勿重注。想提高命中率请看上表 <b>Top3 覆盖 39.9% / ±1球覆盖 66.4%</b>，而非串关。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
 
 <h2>六、当日赛事联赛形势</h2>
@@ -3098,95 +3434,95 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="league-card">
     <h4>日职 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日001 东京绿茵 vs 千叶市原 — 总进球λ 2.40，期望比分 1-0（14.8%）</li>
+      <li>周日001 东京绿茵 vs 千叶市原 — 总进球λ 2.40，命中比分 1-0（模型给该比分 14.8%）（量级参考 1-0）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>日乙 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日002 仙台七夕 vs 札幌冈萨 — 总进球λ 2.80，期望比分 2-1（12.4%）</li>
+      <li>周日002 仙台七夕 vs 札幌冈萨 — 总进球λ 2.80，命中比分 1-1（模型给该比分 12.5%）（量级参考 2-1）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>西甲 (4场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日003 塞尔塔 vs 马拉加 — 总进球λ 2.20，期望比分 2-1（9.0%）</li>
-      <li>周日010 莱万特 vs 巴萨 — 总进球λ 3.74，期望比分 1-3（7.9%）</li>
-      <li>周日016 赫塔费 vs 拉科 — 总进球λ 2.85，期望比分 0-1（8.8%）</li>
-      <li>周日021 皇家社会 vs 马竞 — 总进球λ 3.98，期望比分 1-2（8.0%）</li>
+      <li>周日003 塞尔塔 vs 马拉加 — 总进球λ 2.20，命中比分 1-0（模型给该比分 18.7%）（量级参考 2-1）</li>
+      <li>周日010 莱万特 vs 巴萨 — 总进球λ 3.74，命中比分 1-2（模型给该比分 10.2%）（量级参考 1-3）</li>
+      <li>周日016 赫塔费 vs 拉科 — 总进球λ 2.85，命中比分 1-1（模型给该比分 15.4%）（量级参考 0-1）</li>
+      <li>周日021 皇家社会 vs 马竞 — 总进球λ 3.98，命中比分 1-1（模型给该比分 11.4%）（量级参考 1-2）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>瑞超 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日004 哈马比 vs 布鲁马波 — 总进球λ 3.46，期望比分 2-1（9.3%）</li>
+      <li>周日004 哈马比 vs 布鲁马波 — 总进球λ 3.46，命中比分 1-1（模型给该比分 12.6%）（量级参考 2-1）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>芬超 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日005 库奥皮奥 vs 赫尔辛基 — 总进球λ 2.98，期望比分 2-1（10.1%）</li>
+      <li>周日005 库奥皮奥 vs 赫尔辛基 — 总进球λ 2.98，命中比分 1-1（模型给该比分 14.4%）（量级参考 2-1）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>荷甲 (2场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日006 海伦芬 vs 斯达 — 总进球λ 3.49，期望比分 2-1（10.3%）</li>
-      <li>周日018 埃因霍温 vs 鹿斯巴达 — 总进球λ 4.07，期望比分 3-1（8.4%）</li>
+      <li>周日006 海伦芬 vs 斯达 — 总进球λ 3.49，命中比分 2-1（模型给该比分 10.3%）（量级参考 2-1）</li>
+      <li>周日018 埃因霍温 vs 鹿斯巴达 — 总进球λ 4.07，命中比分 2-1（模型给该比分 10.1%）（量级参考 3-1）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>意甲 (3场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日007 莱切 vs 蒙扎 — 总进球λ 2.65，期望比分 0-1（11.1%）</li>
-      <li>周日015 那不勒斯 vs 博洛尼亚 — 总进球λ 2.54，期望比分 2-1（10.5%）</li>
-      <li>周日019 萨索洛 vs 尤文图斯 — 总进球λ 2.87，期望比分 1-2（10.3%）</li>
+      <li>周日007 莱切 vs 蒙扎 — 总进球λ 2.65，命中比分 1-1（模型给该比分 13.7%）（量级参考 0-1）</li>
+      <li>周日015 那不勒斯 vs 博洛尼亚 — 总进球λ 2.54，命中比分 1-0（模型给该比分 13.7%）（量级参考 2-1）</li>
+      <li>周日019 萨索洛 vs 尤文图斯 — 总进球λ 2.87，命中比分 0-1（模型给该比分 12.1%）（量级参考 1-2）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>法甲 (3场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日008 里尔 vs 特鲁瓦 — 总进球λ 2.92，期望比分 2-1（13.0%）</li>
-      <li>周日012 勒芒 vs 朗斯 — 总进球λ 3.32，期望比分 1-2（10.5%）</li>
-      <li>周日020 布雷斯特 vs 巴黎圣曼 — 总进球λ 3.45，期望比分 1-3（8.9%）</li>
+      <li>周日008 里尔 vs 特鲁瓦 — 总进球λ 2.92，命中比分 2-1（模型给该比分 13.0%）（量级参考 2-1）</li>
+      <li>周日012 勒芒 vs 朗斯 — 总进球λ 3.32，命中比分 1-1（模型给该比分 10.9%）（量级参考 1-2）</li>
+      <li>周日020 布雷斯特 vs 巴黎圣曼 — 总进球λ 3.45，命中比分 1-2（模型给该比分 10.7%）（量级参考 1-3）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>德甲 (2场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日009 莱红牛 vs 汉堡 — 总进球λ 3.39，期望比分 2-1（10.3%）</li>
-      <li>周日014 埃沃斯堡 vs 拜仁 — 总进球λ 4.20，期望比分 2-3（5.5%）</li>
+      <li>周日009 莱红牛 vs 汉堡 — 总进球λ 3.39，命中比分 2-0（模型给该比分 10.7%）（量级参考 2-1）</li>
+      <li>周日014 埃沃斯堡 vs 拜仁 — 总进球λ 4.20，命中比分 1-2（模型给该比分 9.7%）（量级参考 2-3）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>挪超 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日011 汉坎 vs 莫尔德 — 总进球λ 3.86，期望比分 1-2（10.6%）</li>
+      <li>周日011 汉坎 vs 莫尔德 — 总进球λ 3.86，命中比分 1-2（模型给该比分 10.6%）（量级参考 1-2）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>英超 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日013 曼联 vs 曼城 — 总进球λ 3.29，期望比分 1-2（9.5%）</li>
+      <li>周日013 曼联 vs 曼城 — 总进球λ 3.29，命中比分 1-1（模型给该比分 14.2%）（量级参考 1-2）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>葡超 (2场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日017 本菲卡 vs 吉维森特 — 总进球λ 3.44，期望比分 2-1（10.7%）</li>
-      <li>周日022 法马利康 vs 里斯本 — 总进球λ 3.21，期望比分 1-2（10.6%）</li>
+      <li>周日017 本菲卡 vs 吉维森特 — 总进球λ 3.44，命中比分 2-1（模型给该比分 10.7%）（量级参考 2-1）</li>
+      <li>周日022 法马利康 vs 里斯本 — 总进球λ 3.21，命中比分 1-2（模型给该比分 10.6%）（量级参考 1-2）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>巴甲 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日023 弗拉门戈 vs 科林蒂安 — 总进球λ 2.97，期望比分 2-1（11.2%）</li>
+      <li>周日023 弗拉门戈 vs 科林蒂安 — 总进球λ 2.97，命中比分 2-0（模型给该比分 15.0%）（量级参考 2-1）</li>
     </ul>
   </div>
   <div class="league-card">
     <h4>美职 (1场)</h4>
     <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日024 芝加哥 vs 新英格兰 — 总进球λ 3.27，期望比分 2-1（10.6%）</li>
+      <li>周日024 芝加哥 vs 新英格兰 — 总进球λ 3.27，命中比分 1-1（模型给该比分 12.6%）（量级参考 2-1）</li>
     </ul>
   </div>
 </div>
