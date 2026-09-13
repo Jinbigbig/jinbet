@@ -136,7 +136,7 @@ base11 = sum(1 for r in all_rows if r["actual"] == (1, 1)) / n
 if p11:
     print(f"\n【1:1专项】预测1:1 {len(p11)} 场 → 实际1:1 {h11} 场 ({h11/len(p11)*100:.1f}%) | 全体实际1:1基准率 {base11*100:.1f}%")
 
-# 用户假设检验：若在首选≤2球时改选备选（若备选≥3球），命中率变化
+# 假设检验：若在首选≤2球时改选备选（若备选≥3球），命中率变化
 switch_better = switch_worse = same = 0
 for r in all_rows:
     if r["top2"] and sum(r["top1"]) <= 2 <= sum(r["top2"]):  # 首选小球、备选大球
