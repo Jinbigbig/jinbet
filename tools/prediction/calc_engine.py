@@ -375,9 +375,13 @@ def fit_platt_params(force=False):
     gfH, gaH, gfA, gaA = {}, {}, {}, {}
     lg_tot, lg_hist = {}, {}
     MAXG = 8
-    # 与 mix_score_matrix 同源（实际值取 league_profile.json 的 score_mix.w，当前 0.5）。
-    # 历史遗留：此处字面量曾为 0.3，是 w=0.3 时代的 fallback，2026-09-06 改 w=0.5 时漏同步；
-    # 因实际读档案值故从未生效，仅为代码卫生对齐，无功能影响。
+    # 与 mix_score_matrix 同源：实际值取 league_profile.json 的 score_mix.w —— **线上真值是 0.3**。
+    # 【2026-09-13 核查】本注释长期写作「当前 0.5」，且 build_league_profile.py 亦被口头描述为 0.5，
+    # 但档案里自 w=0.3 时代起一直是 0.3，即线上实跑 w_eff ≤ 0.3（w=0.5 从未生效）。
+    # 实测（_mixw_probe.py，4036 场）：0.3→0.5 全样本命中 609→630（+21 场），
+    # 但时间外（前60%训练/后40%检验）0.3=272 / 0.5=270 / 0.6=275，差 ≤5 场（噪声地板 16 场 = 1pp）
+    # → 不显著，故维持 0.3（升到 0.5 会连带触发 Platt 重拟合，收益不可证）。
+    # 另：ADAPTIVE_MIX_K=0.20 是在 w0=0.3 的实测环境下标定的，上文中「w0×0.80」的表述仅指比例关系。
     # 注意：实跑已启用自适应衰减(w_eff 随 λ比)，此处仍是固定 w —— 轻微不同源，影响有限。
     mix_w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
     k_shrink = float(LEAGUE_PROFILE.get("score_mix", {}).get("k_shrink", 50))
@@ -1536,6 +1540,16 @@ def calc_match(m, calib):
         for name, info, lh, la in steps
     )
     chain += f" → 最终λ 主{lam_h:.2f} 客{lam_a:.2f}"
+    # 【2026-09-13 补齐】第七步B 的比分形状混合此前**没有出现在因素链里**，导致
+    # 「比分是怎么推出来的」缺最后一环（也是它长期与文档口径 0.5/0.3 不一致却没被发现的原因）。
+    try:
+        _w0 = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
+        _ratio = (max(lam_h, lam_a) / min(lam_h, lam_a)) if min(lam_h, lam_a) > 1e-9 else 99.0
+        _weff = _w0 * max(ADAPTIVE_MIX_FLOOR, 1.0 - ADAPTIVE_MIX_K * (_ratio - 1.0))
+        chain += (f" → 比分形状混合(与{league}经验比分频率混合, w={_weff:.3f}"
+                  f"=档案{_w0:g}×自适应衰减(λ比{_ratio:.2f},K={ADAPTIVE_MIX_K:g},下限{ADAPTIVE_MIX_FLOOR:g}))")
+    except Exception:
+        pass
     if platt_applied:
         chain += (f" → Platt校准(1X2: 平局{p_draw_raw*100:.1f}%→{p_draw*100:.1f}%)")
     if align_ratio:
