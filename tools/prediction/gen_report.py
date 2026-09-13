@@ -539,7 +539,7 @@ def upset_table():
                  f'<td>{u["div_pp"]:+.1f}pp</td><td>{u["abs_handicap"]:g}</td>'
                  f'<td>{u["lam_sum"]:.2f}</td><td>{u["entropy"]:.3f}</td></tr>')
     return _sub_table(
-        '4.4 冷门风险明细（次数概率 + 影响因素）',
+        '4.4 冷门风险明细',
         f'冷门定义 = <b>市场首选方向未命中</b>（含平局）。训练基础率 <b>{rows[0][1]["upset"]["base_rate"]:.1f}%</b>。'
         '影响因素 = 市场首选概率、模型−市场分歧、|让球|、λ和、市场熵；'
         '时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。'
@@ -582,7 +582,7 @@ def big_goals_table():
     exp_n = sum(m['big']['cal6'] for _p, m in rows) / 100
     n_s = tb.get('n_samples') or 0
     return _sub_table(
-        '4.5 大比分（总进球 6+ / 7+）观察',
+        '4.5 大比分观察',
         f'口径：市场<b>总进球盘</b>去水后逐档校准（总进球盘的「6」与「7+」是两个独立档位，'
         f'6+ = 两者之和）。今日最像的一场：'
         f'<b>{esc(top["matchNumStr"])} {esc(top["home"])} vs {esc(top["away"])}</b>'
@@ -639,7 +639,7 @@ def market_dev_section(matches):
                  f'<td>{esc(rq["conf"])}</td><td>{hit}</td>'
                  f'<td>{up_str}</td></tr>')
     return _sub_table(
-        '4.3 让球盘市场偏差清单（按 EV 降序）',
+        '4.3 让球盘市场偏差清单',
         '模型在 <b>1X2 概率值</b>上没有优势（市场已充分定价，还要付抽水），'
         '但在 <b>让球盘「过滤」</b>上可以挑出价值：月度时间外「每场只买 EV 最高的一注」197 注 ROI <b>+16.86%</b>。'
         '⚠️ <b>EV&gt;1.10 才算有偏离</b>；|让球|=1 置信高、=2 中、≥3 低（样本不足，不建议跟）。'
@@ -1211,7 +1211,7 @@ strategy_sec = f'''
 </div>
 
 <div class="parlay-section">
-  <h3>方向串关推荐（主口径）</h3>
+  <h3>方向串关推荐</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_dir_rows}
@@ -1220,7 +1220,7 @@ strategy_sec = f'''
 </div>
 
 <div class="parlay-section">
-  <h3>比分串关推荐（高赔彩票型 · 命中率 &lt;1%）</h3>
+  <h3>比分串关推荐</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
@@ -1293,7 +1293,7 @@ for _i, (_s, _pf, _lt, _cf, _m) in enumerate(_picks[:5], 1):
         f'<td><span class="tag {_cc}">{esc(_ct.split("（")[0])}</span></td></tr>')
 
 picks_sec = f'''
-<h2>🎯 今日比分精选（重点关注这几场）</h2>
+<h2>🎯 今日比分精选</h2>
 <div class="card">
   <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
     下表按模型把握度从高到低，列出今日最值得跟的几场比分。单比分全场次平均命中约 <b>15%</b>、
@@ -1376,7 +1376,7 @@ for _i, (_gap, _lt, _m) in enumerate(_bold, 1):
         f'<td style="font-family:monospace;">{_lt:.2f}</td></tr>')
 
 bold_sec = f'''
-<h2>🔥 大胆档（要赔率，不要命中率）</h2>
+<h2>🔥 大胆档</h2>
 <div class="card">
   <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
     头条比分是分布里的单个最高格，进球数必然偏小。下表挑出今日「量级与头条差距最大」的场次，
