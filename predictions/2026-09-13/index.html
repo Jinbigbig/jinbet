@@ -111,6 +111,20 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
 <style>
   .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
     color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
+  .league-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:0.35rem; }
+  .league-tbl th, .league-tbl td { border-bottom:1px solid rgba(128,128,128,0.22); padding:0.3rem 0.45rem; text-align:left; white-space:nowrap; }
+  .league-tbl th { color:var(--muted,#7a8ba0); font-weight:600; font-size:0.72rem; }
+  .league-note { font-size:0.76rem; color:var(--muted,#7a8ba0); margin:0.45rem 0 0; line-height:1.55; }
+  .league-tbl.standings { display:block; overflow-x:auto; }
+  .league-tbl.standings td:nth-child(2) { white-space:nowrap; }
+  .league-tbl.standings tr.zone-eu td { background:rgba(46,160,67,0.13); }
+  .league-tbl.standings tr.zone-rel td { background:rgba(220,60,60,0.12); }
+  .league-tbl.standings td:nth-child(10) { font-weight:700; }
+  .league-impact { margin-top:0.6rem; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.5rem; }
+  .league-impact .impact-title { font-size:0.74rem; font-weight:700; color:var(--muted,#7a8ba0); margin-bottom:0.3rem; }
+  .league-impact .impact-row { font-size:0.78rem; line-height:1.7; }
+  .league-impact .impact-row b { color:var(--accent,#2f7de0); }
+  .league-src { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-bottom:0.4rem; }
 </style>
 </head>
 <body>
@@ -120,7 +134,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-09-13 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 24场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-09-13 18:14 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-09-13 18:58 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -138,13 +152,13 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="table-wrap">
     <table>
       <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
-      <th>±1球</th><th>模型概率</th><th>比分可信度</th></tr></thead>
-      <tbody><tr><td style="text-align:center;font-weight:700;color:var(--accent);">1</td><td><span class="tag tag-blue">周日003</span> 西甲</td><td>塞尔塔 vs 马拉加</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-0 + 2-0</td><td style="font-family:monospace;">68%</td><td style="font-family:monospace;">18.8%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.20</span></td><td><span class="tag tag-green">比分可照抄</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">2</td><td><span class="tag tag-blue">周日023</span> 巴甲</td><td>弗拉门戈 vs 科林蒂安</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0</td><td style="font-family:monospace;font-size:0.8rem;">2-0 + 1-0</td><td style="font-family:monospace;">60%</td><td style="font-family:monospace;">15.6%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.97</span></td><td><span class="tag tag-yellow">比分仅参考</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">3</td><td><span class="tag tag-blue">周日016</span> 西甲</td><td>赫塔费 vs 拉科</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 0-1</td><td style="font-family:monospace;">68%</td><td style="font-family:monospace;">15.3%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.85</span></td><td><span class="tag tag-yellow">比分仅参考</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">4</td><td><span class="tag tag-blue">周日001</span> 日职</td><td>东京绿茵 vs 千叶市原</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-0 + 1-1</td><td style="font-family:monospace;">61%</td><td style="font-family:monospace;">14.7%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.40</span></td><td><span class="tag tag-green">比分可照抄</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">5</td><td><span class="tag tag-blue">周日005</span> 芬超</td><td>库奥皮奥 vs 赫尔辛基</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 2-1</td><td style="font-family:monospace;">65%</td><td style="font-family:monospace;">14.4%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.98</span></td><td><span class="tag tag-yellow">比分仅参考</span></td></tr></tbody>
+      <th>±1球</th><th>模型概率</th><th>可信度</th></tr></thead>
+      <tbody><tr><td style="text-align:center;font-weight:700;color:var(--accent);">1</td><td><span class="tag tag-blue">周日003</span> 西甲</td><td>塞尔塔 vs 马拉加</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-0 + 2-0</td><td style="font-family:monospace;">68%</td><td style="font-family:monospace;">18.8%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.20</span></td><td><span class="tag tag-green">可信</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">2</td><td><span class="tag tag-blue">周日023</span> 巴甲</td><td>弗拉门戈 vs 科林蒂安</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0</td><td style="font-family:monospace;font-size:0.8rem;">2-0 + 1-0</td><td style="font-family:monospace;">60%</td><td style="font-family:monospace;">15.6%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.97</span></td><td><span class="tag tag-yellow">一般</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">3</td><td><span class="tag tag-blue">周日016</span> 西甲</td><td>赫塔费 vs 拉科</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 0-1</td><td style="font-family:monospace;">68%</td><td style="font-family:monospace;">15.3%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.85</span></td><td><span class="tag tag-yellow">一般</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">4</td><td><span class="tag tag-blue">周日001</span> 日职</td><td>东京绿茵 vs 千叶市原</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-0 + 1-1</td><td style="font-family:monospace;">61%</td><td style="font-family:monospace;">14.7%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.40</span></td><td><span class="tag tag-green">可信</span></td></tr><tr><td style="text-align:center;font-weight:700;color:var(--accent);">5</td><td><span class="tag tag-blue">周日005</span> 芬超</td><td>库奥皮奥 vs 赫尔辛基</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 2-1</td><td style="font-family:monospace;">65%</td><td style="font-family:monospace;">14.4%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.98</span></td><td><span class="tag tag-yellow">一般</span></td></tr></tbody>
     </table>
   </div>
   <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
     排序依据 = 模型给「命中比分」的概率（小字为该场总进球 λ）。
-    比分可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
+    可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
   </p>
 </div>
 
@@ -278,8 +292,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-green">比分可照抄（λ≤2.6 单点18~22%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-green">可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.40，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -411,8 +425,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -544,8 +558,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-green">比分可照抄（λ≤2.6 单点18~22%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-green">可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -677,8 +691,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.46，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -810,8 +824,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.98，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -943,8 +957,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.49，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1076,8 +1090,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.65，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1219,8 +1233,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.92，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1352,8 +1366,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.39，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1485,8 +1499,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约11%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">不可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.74，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1618,8 +1632,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约11%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">不可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.86，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1751,8 +1765,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.32，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -1894,8 +1908,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.29，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2027,8 +2041,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约11%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">不可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2160,8 +2174,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-green">比分可照抄（λ≤2.6 单点18~22%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-green">可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.54，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2293,8 +2307,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2426,8 +2440,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.44，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2559,8 +2573,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约11%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">不可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 4.07，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2692,8 +2706,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.87，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2825,8 +2839,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.45，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -2958,8 +2972,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-red">比分不可照抄（单点约11%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">不可信</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.98，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -3091,8 +3105,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.21，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -3224,8 +3238,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 2.97，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -3357,8 +3371,8 @@ window.addEventListener('resize', function() { chart.resize(); });
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
-      <span class="tag tag-yellow">比分仅参考（单点约13%）</span>
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-yellow">一般</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 3.27，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
@@ -3408,10 +3422,10 @@ window.addEventListener('resize', function() { chart.resize(); });
 见报告开头「🎯 今日比分精选」（只看模型最有把握的几场）；其余场次请看方向与总进球倾向。
 要容错就看 <b>比分双档</b>（约 26%）与 <b>±1球覆盖</b>（约 67%）。</p>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.1 胜负与比分预测</h3>
-<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>量级</b>小字 = λ 期望进球取整，只看进球规模、<b>不为押中</b>。<b>比分双档</b> = 模型排序前两档（命中约 <b>26%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>比分可信度</b> = 按该场总进球 λ 分档的历史实测命中率：λ 越低比分越值得看（λ≤2.6 约 1/3 场次，单点 18~22%），λ&gt;3.5 降到约 11%。<b>信心</b> = 胜平负方向的确定性（★ 越多越确定）；<b>冷门</b> = 市场首选方向落空的风险等级。</p>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>比分双档</b> = 模型排序前两档（命中约 <b>26%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>可信度</b> 按该场总进球 λ 分档（可信 / 一般 / 不可信，λ 越低越值得看）。<b>冷门概率</b> = 市场首选方向落空的概率。</p>
 <div class="card"><div class="table-wrap"><table>
-  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th></tr></thead>
-  <tbody><tr><td><span class="tag tag-blue">周日001</span></td><td>东京绿茵</td><td>千叶市原</td><td>53.6%</td><td>28.8%</td><td>17.5%</td><td><span class="tag tag-green">主胜 53.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-0 · λ 1.41:0.99</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 28.6%</span></td><td style="font-family:monospace;">61%</td><td>39.3%</td><td>57.0%</td><td><span class="tag tag-green">比分可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.14&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日002</span></td><td>仙台七夕</td><td>札幌冈萨</td><td>73.4%</td><td>21.3%</td><td>5.3%</td><td><span class="tag tag-green">主胜 73.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.06:0.79</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.4%</span></td><td style="font-family:monospace;">58%</td><td>36.3%</td><td>56.1%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.04&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日003</span></td><td>塞尔塔</td><td>马拉加</td><td>64.0%</td><td>27.4%</td><td>8.5%</td><td><span class="tag tag-green">主胜 64.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(18.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.54:0.66</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+2-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 32.6%</span></td><td style="font-family:monospace;">68%</td><td>45.1%</td><td>65.4%</td><td><span class="tag tag-green">比分可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日004</span></td><td>哈马比</td><td>布鲁马波</td><td>74.6%</td><td>19.1%</td><td>6.3%</td><td><span class="tag tag-green">主胜 74.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 3-1 · λ 2.60:0.86</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.5%</span></td><td style="font-family:monospace;">62%</td><td>31.3%</td><td>48.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日005</span></td><td>库奥皮奥</td><td>赫尔辛基</td><td>48.7%</td><td>27.8%</td><td>23.5%</td><td><span class="tag tag-green">主胜 48.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.4%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.65:1.34</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.5%</span></td><td style="font-family:monospace;">65%</td><td>34.2%</td><td>47.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日006</span></td><td>海伦芬</td><td>斯达</td><td>62.1%</td><td>24.4%</td><td>13.5%</td><td><span class="tag tag-green">主胜 62.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.26:1.23</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.5%</span></td><td style="font-family:monospace;">61%</td><td>28.8%</td><td>44.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日007</span></td><td>莱切</td><td>蒙扎</td><td>28.9%</td><td>28.7%</td><td>42.4%</td><td><span class="tag tag-red">客胜 42.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 0-1 · λ 1.31:1.34</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.9%</span></td><td style="font-family:monospace;">72%</td><td>33.0%</td><td>48.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.08&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日008</span></td><td>里尔</td><td>特鲁瓦</td><td>64.0%</td><td>24.2%</td><td>11.8%</td><td><span class="tag tag-green">主胜 64.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.07:0.84</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 25.1%</span></td><td style="font-family:monospace;">68%</td><td>34.5%</td><td>51.0%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日009</span></td><td>莱红牛</td><td>汉堡</td><td>74.5%</td><td>18.9%</td><td>6.6%</td><td><span class="tag tag-green">主胜 74.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.46:0.93</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.1%</span></td><td style="font-family:monospace;">52%</td><td>30.4%</td><td>47.7%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日010</span></td><td>莱万特</td><td>巴萨</td><td>4.1%</td><td>13.0%</td><td>83.0%</td><td><span class="tag tag-red">客胜 83.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-3 · λ 0.76:2.99</span></td><td style="font-family:monospace;font-size:0.8rem;">0-2+0-3<br><span style="color:var(--muted);font-size:0.72rem;">合计 22.0%</span></td><td style="font-family:monospace;">49%</td><td>31.1%</td><td>47.5%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日011</span></td><td>汉坎</td><td>莫尔德</td><td>20.6%</td><td>20.8%</td><td>58.6%</td><td><span class="tag tag-red">客胜 58.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.40:2.46</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.2%</span></td><td style="font-family:monospace;">57%</td><td>26.1%</td><td>38.5%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日012</span></td><td>勒芒</td><td>朗斯</td><td>17.1%</td><td>23.6%</td><td>59.3%</td><td><span class="tag tag-red">客胜 59.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.16:2.16</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 21.4%</span></td><td style="font-family:monospace;">56%</td><td>29.6%</td><td>44.8%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日013</span></td><td>曼联</td><td>曼城</td><td>29.8%</td><td>30.6%</td><td>39.6%</td><td><span class="tag tag-red">客胜 39.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(14.2%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.48:1.81</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.7%</span></td><td style="font-family:monospace;">59%</td><td>33.0%</td><td>46.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日014</span></td><td>埃沃斯堡</td><td>拜仁</td><td>7.4%</td><td>16.5%</td><td>76.1%</td><td><span class="tag tag-red">客胜 76.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.5%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-3 · λ 1.04:3.16</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+1-3<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.7%</span></td><td style="font-family:monospace;">52%</td><td>28.4%</td><td>41.5%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">凯利指数1.09&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日015</span></td><td>那不勒斯</td><td>博洛尼亚</td><td>54.8%</td><td>27.6%</td><td>17.6%</td><td><span class="tag tag-green">主胜 54.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(13.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.58:0.96</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0+1-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 26.3%</span></td><td style="font-family:monospace;">59%</td><td>36.6%</td><td>54.4%</td><td><span class="tag tag-green">比分可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日016</span></td><td>赫塔费</td><td>拉科</td><td>33.4%</td><td>28.2%</td><td>38.3%</td><td><span class="tag tag-red">客胜 38.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(15.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 0-1 · λ 1.40:1.46</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 24.5%</span></td><td style="font-family:monospace;">68%</td><td>32.9%</td><td>47.6%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.12&gt;1.0(客胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日017</span></td><td>本菲卡</td><td>吉维森特</td><td>84.1%</td><td>13.9%</td><td>2.0%</td><td><span class="tag tag-green">主胜 84.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.9%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 3-1 · λ 2.78:0.66</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+3-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 25.3%</span></td><td style="font-family:monospace;">54%</td><td>35.2%</td><td>52.7%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日018</span></td><td>埃因霍温</td><td>鹿斯巴达</td><td>79.9%</td><td>15.9%</td><td>4.2%</td><td><span class="tag tag-green">主胜 79.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(9.7%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 3-1 · λ 3.12:0.94</span></td><td style="font-family:monospace;font-size:0.8rem;">2-1+3-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.1%</span></td><td style="font-family:monospace;">54%</td><td>27.2%</td><td>42.6%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日019</span></td><td>萨索洛</td><td>尤文图斯</td><td>13.6%</td><td>23.7%</td><td>62.7%</td><td><span class="tag tag-red">客胜 62.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.1%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 0.93:1.94</span></td><td style="font-family:monospace;font-size:0.8rem;">0-1+0-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.5%</span></td><td style="font-family:monospace;">53%</td><td>34.6%</td><td>52.1%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日020</span></td><td>布雷斯特</td><td>巴黎圣曼</td><td>7.4%</td><td>17.7%</td><td>74.9%</td><td><span class="tag tag-red">客胜 74.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-3 · λ 0.85:2.60</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.9%</span></td><td style="font-family:monospace;">63%</td><td>29.9%</td><td>46.8%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日021</span></td><td>皇家社会</td><td>马竞</td><td>34.9%</td><td>25.0%</td><td>40.2%</td><td><span class="tag tag-red">客胜 40.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(11.3%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 1.80:2.18</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+1-2<br><span style="color:var(--muted);font-size:0.72rem;">合计 19.5%</span></td><td style="font-family:monospace;">46%</td><td>27.0%</td><td>39.1%</td><td><span class="tag tag-red">比分不可照抄</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="font-size:0.78rem;">凯利指数1.02&gt;1.0(主胜有价值)</td></tr><tr><td><span class="tag tag-blue">周日022</span></td><td>法马利康</td><td>里斯本</td><td>11.1%</td><td>22.9%</td><td>66.0%</td><td><span class="tag tag-red">客胜 66.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(10.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 1-2 · λ 0.97:2.23</span></td><td style="font-family:monospace;font-size:0.8rem;">1-2+0-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 20.7%</span></td><td style="font-family:monospace;">65%</td><td>30.6%</td><td>48.2%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日023</span></td><td>弗拉门戈</td><td>科林蒂安</td><td>79.1%</td><td>18.4%</td><td>2.6%</td><td><span class="tag tag-green">主胜 79.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(15.6%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 2.34:0.63</span></td><td style="font-family:monospace;font-size:0.8rem;">2-0+1-0<br><span style="color:var(--muted);font-size:0.72rem;">合计 28.1%</span></td><td style="font-family:monospace;">60%</td><td>39.7%</td><td>60.7%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="font-size:0.78rem;">-</td></tr><tr><td><span class="tag tag-blue">周日024</span></td><td>芝加哥</td><td>新英格兰</td><td>54.5%</td><td>26.2%</td><td>19.3%</td><td><span class="tag tag-green">主胜 54.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">(12.8%)</span><br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 2-1 · λ 1.91:1.36</span></td><td style="font-family:monospace;font-size:0.8rem;">1-1+2-1<br><span style="color:var(--muted);font-size:0.72rem;">合计 23.3%</span></td><td style="font-family:monospace;">59%</td><td>32.2%</td><td>44.4%</td><td><span class="tag tag-yellow">比分仅参考</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="font-size:0.78rem;">-</td></tr></tbody>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>可信度</th><th>信心</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周日001</span></td><td>东京绿茵</td><td>千叶市原</td><td><span class="tag tag-green">主胜 53.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">14.7%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-0+1-1 <span style="color:var(--muted);">(28.6%)</span></td><td style="font-family:monospace;">61%</td><td>39.3%</td><td>57.0%</td><td><span class="tag tag-green">可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">54%</span></td></tr><tr><td><span class="tag tag-blue">周日002</span></td><td>仙台七夕</td><td>札幌冈萨</td><td><span class="tag tag-green">主胜 73.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">12.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-0+2-1 <span style="color:var(--muted);">(24.4%)</span></td><td style="font-family:monospace;">58%</td><td>36.3%</td><td>56.1%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">35%</span></td></tr><tr><td><span class="tag tag-blue">周日003</span></td><td>塞尔塔</td><td>马拉加</td><td><span class="tag tag-green">主胜 64.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">18.8%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-0+2-0 <span style="color:var(--muted);">(32.6%)</span></td><td style="font-family:monospace;">68%</td><td>45.1%</td><td>65.4%</td><td><span class="tag tag-green">可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">46%</span></td></tr><tr><td><span class="tag tag-blue">周日004</span></td><td>哈马比</td><td>布鲁马波</td><td><span class="tag tag-green">主胜 74.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">11.7%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-1+1-1 <span style="color:var(--muted);">(21.5%)</span></td><td style="font-family:monospace;">62%</td><td>31.3%</td><td>48.2%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">22%</span></td></tr><tr><td><span class="tag tag-blue">周日005</span></td><td>库奥皮奥</td><td>赫尔辛基</td><td><span class="tag tag-green">主胜 48.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">14.4%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+2-1 <span style="color:var(--muted);">(24.5%)</span></td><td style="font-family:monospace;">65%</td><td>34.2%</td><td>47.6%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">57%</span></td></tr><tr><td><span class="tag tag-blue">周日006</span></td><td>海伦芬</td><td>斯达</td><td><span class="tag tag-green">主胜 62.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-1+1-1 <span style="color:var(--muted);">(20.5%)</span></td><td style="font-family:monospace;">61%</td><td>28.8%</td><td>44.2%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">44%</span></td></tr><tr><td><span class="tag tag-blue">周日007</span></td><td>莱切</td><td>蒙扎</td><td><span class="tag tag-red">客胜 42.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">13.6%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+0-1 <span style="color:var(--muted);">(24.9%)</span></td><td style="font-family:monospace;">72%</td><td>33.0%</td><td>48.6%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">62%</span></td></tr><tr><td><span class="tag tag-blue">周日008</span></td><td>里尔</td><td>特鲁瓦</td><td><span class="tag tag-green">主胜 64.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">13.1%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-1+1-1 <span style="color:var(--muted);">(25.1%)</span></td><td style="font-family:monospace;">68%</td><td>34.5%</td><td>51.0%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">39%</span></td></tr><tr><td><span class="tag tag-blue">周日009</span></td><td>莱红牛</td><td>汉堡</td><td><span class="tag tag-green">主胜 74.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.8%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-0+2-1 <span style="color:var(--muted);">(21.1%)</span></td><td style="font-family:monospace;">52%</td><td>30.4%</td><td>47.7%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">33%</span></td></tr><tr><td><span class="tag tag-blue">周日010</span></td><td>莱万特</td><td>巴萨</td><td><span class="tag tag-red">客胜 83.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">0-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">11.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">0-2+0-3 <span style="color:var(--muted);">(22.0%)</span></td><td style="font-family:monospace;">49%</td><td>31.1%</td><td>47.5%</td><td><span class="tag tag-red">不可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">13%</span></td></tr><tr><td><span class="tag tag-blue">周日011</span></td><td>汉坎</td><td>莫尔德</td><td><span class="tag tag-red">客胜 58.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.7%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-2+1-1 <span style="color:var(--muted);">(19.2%)</span></td><td style="font-family:monospace;">57%</td><td>26.1%</td><td>38.5%</td><td><span class="tag tag-red">不可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">40%</span></td></tr><tr><td><span class="tag tag-blue">周日012</span></td><td>勒芒</td><td>朗斯</td><td><span class="tag tag-red">客胜 59.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.8%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+1-2 <span style="color:var(--muted);">(21.4%)</span></td><td style="font-family:monospace;">56%</td><td>29.6%</td><td>44.8%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">43%</span></td></tr><tr><td><span class="tag tag-blue">周日013</span></td><td>曼联</td><td>曼城</td><td><span class="tag tag-red">客胜 39.6%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">14.2%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+1-2 <span style="color:var(--muted);">(23.7%)</span></td><td style="font-family:monospace;">59%</td><td>33.0%</td><td>46.2%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">53%</span></td></tr><tr><td><span class="tag tag-blue">周日014</span></td><td>埃沃斯堡</td><td>拜仁</td><td><span class="tag tag-red">客胜 76.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.5%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-2+1-3 <span style="color:var(--muted);">(20.7%)</span></td><td style="font-family:monospace;">52%</td><td>28.4%</td><td>41.5%</td><td><span class="tag tag-red">不可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">14%</span></td></tr><tr><td><span class="tag tag-blue">周日015</span></td><td>那不勒斯</td><td>博洛尼亚</td><td><span class="tag tag-green">主胜 54.8%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">13.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-0+1-1 <span style="color:var(--muted);">(26.3%)</span></td><td style="font-family:monospace;">59%</td><td>36.6%</td><td>54.4%</td><td><span class="tag tag-green">可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">52%</span></td></tr><tr><td><span class="tag tag-blue">周日016</span></td><td>赫塔费</td><td>拉科</td><td><span class="tag tag-red">客胜 38.3%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">15.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+0-1 <span style="color:var(--muted);">(24.5%)</span></td><td style="font-family:monospace;">68%</td><td>32.9%</td><td>47.6%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">66%</span></td></tr><tr><td><span class="tag tag-blue">周日017</span></td><td>本菲卡</td><td>吉维森特</td><td><span class="tag tag-green">主胜 84.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">12.9%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-0+3-0 <span style="color:var(--muted);">(25.3%)</span></td><td style="font-family:monospace;">54%</td><td>35.2%</td><td>52.7%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">15%</span></td></tr><tr><td><span class="tag tag-blue">周日018</span></td><td>埃因霍温</td><td>鹿斯巴达</td><td><span class="tag tag-green">主胜 79.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">9.7%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-1+3-1 <span style="color:var(--muted);">(19.1%)</span></td><td style="font-family:monospace;">54%</td><td>27.2%</td><td>42.6%</td><td><span class="tag tag-red">不可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">15%</span></td></tr><tr><td><span class="tag tag-blue">周日019</span></td><td>萨索洛</td><td>尤文图斯</td><td><span class="tag tag-red">客胜 62.7%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">0-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">12.1%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">0-1+0-2 <span style="color:var(--muted);">(23.5%)</span></td><td style="font-family:monospace;">53%</td><td>34.6%</td><td>52.1%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">42%</span></td></tr><tr><td><span class="tag tag-blue">周日020</span></td><td>布雷斯特</td><td>巴黎圣曼</td><td><span class="tag tag-red">客胜 74.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.6%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-2+0-2 <span style="color:var(--muted);">(20.9%)</span></td><td style="font-family:monospace;">63%</td><td>29.9%</td><td>46.8%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">21%</span></td></tr><tr><td><span class="tag tag-blue">周日021</span></td><td>皇家社会</td><td>马竞</td><td><span class="tag tag-red">客胜 40.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">11.3%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+1-2 <span style="color:var(--muted);">(19.5%)</span></td><td style="font-family:monospace;">46%</td><td>27.0%</td><td>39.1%</td><td><span class="tag tag-red">不可信</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">50%</span></td></tr><tr><td><span class="tag tag-blue">周日022</span></td><td>法马利康</td><td>里斯本</td><td><span class="tag tag-red">客胜 66.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-2 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">10.6%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-2+0-1 <span style="color:var(--muted);">(20.7%)</span></td><td style="font-family:monospace;">65%</td><td>30.6%</td><td>48.2%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">36%</span></td></tr><tr><td><span class="tag tag-blue">周日023</span></td><td>弗拉门戈</td><td>科林蒂安</td><td><span class="tag tag-green">主胜 79.1%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">2-0 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">15.6%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">2-0+1-0 <span style="color:var(--muted);">(28.1%)</span></td><td style="font-family:monospace;">60%</td><td>39.7%</td><td>60.7%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">27%</span></td></tr><tr><td><span class="tag tag-blue">周日024</span></td><td>芝加哥</td><td>新英格兰</td><td><span class="tag tag-green">主胜 54.5%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">1-1 <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">12.8%</span></td><td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">1-1+2-1 <span style="color:var(--muted);">(23.3%)</span></td><td style="font-family:monospace;">59%</td><td>32.2%</td><td>44.4%</td><td><span class="tag tag-yellow">一般</span></td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">52%</span></td></tr></tbody>
 </table></div></div>
 <h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.2 进球数预测</h3>
 <p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。</p>
@@ -3476,100 +3490,413 @@ window.addEventListener('resize', function() { chart.resize(); });
 </div>
 
 <h2>六、当日赛事联赛形势</h2>
+<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜数据来源 <b>7M 体育数据库</b>（截至各联赛最近更新）。当前数据源不含未来赛程，故本节日聚焦「当前排名 + 本日对阵对积分榜的影响」；美职联(MLS) 7M 未收录，暂以说明替代。</p>
 <div class="league-overview-grid">
   <div class="league-card">
-    <h4>日职 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日001 东京绿茵 vs 千叶市原 — 总进球λ 2.40，命中比分 1-0（模型给该比分 14.7%）（量级参考 1-0）</li>
-    </ul>
+    <h4>日职 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 日本職業聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:56:53 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">町田澤維亞</td><td>7</td><td>5</td><td>2</td><td>0</td><td>19</td><td>6</td><td>13</td><td>17</td></tr>
+      <tr class=""><td>2</td><td style="text-align:left;">神戶勝利船</td><td>7</td><td>5</td><td>1</td><td>1</td><td>11</td><td>5</td><td>6</td><td>16</td></tr>
+      <tr class=""><td>3</td><td style="text-align:left;">柏雷素爾</td><td>7</td><td>5</td><td>0</td><td>2</td><td>13</td><td>10</td><td>3</td><td>15</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">廣島三箭</td><td>7</td><td>4</td><td>2</td><td>1</td><td>19</td><td>6</td><td>13</td><td>14</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">FC東京</td><td>7</td><td>4</td><td>2</td><td>1</td><td>13</td><td>8</td><td>5</td><td>14</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">川崎前鋒</td><td>7</td><td>3</td><td>3</td><td>1</td><td>13</td><td>9</td><td>4</td><td>12</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">鹿島鹿角</td><td>7</td><td>4</td><td>0</td><td>3</td><td>14</td><td>13</td><td>1</td><td>12</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">橫濱水手</td><td>7</td><td>3</td><td>2</td><td>2</td><td>11</td><td>9</td><td>2</td><td>11</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">岡山綠雉</td><td>6</td><td>3</td><td>1</td><td>2</td><td>8</td><td>7</td><td>1</td><td>10</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">大阪櫻花</td><td>7</td><td>3</td><td>1</td><td>3</td><td>6</td><td>11</td><td>-5</td><td>10</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">水戶蜀葵</td><td>7</td><td>2</td><td>3</td><td>2</td><td>11</td><td>9</td><td>2</td><td>9</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">浦和紅鑽</td><td>6</td><td>3</td><td>0</td><td>3</td><td>12</td><td>15</td><td>-3</td><td>9</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">清水心跳</td><td>7</td><td>2</td><td>1</td><td>4</td><td>4</td><td>7</td><td>-3</td><td>7</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">長崎成功丸</td><td>7</td><td>2</td><td>1</td><td>4</td><td>9</td><td>14</td><td>-5</td><td>7</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">大阪飛腳</td><td>7</td><td>1</td><td>3</td><td>3</td><td>8</td><td>13</td><td>-5</td><td>6</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">名古屋八鯨</td><td>7</td><td>2</td><td>0</td><td>5</td><td>7</td><td>13</td><td>-6</td><td>6</td></tr>
+      <tr class=""><td>17</td><td style="text-align:left;">京都不死鳥</td><td>7</td><td>1</td><td>2</td><td>4</td><td>9</td><td>14</td><td>-5</td><td>5</td></tr>
+      <tr class=""><td>18</td><td style="text-align:left;">福岡黃蜂</td><td>7</td><td>1</td><td>1</td><td>5</td><td>9</td><td>11</td><td>-2</td><td>4</td></tr>
+      <tr class=""><td>19</td><td style="text-align:left;">東京綠茵</td><td>6</td><td>0</td><td>3</td><td>3</td><td>2</td><td>8</td><td>-6</td><td>3</td></tr>
+      <tr class=""><td>20</td><td style="text-align:left;">千葉市原</td><td>6</td><td>1</td><td>0</td><td>5</td><td>5</td><td>15</td><td>-10</td><td>3</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日001</span> 东京绿茵 <b>#19 3分</b> vs 千叶市原 <b>#20 3分</b>（分差 +0） · 卡位对话</div>
+    </div>
+    <p class="league-note">进球预期最高：周日001 东京绿茵vs千叶市原（λ2.40） · 冷门风险最高：周日001 东京绿茵vs千叶市原（54%） · 最胶着：周日001 东京绿茵vs千叶市原（主54% / 客18%）</p>
   </div>
   <div class="league-card">
-    <h4>日乙 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日002 仙台七夕 vs 札幌冈萨 — 总进球λ 2.85，命中比分 2-0（模型给该比分 12.3%）（量级参考 2-1）</li>
-    </ul>
+    <h4>日乙 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 日本乙級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 7:24:49 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">RB大宮松鼠</td><td>6</td><td>3</td><td>3</td><td>0</td><td>10</td><td>5</td><td>5</td><td>12</td></tr>
+      <tr class=""><td>2</td><td style="text-align:left;">湘南比馬</td><td>6</td><td>3</td><td>2</td><td>1</td><td>6</td><td>5</td><td>1</td><td>11</td></tr>
+      <tr class=""><td>3</td><td style="text-align:left;">櫪木市FC</td><td>6</td><td>3</td><td>1</td><td>2</td><td>13</td><td>7</td><td>6</td><td>10</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">富山勝利</td><td>6</td><td>3</td><td>1</td><td>2</td><td>11</td><td>5</td><td>6</td><td>10</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">FC橫濱</td><td>6</td><td>3</td><td>1</td><td>2</td><td>11</td><td>7</td><td>4</td><td>10</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">仙台維加泰</td><td>5</td><td>3</td><td>1</td><td>1</td><td>9</td><td>5</td><td>4</td><td>10</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">藤枝MYFC</td><td>6</td><td>3</td><td>1</td><td>2</td><td>10</td><td>7</td><td>3</td><td>10</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">磐田山葉</td><td>6</td><td>3</td><td>1</td><td>2</td><td>8</td><td>7</td><td>1</td><td>10</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">山形山神</td><td>5</td><td>3</td><td>0</td><td>2</td><td>8</td><td>3</td><td>5</td><td>9</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">新潟天鵝</td><td>5</td><td>3</td><td>0</td><td>2</td><td>6</td><td>9</td><td>-3</td><td>9</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">秋田藍閃電</td><td>6</td><td>2</td><td>2</td><td>2</td><td>8</td><td>7</td><td>1</td><td>8</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">鳥棲砂岩</td><td>6</td><td>2</td><td>2</td><td>2</td><td>7</td><td>6</td><td>1</td><td>8</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">甲府風林</td><td>6</td><td>2</td><td>1</td><td>3</td><td>5</td><td>9</td><td>-4</td><td>7</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">德島漩渦</td><td>6</td><td>2</td><td>1</td><td>3</td><td>4</td><td>8</td><td>-4</td><td>7</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">八戶雲羅里</td><td>6</td><td>2</td><td>1</td><td>3</td><td>3</td><td>8</td><td>-5</td><td>7</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">大分三神</td><td>6</td><td>1</td><td>3</td><td>2</td><td>5</td><td>4</td><td>1</td><td>6</td></tr>
+      <tr class=""><td>17</td><td style="text-align:left;">磐城FC</td><td>6</td><td>2</td><td>0</td><td>4</td><td>8</td><td>12</td><td>-4</td><td>6</td></tr>
+      <tr class=""><td>18</td><td style="text-align:left;">宮崎特格瓦雅羅</td><td>6</td><td>1</td><td>2</td><td>3</td><td>6</td><td>10</td><td>-4</td><td>5</td></tr>
+      <tr class=""><td>19</td><td style="text-align:left;">FC今治</td><td>6</td><td>1</td><td>1</td><td>4</td><td>5</td><td>13</td><td>-8</td><td>4</td></tr>
+      <tr class=""><td>20</td><td style="text-align:left;">札幌岡薩多</td><td>5</td><td>1</td><td>0</td><td>4</td><td>6</td><td>12</td><td>-6</td><td>3</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日002</span> 仙台七夕 <b>#6 10分</b> vs 札幌冈萨 <b>#20 3分</b>（分差 +7）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日002 仙台七夕vs札幌冈萨（λ2.85） · 冷门风险最高：周日002 仙台七夕vs札幌冈萨（35%） · 最胶着：周日002 仙台七夕vs札幌冈萨（主73% / 客5%）</p>
   </div>
   <div class="league-card">
-    <h4>西甲 (4场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日003 塞尔塔 vs 马拉加 — 总进球λ 2.20，命中比分 1-0（模型给该比分 18.8%）（量级参考 2-1）</li>
-      <li>周日010 莱万特 vs 巴萨 — 总进球λ 3.74，命中比分 0-2（模型给该比分 11.3%）（量级参考 1-3）</li>
-      <li>周日016 赫塔费 vs 拉科 — 总进球λ 2.85，命中比分 1-1（模型给该比分 15.3%）（量级参考 0-1）</li>
-      <li>周日021 皇家社会 vs 马竞 — 总进球λ 3.98，命中比分 1-1（模型给该比分 11.3%）（量级参考 1-2）</li>
-    </ul>
+    <h4>西甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 西班牙甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:52:39 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">巴塞隆拿</td><td>4</td><td>4</td><td>0</td><td>0</td><td>17</td><td>2</td><td>15</td><td>12</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">皇家馬德里</td><td>5</td><td>4</td><td>0</td><td>1</td><td>14</td><td>4</td><td>10</td><td>12</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">艾拉維斯</td><td>5</td><td>3</td><td>1</td><td>1</td><td>11</td><td>5</td><td>6</td><td>10</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">西維爾</td><td>5</td><td>3</td><td>1</td><td>1</td><td>8</td><td>6</td><td>2</td><td>10</td></tr>
+      <tr class="zone-eu"><td>5</td><td style="text-align:left;">貝迪斯</td><td>4</td><td>3</td><td>0</td><td>1</td><td>5</td><td>5</td><td>0</td><td>9</td></tr>
+      <tr class="zone-eu"><td>6</td><td style="text-align:left;">拉科魯尼亞</td><td>4</td><td>2</td><td>2</td><td>0</td><td>8</td><td>5</td><td>3</td><td>8</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">愛斯賓奴</td><td>5</td><td>2</td><td>1</td><td>2</td><td>8</td><td>5</td><td>3</td><td>7</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">馬德里體育會</td><td>4</td><td>2</td><td>1</td><td>1</td><td>7</td><td>6</td><td>1</td><td>7</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">畢爾包</td><td>5</td><td>2</td><td>1</td><td>2</td><td>7</td><td>6</td><td>1</td><td>7</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">桑坦德</td><td>5</td><td>2</td><td>1</td><td>2</td><td>9</td><td>9</td><td>0</td><td>7</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">皇家蘇斯達</td><td>5</td><td>2</td><td>1</td><td>2</td><td>6</td><td>8</td><td>-2</td><td>7</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">奧沙辛拿</td><td>5</td><td>2</td><td>1</td><td>2</td><td>5</td><td>8</td><td>-3</td><td>7</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">利雲特</td><td>4</td><td>1</td><td>2</td><td>1</td><td>5</td><td>5</td><td>0</td><td>5</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">加泰</td><td>4</td><td>1</td><td>1</td><td>2</td><td>2</td><td>5</td><td>-3</td><td>4</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">華歷簡奴</td><td>5</td><td>1</td><td>1</td><td>3</td><td>8</td><td>14</td><td>-6</td><td>4</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">切爾達</td><td>5</td><td>0</td><td>3</td><td>2</td><td>2</td><td>5</td><td>-3</td><td>3</td></tr>
+      <tr class=""><td>17</td><td style="text-align:left;">維拉利爾</td><td>4</td><td>0</td><td>2</td><td>2</td><td>6</td><td>8</td><td>-2</td><td>2</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">馬拉加</td><td>4</td><td>0</td><td>2</td><td>2</td><td>1</td><td>7</td><td>-6</td><td>2</td></tr>
+      <tr class="zone-rel"><td>19</td><td style="text-align:left;">艾爾切</td><td>5</td><td>0</td><td>2</td><td>3</td><td>6</td><td>13</td><td>-7</td><td>2</td></tr>
+      <tr class="zone-rel"><td>20</td><td style="text-align:left;">華倫西亞</td><td>5</td><td>0</td><td>1</td><td>4</td><td>1</td><td>10</td><td>-9</td><td>1</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日003</span> 塞尔塔 <b>#16 3分</b> vs 马拉加 <b>#18 2分</b>（分差 +1） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日010</span> 莱万特 <b>#13 5分</b> vs 巴萨 <b>#1 12分</b>（分差 -7）</div>
+      <div class="impact-row"><span class="tag tag-blue">周日016</span> 赫塔费 <b>#15 4分</b> vs 拉科 <b>#6 8分</b>（分差 -4）</div>
+      <div class="impact-row"><span class="tag tag-blue">周日021</span> 皇家社会 <b>#11 7分</b> vs 马竞 <b>#8 7分</b>（分差 +0） · 卡位对话</div>
+    </div>
+    <p class="league-note">进球预期最高：周日021 皇家社会vs马竞（λ3.98） · 冷门风险最高：周日016 赫塔费vs拉科（66%） · 最胶着：周日016 赫塔费vs拉科（主33% / 客38%）</p>
   </div>
   <div class="league-card">
-    <h4>瑞超 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日004 哈马比 vs 布鲁马波 — 总进球λ 3.46，命中比分 2-1（模型给该比分 11.7%）（量级参考 3-1）</li>
-    </ul>
+    <h4>瑞超 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026 瑞典超級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:57:25 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">天狼星</td><td>20</td><td>14</td><td>3</td><td>3</td><td>48</td><td>27</td><td>21</td><td>45</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">佐加頓斯</td><td>20</td><td>12</td><td>2</td><td>6</td><td>44</td><td>19</td><td>25</td><td>38</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">哈馬比</td><td>20</td><td>11</td><td>4</td><td>5</td><td>45</td><td>19</td><td>26</td><td>37</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">赫根</td><td>21</td><td>8</td><td>9</td><td>4</td><td>34</td><td>30</td><td>4</td><td>33</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">AIK蘇納</td><td>20</td><td>9</td><td>5</td><td>6</td><td>29</td><td>31</td><td>-2</td><td>32</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">華斯特羅斯</td><td>21</td><td>9</td><td>5</td><td>7</td><td>32</td><td>35</td><td>-3</td><td>32</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">艾夫斯堡</td><td>20</td><td>8</td><td>7</td><td>5</td><td>28</td><td>21</td><td>7</td><td>31</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">馬模</td><td>20</td><td>9</td><td>3</td><td>8</td><td>33</td><td>30</td><td>3</td><td>30</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">哥登堡</td><td>21</td><td>8</td><td>5</td><td>8</td><td>30</td><td>41</td><td>-11</td><td>29</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">加爾斯</td><td>20</td><td>7</td><td>6</td><td>7</td><td>25</td><td>18</td><td>7</td><td>27</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">龐馬普卡納</td><td>20</td><td>7</td><td>6</td><td>7</td><td>29</td><td>32</td><td>-3</td><td>27</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">米贊比</td><td>20</td><td>5</td><td>6</td><td>9</td><td>26</td><td>34</td><td>-8</td><td>21</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">卡馬亞</td><td>20</td><td>5</td><td>4</td><td>11</td><td>21</td><td>30</td><td>-9</td><td>19</td></tr>
+      <tr class="zone-rel"><td>14</td><td style="text-align:left;">迪加科斯</td><td>20</td><td>5</td><td>4</td><td>11</td><td>19</td><td>31</td><td>-12</td><td>19</td></tr>
+      <tr class="zone-rel"><td>15</td><td style="text-align:left;">奧基迪</td><td>20</td><td>3</td><td>6</td><td>11</td><td>23</td><td>43</td><td>-20</td><td>15</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">咸史泰斯</td><td>21</td><td>2</td><td>5</td><td>14</td><td>14</td><td>39</td><td>-25</td><td>11</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日004</span> 哈马比 <b>#3 37分</b> vs 布鲁马波 <b>排名—</b></div>
+    </div>
+    <p class="league-note">进球预期最高：周日004 哈马比vs布鲁马波（λ3.46） · 冷门风险最高：周日004 哈马比vs布鲁马波（22%） · 最胶着：周日004 哈马比vs布鲁马波（主75% / 客6%）</p>
   </div>
   <div class="league-card">
-    <h4>芬超 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日005 库奥皮奥 vs 赫尔辛基 — 总进球λ 2.98，命中比分 1-1（模型给该比分 14.4%）（量级参考 2-1）</li>
-    </ul>
+    <h4>芬超 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026 芬蘭超級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/3 4:58:14 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">古比斯</td><td>22</td><td>12</td><td>7</td><td>3</td><td>38</td><td>23</td><td>15</td><td>43</td></tr>
+      <tr class=""><td>2</td><td style="text-align:left;">英特杜古</td><td>22</td><td>11</td><td>9</td><td>2</td><td>29</td><td>16</td><td>13</td><td>42</td></tr>
+      <tr class=""><td>3</td><td style="text-align:left;">赫爾辛基</td><td>22</td><td>11</td><td>4</td><td>7</td><td>36</td><td>27</td><td>9</td><td>37</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">吉尼斯坦</td><td>22</td><td>10</td><td>6</td><td>6</td><td>36</td><td>29</td><td>7</td><td>36</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">AC奧盧</td><td>22</td><td>10</td><td>4</td><td>8</td><td>25</td><td>25</td><td>0</td><td>34</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">VPS華沙</td><td>22</td><td>9</td><td>6</td><td>7</td><td>29</td><td>22</td><td>7</td><td>33</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">拉迪</td><td>22</td><td>9</td><td>5</td><td>8</td><td>26</td><td>19</td><td>7</td><td>32</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">TPS杜古</td><td>22</td><td>8</td><td>7</td><td>7</td><td>28</td><td>23</td><td>5</td><td>31</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">伊斯韋斯</td><td>22</td><td>7</td><td>4</td><td>11</td><td>34</td><td>37</td><td>-3</td><td>25</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">西納約恩</td><td>22</td><td>4</td><td>7</td><td>11</td><td>25</td><td>33</td><td>-8</td><td>19</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">查路</td><td>22</td><td>3</td><td>6</td><td>13</td><td>18</td><td>44</td><td>-26</td><td>15</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">馬利漢姆</td><td>22</td><td>3</td><td>5</td><td>14</td><td>17</td><td>43</td><td>-26</td><td>14</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日005</span> 库奥皮奥 <b>#1 43分</b> vs 赫尔辛基 <b>#3 37分</b>（分差 +6）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日005 库奥皮奥vs赫尔辛基（λ2.98） · 冷门风险最高：周日005 库奥皮奥vs赫尔辛基（57%） · 最胶着：周日005 库奥皮奥vs赫尔辛基（主49% / 客24%）</p>
   </div>
   <div class="league-card">
-    <h4>荷甲 (2场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日006 海伦芬 vs 斯达 — 总进球λ 3.49，命中比分 2-1（模型给该比分 10.3%）（量级参考 2-1）</li>
-      <li>周日018 埃因霍温 vs 鹿斯巴达 — 总进球λ 4.07，命中比分 2-1（模型给该比分 9.7%）（量级参考 3-1）</li>
-    </ul>
+    <h4>荷甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 荷蘭甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:55:53 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">艾克馬亞</td><td>6</td><td>5</td><td>1</td><td>0</td><td>17</td><td>6</td><td>11</td><td>16</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">PSV燕豪芬</td><td>5</td><td>4</td><td>1</td><td>0</td><td>18</td><td>6</td><td>12</td><td>13</td></tr>
+      <tr class=""><td>3</td><td style="text-align:left;">川迪</td><td>6</td><td>4</td><td>1</td><td>1</td><td>12</td><td>5</td><td>7</td><td>13</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">飛燕諾</td><td>5</td><td>3</td><td>2</td><td>0</td><td>13</td><td>7</td><td>6</td><td>11</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">阿積士</td><td>5</td><td>3</td><td>1</td><td>1</td><td>14</td><td>6</td><td>8</td><td>10</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">精英隊</td><td>5</td><td>3</td><td>1</td><td>1</td><td>12</td><td>5</td><td>7</td><td>10</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">幸運薛達</td><td>6</td><td>3</td><td>1</td><td>2</td><td>12</td><td>14</td><td>-2</td><td>10</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">伊高斯</td><td>6</td><td>2</td><td>3</td><td>1</td><td>15</td><td>13</td><td>2</td><td>9</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">高寧根</td><td>6</td><td>2</td><td>2</td><td>2</td><td>12</td><td>13</td><td>-1</td><td>8</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">NEC尼美根</td><td>6</td><td>2</td><td>1</td><td>3</td><td>11</td><td>12</td><td>-1</td><td>7</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">鹿特丹斯巴達</td><td>5</td><td>1</td><td>2</td><td>2</td><td>9</td><td>9</td><td>0</td><td>5</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">海倫維恩</td><td>5</td><td>1</td><td>2</td><td>2</td><td>7</td><td>9</td><td>-2</td><td>5</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">施禾尼</td><td>5</td><td>1</td><td>1</td><td>3</td><td>6</td><td>10</td><td>-4</td><td>4</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">泰斯達</td><td>5</td><td>1</td><td>1</td><td>3</td><td>5</td><td>11</td><td>-6</td><td>4</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">甘堡爾</td><td>6</td><td>1</td><td>1</td><td>4</td><td>9</td><td>18</td><td>-9</td><td>4</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">烏德勒支</td><td>5</td><td>0</td><td>2</td><td>3</td><td>9</td><td>18</td><td>-9</td><td>2</td></tr>
+      <tr class="zone-rel"><td>17</td><td style="text-align:left;">威廉二世</td><td>5</td><td>0</td><td>2</td><td>3</td><td>5</td><td>14</td><td>-9</td><td>2</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">海牙</td><td>6</td><td>0</td><td>1</td><td>5</td><td>6</td><td>16</td><td>-10</td><td>1</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日006</span> 海伦芬 <b>#12 5分</b> vs 斯达 <b>#14 4分</b>（分差 +1） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日018</span> 埃因霍温 <b>#2 13分</b> vs 鹿斯巴达 <b>#11 5分</b>（分差 +8）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日018 埃因霍温vs鹿斯巴达（λ4.07） · 冷门风险最高：周日006 海伦芬vs斯达（44%） · 最胶着：周日006 海伦芬vs斯达（主62% / 客14%）</p>
   </div>
   <div class="league-card">
-    <h4>意甲 (3场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日007 莱切 vs 蒙扎 — 总进球λ 2.65，命中比分 1-1（模型给该比分 13.6%）（量级参考 0-1）</li>
-      <li>周日015 那不勒斯 vs 博洛尼亚 — 总进球λ 2.54，命中比分 1-0（模型给该比分 13.3%）（量级参考 2-1）</li>
-      <li>周日019 萨索洛 vs 尤文图斯 — 总进球λ 2.87，命中比分 0-1（模型给该比分 12.1%）（量级参考 1-2）</li>
-    </ul>
+    <h4>意甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 意大利甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:51:36 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">拉素</td><td>4</td><td>3</td><td>1</td><td>0</td><td>6</td><td>3</td><td>3</td><td>10</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">羅馬</td><td>3</td><td>3</td><td>0</td><td>0</td><td>10</td><td>1</td><td>9</td><td>9</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">國際米蘭</td><td>3</td><td>3</td><td>0</td><td>0</td><td>8</td><td>3</td><td>5</td><td>9</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">卡利亞里</td><td>4</td><td>3</td><td>0</td><td>1</td><td>4</td><td>2</td><td>2</td><td>9</td></tr>
+      <tr class="zone-eu"><td>5</td><td style="text-align:left;">AC米蘭</td><td>4</td><td>2</td><td>2</td><td>0</td><td>7</td><td>4</td><td>3</td><td>8</td></tr>
+      <tr class="zone-eu"><td>6</td><td style="text-align:left;">科木</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td><td>3</td><td>4</td><td>7</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">費辛隆尼</td><td>4</td><td>2</td><td>1</td><td>1</td><td>7</td><td>4</td><td>3</td><td>7</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">祖雲達斯</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4</td><td>1</td><td>3</td><td>7</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">阿特蘭大</td><td>4</td><td>2</td><td>0</td><td>2</td><td>5</td><td>5</td><td>0</td><td>6</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">烏甸尼斯</td><td>3</td><td>1</td><td>1</td><td>1</td><td>5</td><td>5</td><td>0</td><td>4</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">莎索羅</td><td>3</td><td>1</td><td>1</td><td>1</td><td>5</td><td>5</td><td>0</td><td>4</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">拿玻里</td><td>3</td><td>1</td><td>0</td><td>2</td><td>5</td><td>5</td><td>0</td><td>3</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">拖連奴</td><td>3</td><td>1</td><td>0</td><td>2</td><td>4</td><td>5</td><td>-1</td><td>3</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">萊切</td><td>3</td><td>1</td><td>0</td><td>2</td><td>2</td><td>5</td><td>-3</td><td>3</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">費倫天拿</td><td>4</td><td>1</td><td>0</td><td>3</td><td>5</td><td>11</td><td>-6</td><td>3</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">博洛尼亞</td><td>3</td><td>0</td><td>1</td><td>2</td><td>2</td><td>4</td><td>-2</td><td>1</td></tr>
+      <tr class=""><td>17</td><td style="text-align:left;">帕爾馬</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1</td><td>4</td><td>-3</td><td>1</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">蒙沙</td><td>3</td><td>0</td><td>1</td><td>2</td><td>4</td><td>8</td><td>-4</td><td>1</td></tr>
+      <tr class="zone-rel"><td>19</td><td style="text-align:left;">熱拿亞</td><td>4</td><td>0</td><td>1</td><td>3</td><td>2</td><td>8</td><td>-6</td><td>1</td></tr>
+      <tr class="zone-rel"><td>20</td><td style="text-align:left;">威尼斯</td><td>4</td><td>0</td><td>0</td><td>4</td><td>4</td><td>11</td><td>-7</td><td>0</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日007</span> 莱切 <b>#14 3分</b> vs 蒙扎 <b>#18 1分</b>（分差 +2） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日015</span> 那不勒斯 <b>#12 3分</b> vs 博洛尼亚 <b>#16 1分</b>（分差 +2） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日019</span> 萨索洛 <b>#11 4分</b> vs 尤文图斯 <b>#8 7分</b>（分差 -3） · 卡位对话</div>
+    </div>
+    <p class="league-note">进球预期最高：周日019 萨索洛vs尤文图斯（λ2.87） · 冷门风险最高：周日007 莱切vs蒙扎（62%） · 最胶着：周日007 莱切vs蒙扎（主29% / 客42%）</p>
   </div>
   <div class="league-card">
-    <h4>法甲 (3场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日008 里尔 vs 特鲁瓦 — 总进球λ 2.92，命中比分 2-1（模型给该比分 13.1%）（量级参考 2-1）</li>
-      <li>周日012 勒芒 vs 朗斯 — 总进球λ 3.32，命中比分 1-1（模型给该比分 10.8%）（量级参考 1-2）</li>
-      <li>周日020 布雷斯特 vs 巴黎圣曼 — 总进球λ 3.45，命中比分 1-2（模型给该比分 10.6%）（量级参考 1-3）</li>
-    </ul>
+    <h4>法甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 法國甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:54:14 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">摩納哥</td><td>4</td><td>3</td><td>1</td><td>0</td><td>6</td><td>2</td><td>4</td><td>10</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">雷恩</td><td>4</td><td>3</td><td>1</td><td>0</td><td>8</td><td>5</td><td>3</td><td>10</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">里昂</td><td>4</td><td>2</td><td>2</td><td>0</td><td>6</td><td>2</td><td>4</td><td>8</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">巴黎FC</td><td>4</td><td>2</td><td>2</td><td>0</td><td>6</td><td>2</td><td>4</td><td>8</td></tr>
+      <tr class="zone-eu"><td>5</td><td style="text-align:left;">利爾</td><td>3</td><td>2</td><td>1</td><td>0</td><td>5</td><td>2</td><td>3</td><td>7</td></tr>
+      <tr class="zone-eu"><td>6</td><td style="text-align:left;">史特拉斯堡</td><td>4</td><td>2</td><td>1</td><td>1</td><td>9</td><td>8</td><td>1</td><td>7</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">比斯特</td><td>3</td><td>1</td><td>2</td><td>0</td><td>6</td><td>5</td><td>1</td><td>5</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">羅連安特</td><td>4</td><td>1</td><td>2</td><td>1</td><td>4</td><td>4</td><td>0</td><td>5</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">昂熱</td><td>4</td><td>1</td><td>1</td><td>2</td><td>4</td><td>5</td><td>-1</td><td>4</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">特魯瓦</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4</td><td>7</td><td>-3</td><td>4</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">朗斯</td><td>3</td><td>1</td><td>0</td><td>2</td><td>6</td><td>5</td><td>1</td><td>3</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">馬賽</td><td>4</td><td>1</td><td>0</td><td>3</td><td>6</td><td>6</td><td>0</td><td>3</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">歐塞爾</td><td>4</td><td>1</td><td>0</td><td>3</td><td>5</td><td>11</td><td>-6</td><td>3</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">巴黎聖日門</td><td>3</td><td>0</td><td>2</td><td>1</td><td>5</td><td>6</td><td>-1</td><td>2</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">勒芒</td><td>3</td><td>0</td><td>2</td><td>1</td><td>5</td><td>6</td><td>-1</td><td>2</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">勒哈費爾</td><td>4</td><td>0</td><td>2</td><td>2</td><td>2</td><td>4</td><td>-2</td><td>2</td></tr>
+      <tr class="zone-rel"><td>17</td><td style="text-align:left;">圖魯茲</td><td>4</td><td>0</td><td>2</td><td>2</td><td>4</td><td>7</td><td>-3</td><td>2</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">奈斯</td><td>4</td><td>0</td><td>2</td><td>2</td><td>1</td><td>5</td><td>-4</td><td>2</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日008</span> 里尔 <b>#5 7分</b> vs 特鲁瓦 <b>#10 4分</b>（分差 +3） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日012</span> 勒芒 <b>#15 2分</b> vs 朗斯 <b>#11 3分</b>（分差 -1） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日020</span> 布雷斯特 <b>#7 5分</b> vs 巴黎圣曼 <b>#14 2分</b>（分差 +3） · 卡位对话</div>
+    </div>
+    <p class="league-note">进球预期最高：周日020 布雷斯特vs巴黎圣曼（λ3.45） · 冷门风险最高：周日012 勒芒vs朗斯（43%） · 最胶着：周日012 勒芒vs朗斯（主17% / 客59%）</p>
   </div>
   <div class="league-card">
-    <h4>德甲 (2场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日009 莱红牛 vs 汉堡 — 总进球λ 3.39，命中比分 2-0（模型给该比分 10.8%）（量级参考 2-1）</li>
-      <li>周日014 埃沃斯堡 vs 拜仁 — 总进球λ 4.20，命中比分 1-2（模型给该比分 10.5%）（量级参考 1-3）</li>
-    </ul>
+    <h4>德甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 德國甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:52:09 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">費雷堡</td><td>3</td><td>3</td><td>0</td><td>0</td><td>10</td><td>1</td><td>9</td><td>9</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">多蒙特</td><td>3</td><td>3</td><td>0</td><td>0</td><td>8</td><td>2</td><td>6</td><td>9</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">奧格斯堡</td><td>3</td><td>2</td><td>1</td><td>0</td><td>9</td><td>3</td><td>6</td><td>7</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">艾華斯堡</td><td>2</td><td>2</td><td>0</td><td>0</td><td>7</td><td>5</td><td>2</td><td>6</td></tr>
+      <tr class="zone-eu"><td>5</td><td style="text-align:left;">拜仁慕尼黑</td><td>2</td><td>1</td><td>1</td><td>0</td><td>5</td><td>1</td><td>4</td><td>4</td></tr>
+      <tr class="zone-eu"><td>6</td><td style="text-align:left;">利華古遜</td><td>3</td><td>1</td><td>1</td><td>1</td><td>8</td><td>5</td><td>3</td><td>4</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">緬恩斯</td><td>3</td><td>1</td><td>1</td><td>1</td><td>6</td><td>3</td><td>3</td><td>4</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">法蘭克福</td><td>3</td><td>1</td><td>1</td><td>1</td><td>7</td><td>8</td><td>-1</td><td>4</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">雲達不萊梅</td><td>3</td><td>1</td><td>1</td><td>1</td><td>5</td><td>6</td><td>-1</td><td>4</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">史浩克零四</td><td>3</td><td>1</td><td>1</td><td>1</td><td>3</td><td>4</td><td>-1</td><td>4</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">科隆</td><td>3</td><td>1</td><td>1</td><td>1</td><td>5</td><td>7</td><td>-2</td><td>4</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">RB萊比錫</td><td>2</td><td>1</td><td>0</td><td>1</td><td>4</td><td>3</td><td>1</td><td>3</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">賀芬咸</td><td>3</td><td>1</td><td>0</td><td>2</td><td>6</td><td>7</td><td>-1</td><td>3</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">史特加</td><td>3</td><td>1</td><td>0</td><td>2</td><td>6</td><td>8</td><td>-2</td><td>3</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">柏德博恩</td><td>3</td><td>0</td><td>1</td><td>2</td><td>0</td><td>4</td><td>-4</td><td>1</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">柏林聯</td><td>3</td><td>0</td><td>1</td><td>2</td><td>4</td><td>10</td><td>-6</td><td>1</td></tr>
+      <tr class="zone-rel"><td>17</td><td style="text-align:left;">漢堡</td><td>2</td><td>0</td><td>0</td><td>2</td><td>0</td><td>7</td><td>-7</td><td>0</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">慕遜加柏</td><td>3</td><td>0</td><td>0</td><td>3</td><td>3</td><td>12</td><td>-9</td><td>0</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日009</span> 莱红牛 <b>#12 3分</b> vs 汉堡 <b>#17 0分</b>（分差 +3） · 卡位对话</div>
+      <div class="impact-row"><span class="tag tag-blue">周日014</span> 埃沃斯堡 <b>#4 6分</b> vs 拜仁 <b>#5 4分</b>（分差 +2） · 卡位对话</div>
+    </div>
+    <p class="league-note">进球预期最高：周日014 埃沃斯堡vs拜仁（λ4.20） · 冷门风险最高：周日009 莱红牛vs汉堡（33%） · 最胶着：周日009 莱红牛vs汉堡（主74% / 客7%）</p>
   </div>
   <div class="league-card">
-    <h4>挪超 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日011 汉坎 vs 莫尔德 — 总进球λ 3.86，命中比分 1-2（模型给该比分 10.7%）（量级参考 1-2）</li>
-    </ul>
+    <h4>挪超 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026 挪威超級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:57:55 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">波杜基林特</td><td>19</td><td>15</td><td>2</td><td>2</td><td>49</td><td>15</td><td>34</td><td>47</td></tr>
+      <tr class=""><td>2</td><td style="text-align:left;">維京</td><td>19</td><td>14</td><td>2</td><td>3</td><td>43</td><td>19</td><td>24</td><td>44</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">特羅素</td><td>20</td><td>10</td><td>5</td><td>5</td><td>37</td><td>27</td><td>10</td><td>35</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">莫迪</td><td>19</td><td>10</td><td>3</td><td>6</td><td>38</td><td>29</td><td>9</td><td>33</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">利尼史特朗</td><td>20</td><td>10</td><td>2</td><td>8</td><td>28</td><td>26</td><td>2</td><td>32</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">洛辛堡</td><td>20</td><td>9</td><td>3</td><td>8</td><td>36</td><td>29</td><td>7</td><td>30</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">白蘭恩</td><td>19</td><td>8</td><td>2</td><td>9</td><td>37</td><td>29</td><td>8</td><td>26</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">費德列斯達</td><td>19</td><td>8</td><td>2</td><td>9</td><td>23</td><td>30</td><td>-7</td><td>26</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">薩普斯堡</td><td>19</td><td>6</td><td>6</td><td>7</td><td>22</td><td>25</td><td>-3</td><td>24</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">咸卡姆</td><td>19</td><td>6</td><td>5</td><td>8</td><td>26</td><td>36</td><td>-10</td><td>23</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">華拿倫加</td><td>20</td><td>6</td><td>4</td><td>10</td><td>33</td><td>42</td><td>-9</td><td>22</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">辛迪夫佐特</td><td>19</td><td>5</td><td>5</td><td>9</td><td>16</td><td>24</td><td>-8</td><td>20</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">基斯迪辛特</td><td>19</td><td>5</td><td>4</td><td>10</td><td>19</td><td>29</td><td>-10</td><td>19</td></tr>
+      <tr class="zone-rel"><td>14</td><td style="text-align:left;">KFUM奧斯陸</td><td>19</td><td>5</td><td>4</td><td>10</td><td>20</td><td>33</td><td>-13</td><td>19</td></tr>
+      <tr class="zone-rel"><td>15</td><td style="text-align:left;">阿利辛特</td><td>19</td><td>3</td><td>9</td><td>7</td><td>30</td><td>43</td><td>-13</td><td>18</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">史達</td><td>19</td><td>3</td><td>4</td><td>12</td><td>20</td><td>41</td><td>-21</td><td>13</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日011</span> 汉坎 <b>#10 23分</b> vs 莫尔德 <b>#4 33分</b>（分差 -10）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日011 汉坎vs莫尔德（λ3.86） · 冷门风险最高：周日011 汉坎vs莫尔德（40%） · 最胶着：周日011 汉坎vs莫尔德（主21% / 客59%）</p>
   </div>
   <div class="league-card">
-    <h4>英超 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日013 曼联 vs 曼城 — 总进球λ 3.29，命中比分 1-1（模型给该比分 14.2%）（量级参考 1-2）</li>
-    </ul>
+    <h4>英超 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 英格蘭超級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:53:42 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">阿仙奴</td><td>4</td><td>4</td><td>0</td><td>0</td><td>8</td><td>1</td><td>7</td><td>12</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">曼城</td><td>3</td><td>3</td><td>0</td><td>0</td><td>7</td><td>2</td><td>5</td><td>9</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">侯城</td><td>4</td><td>2</td><td>2</td><td>0</td><td>5</td><td>2</td><td>3</td><td>8</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">車路士</td><td>4</td><td>2</td><td>1</td><td>1</td><td>10</td><td>9</td><td>1</td><td>7</td></tr>
+      <tr class="zone-eu"><td>5</td><td style="text-align:left;">賓福特</td><td>4</td><td>1</td><td>3</td><td>0</td><td>7</td><td>4</td><td>3</td><td>6</td></tr>
+      <tr class="zone-eu"><td>6</td><td style="text-align:left;">利物浦</td><td>4</td><td>1</td><td>3</td><td>0</td><td>6</td><td>4</td><td>2</td><td>6</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">愛華頓</td><td>4</td><td>1</td><td>3</td><td>0</td><td>5</td><td>3</td><td>2</td><td>6</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">葉士域治</td><td>4</td><td>2</td><td>0</td><td>2</td><td>7</td><td>10</td><td>-3</td><td>6</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">紐卡素</td><td>3</td><td>1</td><td>2</td><td>0</td><td>6</td><td>4</td><td>2</td><td>5</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">列斯聯</td><td>3</td><td>1</td><td>2</td><td>0</td><td>3</td><td>2</td><td>1</td><td>5</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">諾定咸森林</td><td>4</td><td>1</td><td>2</td><td>1</td><td>4</td><td>4</td><td>0</td><td>5</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">白禮頓</td><td>3</td><td>1</td><td>1</td><td>1</td><td>8</td><td>5</td><td>3</td><td>4</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">曼聯</td><td>3</td><td>1</td><td>1</td><td>1</td><td>7</td><td>6</td><td>1</td><td>4</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">新特蘭</td><td>4</td><td>1</td><td>1</td><td>2</td><td>3</td><td>5</td><td>-2</td><td>4</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">般尼茅夫</td><td>4</td><td>0</td><td>3</td><td>1</td><td>6</td><td>7</td><td>-1</td><td>3</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">水晶宮</td><td>4</td><td>1</td><td>0</td><td>3</td><td>6</td><td>11</td><td>-5</td><td>3</td></tr>
+      <tr class=""><td>17</td><td style="text-align:left;">熱刺</td><td>4</td><td>0</td><td>2</td><td>2</td><td>0</td><td>5</td><td>-5</td><td>2</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">富咸</td><td>4</td><td>0</td><td>1</td><td>3</td><td>4</td><td>7</td><td>-3</td><td>1</td></tr>
+      <tr class="zone-rel"><td>19</td><td style="text-align:left;">阿士東維拉</td><td>4</td><td>0</td><td>1</td><td>3</td><td>1</td><td>7</td><td>-6</td><td>1</td></tr>
+      <tr class="zone-rel"><td>20</td><td style="text-align:left;">高雲地利</td><td>3</td><td>0</td><td>0</td><td>3</td><td>0</td><td>5</td><td>-5</td><td>0</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日013</span> 曼联 <b>#13 4分</b> vs 曼城 <b>#2 9分</b>（分差 -5）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日013 曼联vs曼城（λ3.29） · 冷门风险最高：周日013 曼联vs曼城（53%） · 最胶着：周日013 曼联vs曼城（主30% / 客40%）</p>
   </div>
   <div class="league-card">
-    <h4>葡超 (2场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日017 本菲卡 vs 吉维森特 — 总进球λ 3.44，命中比分 2-0（模型给该比分 12.9%）（量级参考 3-1）</li>
-      <li>周日022 法马利康 vs 里斯本 — 总进球λ 3.21，命中比分 1-2（模型给该比分 10.6%）（量级参考 1-2）</li>
-    </ul>
+    <h4>葡超 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 葡萄牙超級聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 6:53:12 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class="zone-eu"><td>1</td><td style="text-align:left;">波圖</td><td>6</td><td>6</td><td>0</td><td>0</td><td>15</td><td>2</td><td>13</td><td>18</td></tr>
+      <tr class="zone-eu"><td>2</td><td style="text-align:left;">賓菲加</td><td>5</td><td>4</td><td>1</td><td>0</td><td>18</td><td>3</td><td>15</td><td>13</td></tr>
+      <tr class="zone-eu"><td>3</td><td style="text-align:left;">士砵亭</td><td>5</td><td>4</td><td>1</td><td>0</td><td>14</td><td>5</td><td>9</td><td>13</td></tr>
+      <tr class="zone-eu"><td>4</td><td style="text-align:left;">辛達卡拉</td><td>5</td><td>3</td><td>2</td><td>0</td><td>9</td><td>3</td><td>6</td><td>11</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">阿洛卡</td><td>5</td><td>3</td><td>1</td><td>1</td><td>7</td><td>3</td><td>4</td><td>10</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">阿馬多拉</td><td>5</td><td>2</td><td>3</td><td>0</td><td>11</td><td>9</td><td>2</td><td>9</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">維塞烏</td><td>6</td><td>2</td><td>2</td><td>2</td><td>7</td><td>9</td><td>-2</td><td>8</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">基維辛迪</td><td>4</td><td>2</td><td>1</td><td>1</td><td>3</td><td>1</td><td>2</td><td>7</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">布拉加</td><td>4</td><td>2</td><td>1</td><td>1</td><td>6</td><td>5</td><td>1</td><td>7</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">馬里迪莫</td><td>5</td><td>2</td><td>1</td><td>2</td><td>6</td><td>8</td><td>-2</td><td>7</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">艾華卡</td><td>6</td><td>1</td><td>2</td><td>3</td><td>8</td><td>11</td><td>-3</td><td>5</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">甘馬雷斯</td><td>6</td><td>1</td><td>1</td><td>4</td><td>4</td><td>7</td><td>-3</td><td>4</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">國民隊</td><td>6</td><td>1</td><td>1</td><td>4</td><td>7</td><td>11</td><td>-4</td><td>4</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">摩里倫斯</td><td>5</td><td>1</td><td>1</td><td>3</td><td>4</td><td>12</td><td>-8</td><td>4</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">法馬利卡奧</td><td>5</td><td>0</td><td>3</td><td>2</td><td>4</td><td>6</td><td>-2</td><td>3</td></tr>
+      <tr class="zone-rel"><td>16</td><td style="text-align:left;">里奧阿維</td><td>5</td><td>1</td><td>0</td><td>4</td><td>2</td><td>11</td><td>-9</td><td>3</td></tr>
+      <tr class="zone-rel"><td>17</td><td style="text-align:left;">伊斯托里爾</td><td>5</td><td>0</td><td>2</td><td>3</td><td>2</td><td>7</td><td>-5</td><td>2</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">卡薩比亞</td><td>6</td><td>0</td><td>1</td><td>5</td><td>1</td><td>15</td><td>-14</td><td>1</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日017</span> 本菲卡 <b>#2 13分</b> vs 吉维森特 <b>排名—</b></div>
+      <div class="impact-row"><span class="tag tag-blue">周日022</span> 法马利康 <b>#15 3分</b> vs 里斯本 <b>#3 13分</b>（分差 -10）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日017 本菲卡vs吉维森特（λ3.44） · 冷门风险最高：周日022 法马利康vs里斯本（36%） · 最胶着：周日022 法马利康vs里斯本（主11% / 客66%）</p>
   </div>
   <div class="league-card">
-    <h4>巴甲 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日023 弗拉门戈 vs 科林蒂安 — 总进球λ 2.97，命中比分 2-0（模型给该比分 15.6%）（量级参考 2-1）</li>
-    </ul>
+    <h4>巴甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026 巴西甲組聯賽</span></h4>
+    <div class="league-src">数据更新：2026/9/13 13:43:16 ｜ 来源 7M 体育数据库</div>
+    <table class="league-tbl standings">
+      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+      <tr class=""><td>1</td><td style="text-align:left;">彭美拉斯</td><td>27</td><td>16</td><td>8</td><td>3</td><td>47</td><td>21</td><td>26</td><td>56</td></tr>
+      <tr class=""><td>2</td><td style="text-align:left;">法林明高</td><td>26</td><td>16</td><td>6</td><td>4</td><td>51</td><td>21</td><td>30</td><td>54</td></tr>
+      <tr class=""><td>3</td><td style="text-align:left;">帕拉尼恩斯</td><td>27</td><td>13</td><td>7</td><td>7</td><td>41</td><td>31</td><td>10</td><td>46</td></tr>
+      <tr class=""><td>4</td><td style="text-align:left;">富明尼斯</td><td>27</td><td>12</td><td>9</td><td>6</td><td>41</td><td>35</td><td>6</td><td>45</td></tr>
+      <tr class=""><td>5</td><td style="text-align:left;">巴希亞</td><td>26</td><td>11</td><td>10</td><td>5</td><td>40</td><td>32</td><td>8</td><td>43</td></tr>
+      <tr class=""><td>6</td><td style="text-align:left;">高士路</td><td>27</td><td>12</td><td>6</td><td>9</td><td>39</td><td>39</td><td>0</td><td>42</td></tr>
+      <tr class=""><td>7</td><td style="text-align:left;">明尼路</td><td>26</td><td>11</td><td>6</td><td>9</td><td>35</td><td>31</td><td>4</td><td>39</td></tr>
+      <tr class=""><td>8</td><td style="text-align:left;">哥列迪巴</td><td>27</td><td>10</td><td>8</td><td>9</td><td>37</td><td>38</td><td>-1</td><td>38</td></tr>
+      <tr class=""><td>9</td><td style="text-align:left;">巴拉干天奴</td><td>26</td><td>10</td><td>6</td><td>10</td><td>32</td><td>29</td><td>3</td><td>36</td></tr>
+      <tr class=""><td>10</td><td style="text-align:left;">山度士</td><td>26</td><td>9</td><td>8</td><td>9</td><td>39</td><td>39</td><td>0</td><td>35</td></tr>
+      <tr class=""><td>11</td><td style="text-align:left;">聖保羅</td><td>26</td><td>9</td><td>6</td><td>11</td><td>31</td><td>30</td><td>1</td><td>33</td></tr>
+      <tr class=""><td>12</td><td style="text-align:left;">哥連泰斯</td><td>26</td><td>8</td><td>8</td><td>10</td><td>27</td><td>27</td><td>0</td><td>32</td></tr>
+      <tr class=""><td>13</td><td style="text-align:left;">保地花高</td><td>26</td><td>8</td><td>8</td><td>10</td><td>38</td><td>41</td><td>-3</td><td>32</td></tr>
+      <tr class=""><td>14</td><td style="text-align:left;">維多利亞</td><td>26</td><td>9</td><td>5</td><td>12</td><td>25</td><td>37</td><td>-12</td><td>32</td></tr>
+      <tr class=""><td>15</td><td style="text-align:left;">國際體育會</td><td>27</td><td>6</td><td>10</td><td>11</td><td>30</td><td>35</td><td>-5</td><td>28</td></tr>
+      <tr class=""><td>16</td><td style="text-align:left;">甘美奧</td><td>26</td><td>7</td><td>7</td><td>12</td><td>28</td><td>35</td><td>-7</td><td>28</td></tr>
+      <tr class="zone-rel"><td>17</td><td style="text-align:left;">米拉索</td><td>26</td><td>7</td><td>7</td><td>12</td><td>29</td><td>40</td><td>-11</td><td>28</td></tr>
+      <tr class="zone-rel"><td>18</td><td style="text-align:left;">華斯高</td><td>26</td><td>7</td><td>7</td><td>12</td><td>29</td><td>41</td><td>-12</td><td>28</td></tr>
+      <tr class="zone-rel"><td>19</td><td style="text-align:left;">瑞模貝雷PA</td><td>26</td><td>5</td><td>8</td><td>13</td><td>30</td><td>43</td><td>-13</td><td>23</td></tr>
+      <tr class="zone-rel"><td>20</td><td style="text-align:left;">查比高恩斯</td><td>26</td><td>3</td><td>8</td><td>15</td><td>28</td><td>52</td><td>-24</td><td>17</td></tr>
+    </table>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 积分影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周日023</span> 弗拉门戈 <b>#2 54分</b> vs 科林蒂安 <b>#12 32分</b>（分差 +22）</div>
+    </div>
+    <p class="league-note">进球预期最高：周日023 弗拉门戈vs科林蒂安（λ2.97） · 冷门风险最高：周日023 弗拉门戈vs科林蒂安（27%） · 最胶着：周日023 弗拉门戈vs科林蒂安（主79% / 客3%）</p>
   </div>
   <div class="league-card">
-    <h4>美职 (1场)</h4>
-    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">
-      <li>周日024 芝加哥 vs 新英格兰 — 总进球λ 3.27，命中比分 1-1（模型给该比分 12.8%）（量级参考 2-1）</li>
-    </ul>
+    <h4>美职</h4>
+    <p class="league-note">7M 数据库未收录美职联(MLS)积分榜。本节其余联赛展示真实积分榜。</p>
   </div>
 </div>
 
