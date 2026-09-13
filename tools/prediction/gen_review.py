@@ -1,8 +1,13 @@
 """生成「某日预测 vs 实际赛果」复盘 HTML。
 
 数据来源：
-  - 预测：predictions/<date>/pred_snapshot.json（每场含方向概率、top_scores 双档、stars 信心）
+  - 预测：predictions/<date>/pred_snapshot.json（每场含方向概率、λ、top_scores、stars 信心）
   - 赛果：results_data.json + results_history/*.json（键 = 日期_主_客，已修正主客方向）
+
+比分口径（2026-09-13 起与报告同步）：
+  - 头条 = 「期望比分」= λ 期望进球四舍五入，并约束在预测倾向象限内（与 _gen_report.expect_score 同规则）；
+  - 双档 = 期望比分 + 同倾向内概率最高的其余比分（_gen_report.expect_band；1591 场回测 26.0%，单点 13.8%）。
+  旧口径为「全局 top_scores 前两档」，与报告展示不一致，已弃用。
 
 特点：
   - 不依赖市场赔率，覆盖该日全部预测场次（含只有让球盘、无 1X2 赔率的场次）。
@@ -20,6 +25,53 @@ import os
 import re
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+
+# 竞彩比分盘的列出比分（与 _gen_report._LISTED_LABELS 保持一致；λ 取整结果不在此列时退回象限众数）
+LISTED_LABELS = {
+    '1:0', '2:0', '2:1', '3:0', '3:1', '3:2', '4:0', '4:1', '4:2', '5:0', '5:1', '5:2',
+    '0:0', '1:1', '2:2', '3:3',
+    '0:1', '0:2', '1:2', '0:3', '1:3', '2:3', '0:4', '1:4', '2:4', '0:5', '1:5', '2:5',
+}
+
+
+def _parse_score(s):
+    try:
+        h, a = (int(x) for x in str(s).split(':'))
+        return (h, a)
+    except (ValueError, AttributeError):
+        return None
+
+
+def _in_quad(c, okey):
+    return ((c[0] > c[1]) if okey == 'home' else
+            ((c[0] == c[1]) if okey == 'draw' else (c[0] < c[1])))
+
+
+def predict_scores(m):
+    """按报告口径取 (期望比分, 双档比分集合)。
+
+    与 _gen_report.expect_score / expect_band 同规则；期望比分不合法（取整后不在列出比分内、
+    或与倾向相反）时退回「倾向象限内概率最高的列出比分」。
+    """
+    ph, pd, pa = (float(m.get('prob_home', 0)), float(m.get('prob_draw', 0)),
+                  float(m.get('prob_away', 0)))
+    okey = 'home' if ph >= pd and ph >= pa else ('away' if pa >= pd else 'draw')
+    ts = m.get('top_scores') or []
+    idir = [t for t in ts if (_parse_score(t.get('score')) and _in_quad(_parse_score(t['score']), okey))]
+    fallback = idir[0]['score'] if idir else (ts[0]['score'] if ts else '-')
+    lh = float(m.get('lam_home', 0) or 0)
+    la = float(m.get('lam_away', 0) or 0)
+    cand = (int(round(lh)), int(round(la)))
+    if _in_quad(cand, okey) and f'{cand[0]}:{cand[1]}' in LISTED_LABELS:
+        exp = f'{cand[0]}:{cand[1]}'
+    else:
+        exp = fallback
+    band = {exp}
+    for t in idir:
+        if t.get('score') != exp:
+            band.add(t['score'])
+            break
+    return exp, band
 
 
 def load_json(p):
@@ -112,7 +164,7 @@ def main():
         rows.append((m, sc))
 
     n = len(rows)
-    dir_hit = score_hit = any_hit = 0
+    dir_hit = score_hit = any_hit = exp_hit = 0
     lam_model_sum = 0.0
     lam_actual_sum = 0.0
     table = []
@@ -121,18 +173,19 @@ def main():
         home, away, lid = m.get('home'), m.get('away'), m.get('league', '')
         ph, pd, pa = float(m.get('prob_home', 0)), float(m.get('prob_draw', 0)), float(m.get('prob_away', 0))
         pred_dir = '主胜' if ph >= pd and ph >= pa else ('客胜' if pa >= pd else '平局')
-        top2 = (m.get('top_scores') or [])[:2]
-        s1 = top2[0]['score'] if len(top2) > 0 else '-'
-        s2 = top2[1]['score'] if len(top2) > 1 else '-'
+        exp_sc, band = predict_scores(m)
+        band_order = [exp_sc] + sorted(band - {exp_sc})
         stars = '★' * int(m.get('stars', 0))
         actual = outcome_label(*sc) if sc else '?'
         actual_score = f'{sc[0]}:{sc[1]}' if sc else '?'
         dh = (pred_dir == actual) if sc else False
-        sh = (sc is not None and actual_score in {t.get('score') for t in top2})
+        sh = (sc is not None and actual_score in band)
+        eh = (sc is not None and actual_score == exp_sc)
         ah = dh or sh
         if sc:
             dir_hit += dh
             score_hit += sh
+            exp_hit += eh
             any_hit += ah
             lt = m.get('lam_total') or (float(m.get('lam_home', 0) or 0) + float(m.get('lam_away', 0) or 0))
             lam_model_sum += float(lt)
@@ -141,7 +194,8 @@ def main():
                 misses.append(f'{m.get("id")} {home}vs{away} 预测{pred_dir}实际{actual}')
         table.append(
             f'<tr><td class="b">{m.get("id")}</td><td>{lid}</td><td class="b">{home} vs {away}</td>'
-            f'<td class="dir">{pred_dir}</td><td>{s1}/{s2}</td><td>{stars}</td>'
+            f'<td class="dir">{pred_dir}</td>'
+            f'<td class="b">{exp_sc}</td><td>{"/".join(band_order)}</td><td>{stars}</td>'
             f'<td class="b">{actual_score}</td><td class="b">{actual}</td>'
             f'<td><span class="{"ok" if dh else "no"}">{"✔" if dh else "✘"}</span></td>'
             f'<td><span class="{"ok" if sh else "no"}">{"✔" if sh else "✘"}</span></td></tr>'
@@ -150,7 +204,8 @@ def main():
     nres = sum(1 for _, sc in rows if sc)
     lam_bias = (lam_model_sum - lam_actual_sum) / nres if nres else 0.0
     concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
-             f'={ (dir_hit/nres*100) if nres else 0:.0f}%，比分双档命中 {score_hit}/{nres}'
+             f'={ (dir_hit/nres*100) if nres else 0:.0f}%，期望比分单点命中 {exp_hit}/{nres}'
+             f'={ (exp_hit/nres*100) if nres else 0:.0f}%，比分双档命中 {score_hit}/{nres}'
              f'={ (score_hit/nres*100) if nres else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
              f'={ (any_hit/nres*100) if nres else 0:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
     miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
@@ -158,11 +213,11 @@ def main():
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>
 <h1>{ds} 竞彩预测复盘</h1>
-<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 比分双档命中 {score_hit}/{nres} · 至少一项命中 {any_hit}/{nres}</h2>
+<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 期望比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 至少一项命中 {any_hit}/{nres}</h2>
 <div class="sum"><b>关键复盘结论：</b>{concl}{miss_note}
 次日建议：方向失手集中在{"冷门/平局爆冷" if misses else "无"}场次，强弱对话与深让盘依 V3.3 滚动校准自动修正，无需每日手调；若连续多日方向命中率低于 50% 或 λ 总进球偏差持续 >0.2 球，应触发离线重拟合（market_calib / Platt）。</div>
 <table>
-<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>预测比分(双档)</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th></tr>
+<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>期望比分</th><th>双档(含期望比分)</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th></tr>
 {''.join(table)}
 </table></body></html>"""
 
@@ -176,6 +231,7 @@ def main():
     if misses:
         print(miss_note)
     print(f'复盘指标: 方向 {dir_hit}/{nres}={(dir_hit/nres*100) if nres else 0:.0f}% | '
+          f'期望比分单点 {exp_hit}/{nres}={(exp_hit/nres*100) if nres else 0:.0f}% | '
           f'比分双档 {score_hit}/{nres}={(score_hit/nres*100) if nres else 0:.0f}% | '
           f'λ总进球偏差 {lam_bias:+.2f} 球/场')
 
