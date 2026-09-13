@@ -134,7 +134,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-09-13 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 24场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-09-13 19:42 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-09-13 19:54 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -3949,5 +3949,134 @@ window.addEventListener('resize', function() { chart.resize(); });
     <p style="margin-top:0.5rem;">报告生成时间: 2026-09-13 | 仅供数据分析参考，不构成投注建议</p>
   </div>
 </div>
+
+<style>
+  h2, h3 { scroll-margin-top: 1.2rem; }
+  .toc-nav {
+    position: fixed; right: max(10px, calc((100vw - 1140px) / 2)); top: 50%;
+    transform: translateY(-50%); width: 176px; max-height: 76vh; overflow-y: auto;
+    background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 10px; padding: 0.7rem 0.5rem; z-index: 60;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.09); font-size: 0.8rem;
+    scrollbar-width: thin;
+  }
+  .toc-nav::-webkit-scrollbar { width: 4px; }
+  .toc-nav::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.16); border-radius: 2px; }
+  .toc-head {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted, #6c757d);
+    padding: 0 0.55rem 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08); margin-bottom: 0.35rem;
+  }
+  .toc-list { list-style: none; margin: 0; padding: 0; }
+  .toc-nav a {
+    display: block; padding: 0.32rem 0.55rem; color: var(--muted, #6c757d); text-decoration: none;
+    border-left: 2px solid transparent; border-radius: 0 4px 4px 0; line-height: 1.42;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: none;
+  }
+  .toc-nav a:hover { color: var(--ink, #1a1a2e); background: rgba(0,0,0,0.045); }
+  .toc-nav a.lv3 { padding-left: 1.2rem; font-size: 0.74rem; opacity: 0.9; }
+  .toc-nav a.active {
+    color: var(--accent, #e63946); border-left-color: var(--accent, #e63946);
+    background: rgba(230,57,70,0.08); font-weight: 600;
+  }
+  .toc-toggle {
+    position: fixed; right: 14px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: none; background: var(--accent, #e63946); color: #fff; font-size: 1.15rem;
+    cursor: pointer; z-index: 61; box-shadow: 0 4px 14px rgba(230,57,70,0.36);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .toc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 59; }
+  @media (min-width: 1361px) { .toc-toggle { display: none; } }
+  @media (max-width: 1360px) {
+    .toc-nav {
+      right: 14px; width: 210px; transform: translateY(-50%) translateX(calc(100% + 30px));
+      transition: transform 0.24s ease; max-height: 70vh;
+    }
+    .toc-nav.open { transform: translateY(-50%) translateX(0); }
+  }
+</style>
+<nav id="tocNav" class="toc-nav" aria-label="章节导航">
+  <div class="toc-head">目录</div>
+  <ul class="toc-list" id="tocList"></ul>
+</nav>
+<button id="tocToggle" class="toc-toggle" type="button" aria-label="打开章节目录" aria-expanded="false">&#9776;</button>
+<script>
+(function () {
+  var nav = document.getElementById('tocNav');
+  var list = document.getElementById('tocList');
+  var btn = document.getElementById('tocToggle');
+  if (!nav || !list) return;
+  var scope = document.querySelector('body > .container') || document.body;
+  var heads = [].filter.call(scope.querySelectorAll('h2, h3'), function (h) {
+    return (h.textContent || '').trim().length > 0;
+  });
+  if (!heads.length) { nav.style.display = 'none'; if (btn) btn.style.display = 'none'; return; }
+
+  var seq = 0;
+  heads.forEach(function (h) {
+    var txt = (h.textContent || '').trim().replace(/\s+/g, ' ');
+    if (!h.id) h.id = 'sec-' + (++seq);
+    var a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = txt;
+    a.title = txt;
+    if (h.tagName.toLowerCase() === 'h3') a.className = 'lv3';
+    a.addEventListener('click', closeNav);
+    var li = document.createElement('li');
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  var links = [].slice.call(list.querySelectorAll('a'));
+  var mask = null;
+
+  function closeNav() {
+    nav.classList.remove('open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (mask) { mask.remove(); mask = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      mask = document.createElement('div');
+      mask.className = 'toc-mask';
+      mask.addEventListener('click', closeNav);
+      document.body.appendChild(mask);
+    } else if (mask) { mask.remove(); mask = null; }
+  });
+
+  var current = heads[0];
+  function spy() {
+    var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
+    var pick = heads[0];
+    if (atBottom) {
+      pick = heads[heads.length - 1];
+    } else {
+      for (var i = 0; i < heads.length; i++) {
+        if (heads[i].getBoundingClientRect().top <= 140) pick = heads[i];
+      }
+    }
+    if (pick === current) return;
+    current = pick;
+    var activeId = '#' + pick.id;
+    links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === activeId); });
+    var act = list.querySelector('a.active');
+    if (act && nav.classList.contains('open') === false) {
+      var nr = nav.getBoundingClientRect(), ar = act.getBoundingClientRect();
+      if (ar.top < nr.top + 30 || ar.bottom > nr.bottom - 8) {
+        nav.scrollTop += (ar.top - nr.top) - (nav.clientHeight / 2) + (ar.height / 2);
+      }
+    }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { spy(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', spy, { passive: true });
+  spy();
+})();
+</script>
 </body>
 </html>
