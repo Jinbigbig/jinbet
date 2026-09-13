@@ -51,29 +51,106 @@ CSS += '''
 <style>
   .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
     color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
+  .league-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:0.35rem; }
+  .league-tbl th, .league-tbl td { border-bottom:1px solid rgba(128,128,128,0.22); padding:0.3rem 0.45rem; text-align:left; white-space:nowrap; }
+  .league-tbl th { color:var(--muted,#7a8ba0); font-weight:600; font-size:0.72rem; }
+  .league-note { font-size:0.76rem; color:var(--muted,#7a8ba0); margin:0.45rem 0 0; line-height:1.55; }
+  .league-tbl.standings { display:block; overflow-x:auto; }
+  .league-tbl.standings td:nth-child(2) { white-space:nowrap; }
+  .league-tbl.standings tr.zone-eu td { background:rgba(46,160,67,0.13); }
+  .league-tbl.standings tr.zone-rel td { background:rgba(220,60,60,0.12); }
+  .league-tbl.standings td:nth-child(10) { font-weight:700; }
+  .league-impact { margin-top:0.6rem; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.5rem; }
+  .league-impact .impact-title { font-size:0.74rem; font-weight:700; color:var(--muted,#7a8ba0); margin-bottom:0.3rem; }
+  .league-impact .impact-row { font-size:0.78rem; line-height:1.7; }
+  .league-impact .impact-row b { color:var(--accent,#2f7de0); }
+  .league-src { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-bottom:0.4rem; }
 </style>'''
 # 第六节已改为按当日实际联赛动态生成（见 build_league_sec），不再回收旧报告静态段落
 
 def build_league_sec(matches):
-    """按当日实际联赛动态生成第六节（旧版为回收上一份报告的静态段落，会串场）"""
+    """六、当日赛事联赛形势：用 7M 真实积分榜，每联赛单独一张卡。
+    含：当前积分榜（排名/赛/胜平负/进失/净/分，欧冠·欧联·降级区着色）
+        + 本日对阵积分影响（双方当前排名与积分，及本场胜负对积分的摆动）。
+    未来赛程：7M 数据库不含，本节日聚焦「当前排名 + 本日对阵影响」；
+    美职联(MLS) 7M 未收录，单独以说明替代。"""
+    import _league_match as LM
     from collections import OrderedDict
+    league_data = {}
+    try:
+        league_data = json.load(open('league_data.json', encoding='utf-8')).get('leagues', {})
+    except Exception:
+        league_data = {}
+    idx = LM.build_index(league_data)
     grouped = OrderedDict()
     for m in matches:
         grouped.setdefault(m.get('league') or '未知', []).append(m)
-    out = ['<h2>六、当日赛事联赛形势</h2>', '<div class="league-overview-grid">']
+    out = ['<h2>六、当日赛事联赛形势</h2>',
+           '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">'
+           '积分榜数据来源 <b>7M 体育数据库</b>（截至各联赛最近更新）。'
+           '当前数据源不含未来赛程，故本节日聚焦「当前排名 + 本日对阵对积分榜的影响」；'
+           '美职联(MLS) 7M 未收录，暂以说明替代。'.replace('。。', '。') + '</p>',
+           '<div class="league-overview-grid">']
     for lg, ms in grouped.items():
         out.append('  <div class="league-card">')
-        out.append(f'    <h4>{esc(lg)} ({len(ms)}场)</h4>')
-        out.append('    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">')
+        # 美职：数据源缺失，直接说明
+        if lg in LM.UNAVAILABLE:
+            out.append(f'    <h4>{esc(lg)}</h4>')
+            out.append(f'    <p class="league-note">{esc(LM.UNAVAILABLE[lg])}。本节其余联赛展示真实积分榜。</p>')
+            out.append('  </div>')
+            continue
+        parsed = league_data.get(lg)
+        if not parsed or not parsed.get('teams'):
+            out.append(f'    <h4>{esc(lg)}</h4>')
+            out.append('    <p class="league-note">本联赛积分榜获取失败，跳过。</p>')
+            out.append('  </div>')
+            continue
+        season = parsed.get('season_zh') or parsed.get('season', '')
+        updated = parsed.get('summary', {}).get('last_update', '')
+        out.append(f'    <h4>{esc(lg)} <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· {esc(season)}</span></h4>')
+        out.append(f'    <div class="league-src">数据更新：{esc(updated)} ｜ 来源 7M 体育数据库</div>')
+        # 积分榜
+        out.append('    <table class="league-tbl standings">')
+        out.append('      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th>'
+                   '<th>进</th><th>失</th><th>净</th><th>分</th></tr>')
+        for t in parsed['teams']:
+            note = t.get('note_zh') or t.get('note', '') or ''
+            if '盃' in note or '杯' in note:
+                zone = 'zone-eu'
+            elif '降' in note:
+                zone = 'zone-rel'
+            else:
+                zone = ''
+            out.append(
+                f'      <tr class="{zone}">'
+                f'<td>{t["rank"]}</td>'
+                f'<td style="text-align:left;">{esc(t.get("name_zh") or t["name"])}</td>'
+                f'<td>{t["p"]}</td><td>{t["w"]}</td><td>{t["d"]}</td><td>{t["l"]}</td>'
+                f'<td>{t["gf"]}</td><td>{t["ga"]}</td><td>{t["gd"]}</td>'
+                f'<td>{t["pts"]}</td></tr>')
+        out.append('    </table>')
+        # 本日对阵 · 积分影响
+        out.append('    <div class="league-impact">')
+        out.append('      <div class="impact-title">本日对阵 · 积分影响</div>')
         for m in ms:
-            _hs, _hp = hit_pick(m)
-            _es, _ep, _ = expect_score(m)
-            _hp_txt = f'（模型给该比分 {_hp:.1f}%）' if _hp is not None else ''
-            out.append(f"      <li>{m.get('matchNumStr','')} {rank_tag(m['home'], m.get('home_rank'))}"
-                       f" vs {rank_tag(m['away'], m.get('away_rank'))}"
-                       f" — 总进球λ {m.get('lam_total',0):.2f}，命中比分 {dash(_hs)}{_hp_txt}"
-                       f"（量级参考 {dash(_es)}）</li>")
-        out.append('    </ul>')
+            h = LM.match_team(m['home'], lg, idx)
+            a = LM.match_team(m['away'], lg, idx)
+            hinfo = f'#{h["rank"]} {h["pts"]}分' if h else '排名—'
+            ainfo = f'#{a["rank"]} {a["pts"]}分' if a else '排名—'
+            swing = ''
+            if h and a:
+                gap = h['pts'] - a['pts']
+                swing = f'（分差 {gap:+d}）'
+                if h['rank'] != a['rank'] and abs(gap) <= 3:
+                    swing += ' · 卡位对话'
+            out.append(
+                f'      <div class="impact-row"><span class="tag tag-blue">{esc(m["matchNumStr"])}</span> '
+                f'{esc(m["home"])} <b>{hinfo}</b> vs {esc(m["away"])} <b>{ainfo}</b>{esc(swing)}</div>')
+        out.append('    </div>')
+        # 模型看点（一句话，公开页安全）
+        _note = league_note(ms)
+        if _note:
+            out.append(f'    <p class="league-note">{_note}</p>')
         out.append('  </div>')
     out.append('</div>')
     return '\n'.join(out)
@@ -90,7 +167,62 @@ def team_with_rank(name, rank):
     r = rank if str(rank).startswith('联赛第') else f'联赛第{rank}'
     return f'{esc(name)}<sub class="team-rank">{esc(r)}</sub>'
 
+_LM_CACHE = None
+
+def league_index():
+    """懒加载 7M 积分榜索引（league_data.json + 队名匹配器），供逐场卡排名回填"""
+    global _LM_CACHE
+    if _LM_CACHE is None:
+        try:
+            import _league_match as LM
+            ld = json.load(open('league_data.json', encoding='utf-8')).get('leagues', {})
+            _LM_CACHE = (LM, LM.build_index(ld))
+        except Exception:
+            _LM_CACHE = (None, None)
+    return _LM_CACHE
+
+def rank_of(team, league):
+    """查 7M 当前排名；未收录（如美职）或匹配不到返回 None"""
+    LM, idx = league_index()
+    if LM is None or idx is None:
+        return None
+    row = LM.match_team(team, league, idx)
+    if row and row.get('rank'):
+        return row['rank']
+    return None
+
+def rank_disp(team, league):
+    """逐场卡排名展示：第N 或 -"""
+    r = rank_of(team, league)
+    return f'第{r}' if r else '-'
+
 def dash(score): return score.replace(':', '-')
+
+def form_str(recent, n=5):
+    """近期战绩：近 n 场 胜/平/负 + 进/失球。recent = [{gf,ga}, ...]（顺序不敏感）。"""
+    if not recent:
+        return '—'
+    games = recent[-n:] if len(recent) > n else recent
+    w = sum(1 for g in games if g.get('gf', 0) > g.get('ga', 0))
+    d = sum(1 for g in games if g.get('gf', 0) == g.get('ga', 0))
+    l = sum(1 for g in games if g.get('gf', 0) < g.get('ga', 0))
+    gf = sum(g.get('gf', 0) for g in games)
+    ga = sum(g.get('ga', 0) for g in games)
+    return f'{w}胜{d}平{l}负（进{gf}失{ga}）'
+
+def league_note(ms):
+    """按数据挑本联赛三档看点：进球预期最高 / 冷门风险最高 / 概率最胶着。"""
+    if not ms:
+        return ''
+    top_lam = max(ms, key=lambda m: m.get('lam_total', 0))
+    ups = [(m['upset']['prob'], m) for m in ms if m.get('upset')]
+    top_up = max(ups, key=lambda x: x[0])[1] if ups else None
+    closest = min(ms, key=lambda m: abs(m['prob']['home'] - m['prob']['away']))
+    parts = [f'进球预期最高：{top_lam["matchNumStr"]} {top_lam["home"]}vs{top_lam["away"]}（λ{top_lam["lam_total"]:.2f}）']
+    if top_up:
+        parts.append(f'冷门风险最高：{top_up["matchNumStr"]} {top_up["home"]}vs{top_up["away"]}（{top_up["upset"]["prob"]:.0f}%）')
+    parts.append(f'最胶着：{closest["matchNumStr"]} {closest["home"]}vs{closest["away"]}（主{closest["prob"]["home"]:.0f}% / 客{closest["prob"]["away"]:.0f}%）')
+    return ' · '.join(parts)
 
 def stars_html(n):
     return f'<span style="color:var(--accent3);font-size:1.05rem;">{"★"*n}{"☆"*(5-n)}</span>'
@@ -201,20 +333,47 @@ def hit_pick(m):
     return ds, None
 
 
-def hit_band(m, k=2):
-    """双档 / Top-k = 联合众数排序下的前 k 个列出比分。
+def _pois_cell_prob(m, score):
+    """比分不在矩阵前 6 格时的兜底概率（独立泊松近似，单位 %）。"""
+    try:
+        h, a = (int(x) for x in str(score).split(':'))
+    except (ValueError, AttributeError):
+        return 0.0
+    pmf = lambda k, lam: math.exp(-lam) * lam ** k / math.factorial(k)
+    return round(pmf(h, m['lam_home']) * pmf(a, m['lam_away']) * 100, 1)
 
-    回测（1591 场生产口径）：Top1 16.6% → Top2 29.9% → Top3 39.9%。
-    对照上一版「期望比分 + 同倾向次高」：Top1 13.8% / Top2 26.0% —— 双档少中 61 场。
-    返回 [(score, prob), ...]。
+
+def hit_band(m, k=2):
+    """双档 = 稳档（联合众数，单场命中最优）+ 胆档（λ 量级期望，进球数无偏）。
+
+    口径依据：众数是分布单点，必然低于均值 → 只取「众数 + 次高众数」时两档同质偏小。
+    实测（时间外检验集 n=1620）：旧双档平均 1.86 球 vs 实际 2.85 球（偏差 −0.99），
+    仅 7.6% 的场次双档里含 ≥3 球。第二档换成量级无偏的期望比分后：
+      头条命中 16.5% 不变 · 含 ≥3 球档 39% → 69%
+    代价：双档命中 27.6% → 26.1%（−1.5pp）。
+    语义：稳档负责押中，胆档负责量级——两档互补而非同质。
+    返回 [(score, prob), ...]，prob 单位 %。
     """
-    out = []
-    for t in (m.get('top_scores') or []):
-        if t.get('score') in _LISTED_LABELS:
-            out.append((t['score'], t.get('prob') or 0.0))
+    out, seen = [], set()
+
+    s1, p1 = hit_pick(m)                      # 稳档：命中最优
+    out.append((s1, p1 if p1 is not None else 0.0))
+    seen.add(s1)
+
+    if k >= 2:
+        s2, p2, _ = expect_score(m)           # 胆档：量级无偏（已约束在倾向象限内）
+        if s2 not in seen:
+            out.append((s2, p2 if p2 is not None else _pois_cell_prob(m, s2)))
+            seen.add(s2)
+
+    for t in (m.get('top_scores') or []):     # 不足则按模型排序补足
         if len(out) >= k:
             break
-    return out
+        sc = t.get('score')
+        if sc in _LISTED_LABELS and sc not in seen:
+            out.append((sc, t.get('prob') or 0.0))
+            seen.add(sc)
+    return out[:k]
 
 
 def quad_picks(m, k=2):
@@ -282,10 +441,10 @@ def score_cred(m):
     """
     lt = m['lam_home'] + m['lam_away']
     if lt <= 2.6:
-        return '比分可照抄（λ≤2.6 单点18~22%）', 'tag-green'
+        return '可信', 'tag-green'
     if lt <= 3.5:
-        return '比分仅参考（单点约13%）', 'tag-yellow'
-    return '比分不可照抄（单点约11%）', 'tag-red'
+        return '一般', 'tag-yellow'
+    return '不可信', 'tag-red'
 
 
 
@@ -727,9 +886,9 @@ def match_card(m):
   </div>
 
   <div class="match-teams">
-    <span class="home">{team_with_rank(m["home"], m["home_rank"])}</span>
+    <span class="home">{team_with_rank(m["home"], m["home_rank"] or rank_of(m["home"], m["league"]))}</span>
     <span class="vs">VS</span>
-    <span class="away">{team_with_rank(m["away"], m["away_rank"])}</span>
+    <span class="away">{team_with_rank(m["away"], m["away_rank"] or rank_of(m["away"], m["league"]))}</span>
   </div>
 
   <div class="odds-grid">
@@ -740,8 +899,8 @@ def match_card(m):
 
   <h4>积分排名与形势</h4>
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">{esc(m["home_rank"] if m["home_rank"] else "-")} / {esc(m["league"])}</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">{esc(m["away_rank"] if m["away_rank"] else "-")} / {esc(m["league"])}</div></div>
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">{rank_disp(m["home"], m["league"])} / {esc(m["league"])}</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">{rank_disp(m["away"], m["league"])} / {esc(m["league"])}</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">{hm_str}</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">{esc(factor_str)}</div></div>
   </div>
@@ -771,7 +930,7 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
       <span class="pred-score">{esc(qp_join)}</span>
-      <span class="pred-value">（模型排序前两档，合计 <b>{qp_sum:.1f}%</b>
+      <span class="pred-value">（稳档押中 + 胆档量级，合计 <b>{qp_sum:.1f}%</b>
         <span style="color:var(--muted);">· 长期双档命中约 26%</span>）</span>
     </div>
     <div class="pred-row">
@@ -794,7 +953,7 @@ def match_card(m):
         <span style="color:var(--muted);">（长期命中：Top3 约 35% · Top5 约 52%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分可信度:</span>
+      <span class="pred-label">可信度:</span>
       <span class="tag {cred_cls}">{esc(cred_tag)}</span>
       <span class="pred-value"><span style="color:var(--muted);">λ总量 {m['lam_home']+m['lam_away']:.2f}，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
     </div>
@@ -848,22 +1007,21 @@ for m in MATCHES:
     _bp = band_prob(m, _hs2)
     _bp_cell = (f'{_bp*100:.0f}%' if _bp is not None else '-')
     _cred_t, _cred_c = score_cred(m)
-    _hp_str = f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({_hp2:.1f}%)</span>' if _hp2 is not None else ''
+    _hp_cell = (f'{dash(_hs2)} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">{_hp2:.1f}%</span>'
+                if _hp2 is not None else dash(_hs2))
+    _band_cell = '+'.join(dash(s) for s, _ in _qp2)
+    _u = m.get('upset')
+    _cold_cell = (f'<span class="tag {UPSET_CLS.get(_u["level"], "tag-blue")}">{_u["prob"]:.0f}%</span>'
+                 if _u else '-')
     rowsA += (f'<tr>{num_cell}{pair}'
-              f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
               f'<td><span class="tag {DIR_TAG.get(dlabel2, "tag-blue")}">{dlabel2} {op2*100:.1f}%</span></td>'
-              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_hs2)}{_hp_str}'
-              f'<br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">量级 {dash(_escore2)}'
-              f' · λ {m["lam_home"]:.2f}:{m["lam_away"]:.2f}</span></td>'
-              f'<td style="font-family:monospace;font-size:0.8rem;">'
-              f'{"+".join(dash(s) for s, _ in _qp2)}<br>'
-              f'<span style="color:var(--muted);font-size:0.72rem;">合计 {_qp2_sum:.1f}%</span></td>'
+              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">{_hp_cell}</td>'
+              f'<td style="font-family:monospace;font-size:0.8rem;white-space:nowrap;">{_band_cell} <span style="color:var(--muted);">({_qp2_sum:.1f}%)</span></td>'
               f'<td style="font-family:monospace;">{_bp_cell}</td>'
               f'<td>{top3:.1f}%</td>'
               f'<td>{sum(t["prob"] for t in ts[:5]):.1f}%</td>'
               f'<td><span class="tag {_cred_c}">{_cred_t.split("（")[0]}</span></td>'
-              f'<td>{stars_html(m["stars"])}</td>'
-              f'<td style="font-size:0.78rem;">{cold}</td></tr>')
+              f'<td style="text-align:center;white-space:nowrap;">{_cold_cell}</td></tr>')
     # 4.2 进球数预测
     rowsB += (f'<tr>{num_cell}{pair}'
                f'<td><span class="tag {tg["cls"]}" title="λ总分{tg["lt"]:.2f}">{tg["tag"]}</span></td>'
@@ -886,8 +1044,8 @@ summary4_sec = f'''
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，且不同场次差别很大：
 见报告开头「🎯 今日比分精选」（只看模型最有把握的几场）；其余场次请看方向与总进球倾向。
 要容错就看 <b>比分双档</b>（约 26%）与 <b>±1球覆盖</b>（约 67%）。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>量级</b>小字 = λ 期望进球取整，只看进球规模、<b>不为押中</b>。<b>比分双档</b> = 模型排序前两档（命中约 <b>26%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>比分可信度</b> = 按该场总进球 λ 分档的历史实测命中率：λ 越低比分越值得看（λ≤2.6 约 1/3 场次，单点 18~22%），λ&gt;3.5 降到约 11%。<b>信心</b> = 胜平负方向的确定性（★ 越多越确定）；<b>冷门</b> = 市场首选方向落空的风险等级。',
-'<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th>', rowsA)}
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>比分双档</b> = 模型排序前两档（命中约 <b>26%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>可信度</b> 按该场总进球 λ 分档（可信 / 一般 / 不可信，λ 越低越值得看）。<b>冷门概率</b> = 市场首选方向落空的概率。',
+'<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>可信度</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
@@ -1145,14 +1303,94 @@ picks_sec = f'''
   <div class="table-wrap">
     <table>
       <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
-      <th>±1球</th><th>模型概率</th><th>比分可信度</th></tr></thead>
+      <th>±1球</th><th>模型概率</th><th>可信度</th></tr></thead>
       <tbody>{_rows_pk}</tbody>
     </table>
   </div>
   <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
     排序依据 = 模型给「命中比分」的概率（小字为该场总进球 λ）。
-    比分可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
+    可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
   </p>
+</div>
+'''
+
+# ---------- 🔥 大胆档（量级口径 · 进攻型参考） ----------
+# 单比分众数是分布里的单个最高格，必然低于进球量级 → 头条天然偏小。
+# 众数同时又是「单场命中次数」目标下的最优解，故头条不改动；
+# 本节把更激进的两档单独列出，供追求赔率而非命中率的思路参考：
+#   量级档 = λ 期望进球取整（进球数无偏）；极限档 = 同倾向下总进球再上一档的最高概率格。
+def _extreme_pick(m):
+    """同倾向象限内、总进球 = 量级档 +1 的最高概率列出格。返回 (比分, 概率%)。"""
+    lh, la = m['lam_home'], m['lam_away']
+    _, okey, _, _, _ = direction_pick(m)
+    e, _, _ = expect_score(m)
+    try:
+        eh, ea = (int(x) for x in str(e).split(':'))
+    except (ValueError, AttributeError):
+        return None, None
+    target = eh + ea + 1
+    pmf = lambda k, lam: math.exp(-lam) * lam ** k / math.factorial(k)
+    best, bp = None, -1.0
+    for h in range(6):
+        for a in range(6):
+            if f'{h}:{a}' not in _LISTED_LABELS or h + a != target:
+                continue
+            if okey == 'home' and not h > a:
+                continue
+            if okey == 'draw' and h != a:
+                continue
+            if okey == 'away' and not a > h:
+                continue
+            p = pmf(h, lh) * pmf(a, la)
+            if p > bp:
+                bp, best = p, f'{h}:{a}'
+    return best, (round(bp * 100, 1) if best else None)
+
+
+def _bold_rank(m):
+    """排序：量级档与头条的总进球差越大越优先（= 头条越偏小的场次）。"""
+    s, _ = hit_pick(m)
+    e, _, _ = expect_score(m)
+    try:
+        gap = sum(int(x) for x in str(e).split(':')) - sum(int(x) for x in str(s).split(':'))
+    except (ValueError, AttributeError):
+        gap = 0
+    return max(gap, 0), float(m.get('lam_home', 0) or 0) + float(m.get('lam_away', 0) or 0)
+
+
+_bold = sorted((_bold_rank(m) + (m,) for m in MATCHES), key=lambda x: (-x[0], -x[1]))[:5]
+_rows_bd = ''
+for _i, (_gap, _lt, _m) in enumerate(_bold, 1):
+    _s, _sp = hit_pick(_m)
+    _e, _ep, _ = expect_score(_m)
+    _x, _xp = _extreme_pick(_m)
+    _rows_bd += (
+        f'<tr><td style="text-align:center;font-weight:700;color:var(--accent3);">{_i}</td>'
+        f'<td><span class="tag tag-blue">{esc(_m["matchNumStr"])}</span> {esc(_m["league"])}</td>'
+        f'<td>{esc(_m["home"])} vs {esc(_m["away"])}</td>'
+        f'<td style="font-family:monospace;color:var(--muted);">{dash(_s)}</td>'
+        f'<td style="font-family:monospace;font-weight:700;color:var(--accent3);">{dash(_e)}'
+        f'{" <span style=\"color:var(--muted);font-weight:400;\">" + (f"{_ep:.1f}%" if _ep is not None else "") + "</span>" if _ep is not None else ""}</td>'
+        f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_x) if _x else "—"}'
+        f'{" <span style=\"color:var(--muted);font-weight:400;\">" + f"{_xp:.1f}%" + "</span>" if _xp is not None else ""}</td>'
+        f'<td style="font-family:monospace;">{_lt:.2f}</td></tr>')
+
+bold_sec = f'''
+<h2>🔥 大胆档（要赔率，不要命中率）</h2>
+<div class="card">
+  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
+    头条比分是分布里的单个最高格，进球数必然偏小。下表挑出今日「量级与头条差距最大」的场次，
+    另给两档进攻型参考：<b>量级档</b>（λ 期望进球取整，进球数无偏）、
+    <b>极限档</b>（同倾向下总进球再上一档）。这两档赔率明显更高、命中率低于头条——
+    想搏赔率看这里，跟单仍以稳档为准。
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>稳档（头条）</th>
+      <th>量级档</th><th>极限档</th><th>λ总</th></tr></thead>
+      <tbody>{_rows_bd}</tbody>
+    </table>
+  </div>
 </div>
 '''
 
@@ -1182,6 +1420,7 @@ page = f'''<!DOCTYPE html>
 <div class="container">
 
 {picks_sec}
+{bold_sec}
 {overview_sec}
 {chart_sec}
 {deep_sec}
