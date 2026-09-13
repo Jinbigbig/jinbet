@@ -276,12 +276,11 @@ def main():
     _days, _tot = cumulative_kpi(ds)
     cum_html = ''
     if _tot[0]:
-        cum_html = (f'<div class="sum"><b>累计目标函数（{len(_days)} 个比赛日 · {_tot[0]} 场）：</b>'
+        cum_html = (f'<div class="sum"><b>累计命中（{len(_days)} 个比赛日 · {_tot[0]} 场）：</b>'
                     f'方向 <b>{_tot[1]}</b>（{_tot[1]/_tot[0]*100:.1f}%）· '
                     f'命中比分单点 <b>{_tot[2]}</b>（{_tot[2]/_tot[0]*100:.1f}%）· '
                     f'双档 <b>{_tot[3]}</b>（{_tot[3]/_tot[0]*100:.1f}%）。'
-                    f'口径 = 报告头条「联合众数」/ 众数前两档（4036 场基准 14.94% / 26.54%；常数基线 12.93%）。'
-                    f'<b>任何模型或选法改动都看这行的命中次数是否上升。</b></div>')
+                    f'长期基准：单点约 15% · 双档约 26%。</div>')
 
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>
