@@ -5,9 +5,10 @@
   - 赛果：results_data.json + results_history/*.json（键 = 日期_主_客，已修正主客方向）
 
 比分口径（2026-09-13 起与报告同步）：
-  - 头条 = 「期望比分」= λ 期望进球四舍五入，并约束在预测倾向象限内（与 _gen_report.expect_score 同规则）；
-  - 双档 = 期望比分 + 同倾向内概率最高的其余比分（_gen_report.expect_band；1591 场回测 26.0%，单点 13.8%）。
-  旧口径为「全局 top_scores 前两档」，与报告展示不一致，已弃用。
+  - 头条 = 「命中比分」= 已对齐矩阵的联合众数（= top_scores 首个列出比分），
+    这是「押中次数」目标函数下的最优解（与 _gen_report.hit_pick 同规则；1591 场回测 16.6%）；
+  - 双档 = 众数排序前两档（_gen_report.hit_band；回测 29.9%）。
+  旧口径（λ 期望取整 + 同倾向次高，单点 13.8%/双档 26.0%）已弃用，λ 期望值仅作「量级参考」。
 
 特点：
   - 不依赖市场赔率，覆盖该日全部预测场次（含只有让球盘、无 1X2 赔率的场次）。
@@ -48,30 +49,29 @@ def _in_quad(c, okey):
 
 
 def predict_scores(m):
-    """按报告口径取 (期望比分, 双档比分集合)。
+    """按报告口径取 (命中比分, 双档集合, 量级参考比分)。
 
-    与 _gen_report.expect_score / expect_band 同规则；期望比分不合法（取整后不在列出比分内、
-    或与倾向相反）时退回「倾向象限内概率最高的列出比分」。
+    2026-09-13 二次定调（用户：主要优化方向 = 比分准确度，概率大小没有意义）：
+      头条 = 已对齐矩阵的**联合众数**（= top_scores 里首个列出比分）= 押中次数目标函数的最优解；
+      双档 = 众数排序前两档（1591 场回测 Top1 16.6% / Top2 29.9%）；
+      量级参考 = λ 期望进球取整（无偏但不为押中，总进球偏差 −0.22 球/场）。
+    旧口径「期望比分 + 同倾向次高」为 Top1 13.8% / Top2 26.0%，已弃用。
     """
-    ph, pd, pa = (float(m.get('prob_home', 0)), float(m.get('prob_draw', 0)),
-                  float(m.get('prob_away', 0)))
+    ts = [t for t in (m.get('top_scores') or [])
+          if _parse_score(t.get('score')) and t.get('score') in LISTED_LABELS]
+    hit = ts[0]['score'] if ts else '-'
+    band = {t['score'] for t in ts[:2]}
+    ph, pd, pa = (float(m.get('prob_home', 0) or 0), float(m.get('prob_draw', 0) or 0),
+                  float(m.get('prob_away', 0) or 0))
     okey = 'home' if ph >= pd and ph >= pa else ('away' if pa >= pd else 'draw')
-    ts = m.get('top_scores') or []
-    idir = [t for t in ts if (_parse_score(t.get('score')) and _in_quad(_parse_score(t['score']), okey))]
-    fallback = idir[0]['score'] if idir else (ts[0]['score'] if ts else '-')
     lh = float(m.get('lam_home', 0) or 0)
     la = float(m.get('lam_away', 0) or 0)
     cand = (int(round(lh)), int(round(la)))
     if _in_quad(cand, okey) and f'{cand[0]}:{cand[1]}' in LISTED_LABELS:
-        exp = f'{cand[0]}:{cand[1]}'
+        mag = f'{cand[0]}:{cand[1]}'
     else:
-        exp = fallback
-    band = {exp}
-    for t in idir:
-        if t.get('score') != exp:
-            band.add(t['score'])
-            break
-    return exp, band
+        mag = hit
+    return hit, band, mag
 
 
 def load_json(p):
@@ -133,9 +133,72 @@ tr:nth-child(even){background:#fafafa}
 """
 
 
+def day_rows(ds):
+    """读某日快照并与赛果配对 → (snap, [(match, (h,a) | None)])；无快照返回 (None, None)"""
+    snap_path = os.path.join(ROOT, 'predictions', ds, 'pred_snapshot.json')
+    if not os.path.exists(snap_path):
+        return None, None
+    snap = load_json(snap_path)
+    recs = load_results_all()
+    rows = []
+    for m in snap.get('matches') or []:
+        key = f'{ds}_{m.get("home")}_{m.get("away")}'
+        rec = recs.get(key)
+        rows.append((m, parse_score(rec) if rec else None))
+    return snap, rows
+
+
+def tally(rows):
+    """统计 (已出赛果场次, 方向命中, 命中比分单点, 双档命中)"""
+    nres = dh = hh = bh = 0
+    for m, sc in rows:
+        if not sc:
+            continue
+        hit_sc, band, _ = predict_scores(m)
+        ph, pd, pa = (float(m.get('prob_home', 0) or 0), float(m.get('prob_draw', 0) or 0),
+                      float(m.get('prob_away', 0) or 0))
+        pred_dir = '主胜' if ph >= pd and ph >= pa else ('客胜' if pa >= pd else '平局')
+        actual = f'{sc[0]}:{sc[1]}'
+        nres += 1
+        dh += 1 if pred_dir == outcome_label(*sc) else 0
+        hh += 1 if actual == hit_sc else 0
+        bh += 1 if actual in band else 0
+    return nres, dh, hh, bh
+
+
+def cumulative_kpi(up_to, since='2026-09-08'):
+    """累计目标函数：把所有已出赛果的预测快照按日累加（2026-09-13 起的目标函数 = 命中次数）。
+
+    这是「函数好优化」的度量基准：任何口径/模型改动都看这里的累计命中次数是否上升。
+
+    起点 since 默认 2026-09-08：更早的快照（engine=poisson-v2.2 旧链路）没有 top_scores 字段，
+    且 09-10 之前赛果库存在主客颠倒 bug，纳入会污染基准。
+    基准线（1591 场生产口径回测，score_hit_probe.py）：单点 16.6% / 双档 29.9%。
+    """
+    import glob as _g
+    days = []
+    tot = [0, 0, 0, 0]
+    files = sorted(_g.glob(os.path.join(ROOT, 'predictions', '*', 'pred_snapshot.json')))
+    for f in files:
+        ds = os.path.basename(os.path.dirname(f))
+        if ds < since or ds > up_to:
+            continue
+        snap, rows = day_rows(ds)
+        if not rows or not any(m.get('top_scores') for m, _ in rows):
+            continue
+        nres, dh, hh, bh = tally(rows)
+        if not nres:
+            continue
+        days.append((ds, nres, dh, hh, bh))
+        for i, v in enumerate((nres, dh, hh, bh)):
+            tot[i] += v
+    return days, tot
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--date', default=None, help='被复盘日期 YYYY-MM-DD，默认昨天')
+    ap.add_argument('--kpi', action='store_true', help='只打印累计目标函数（命中次数）序列')
     a = ap.parse_args()
 
     if a.date:
@@ -145,23 +208,21 @@ def main():
     ds = reviewed.isoformat()
     next_day = (reviewed + dt.timedelta(days=1)).isoformat()
 
-    snap_path = os.path.join(ROOT, 'predictions', ds, 'pred_snapshot.json')
-    if not os.path.exists(snap_path):
-        print(f'无快照：{snap_path}（该日可能未生成报告）')
+    if a.kpi:
+        days, tot = cumulative_kpi(ds)
+        print(f'累计目标函数（截止 {ds}，口径 = 报告头条联合众数 / 双档）')
+        print(f"{'日期':<12}{'场次':>6}{'方向':>10}{'命中比分单点':>14}{'双档':>10}")
+        for d_, n_, dh_, hh_, bh_ in days:
+            print(f'{d_:<12}{n_:>6}{dh_:>7}({dh_/n_*100:.0f}%){hh_:>8}({hh_/n_*100:.0f}%){bh_:>6}({bh_/n_*100:.0f}%)')
+        if tot[0]:
+            print(f"{'合计':<12}{tot[0]:>6}{tot[1]:>7}({tot[1]/tot[0]*100:.1f}%)"
+                  f"{tot[2]:>8}({tot[2]/tot[0]*100:.1f}%){tot[3]:>6}({tot[3]/tot[0]*100:.1f}%)")
         return
-    snap = load_json(snap_path)
-    recs = load_results_all()
 
-    rows = []
-    for m in snap.get('matches') or []:
-        home, away = m.get('home'), m.get('away')
-        key = f'{ds}_{home}_{away}'
-        rec = recs.get(key)
-        sc = parse_score(rec) if rec else None
-        if not sc:
-            rows.append((m, None))
-            continue
-        rows.append((m, sc))
+    snap, rows = day_rows(ds)
+    if snap is None:
+        print(f'无快照：predictions/{ds}/pred_snapshot.json（该日可能未生成报告）')
+        return
 
     n = len(rows)
     dir_hit = score_hit = any_hit = exp_hit = 0
@@ -173,8 +234,9 @@ def main():
         home, away, lid = m.get('home'), m.get('away'), m.get('league', '')
         ph, pd, pa = float(m.get('prob_home', 0)), float(m.get('prob_draw', 0)), float(m.get('prob_away', 0))
         pred_dir = '主胜' if ph >= pd and ph >= pa else ('客胜' if pa >= pd else '平局')
-        exp_sc, band = predict_scores(m)
-        band_order = [exp_sc] + sorted(band - {exp_sc})
+        hit_sc, band, mag_sc = predict_scores(m)
+        band_order = ([hit_sc] + sorted(band - {hit_sc}))
+        exp_sc = hit_sc
         stars = '★' * int(m.get('stars', 0))
         actual = outcome_label(*sc) if sc else '?'
         actual_score = f'{sc[0]}:{sc[1]}' if sc else '?'
@@ -204,20 +266,31 @@ def main():
     nres = sum(1 for _, sc in rows if sc)
     lam_bias = (lam_model_sum - lam_actual_sum) / nres if nres else 0.0
     concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
-             f'={ (dir_hit/nres*100) if nres else 0:.0f}%，期望比分单点命中 {exp_hit}/{nres}'
+             f'={ (dir_hit/nres*100) if nres else 0:.0f}%，命中比分单点 {exp_hit}/{nres}'
              f'={ (exp_hit/nres*100) if nres else 0:.0f}%，比分双档命中 {score_hit}/{nres}'
              f'={ (score_hit/nres*100) if nres else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
              f'={ (any_hit/nres*100) if nres else 0:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
     miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
 
+    _days, _tot = cumulative_kpi(ds)
+    cum_html = ''
+    if _tot[0]:
+        cum_html = (f'<div class="sum"><b>累计目标函数（{len(_days)} 个比赛日 · {_tot[0]} 场）：</b>'
+                    f'方向 <b>{_tot[1]}</b>（{_tot[1]/_tot[0]*100:.1f}%）· '
+                    f'命中比分单点 <b>{_tot[2]}</b>（{_tot[2]/_tot[0]*100:.1f}%）· '
+                    f'双档 <b>{_tot[3]}</b>（{_tot[3]/_tot[0]*100:.1f}%）。'
+                    f'口径 = 报告头条「联合众数」/ 众数前两档（score_hit_probe.py，1591 场基准 16.6% / 29.9%）。'
+                    f'<b>任何模型或选法改动都看这行的命中次数是否上升。</b></div>')
+
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>
 <h1>{ds} 竞彩预测复盘</h1>
-<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 期望比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 至少一项命中 {any_hit}/{nres}</h2>
+<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 命中比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 至少一项命中 {any_hit}/{nres}</h2>
+{cum_html}
 <div class="sum"><b>关键复盘结论：</b>{concl}{miss_note}
 次日建议：方向失手集中在{"冷门/平局爆冷" if misses else "无"}场次，强弱对话与深让盘依 V3.3 滚动校准自动修正，无需每日手调；若连续多日方向命中率低于 50% 或 λ 总进球偏差持续 >0.2 球，应触发离线重拟合（market_calib / Platt）。</div>
 <table>
-<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>期望比分</th><th>双档(含期望比分)</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th></tr>
+<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>命中比分(头条)</th><th>双档</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th></tr>
 {''.join(table)}
 </table></body></html>"""
 
@@ -231,7 +304,7 @@ def main():
     if misses:
         print(miss_note)
     print(f'复盘指标: 方向 {dir_hit}/{nres}={(dir_hit/nres*100) if nres else 0:.0f}% | '
-          f'期望比分单点 {exp_hit}/{nres}={(exp_hit/nres*100) if nres else 0:.0f}% | '
+          f'命中比分单点 {exp_hit}/{nres}={(exp_hit/nres*100) if nres else 0:.0f}% | '
           f'比分双档 {score_hit}/{nres}={(score_hit/nres*100) if nres else 0:.0f}% | '
           f'λ总进球偏差 {lam_bias:+.2f} 球/场')
 
