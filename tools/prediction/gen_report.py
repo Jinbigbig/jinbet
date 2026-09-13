@@ -1401,13 +1401,18 @@ TOC_BLOCK = '''
 <style>
   h2, h3 { scroll-margin-top: 1.2rem; }
   .toc-nav {
-    position: fixed; right: max(10px, calc((100vw - 1140px) / 2)); top: 50%;
-    transform: translateY(-50%); width: 176px; max-height: 76vh; overflow-y: auto;
+    /* 容器 1080px 居中 ⇒ 内容右缘距视口右 = (100vw-1080)/2。
+       定位须满足 right + width ≤ 该间距 - 16px，否则会压住正文。 */
+    --toc-w: 140px;
+    position: fixed; top: 50%;
+    right: clamp(8px, calc((100vw - 1080px) / 2 - var(--toc-w) - 16px), 32px);
+    transform: translateY(-50%); width: var(--toc-w); max-height: 76vh; overflow-y: auto;
     background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.09);
     border-radius: 10px; padding: 0.7rem 0.5rem; z-index: 60;
-    box-shadow: 0 4px 22px rgba(0,0,0,0.09); font-size: 0.8rem;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.09); font-size: 0.78rem;
     scrollbar-width: thin;
   }
+  @media (min-width: 1600px) { .toc-nav { --toc-w: 168px; font-size: 0.8rem; } }
   .toc-nav::-webkit-scrollbar { width: 4px; }
   .toc-nav::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.16); border-radius: 2px; }
   .toc-head {
@@ -1421,7 +1426,7 @@ TOC_BLOCK = '''
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: none;
   }
   .toc-nav a:hover { color: var(--ink, #1a1a2e); background: rgba(0,0,0,0.045); }
-  .toc-nav a.lv3 { padding-left: 1.2rem; font-size: 0.74rem; opacity: 0.9; }
+  .toc-nav a.lv3 { padding-left: 1.05rem; font-size: 0.72rem; opacity: 0.9; }
   .toc-nav a.active {
     color: var(--accent, #e63946); border-left-color: var(--accent, #e63946);
     background: rgba(230,57,70,0.08); font-weight: 600;
@@ -1433,11 +1438,12 @@ TOC_BLOCK = '''
     display: flex; align-items: center; justify-content: center;
   }
   .toc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 59; }
-  @media (min-width: 1361px) { .toc-toggle { display: none; } }
-  @media (max-width: 1360px) {
+  @media (min-width: 1400px) { .toc-toggle { display: none; } }
+  @media (max-width: 1399px) {
     .toc-nav {
-      right: 14px; width: 210px; transform: translateY(-50%) translateX(calc(100% + 30px));
-      transition: transform 0.24s ease; max-height: 70vh;
+      --toc-w: 210px; right: 12px;
+      transform: translateY(-50%) translateX(calc(100% + 26px));
+      transition: transform 0.24s ease; max-height: 70vh; font-size: 0.82rem;
     }
     .toc-nav.open { transform: translateY(-50%) translateX(0); }
   }
