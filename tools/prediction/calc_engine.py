@@ -1507,15 +1507,20 @@ def calc_match(m, calib):
     if len(signals) == 0:
         signals.append("无明显冷门信号")
 
-    # ---------- 信心评级 ----------
-    top_p = ranked[0][1]
-    if top_p >= 0.15:
+    # ---------- 信心评级（2026-09-13 重构：由「比分概率」改为「方向确定性」）----------
+    # 旧口径 top_p = 比分矩阵最高格概率（全局众数），实测对方向的判别力仅 +13.6pp
+    # （五等分档方向命中 46.9%→60.5%，中间档非单调）；期望比分概率更差（−1.7pp，完全无效）。
+    # 新口径 = Platt 后 max(1X2) 倾向概率：五等分档方向命中 38.1%→74.6%（跨度 +36.6pp，
+    # 完美单调），且控制 λ 后仍有 +10~24pp 增量（star_value_probe.py，1591 场）。
+    # 阈值取五等分位：0.44 / 0.50 / 0.57 / 0.66。
+    top_p = max(p_home, p_draw, p_away)
+    if top_p >= 0.66:
         stars = 5
-    elif top_p >= 0.12:
+    elif top_p >= 0.57:
         stars = 4
-    elif top_p >= 0.09:
+    elif top_p >= 0.50:
         stars = 3
-    elif top_p >= 0.07:
+    elif top_p >= 0.44:
         stars = 2
     else:
         stars = 1
