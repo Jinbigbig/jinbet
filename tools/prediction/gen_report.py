@@ -66,10 +66,11 @@ def build_league_sec(matches):
         out.append(f'    <h4>{esc(lg)} ({len(ms)}场)</h4>')
         out.append('    <ul style="font-size:0.85rem;margin:0.35rem 0 0 1.1rem;padding:0;">')
         for m in ms:
-            sc, pr = first_score(m)
+            _es, _ep, _ = expect_score(m)
+            _ep_txt = f'（{_ep:.1f}%）' if _ep is not None else ''
             out.append(f"      <li>{m.get('matchNumStr','')} {rank_tag(m['home'], m.get('home_rank'))}"
                        f" vs {rank_tag(m['away'], m.get('away_rank'))}"
-                       f" — 总进球λ {m.get('lam_total',0):.2f}，首选 {sc}（{pr*100:.1f}%）</li>")
+                       f" — 总进球λ {m.get('lam_total',0):.2f}，期望比分 {dash(_es)}{_ep_txt}</li>")
         out.append('    </ul>')
         out.append('  </div>')
     out.append('</div>')
@@ -114,10 +115,11 @@ def coverage(m, k):
 
 
 def direction_pick(m):
-    """方向首选：Platt 校准后最可能赛果象限内的众数比分。
+    """倾向 + 该倾向象限内的众数比分（2026-09-13 起**只作内部用**，不再当头条）。
 
-    全局众数在均衡场次几乎恒为 1:1（P≈11~14%），对跟方向的用户无信息量；
-    象限条件口径把「胜平负倾向」与「该倾向下最可能比分」分开表达。
+    全局众数在均衡场次几乎恒为 1:1（P≈11~14%），且众数是分布单点、必然低于均值
+    （回测总进球系统性低 0.90 球/场），故头条已改用 expect_score()。
+    本函数仍用于：① 判定倾向；② 约束期望比分落在倾向象限内；③ 期望比分不合法时的兜底。
     返回 (倾向中文, 倾向key, 方向比分, 方向比分概率0-1, 倾向概率0-1)。
     """
     pr = m['prob']
@@ -175,6 +177,31 @@ _LISTED_LABELS = {
 }
 
 
+def expect_band(m, k=2):
+    """双档（2026-09-13 起）= 头条「期望比分」+ 同一倾向内概率最高的其余比分。
+
+    为什么不沿用「象限概率前两档」：那会出现双档不含头条比分的情形（例如期望 2-1 而双档 1-0+2-0），
+    同一行自相矛盾。含期望比分的 2 档组合回测（_exp_band_probe.py，1591 场生产口径）：
+      象限前两档 25.5% → 期望比分+象限次高 <b>26.0%</b>（档数同为 2，且与头条口径一致）。
+    返回 [(score, prob), ...]，概率为模型给该比分的概率（无则 0）。
+    """
+    escore, eprob, _ = expect_score(m)
+    pr = m['prob']
+    okey = max([('home',), ('draw',), ('away',)], key=lambda x: pr[x[0]])[0]
+    q = lambda c: (c[0] > c[1]) if okey == 'home' else ((c[0] == c[1]) if okey == 'draw' else (c[0] < c[1]))
+    out = [(escore, eprob if eprob is not None else 0.0)]
+    for t in m['top_scores']:
+        try:
+            h, a = (int(x) for x in str(t['score']).split(':'))
+        except (ValueError, AttributeError):
+            continue
+        if q((h, a)) and t['score'] != escore:
+            out.append((t['score'], t['prob']))
+        if len(out) >= k:
+            break
+    return out
+
+
 def quad_picks(m, k=2):
     """倾向象限内的概率前 k 个列出比分（卡片「比分双档」）。
 
@@ -200,13 +227,16 @@ def quad_picks(m, k=2):
 
 
 def expect_score(m):
-    """期望比分 = λ 四舍五入（强制落在已发布倾向象限内，否则退回该象限概率首选）。
+    """头条比分口径（2026-09-13 起为报告唯一头条）= λ 期望值四舍五入。
 
-    why：单比分「概率众数」必然低于分布均值，回测头条总进球系统性比实际低 0.90 球/场
-    （主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源。
-    改用 λ 期望值口径后（score_rule_probe.py，1591 场，R7）：
-      总进球偏差 −0.90 → −0.22，±1球覆盖 66.4% → 71.0%，代价是精确率 15.4% → 13.8%。
-    返回 (比分, 是否与概率首选一致)。
+    为什么不用「象限概率众数」当头条：众数是分布里的**单点**，而分布的**均值**才是期望进球。
+    单点众数必然低于均值 —— 回测（1591 场）头条总进球系统性比实际低 0.90 球/场
+    （主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源，属格式问题而非模型算偏。
+    λ 期望值口径（score_rule_probe.py R7，1591 场生产口径）：
+      总进球偏差 −0.90 → −0.22 球，±1球覆盖 66.4% → 71.0%；代价是单点精确率 15.4% → 13.8%。
+    强制落在已发布倾向象限内（否则退回该象限概率首选），避免「比分与倾向自相矛盾」。
+
+    返回 (比分, 该比分模型概率或 None, 是否与象限众数一致)。
     """
     lh, la = m['lam_home'], m['lam_away']
     _, okey, dscore, _, _ = direction_pick(m)
@@ -214,23 +244,31 @@ def expect_score(m):
     ok = ((cand[0] > cand[1]) if okey == 'home'
           else ((cand[0] == cand[1]) if okey == 'draw' else (cand[0] < cand[1])))
     if ok and f'{cand[0]}:{cand[1]}' in _LISTED_LABELS:
-        return f'{cand[0]}:{cand[1]}', (f'{cand[0]}:{cand[1]}' == dscore)
-    return dscore, True
+        label = f'{cand[0]}:{cand[1]}'
+    else:
+        label = dscore
+    prob = next((t['prob'] for t in m['top_scores'] if t['score'] == label), None)
+    return label, prob, (label == dscore)
 
 
 def score_cred(m):
-    """比分可信度分级：单比分命中率随 λ 总量显著单调下降。
+    """比分可信度分级（2026-09-13 按新头条「期望比分」口径重测）。
 
-    score_rule_probe.py 1591 场分档：λ≤2.3 → 23.8%（±1球 75.3%）；
-    2.3~3.0 → 14.9%；>3.0 → 13.0%。低 λ 场次的单比分值得参考，高 λ 场次纯噪声。
+    _exp_band_probe.py，1591 场，λ 按期望比分口径分档（单点命中 / ±1球覆盖）：
+      λ≤2.0 → 25.6% / 85.4%；2.0~2.2 → 9.7% / 65.3%；2.2~2.4 → 14.7% / 75.0%；
+      2.4~2.6 → 17.6% / 67.6%；2.6~2.8 → 7.1% / 66.4%；2.8~3.0 → 12.3% / 67.8%；
+      3.0~3.2 → 10.4% / 75.5%；3.2~3.5 → 11.8% / 74.9%；>3.5 → 16.5% / 67.7%。
+    结论：只有 λ≤2.0 档显著更好；λ>2.0 后单点命中稳定在约 13%（不再随 λ 单调下降，
+    旧「低λ 23.8% → 高λ 13.0%」是象限众数口径的性质，改口径后不再成立）。
+    故分档语义=「该比分能不能照抄」，而非命中率单调阶梯。
     返回 (标签, class)。
     """
     lt = m['lam_home'] + m['lam_away']
-    if lt <= 2.3:
-        return '比分较可信（低λ场 回测23.8%）', 'tag-green'
+    if lt <= 2.0:
+        return '比分较可信（低λ 单点25.6%）', 'tag-green'
     if lt <= 3.0:
-        return '比分仅参考（回测14.9%）', 'tag-yellow'
-    return '比分不可照抄（高λ场 回测13.0%）', 'tag-red'
+        return '比分仅参考（单点约13%）', 'tag-yellow'
+    return '比分不可照抄（单点约13%）', 'tag-red'
 
 
 # ---------- V3.3 二级盘：让球盘偏差 + 冷门风险 ----------
@@ -331,8 +369,8 @@ def upset_table():
         '时间外 Brier <b>0.2342</b> vs 常数基线 0.2498，低风险 1/3 翻车 ≈25% / 高风险 1/3 ≈44%。'
         '<b>用法</b>：高风险场次不进信心串关（可小注博冷）；中风险场次少押单场方向。'
         '⚠️ 2026-09 样本仅 46 场、分层不显著，模型随样本自动向基础率收缩。'
-        '<br><b>与星级的关系（重要）</b>：星级 = 首选比分概率，与冷门风险<b>不是同一件事</b>'
-        '（相关 ≈ 0，且呈倒 U）：4★ 档（首选比分 0.12–0.15，占样本 29%）实测翻车率 <b>54.6% 最高</b>，'
+        '<br><b>与星级的关系（重要）</b>：星级 = 象限众数比分概率，与冷门风险<b>不是同一件事</b>'
+        '（相关 ≈ 0，且呈倒 U）：4★ 档（众数比分 0.12–0.15，占样本 29%）实测翻车率 <b>54.6% 最高</b>，'
         '而 5★ 档（≥0.15，λ 极低）降到 40.9%。<b>高星级 ≠ 低冷门</b>，两者要分开看。',
         '<th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th>'
         '<th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th>', body)
@@ -554,12 +592,13 @@ def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     olabel, okey, dscore, dprob, oprob = direction_pick(m)
     tg = total_goals_info(m)
-    qp = quad_picks(m, 2)
+    qp = expect_band(m, 2)
+    escore, eprob, esame = expect_score(m)
     qp_join = ' + '.join(f'{dash(s)} {p:.1f}%' for s, p in qp) or dash(dscore)
     qp_sum = sum(p for _, p in qp)
-    bp = band_prob(m, dscore)
+    bp = band_prob(m, escore)
+    eprob_str = f'｜模型给该比分 {eprob:.1f}%' if eprob is not None else ''
     cred_tag, cred_cls = score_cred(m)
-    escore, esame = expect_score(m)
     # 注：不再展示「全局众数」（结构性退化为 1:1），改由 score_group / coverage 呈现
     hm = h2h_mean(m)
     hm_str = f'{hm:.2f} 球' if hm else '数据不足'
@@ -630,6 +669,23 @@ def match_card(m):
   <div class="prediction">
     <div class="pred-title">🎯 AI泊松模型V3.3预测</div>
     <div class="pred-row">
+      <span class="pred-label">期望比分:</span>
+      <span class="pred-score">{dash(escore)}</span>
+      <span class="pred-value">（λ 期望 {m['lam_home']:.2f} : {m['lam_away']:.2f} 四舍五入{eprob_str}{'' if esame else '｜象限内已修正'}）
+        <br><span style="color:var(--muted);font-size:0.8rem;">头条口径 = 期望进球取整：总进球偏差 <b>−0.22 球/场</b>（象限众数口径为 −0.90）——众数是单点、必然低于分布均值，故不再作头条</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分双档:</span>
+      <span class="pred-score">{esc(qp_join)}</span>
+      <span class="pred-value">（{olabel}倾向内前两档，合计 <b>{qp_sum:.1f}%</b>
+        <span style="color:var(--muted);">· 1591 场回测：双档（含头条比分）命中 <b>26.0%</b> vs 单档 13.8%</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">±1球覆盖:</span>
+      <span class="pred-score">{f'{bp*100:.1f}%' if bp is not None else '-'}</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在「期望比分」上下各 1 球范围内的概率（以期望比分中心，回测 <b>71.0%</b>；众数中心为 66.4%）——跟单场比分看这个</span></span>
+    </div>
+    <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
       <span class="pred-value">{esc(score_group(m, 5))}</span>
     </div>
@@ -639,28 +695,9 @@ def match_card(m):
         <span style="color:var(--muted);">（2577场回测命中：Top3 33.3% · Top5 49.1%）</span></span>
     </div>
     <div class="pred-row">
-      <span class="pred-label">比分双档:</span>
-      <span class="pred-score">{esc(qp_join)}</span>
-      <span class="pred-value">（{olabel}倾向内前两档，合计 <b>{qp_sum:.1f}%</b>
-        <span style="color:var(--muted);">· 1591 场回测：双档命中 25.5% vs 单档 15.4%</span>）</span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">方向首选:</span>
-      <span class="pred-score">{dash(dscore)}</span>
-      <span class="pred-value">({dprob*100:.1f}% ｜ {olabel}{oprob*100:.1f}% 倾向内最可能比分
-        <span style="color:var(--muted);">· 单档回测命中 15.4%</span>)
-        {f'<br><span style="color:var(--muted);font-size:0.8rem;">±1球覆盖 <b>{bp*100:.1f}%</b>——实际比分落在参考比分上下各 1 球内的概率，跟单场比分看这个（回测 66.4%）</span>' if bp is not None else ''}</span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">期望比分:</span>
-      <span class="pred-score">{dash(escore)}</span>
-      <span class="pred-value">（λ 期望值四舍五入{'' if esame else '·象限内已修正'}｜<b>看总进球水平用这个</b>
-        <span style="color:var(--muted);">· 回测总进球偏差 −0.90→<b>−0.22</b> 球，±1球覆盖 66.4%→<b>71.0%</b>（精确率 15.4%→13.8%）</span>）</span>
-    </div>
-    <div class="pred-row">
       <span class="pred-label">比分可信度:</span>
       <span class="tag {cred_cls}">{esc(cred_tag)}</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 {m['lam_home']+m['lam_away']:.2f}；单比分命中率随总进球水平下降（低λ 23.8% → 高λ 13.0%），高λ场次请只看方向与总量</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 {m['lam_home']+m['lam_away']:.2f}；λ≤2.0 的期望比分单点命中 25.6%（±1球 85.4%）；λ&gt;2.0 后单点稳定在约 13%，此时请以方向与总量为主</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -672,11 +709,9 @@ def match_card(m):
       <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
     </div>
     <div style="margin-top:0.35rem;font-size:0.72rem;color:var(--muted);">
-      <b>单比分为什么总「看起来差很多」（1591 场定量归因，score_rule_probe.py）</b>：单比分是 31 格里的<b>单点</b>，命中 = ①方向命中 53.8% × ③方向正确下比分命中 28.6% = <b>15.4%</b>。
+      <b>比分口径说明（1591 场定量归因，score_rule_probe.py）</b>：<b>头条已改为「期望比分」= λ 期望进球取整</b>，不再以概率众数作头条——众数是分布里的<b>单点</b>，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35 / 客 −0.55），这正是「预测 1-0、实际 3-1」观感的来源；改用期望值口径后偏差降到 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>（代价是单点精确率 15.4% → 13.8%，该口径本就不是为「押中单点」设计的）。
       <b>模型没有算偏</b>：逐格校准误差仅 ±1~2pp（1:1 模型 11.8% vs 实际 13.2%；1:2 5.6% vs 7.7%；2:0 7.2% vs 6.2%）；总进球分布 P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数概率 13.73%，实际命中 15.4%（<b>模型偏保守</b>）；±1球模型自评 60.4% vs 实测 <b>66.4%</b>（同样偏保守）。温度展平测试（g∝g^(1/T)，T=1.0~1.35）在时间外让比分 LogLoss <b>单调变差</b>（2.7635→2.8254），故<b>引擎比分矩阵不动</b>。
-      观感偏差的真正来源：<b>单点众数必然低于分布均值</b>——头条比分的总进球系统性比实际<b>低 0.90 球/场</b>（主 −0.35 / 客 −0.55），所以「预测 1-0、实际 3-1」是格式问题，不是模型没算。要消除这个偏差请用上面的<b>期望比分</b>（λ 四舍五入：总进球偏差 −0.90 → <b>−0.22</b>，±1球覆盖 66.4% → <b>71.0%</b>，代价是精确率 15.4% → 13.8%）。
-      9 种头条选法对照：现状「象限列出众数」精确率最高（15.4%），全局众数 16.6% 但 60% 场次退化成 1:1（不可用），round(λ) 13.8%、象限+总进球众数 11.4%、λ最接近 10.8%。
-      口径阶梯：单档 15.4% → <b>双档 25.5%</b> → Top3 32.2% → ±1球 66.4% → 方向 53.8%。分档：低λ场 23.8% / 中 14.9% / 高λ场仅 13.0%。
+      口径阶梯：期望比分单点 13.8% → <b>双档（含头条比分）26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%。分档：λ≤2.0 期望比分单点 25.6%、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 13%。
     </div>
     <div style="margin-top:0.75rem;font-size:0.75rem;color:var(--muted);font-family:monospace;line-height:1.8;word-break:break-all;">
       {esc(m['chain'])}
@@ -704,27 +739,25 @@ for m in MATCHES:
     pr = m['prob']
     num_cell = f'<td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
     pair = f'<td>{rank_tag(m["home"], m["home_rank"])}</td><td>{rank_tag(m["away"], m["away_rank"])}</td>'
-    # 4.1 胜负与比分（1X2 三率 + 方向首选 + 双档 + 众数 合并一表）
+    # 4.1 胜负与比分（1X2 三率 + 期望比分 + 双档 + 覆盖；头条=λ 期望值口径）
     dlabel2, dkey2, ds2, dp2, op2 = direction_pick(m)
-    _qp = quad_picks(m, 3)
-    _qp2 = _qp[:2]
+    _qp2 = expect_band(m, 2)
     _qp2_sum = sum(p for _, p in _qp2)
-    _secs = [f'{dash(s)} ({p:.1f}%)' for s, p in _qp[1:3]]
-    second = ' · '.join(_secs) or '-'
-    _bp = band_prob(m, ds2)
+    _escore2, _eprob2, _esame2 = expect_score(m)
+    _bp = band_prob(m, _escore2)
     _bp_cell = (f'{_bp*100:.0f}%' if _bp is not None else '-')
     _cred_t, _cred_c = score_cred(m)
-    escore2, _esame2 = expect_score(m)
+    _ep_str = f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({_eprob2:.1f}%)</span>' if _eprob2 is not None else ''
     rowsA += (f'<tr>{num_cell}{pair}'
               f'<td>{pr["home"]:.1f}%</td><td>{pr["draw"]:.1f}%</td><td>{pr["away"]:.1f}%</td>'
               f'<td><span class="tag {DIR_TAG.get(dlabel2, "tag-blue")}">{dlabel2} {op2*100:.1f}%</span></td>'
-              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(ds2)}'
-              f' <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">({dp2*100:.1f}%)</span>'
-              f'<br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">双档 '
-              f'{"+".join(dash(s) for s, _ in _qp2)} {_qp2_sum:.1f}%</span></td>'
+              f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_escore2)}{_ep_str}'
+              f'<br><span style="color:var(--muted);font-weight:400;font-size:0.72rem;">λ {m["lam_home"]:.2f}:{m["lam_away"]:.2f}'
+              f'{"" if _esame2 else " · 已修正"}</span></td>'
+              f'<td style="font-family:monospace;font-size:0.8rem;">'
+              f'{"+".join(dash(s) for s, _ in _qp2)}<br>'
+              f'<span style="color:var(--muted);font-size:0.72rem;">合计 {_qp2_sum:.1f}%</span></td>'
               f'<td style="font-family:monospace;">{_bp_cell}</td>'
-              f'<td style="font-family:monospace;">{dash(escore2)}</td>'
-              f'<td style="font-family:monospace;">{esc(second)}</td>'
               f'<td>{top3:.1f}%</td>'
               f'<td>{sum(t["prob"] for t in ts[:5]):.1f}%</td>'
               f'<td><span class="tag {_cred_c}">{_cred_t.split("（")[0]}</span></td>'
@@ -747,9 +780,9 @@ def _sub_table(title, note, head, body):
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → 该方向内首选比分）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>勿押单比分</b>：1591 场生产口径回测（score_rule_probe.py，2026-09-13），单比分命中 <b>15.4%</b>、<b>双档 25.5%</b>、Top3 32.2%、±1球覆盖 66.4%、方向 53.8%——单比分是 31 格里的单点，且分档看差距极大（低λ场 23.8% vs 高λ场 13.0%）。<b>模型本身校准良好</b>：模型给真实比分的平均概率 8.36%、自认众数概率 13.73%，与实际 15.4% 一致；逐格误差 ±1~2pp；P(≥3) 模型 52.2% vs 实际 53.4%。真正让比分「看起来差很多」的是：单点众数必然低于分布均值，头条比分总进球系统性比实际低 <b>0.90 球/场</b>，所以「预测 1-0、实际 3-1」是格式问题而非模型没算。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>方向首选</b> = 该倾向象限内概率最高的比分（精确率口径，回测 15.4%）；<b>双档</b> = 同象限前两档合计（<b>25.5%</b>）；<b>期望比分</b> = λ 期望值四舍五入（容错口径：总进球偏差 −0.90→−0.22 球、±1球覆盖 66.4%→<b>71.0%</b>，精确率 13.8%，<b>看总进球水平用这一列</b>）。<b>±1球覆盖</b> = 实际比分落在方向首选上下各 1 球范围内的概率（实测 66.4%）。<b>比分可信度</b> = 按 λ 总量分档（≤2.3 → 23.8%，2.3~3.0 → 14.9%，&gt;3.0 → <b>13.0%</b>）：高 λ 场次的单比分接近噪声，只看方向与总量。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp。',
-'<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>方向首选 / 双档</th><th>±1球覆盖</th><th>期望比分</th><th>次选/三选(同向)</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th>', rowsA)}
+<p style="font-size:0.85rem;color:var(--muted);">两种玩法口径分开看：<b>胜负+比分</b>看方向（Platt 校准三率 → 倾向 → <b>期望比分</b>）、<b>进球数</b>看总量倾向（λ 泊松累加，命中率远高于单比分）。<b>头条比分口径已改</b>：不再取概率众数（众数是分布单点，必然低于均值，回测其总进球系统性比实际低 <b>0.90 球/场</b>），改用 <b>λ 期望进球取整</b> → 总进球偏差降至 <b>−0.22 球/场</b>、±1球覆盖 66.4% → <b>71.0%</b>。1591 场生产口径回测（score_rule_probe.py）：期望比分单点 13.8%、双档（含头条比分）26.0%、Top3 32.2%、±1球 71.0%、方向 53.8%；分档（按新口径重测）只有 λ≤2.0 档显著更好（单点 25.6% / ±1球 85.4%），λ&gt;2.0 后稳定在约 13%。<b>模型本身校准良好</b>：逐格误差 ±1~2pp；P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数 13.73%/自评±1球 60.4%，实际 15.4%/66.4%（两项均偏保守）。</p>
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经 Platt 校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>期望比分</b>（头条口径，2026-09-13 起）= λ 期望进球四舍五入并约束在倾向象限内：总进球偏差 −0.22 球/场、±1球覆盖 <b>71.0%</b>（象限众数口径分别为 −0.90 与 66.4%）——单点精确率 13.8%，本口径不为「押中单点」设计。<b>比分双档</b> = 头条期望比分 + 同倾向内概率最高的其余比分（1591 场回测命中 <b>26.0%</b>，单档 13.8%；不含期望比分的「象限前两档」25.5%）。<b>±1球覆盖</b> = 实际比分落在期望比分上下各 1 球范围内的概率（回测 71.0%）——跟单场比分请看「双档 + ±1球覆盖 + Top3/Top5」。<b>比分可信度</b> = 按 λ 总量分档（期望比分口径重测）：λ≤2.0 → 单点 <b>25.6%</b>、±1球 85.4%；λ&gt;2.0 之后单点稳定在约 <b>13%</b>（不再随 λ 单调下降，旧「低λ 23.8%→高λ 13.0%」为象限众数口径的性质）——λ&gt;2.0 的场次请以方向与总量为主。<b>比分矩阵已对齐发布三率</b>（V3.3 SCORE_ALIGN），对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp。',
+'<th>编号</th><th>主队</th><th>客队</th><th>胜率</th><th>平率</th><th>负率</th><th>倾向</th><th>期望比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>比分可信度</th><th>信心</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
@@ -766,10 +799,16 @@ conf_pool = [m for m in conf_pool_all if m not in _hi_risk]
 cold_pool = [m for m in MATCHES if any(('凯利' in s or '排名背离' in s or '爆冷' in s or '防平防冷' in s or '双平' in s) for s in m['signals'])]
 
 def make_group(ms):
+    """比分串关的腿：统一走头条口径「期望比分」（λ 期望值取整），概率取该比分模型概率。
+
+    此处只作高赔彩票型展示：lambda_level_probe.py 回测 3 串 1（比分腿）198 天仅中 1 天（0.5%），
+    故真实概率必须如实标注，不作推荐强度使用。
+    """
     legs, odds_prod, prob_prod = [], 1.0, 1.0
     for m in ms:
         _ol, _ok, ds, dp, _op = direction_pick(m)
-        s, p = ds, dp
+        s, ep, _esame = expect_score(m)
+        p = (ep / 100.0) if ep is not None else dp
         odd = score_odd(m, s)
         legs.append(f"[{m['matchNumStr']}]{m['home']}vs{m['away']} {dash(s)}")
         if odd:
@@ -800,7 +839,7 @@ for i in range(n_conf_groups):
     if len(legs) < 2:
         break
     parlays.append(('信心', GROUP_NAME[i], make_group(legs), min(m['stars'] for m in legs),
-                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，均取方向首选比分（倾向内最可能）"
+                    f"{len(legs)}串1：取评级最高（4-5★优先）的{len(legs)}场，比分腿统一用头条口径「期望比分」（λ 期望值取整）"
                     + ("；已剔除高冷门风险场次" if _hi_risk and not _conf_backfill else "")))
 
 cold_sorted = sorted(cold_pool, key=lambda m: (-len(m['signals']), -first_score(m)[1]))
@@ -903,7 +942,7 @@ strategy_sec = f'''
   {_big_card}<div class="summary-card"><h4>⚖️ 让球盘价值 (V3.3)</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。月度时间外 197 注 ROI <strong>+16.86%</strong>（纯模型同口径 +4.78%）——<b>价值在过滤不在加权</b>，仅小注。</p></div>
   <div class="summary-card"><h4>📈 总进球偏差归因 (2026-09-13)</h4><p style="font-size:0.9rem;">1591 场回测：<b>2026 年 1~8 月模型 λ 场均高估 +0.12 球</b>（实际 2.75~2.91），并非系统性低估；<b>9 月实际场均升到 3.05~3.13</b>（全库口径），属异常高进球期，这才使近期偏差转负（09-11 −0.63 / 09-12 −0.47）。λ 水平系数 k 扫描：k=1.10~1.15 会让 MAE、比分 LogLoss、1X2 Brier <b>全线变差</b>，故<b>不追高</b>；校准窗口 7→14 天在时间外把 MAE 1.1869→1.1850 且显著降低逐日颠簸，为可选优化项。</p></div>
   <div class="summary-card"><h4>🎯 比分口径一致性 (V3.3)</h4><p style="font-size:0.9rem;">比分概率组的分布已与同页发布的胜/平/负<b>完全对齐</b>（此前因市场混合/联赛形状混合/Platt 三步都只作用在 1X2 上，两处口径最多相差 <strong>9.9pp</strong>）。对齐后比分 LogLoss −0.0131（t=−4.15）、1X2 Brier −1.4%、方向命中 +0.47pp；Top5 覆盖变化在噪声内（±0.2pp）。</p></div>
-  <div class="summary-card"><h4>🔬 单比分误差归因 (2026-09-13 新增)</h4><p style="font-size:0.9rem;">1591 场生产口径回测：单比分命中 <b>15.4%</b> = 方向 53.8% × 方向内比分 28.6%。<b>不是模型算偏</b>——逐格校准误差 ±1~2pp（1:1 11.8% vs 13.2%、1:2 5.6% vs 7.7%、2:0 7.2% vs 6.2%）；P(≥3) 模型 52.2% vs 实际 53.4%；模型自认众数 13.73%、自评±1球 60.4%，实际命中 15.4% / 66.4%（<b>两项都偏保守</b>）。温度展平测试（T=1.0~1.35）在时间外让比分 LogLoss 单调变差（2.7635→2.8254）→ <b>引擎比分矩阵不动</b>。<b>「出入很大」的来源是格式</b>：单点众数必然低于分布均值，头条比分总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35/客 −0.55），所以高频出现「预测 1-0、实际 3-1」。已为此新增<b>「期望比分」（λ 四舍五入）</b>口径：偏差 −0.90→<b>−0.22</b>、±1球覆盖 66.4%→<b>71.0%</b>（精确率 13.8%，略低）。<b>口径阶梯</b>：单档 15.4% → 双档 25.5% → Top3 32.2% → ±1球 66.4% → 方向 53.8%；<b>分档</b>：低λ场 23.8%、高λ场仅 13.0%（卡片已标「比分可信度」）。9 种头条选法对照中现状精确率仍最高（15.4%），故保留。</p></div>
+  <div class="summary-card"><h4>🔬 比分头条口径改版 (2026-09-13)</h4><p style="font-size:0.9rem;">头条比分由「概率众数」改为 <b>λ 期望进球取整</b>。原因是数学的：<b>众数是分布单点，必然低于均值</b>——回测（1591 场）众数口径头条总进球系统性比实际低 <b>0.90 球/场</b>（主 −0.35/客 −0.55），这才是「预测 1-0、实际 3-1」的来源。改期望值口径后：总进球偏差 <b>−0.90 → −0.22 球/场</b>，±1球覆盖 <b>66.4% → 71.0%</b>，代价是单点精确率 15.4% → 13.8%（该口径并非为押中单点设计）。<b>模型本身校准良好</b>：逐格校准误差 ±1~2pp（1:1 11.8% vs 13.2%、1:2 5.6% vs 7.7%、2:0 7.2% vs 6.2%）；P(≥3) 52.2% vs 53.4%；模型自认众数 13.73%、自评±1球 60.4%，实际命中 15.4% / 66.4%（<b>两项都偏保守</b>）。温度展平测试（T=1.0~1.35）在时间外让比分 LogLoss 单调变差（2.7635→2.8254）→ <b>引擎比分矩阵不动</b>。口径阶梯：期望比分 <b>13.8%</b> → 双档（含头条比分）<b>26.0%</b> → Top3 32.2% → ±1球 <b>71.0%</b> → 方向 53.8%；分档（按新口径重测）：λ≤2.0 单点 25.6% / ±1球 85.4%，λ&gt;2.0 后单点稳定在约 13%——旧「低λ 23.8% → 高λ 13.0%」是象限众数口径的性质，改口径后不再成立（卡片已按新分档标注「比分可信度」）。</p></div>
   <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了H2H方向性总量守恒再分配（V2.2新增），胜负记录直接改变λ分配而非只调总进球。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
@@ -928,7 +967,7 @@ strategy_sec = f'''
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
     {parlay_rows}
   </table>
-  <div class="parlay-note">注：综合概率为各场方向首选比分概率连乘（近似独立）。<b>比分串关的 3 腿全中率仅 0.5%（198 个比赛日仅 1 天命中）</b>，组合概率常低至 0.1%~0.4%——请把它当作买彩票而非投资建议，切勿重注。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
+  <div class="parlay-note">注：综合概率为各场比分腿概率连乘（近似独立）。比分腿已统一为头条口径<b>「期望比分」</b>（λ 期望值取整），概率取模型给该比分的概率。<b>比分串关的 3 腿全中率仅 0.5%（198 个比赛日仅 1 天命中）</b>，组合概率常低至 0.1%~0.4%——请把它当作买彩票而非投资建议，切勿重注。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）。组数与腿数随当日场次动态调整：信心组 = min(3, max(2, 场次÷8))，冷门组 = min(3, max(2, 场次÷10))，每组 3 腿（≥15场）或 2 腿（6-14场）；冷门场次不足时用高信心场锚定补足，每组至少 2 组、至少 2 腿。</div>
 </div>
 '''
 
