@@ -614,15 +614,15 @@ def market_dev_section(matches):
     body = ''
     for ev, m, rq, b in rows:
         if ev >= 1.10 and rq['conf'] == '高':
-            cls, hit = 'tag-red', '✅ 达标(高置信)'
+            cls = 'tag-red'
         elif ev >= 1.10 and rq['conf'] == '中':
-            cls, hit = 'tag-yellow', '⚠️ 中置信'
+            cls = 'tag-yellow'
         elif ev >= 1.10:
-            cls, hit = 'tag-blue', '❌ 低置信(勿跟)'
+            cls = 'tag-blue'
         elif ev >= 1.00:
-            cls, hit = 'tag-yellow', '观察'
+            cls = 'tag-yellow'
         else:
-            cls, hit = 'tag-blue', '—'
+            cls = 'tag-blue'
         up = upset_pct(m)
         up_str = f'{up:.0f}%' if up is not None else '-'
         body += (f'<tr><td><span class="tag tag-blue">{esc(m["matchNumStr"])}</span></td>'
@@ -636,7 +636,7 @@ def market_dev_section(matches):
                  f'<td><strong>{rq["calibrated"][b["key"]]:.1f}%</strong></td>'
                  f'<td style="font-family:monospace;font-weight:700;">{ev:.2f}</td>'
                  f'<td>{rq["div_pp"]:.0f}pp</td>'
-                 f'<td>{esc(rq["conf"])}</td><td>{hit}</td>'
+                 f'<td>{esc(rq["conf"])}</td>'
                  f'<td>{up_str}</td></tr>')
     return _sub_table(
         '4.3 让球盘市场偏差清单',
@@ -645,7 +645,7 @@ def market_dev_section(matches):
         '⚠️ <b>EV&gt;1.10 才算有偏离</b>；|让球|=1 置信高、=2 中、≥3 低（样本不足，不建议跟）。'
         '该玩法月度 ROI 波动大（+81%/+53%/−27%/−14%），只用小注。<b>不要用它替换 1X2 判断</b>。',
         '<th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>价值方向</th><th>赔率</th>'
-        '<th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>状态</th><th>冷门风险</th>',
+        '<th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>冷门风险</th>',
         body)
 
 def h2h_mean(m):
