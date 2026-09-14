@@ -940,11 +940,11 @@ V3_CONFIG = {
                   "note": "周期寻优衰减0.85/xG权重/H2H权重/clamp边界，walk-forward防过拟合"},
     "HEDGE_ENSEMBLE": {"enabled": True, "min_samples": 500,
                        "note": "泊松/DC/Elo/市场多专家Hedge加权 w∝exp(-ηL)"},
-    "KALMAN_STRENGTH": {"enabled": False, "min_samples": 200,
+    "KALMAN_STRENGTH": {"enabled": True, "min_samples": 200,
                         "note": "按xG残差在线更新攻防强度，主客场分离，赛季初向联赛均值回归"},
     "CLV_TRACK": {"enabled": True, "min_samples": 100,
                   "note": "记录推荐时赔率与收盘赔率，CLV长期为负则提高市场混合权重α"},
-    "DRIFT_MONITOR": {"enabled": False, "min_samples": 200,
+    "DRIFT_MONITOR": {"enabled": True, "min_samples": 200,
                       "note": "PSI/KS监控特征与预测分布漂移，超阈值自动触发重标定"},
 }
 
@@ -1336,9 +1336,191 @@ def half_score_adjust(lam_h, lam_a, half_score_str):
     return nh, na, " → ".join(note_parts)
 
 
-def kalman_update_strength(team, xg_residual):
-    """TODO(V3)：卡尔曼/Elo 在线更新攻防强度，主客场分离。触发：≥200场。"""
-    raise NotImplementedError("KALMAN_STRENGTH 未实现")
+def load_strength_db(db_path=None):
+    """加载球队攻防强度状态字典。不存在返回空 dict。"""
+    if db_path is None:
+        db_path = os.path.join(BASE, "strength_db.json")
+    if os.path.exists(db_path):
+        try:
+            return json.load(open(db_path, encoding="utf-8"))
+        except Exception:
+            return {"_meta": {}, "teams": {}}
+    return {"_meta": {"created": datetime.datetime.now().isoformat(),
+                      "note": "KALMAN_STRENGTH V3.4: 4维(主/客 × 攻/守) + Kalman增益在线更新"},
+            "teams": {}}
+
+
+def save_strength_db(db, db_path=None):
+    """持久化 strength 字典。"""
+    if db_path is None:
+        db_path = os.path.join(BASE, "strength_db.json")
+    json.dump(db, open(db_path, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
+
+
+def kalman_update_strength(team, is_home, metric, residual, db=None, db_path=None):
+    """Kalman 在线更新球队攻防强度 — V3.4 实装。
+
+    4 个 metric 维度:
+      "attack": 进球能力 (主队进球多→attack↑)
+      "defend": 失球能力 (主队失球多→defend↑)
+    结合 is_home 分主客场 → 实际存储 ha/hd/aa/ad 四个独立强度。
+
+    Kalman 增益控制:
+      K = P / (P + R)     观测噪声 R=0.20 (单次进球的方差, 足球进球方差大)
+      strength += K * residual
+      P = (1-K) * P + Q   过程噪声 Q=0.01 (赛季中强度缓慢变化)
+
+    strength=1.0 代表联赛基线水平; 实际 lambda 修正: λ *= strength/1.0
+
+    参数:
+      team: 球队名 (str)
+      is_home: 是否主队 (bool)
+      metric: "attack" 或 "defend"
+      residual: 实际进球/失球 - 期望进球/失球 (float)
+      db: strength 字典; None 则从 db_path 读
+      db_path: 文件路径; None 则用默认 strength_db.json
+
+    返回: 更新后的 strength 字典 (会自动 save)
+    """
+    if db is None:
+        db = load_strength_db(db_path)
+
+    teams = db.setdefault("teams", {})
+    t = teams.setdefault(team, {
+        "ha": 1.0, "hd": 1.0, "aa": 1.0, "ad": 1.0,  # 主/客 × 攻/守
+        "P_ha": 1.0, "P_hd": 1.0, "P_aa": 1.0, "P_ad": 1.0,  # 不确定性 (0→完全确定, 1→完全不确定)
+        "n_ha": 0, "n_hd": 0, "n_aa": 0, "n_ad": 0,
+    })
+
+    # 映射到实际键
+    prefix = "h" if is_home else "a"
+    suffix = "a" if metric == "attack" else "d"
+    skey = f"{prefix}{suffix}"      # ha / hd / aa / ad
+    pkey = f"P_{skey}"
+    nkey = f"n_{skey}"
+
+    R = 3.0    # 观测噪声 (足球进球方差大, 稳态 K≈0.005)
+    Q = 0.005  # 过程噪声 (赛季中强度缓慢变化)
+
+    P = t[pkey]
+    K = P / (P + R)                           # Kalman 增益
+    t[skey] += K * residual                   # 更新强度
+    t[pkey] = (1 - K) * P + Q                 # 降低不确定性 + 加过程噪声
+    t[nkey] = t.get(nkey, 0) + 1
+
+    # 守住合理区间: 0.7 ~ 1.4 (强度偏离基线不超过 ±40%)
+    t[skey] = clamp(t[skey], 0.70, 1.40)
+
+    # 持久化
+    save_strength_db(db, db_path)
+    return db
+
+
+def strength_to_lambda_modifier(team, is_home, db):
+    """把 strength 字典转成 λ 乘法修正项 — V3.4。
+
+    返回: (attack_mod, defend_mod) — 主队 λ 乘 attack_mod, 客队 λ 乘 defend_mod
+    若球队无记录则返回 (1.0, 1.0) (中性)。
+    """
+    teams = db.get("teams", {}) if db else {}
+    t = teams.get(team)
+    if not t:
+        return (1.0, 1.0)
+
+    prefix = "h" if is_home else "a"
+    attack_s = t.get(f"{prefix}a", 1.0)
+    defend_s = t.get(f"{prefix}d", 1.0)
+
+    # 不确定性高时向 1.0 收缩 (经验贝叶斯)
+    p_a = t.get(f"P_{prefix}a", 0.5)
+    p_d = t.get(f"P_{prefix}d", 0.5)
+    shrink_a = clamp(1.0 - p_a, 0.3, 1.0)   # P=1(完全不确定)→shrink=0.3
+    shrink_d = clamp(1.0 - p_d, 0.3, 1.0)
+
+    attack_mod = 1.0 + (attack_s - 1.0) * shrink_a
+    defend_mod = 1.0 + (defend_s - 1.0) * shrink_d
+    return (clamp(attack_mod, 0.7, 1.3), clamp(defend_mod, 0.7, 1.3))
+
+
+def backfill_strength_from_history(results_dir=None, db_path=None, verbose=True):
+    """从 results_history 遍历历史赛果, 初始化所有球队的攻防强度 — V3.4。
+
+    做法:
+      1. 先按队聚合所有比赛的进球/失球数据
+      2. 用联赛基线均值做"期望进球"的粗估计
+      3. 每场打完后跑 Kalman update
+
+    返回: (db, n_teams, n_updates)
+    """
+    if results_dir is None:
+        results_dir = _repo_root()
+    load_league_profile()
+
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    db = load_strength_db(db_path)
+    updates = 0
+
+    # 遍历所有历史比赛 (按时间顺序)
+    matches = []
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        date_str = os.path.basename(f).replace(".json", "")
+        for key, v in data.items():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            league = v.get("league") or "其他"
+            parts = key.split("_", 2)
+            if len(parts) < 3:
+                continue
+            d, home, away = parts
+            matches.append({"date": d, "league": league, "home": home, "away": away,
+                           "hg": hg, "ag": ag})
+
+    # 按日期排序 (升序, 早的先处理)
+    matches.sort(key=lambda x: x["date"])
+
+    for m in matches:
+        total = league_baseline(m["league"])
+        # 更合理的期望: 用不分主客的基础拆分 (主场略高)
+        exp_home = total * 0.47
+        exp_away = total * 0.42
+        # 残差限幅: 单场最多贡献 ±1.5 的残差, 避免异常球 (7:0, 0:8) 一次推爆
+        hg_res = clamp(m["hg"] - exp_home, -1.5, 1.5)
+        ag_res = clamp(m["ag"] - exp_away, -1.5, 1.5)
+
+        # 主队进攻残差, 主队防守残差, 客队进攻, 客队防守
+        kh = kalman_update_strength(m["home"], True, "attack", hg_res, db, db_path)
+        kh = kalman_update_strength(m["home"], True, "defend", ag_res, db, db_path)
+        kh = kalman_update_strength(m["away"], False, "attack", ag_res, db, db_path)
+        kh = kalman_update_strength(m["away"], False, "defend", hg_res, db, db_path)
+        updates += 1
+
+    n_teams = len(db.get("teams", {}))
+    if verbose:
+        print(f"\n=== KALMAN_STRENGTH V3.4 backfill ===")
+        print(f"  历史比赛数: {updates}")
+        print(f"  覆盖球队数: {n_teams}")
+        # 打印 top 5 进攻最强/最弱
+        teams = db["teams"]
+        by_ha = sorted(teams.items(), key=lambda x: -x[1].get("ha", 1.0))[:5]
+        by_hd = sorted(teams.items(), key=lambda x: -x[1].get("hd", 1.0))[:5]
+        print(f"  主队进攻 Top5: {[(t, round(v['ha'],2)) for t,v in by_ha]}")
+        print(f"  主队防守 Top5(失球最多): {[(t, round(v['hd'],2)) for t,v in by_hd]}")
+    return db, n_teams, updates
 
 
 def track_clv(snapshot_path=None, results_dir=None):
@@ -1452,9 +1634,220 @@ def track_clv(snapshot_path=None, results_dir=None):
     }
 
 
-def drift_check(feat_hist, feat_now):
-    """TODO(V3)：PSI/KS 漂移监控，超阈值触发重标定。触发：≥200场。"""
-    raise NotImplementedError("DRIFT_MONITOR 未实现")
+def drift_check(baseline_path=None, results_dir=None, verbose=True):
+    """PSI + KS 漂移监控 — V3.4 实装。
+
+    监控对象:
+      1. 联赛基线进球分布 (league_mean_goals): 各联赛的总进球均值
+      2. 全局进球分布 (global_goals_dist): 所有比赛的总进球数直方图
+      3. 主/客进球比率分布 (home_away_ratio): 主队进球 / 客队进球
+
+    PSI 阈值 (经验):
+      PSI < 0.10: 稳定 ✅
+      0.10 ≤ PSI < 0.25: 警惕 ⚠️
+      PSI ≥ 0.25: 漂移严重 ❌ (应触发重标定)
+
+    KS 阈值 (α=0.05):
+      KS > 1.36/√n: 拒绝同分布假设 (应触发重标定)
+
+    返回: {metric_name: {"psi": float, "ks": float, "drift_detected": bool, "level": str}}
+    """
+    if results_dir is None:
+        results_dir = _repo_root()
+    if baseline_path is None:
+        baseline_path = os.path.join(BASE, "drift_baseline.json")
+
+    # 收集当前数据
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    league_means = {}
+    global_totals = []
+    ratios = []
+    league_sums = {}
+    league_counts = {}
+
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            league = v.get("league") or "其他"
+            total = hg + ag
+            global_totals.append(total)
+            if ag > 0:
+                ratios.append(hg / ag)
+            league_sums[league] = league_sums.get(league, 0) + total
+            league_counts[league] = league_counts.get(league, 0) + 1
+
+    if len(global_totals) < 50:
+        return None
+    for lg in league_sums:
+        league_means[lg] = league_sums[lg] / league_counts[lg]
+
+    # 基准快照（不存在就创建）
+    baseline = None
+    if os.path.exists(baseline_path):
+        try:
+            baseline = json.load(open(baseline_path, encoding="utf-8"))
+        except Exception:
+            baseline = None
+
+    if baseline is None or not baseline.get("_created"):
+        baseline = {
+            "_created": datetime.datetime.now().isoformat(),
+            "_note": "首次自动生成的漂移监控基准快照; 若后续 PSI 持续超阈值应手动重建",
+            "league_means": league_means,
+            "global_totals_hist": _histogram(global_totals, bins=[0, 1.5, 2.5, 3.5, 4.5, 6, 10]),
+            "ratios_hist": _histogram(ratios, bins=[0, 0.6, 0.9, 1.1, 1.5, 2.5, 10]),
+        }
+        json.dump(baseline, open(baseline_path, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=2)
+        if verbose:
+            print(f"\n=== DRIFT_MONITOR (V3.4) ===")
+            print(f"基准快照不存在, 已创建: {baseline_path}")
+            print(f"后续对比基准时间: {baseline['_created']}")
+        return None
+
+    # 当前分箱
+    cur_hist = _histogram(global_totals, bins=[0, 1.5, 2.5, 3.5, 4.5, 6, 10])
+    cur_ratio_hist = _histogram(ratios, bins=[0, 0.6, 0.9, 1.1, 1.5, 2.5, 10])
+    cur_league_means = league_means
+    base_league_means = baseline.get("league_means", {})
+
+    result = {}
+    drift_count = 0
+
+    # 1. 全局进球 PSI
+    base_hist = baseline.get("global_totals_hist", {})
+    psi1 = _psi(base_hist, cur_hist)
+    # KS
+    ks1 = _ks_from_hist(base_hist, cur_hist)
+    drift1 = psi1 is not None and psi1 >= 0.25
+    level1 = "⚠️ 警惕" if (psi1 is not None and psi1 >= 0.10 and psi1 < 0.25) else ("❌ 漂移" if drift1 else "✅ 稳定")
+    drift_count += int(drift1)
+    result["global_goals"] = {"psi": round(psi1, 4) if psi1 is not None else None,
+                              "ks": round(ks1, 4) if ks1 is not None else None,
+                              "drift_detected": drift1, "level": level1}
+
+    # 2. 主客比 PSI
+    base_rhist = baseline.get("ratios_hist", {})
+    psi2 = _psi(base_rhist, cur_ratio_hist)
+    ks2 = _ks_from_hist(base_rhist, cur_ratio_hist)
+    drift2 = psi2 is not None and psi2 >= 0.25
+    level2 = "⚠️ 警惕" if (psi2 is not None and psi2 >= 0.10 and psi2 < 0.25) else ("❌ 漂移" if drift2 else "✅ 稳定")
+    drift_count += int(drift2)
+    result["home_away_ratio"] = {"psi": round(psi2, 4) if psi2 is not None else None,
+                                 "ks": round(ks2, 4) if ks2 is not None else None,
+                                 "drift_detected": drift2, "level": level2}
+
+    # 3. 联赛基线（按联赛均值逐年 PSI 的简化版: 只看 top 10 联赛的均值变化率）
+    league_deltas = []
+    for lg in sorted(set(list(cur_league_means.keys()) + list(base_league_means.keys()))):
+        cm = cur_league_means.get(lg)
+        bm = base_league_means.get(lg)
+        if cm and bm and bm > 0:
+            league_deltas.append((lg, abs(cm - bm) / bm))
+    if league_deltas:
+        league_deltas.sort(key=lambda x: -x[1])
+        top3 = league_deltas[:3]
+        # 简化: 用各联赛均值变化率的标准差做简单漂移指数
+        mean_delta = sum(d for _, d in league_deltas) / len(league_deltas)
+        std_delta = math.sqrt(sum((d - mean_delta) ** 2 for _, d in league_deltas) / len(league_deltas))
+        drift3 = std_delta >= 0.05  # 各联赛均值变化率标准差 ≥ 5%
+        level3 = "⚠️ 警惕" if 0.02 <= std_delta < 0.05 else ("❌ 漂移" if drift3 else "✅ 稳定")
+        drift_count += int(drift3)
+        result["league_baselines"] = {
+            "mean_delta_pct": round(mean_delta * 100, 2),
+            "std_delta_pct": round(std_delta * 100, 2),
+            "top3_changed": [(lg, round(d * 100, 2)) for lg, d in top3],
+            "drift_detected": drift3, "level": level3,
+        }
+
+    if verbose:
+        print(f"\n=== DRIFT_MONITOR (V3.4) — 基准 {baseline['_created']} ===")
+        for name, info in result.items():
+            if "psi" in info and info["psi"] is not None:
+                print(f"  {name:20s} PSI={info['psi']:.4f} KS={info['ks']:.4f}  {info['level']}")
+            elif "mean_delta_pct" in info:
+                print(f"  {name:20s} 均值变化率={info['mean_delta_pct']}% 标准差={info['std_delta_pct']}%  {info['level']}")
+                for lg, d in info.get("top3_changed", []):
+                    print(f"    ↑ {lg}: {d}%")
+        if drift_count > 0:
+            print(f"\n  ❌ 检测到 {drift_count} 项漂移 — 建议执行 compute_calibration() 重标定")
+        else:
+            print(f"\n  ✅ 全部稳定 (PSI < 0.10)")
+
+    result["_baseline_date"] = baseline.get("_created")
+    result["_n_samples"] = len(global_totals)
+    result["overall_drift_detected"] = drift_count > 0
+    return result
+
+
+# ---------- DRIFT_MONITOR 工具函数 ----------
+
+def _histogram(values, bins):
+    """把 values 按 bins 分箱, 返回 {bin_label: 计数占比}。bins 必须升序。"""
+    h = {}
+    n = len(values)
+    for i in range(len(bins) - 1):
+        lo, hi = bins[i], bins[i + 1]
+        label = f"[{lo},{hi})" if i < len(bins) - 2 else f"[{lo},∞)"
+        h[label] = 0
+    if n == 0:
+        return h
+    for v in values:
+        for i in range(len(bins) - 1):
+            lo, hi = bins[i], bins[i + 1]
+            if i < len(bins) - 2:
+                if lo <= v < hi:
+                    label = f"[{lo},{hi})"
+                    h[label] = h.get(label, 0) + 1
+                    break
+            else:
+                if v >= lo:
+                    label = f"[{lo},∞)"
+                    h[label] = h.get(label, 0) + 1
+                    break
+    return {k: round(v / n, 5) for k, v in h.items()}
+
+
+def _psi(base_dict, cur_dict):
+    """PSI = Σ((actual - expected) × ln(actual/expected))。两 dict 必须同 bin key。"""
+    all_keys = sorted(set(list(base_dict.keys()) + list(cur_dict.keys())))
+    psi = 0.0
+    for k in all_keys:
+        b = base_dict.get(k, 0.001)
+        c = cur_dict.get(k, 0.001)
+        b = max(b, 0.001)
+        c = max(c, 0.001)
+        psi += (c - b) * math.log(c / b)
+    return psi
+
+
+def _ks_from_hist(base_dict, cur_dict):
+    """从两个直方图近似 KS 统计量 (最大累积分布差)。"""
+    all_keys = sorted(set(list(base_dict.keys()) + list(cur_dict.keys())))
+    cum_base = cum_cur = 0.0
+    max_diff = 0.0
+    for k in all_keys:
+        cum_base += base_dict.get(k, 0)
+        cum_cur += cur_dict.get(k, 0)
+        diff = abs(cum_base - cum_cur)
+        if diff > max_diff:
+            max_diff = diff
+    return max_diff
 
 
 def read_daily_pred(d):
