@@ -936,16 +936,26 @@ V3_CONFIG = {
                   "note": "❌ 2026-09-10 验证否决：休息天数对净胜球看似有 −0.6 球效应（多休反而更差），"
                           "但用市场赔率控制实力后残差仅 +0.09/−0.13 且符号不一致；"
                           "「休息少」实为「强队参赛密」的代理。见 rest_days_probe.py"},
-    "BRIER_OPT": {"enabled": True, "min_samples": 500,
-                  "note": "周期寻优衰减0.85/xG权重/H2H权重/clamp边界，walk-forward防过拟合"},
-    "HEDGE_ENSEMBLE": {"enabled": True, "min_samples": 500,
-                       "note": "泊松/DC/Elo/市场多专家Hedge加权 w∝exp(-ηL)"},
-    "KALMAN_STRENGTH": {"enabled": True, "min_samples": 200,
-                        "note": "按xG残差在线更新攻防强度，主客场分离，赛季初向联赛均值回归"},
-    "CLV_TRACK": {"enabled": True, "min_samples": 100,
-                  "note": "记录推荐时赔率与收盘赔率，CLV长期为负则提高市场混合权重α"},
-    "DRIFT_MONITOR": {"enabled": True, "min_samples": 200,
-                      "note": "PSI/KS监控特征与预测分布漂移，超阈值自动触发重标定"},
+    # ---- V3.4 五模块（2026-09-14 接线：main() 每日调用，见文件末尾「V3.4 运行时」节）----
+    # 此前这五项 enabled=True 只在路线图打印 ON，main() 从未调用（已落库、未接线）。
+    "BRIER_OPT": {"enabled": True, "wired": True, "apply": True, "min_samples": 500,
+                  "every_days": 7, "min_improve_pct": 0.3, "band": (0.60, 0.85),
+                  "note": "周期寻优 MARKET_W/DECAY/LEAGUE_SHRINK_W（walk-forward 分折），"
+                          "达标才采纳（改善≥0.3% 且落在 0.60~0.85 安全带），每 7 天最多一次；"
+                          "当前最优值落 v34_state.json，采纳值存 v34_tuned.json"},
+    "HEDGE_ENSEMBLE": {"enabled": True, "wired": True, "apply": False,
+                       "eta": 6.0, "band": (0.70, 0.90), "min_samples": 500,
+                       "note": "专家 HEDGE（模型/市场/混合）近期对数损失 w∝exp(-ηL) → 当日市场权重；"
+                               "接线后按 alpha 门控：默认 apply=False（回测未过 → 只记录不改变预测）"},
+    "KALMAN_STRENGTH": {"enabled": True, "wired": True, "apply": False, "min_samples": 200,
+                        "note": "按「相对自身状态期望 λ 的偏置」在线更新 4 维攻防强度（主/客×攻/守），"
+                                "主客场分离 + 不确定度收缩；接线后按 alpha 门控：默认 apply=False"},
+    "CLV_TRACK": {"enabled": True, "wired": True, "apply": True, "min_samples": 100,
+                  "note": "每日跟踪推荐赔率 vs 收盘赔率（results_history 里的最终赔率），"
+                          "累计入 clv_log.json；联赛 CLV 持续 < −5% 时在流水线打印「提高该联赛 MARKET_W」提示"},
+    "DRIFT_MONITOR": {"enabled": True, "wired": True, "apply": True, "min_samples": 200,
+                      "note": "每日 PSI/KS 监控进球/主客比/联赛基线分布，基准 drift_baseline.json；"
+                              "超阈值时置位 state.drift.retrain_suggested，提示重拟合（不自动改参数）"},
 }
 
 
@@ -995,19 +1005,22 @@ def shrink_league(buckets, pred_mean, global_factor, cfg):
 
 
 def roadmap_status(n_samples):
-    """返回各模块启用进度；达到样本量却未启用的标记 READY，提醒接入。"""
+    """返回各模块启用进度；已接线 / 未接线（工具态）分别标注，避免 ON 被读成已生效。"""
     lines = []
     for name, cfg in V3_CONFIG.items():
         need = cfg["min_samples"]
-        if cfg["enabled"]:
-            state = "ON"
-        elif cfg.get("rejected"):
+        if cfg.get("rejected"):
             state = "REJECTED"
+        elif cfg["enabled"]:
+            if cfg.get("wired"):
+                state = "ON·生效" if cfg.get("apply") else "ON·观察"
+            else:
+                state = "ON"
         elif need and n_samples >= need:
             state = "READY"
         else:
             state = f"{n_samples}/{need}"
-        lines.append(f"  [{'x' if cfg['enabled'] else ' '}] {name:<15} {state:<8} {cfg['note'][:40]}")
+        lines.append(f"  [{'x' if cfg['enabled'] else ' '}] {name:<15} {state:<9} {cfg['note'][:40]}")
     return lines
 
 
@@ -1850,6 +1863,432 @@ def _ks_from_hist(base_dict, cur_dict):
     return max_diff
 
 
+# ================================================================ V3.4 运行时（2026-09-14 接线至每日链路）
+# 这 5 个模块此前只登记在 V3_CONFIG（路线图打印 ON），main() 从未调用 —— 即「已落库、未接线」。
+# 本节把它们真正接进每日流程，分三类：
+#   ① 改变预测：KALMAN_STRENGTH（λ 修正，接入第三步C）/ HEDGE_ENSEMBLE（当日市场权重）
+#      —— 用 alpha 门控：默认 apply=False（回测未过则只记录、不改预测，避免噪声改动上线）
+#   ② 周期调参：BRIER_OPT（每 7 天最多一次 walk-forward 寻优，达标才采纳全局超参）
+#   ③ 每日监控：CLV_TRACK / DRIFT_MONITOR（产出落 v34_state.json / clv_log.json，不改预测）
+# 状态文件均随 gh-pages 提交，保证 CI 与本地共用同一份状态。
+
+STRENGTH_DB_PATH = os.path.join(BASE, "strength_db.json")
+V34_STATE_PATH = os.path.join(BASE, "v34_state.json")
+CLV_LOG_PATH = os.path.join(BASE, "clv_log.json")
+V34_TUNED_PATH = os.path.join(BASE, "v34_tuned.json")
+
+KALMAN_R = 3.0            # 观测噪声（相对偏置方差）
+KALMAN_Q = 0.005          # 过程噪声（强度缓慢漂移）
+STRENGTH_MIN_OBS = 5      # 每个维度至少观测数，未达则该维中性
+STRENGTH_CLAMP = (0.75, 1.25)   # 单维强度上下限（相对偏置 ±25%）
+STRENGTH_APPLY_CLAMP = (0.88, 1.12)  # 合成分对 λ 的修正上限（更保守）
+
+
+def _ewma_form(hist):
+    """从「按时间升序的进球序列」算 EWMA 均值（与第一步同式：DECAY^i，窗口 RECENT_N）。"""
+    if not hist:
+        return None
+    seq = hist[-RECENT_N:][::-1]        # 由近及远
+    s = c = 0.0
+    for i, v in enumerate(seq):
+        w = DECAY ** i
+        s += v * w
+        c += w
+    return s / c if c else None
+
+
+def _form_expectation(form_h, form_a):
+    """赛前「状态期望 λ」：与第一步基础和同式（主队 gf 0.75 + 客队 ga 0.25，反之亦然）。
+
+    只用于算 Kalman 残差（球队相对自身状态期望的偏置），不参与发布 λ。
+    """
+    if form_h is None or form_a is None:
+        return None
+    gf_h, ga_h = form_h
+    gf_a, ga_a = form_a
+    exp_h = gf_h * 0.75 + ga_a * 0.25
+    exp_a = gf_a * 0.75 + ga_h * 0.25
+    return exp_h, exp_a
+
+
+def strength_modifiers(home, away, db):
+    """从 strength db 取本场合成的 λ 修正（主/客各一）。无记录或样本不足 → 1.0 中性。
+
+    合成：λ_h *= (攻_主 + 守_客)/2 ，λ_a *= (攻_客 + 守_主)/2
+    （用均值而非乘积，避免与基础 λ 里已含的「自身近期进球」双重计数放大）
+    """
+    teams = (db or {}).get("teams", {})
+    out = []
+    for role in ("h", "a"):
+        t = teams.get(home if role == "h" else away)
+        o = teams.get(away if role == "h" else home)
+        if not t or not o:
+            return (1.0, 1.0)
+        pref, oref = role, ("a" if role == "h" else "h")
+        own_att = t.get(f"{pref}a", 1.0)
+        own_n = t.get(f"n_{pref}a", 0)
+        opp_def = o.get(f"{oref}d", 1.0)
+        opp_n = o.get(f"n_{oref}d", 0)
+        if own_n < STRENGTH_MIN_OBS or opp_n < STRENGTH_MIN_OBS:
+            out.append(1.0)
+            continue
+        # 不确定度收缩（P 越大越不信任）
+        sa = clamp(1.0 - t.get(f"P_{pref}a", 1.0), 0.25, 1.0)
+        sd = clamp(1.0 - o.get(f"P_{oref}d", 1.0), 0.25, 1.0)
+        ma = 1.0 + (own_att - 1.0) * sa
+        md = 1.0 + (opp_def - 1.0) * sd
+        out.append(clamp((ma + md) / 2.0, *STRENGTH_APPLY_CLAMP))
+    return (out[0], out[1])
+
+
+def replay_strength(matches, db=None, collect=False, verbose=False):
+    """按日期升序重放历史比赛 → 维护 4 维攻防强度（Kalman，相对偏置口径）。
+
+    与旧 backfill 的差别：残差改为**相对值** (实际 − 状态期望)/状态期望，
+    与 strength_to_lambda_modifier 的「乘法修正」单位一致（旧版把进球数加进乘数，量纲不符）。
+
+    matches: [{"date","league","home","away","hg","ag"}] 升序
+    collect: True 时额外返回每场**赛前**的修正值（供回测逐场取用，无前视泄漏）
+    返回 (db, snaps)
+    """
+    if db is None:
+        db = {"_meta": {"updated": datetime.datetime.now().isoformat(),
+                        "note": "KALMAN_STRENGTH: 相对偏置口径，4维(主/客×攻/守)+不确定度收缩"},
+              "teams": {}}
+    teams = db.setdefault("teams", {})
+    gf, ga = {}, {}      # 队 -> 进球序列 / 失球序列（全部比赛，用于算赛前状态期望）
+
+    snaps = []
+    for m in matches:
+        hm, aw = m["home"], m["away"]
+        fh = _ewma_form(gf.get(hm))
+        ch = _ewma_form(ga.get(hm))
+        fa = _ewma_form(gf.get(aw))
+        ca = _ewma_form(ga.get(aw))
+        form_h = (fh, ch) if (fh is not None and ch is not None) else None
+        form_a = (fa, ca) if (fa is not None and ca is not None) else None
+        exp = _form_expectation(form_h, form_a)
+        if collect and exp:
+            snaps.append({"date": m["date"], "home": hm, "away": aw,
+                          "mods": strength_modifiers(hm, aw, db),
+                          "exp": exp})
+        elif collect:
+            snaps.append({"date": m["date"], "home": hm, "away": aw,
+                          "mods": (1.0, 1.0), "exp": None})
+        if exp:
+            e_h, e_a = exp[0], max(exp[1], 0.30)
+            e_h = max(e_h, 0.30)
+            res_att_h = (m["hg"] - e_h) / e_h
+            res_def_h = (m["ag"] - e_a) / e_a
+            res_att_a = (m["ag"] - e_a) / e_a
+            res_def_a = (m["hg"] - e_h) / e_h
+            strength_update(hm, True, "attack", res_att_h, db)
+            strength_update(hm, True, "defend", res_def_h, db)
+            strength_update(aw, False, "attack", res_att_a, db)
+            strength_update(aw, False, "defend", res_def_a, db)
+        gf.setdefault(hm, []).append(m["hg"])
+        ga.setdefault(hm, []).append(m["ag"])
+        gf.setdefault(aw, []).append(m["ag"])
+        ga.setdefault(aw, []).append(m["hg"])
+    db["_meta"]["updated"] = datetime.datetime.now().isoformat()
+    db["_meta"]["n_matches"] = len(matches)
+    return db, snaps
+
+
+def strength_update(team, is_home, metric, resid_rel, db, persist=False, db_path=None):
+    """Kalman 更新单维强度（相对偏置，1.0 = 与自身状态期望一致）。
+
+    K = P/(P+R)，state += K·resid；P ← (1−K)P + Q。R=3 → 稳态 K≈0.04（有效窗口≈25 场）。
+    """
+    teams = db.setdefault("teams", {})
+    t = teams.setdefault(team, {"ha": 1.0, "hd": 1.0, "aa": 1.0, "ad": 1.0,
+                                "P_ha": 1.0, "P_hd": 1.0, "P_aa": 1.0, "P_ad": 1.0,
+                                "n_ha": 0, "n_hd": 0, "n_aa": 0, "n_ad": 0})
+    skey = ("h" if is_home else "a") + ("a" if metric == "attack" else "d")
+    pkey, nkey = "P_" + skey, "n_" + skey
+    P = t[pkey]
+    K = P / (P + KALMAN_R)
+    t[skey] = clamp(t[skey] + K * resid_rel, *STRENGTH_CLAMP)
+    t[pkey] = (1 - K) * P + KALMAN_Q
+    t[nkey] = t.get(nkey, 0) + 1
+    if persist:
+        db_path = db_path or STRENGTH_DB_PATH
+        json.dump(db, open(db_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    return db
+
+
+def collect_history_matches(include_results_data=True):
+    """汇总 results_history（+ results_data 当日新增）里带完整比分的比赛，按日期升序。"""
+    root = _repo_root()
+    lib = {}
+    rh = os.path.join(root, "results_history")
+    if os.path.isdir(rh):
+        for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+            if "index" in os.path.basename(f):
+                continue
+            try:
+                lib.update(json.load(open(f, encoding="utf-8")))
+            except Exception:
+                continue
+    if include_results_data:
+        try:
+            for k, v in json.load(open(os.path.join(root, "results_data.json"),
+                                       encoding="utf-8")).items():
+                lib.setdefault(k, v)
+        except Exception:
+            pass
+    out = []
+    for k, v in lib.items():
+        s = v.get("fullScore") or v.get("score") or ""
+        if not isinstance(s, str) or ":" not in s:
+            continue
+        parts = k.split("_", 2)
+        if len(parts) < 3:
+            continue
+        try:
+            hg, ag = (int(x) for x in s.split(":")[:2])
+        except ValueError:
+            continue
+        out.append({"date": parts[0], "league": v.get("league") or "其他",
+                    "home": parts[1], "away": parts[2], "hg": hg, "ag": ag})
+    out.sort(key=lambda x: x["date"])
+    return out
+
+
+def ensure_strength_db(verbose=True, force=False):
+    """重建 strength_db.json（全量重放，确定性，每日 1~3 秒）。
+
+    全量重放而非增量：EWMA 状态期望依赖完整历史，增量维护需要额外保存 form 序列，
+    且一处错位会静默污染后续所有场次 —— 重放更稳。
+    """
+    matches = collect_history_matches()
+    if not matches:
+        return {"_meta": {}, "teams": {}}
+    db, _ = replay_strength(matches)
+    n_teams = len(db.get("teams", {}))
+    if verbose:
+        print(f"\n=== KALMAN_STRENGTH (V3.4 已接线) ===")
+        print(f"  重放 {len(matches)} 场（{matches[0]['date']} ~ {matches[-1]['date']}）"
+              f" | 覆盖球队 {n_teams}")
+        teams = db["teams"]
+        ready = [t for t, v in teams.items()
+                 if min(v.get("n_ha", 0), v.get("n_aa", 0)) >= STRENGTH_MIN_OBS]
+        by_a = sorted(teams.items(), key=lambda kv: -kv[1].get("ha", 1.0))[:5]
+        by_d = sorted(teams.items(), key=lambda kv: -kv[1].get("hd", 1.0))[:5]
+        print(f"  样本达标(≥{STRENGTH_MIN_OBS}场)球队: {len(ready)}/{n_teams}"
+              f" | 开关 apply={V3_CONFIG['KALMAN_STRENGTH']['apply']}")
+        print(f"  主队进攻偏置 Top5: {[(t, round(v['ha'], 3)) for t, v in by_a]}")
+        print(f"  主队防守偏置 Top5（失球多于期望）: {[(t, round(v['hd'], 3)) for t, v in by_d]}")
+    try:
+        json.dump(db, open(STRENGTH_DB_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] strength_db 写入失败: {e}")
+    return db
+
+
+def hedge_daily_weight(verbose=True, results_dir=None, window=500):
+    """HEDGE_ENSEMBLE 当日市场权重：专家近期对数损失 → w∝exp(−ηL)。
+
+    专家 = 纯模型（泊松）/ 纯市场（去水 1X2）/ 当前混合，损失取最近 window 场均值。
+    与固定 MARKET_W=0.80 的差别：市场近期明显更准时自动加重市场、反之回撤模型权重。
+    """
+    cfg = V3_CONFIG["HEDGE_ENSEMBLE"]
+    losses = compute_hedge_losses(results_dir, window)
+    if not losses:
+        return {"weights": None, "losses": None, "w": MARKET_W, "applied": False,
+                "note": "样本不足"}
+    eta = cfg.get("eta", 6.0)
+    w = hedge_weights({"model": losses["model"], "market": losses["market"]}, eta=eta)
+    lo, hi = cfg.get("band", (0.70, 0.90))
+    w_mkt = clamp(w.get("market", MARKET_W) if w else MARKET_W, lo, hi)
+    applied = bool(cfg.get("apply")) and w is not None
+    if verbose:
+        print(f"\n=== HEDGE_ENSEMBLE (V3.4 已接线) ===")
+        print(f"  近 {losses['n']} 场对数损失: 模型 {losses['model']:.4f} "
+              f"| 市场 {losses['market']:.4f} | 混合 {losses['blend']:.4f}")
+        print(f"  HEDGE 权重(η={eta}): 模型 {w.get('model'):.3f} / 市场 {w.get('market'):.3f}"
+              f" → 当日市场权重 {w_mkt:.3f}（安全带 {lo}~{hi}，固定值 {MARKET_W}）")
+        print(f"  开关 apply={applied}"
+              + ("（生效）" if applied else "（只记录，不改预测）"))
+    return {"weights": {k: round(v, 4) for k, v in w.items()} if w else None,
+            "losses": losses, "w": round(w_mkt, 4), "eta": eta,
+            "applied": applied, "fixed_w": MARKET_W}
+
+
+def load_tuned_params(verbose=True):
+    """读取 BRIER_OPT 上一轮采纳的超参（若存在且已 apply）。"""
+    if not os.path.exists(V34_TUNED_PATH):
+        return {}
+    try:
+        d = json.load(open(V34_TUNED_PATH, encoding="utf-8"))
+    except Exception:
+        return {}
+    if not d.get("params"):
+        return {}
+    if verbose:
+        print(f"=== BRIER_OPT 已采纳超参（{d.get('date', '?')}）: {d['params']} ===")
+    return d["params"]
+
+
+def run_brier_opt(calib=None, verbose=True, force=False):
+    """BRIER_OPT 周期执行：每 7 天最多一次，达标才采纳（改善 ≥0.3% 且落在安全带内）。"""
+    cfg = V3_CONFIG["BRIER_OPT"]
+    st = {}
+    if os.path.exists(V34_STATE_PATH):
+        try:
+            st = json.load(open(V34_STATE_PATH, encoding="utf-8"))
+        except Exception:
+            st = {}
+    last = (st.get("brier_opt") or {}).get("date")
+    today = datetime.date.fromisoformat(TODAY)
+    if last and not force:
+        try:
+            gap = (today - datetime.date.fromisoformat(last)).days
+        except ValueError:
+            gap = 99
+        if gap < cfg.get("every_days", 7):
+            if verbose:
+                print(f"\n=== BRIER_OPT === 上次 {last}（{gap} 天前 < {cfg.get('every_days', 7)} 天），跳过")
+            return st.get("brier_opt")
+    res = brier_optimize("MARKET_W")
+    if not res:
+        return None
+    out = {"date": TODAY, **res, "applied": False}
+    # 采纳门控：walk-forward 改善够大 + 最优值不越过安全带（保 alpha：市场权重上限 0.85）
+    lo, hi = cfg.get("band", (0.60, 0.85))
+    if (cfg.get("apply") and res.get("improvement_pct") is not None
+            and res["improvement_pct"] >= cfg.get("min_improve_pct", 0.3)
+            and lo <= res["best"] <= hi and res["best"] != res["old"]):
+        out["applied"] = True
+        try:
+            json.dump({"date": TODAY, "params": {res["param"]: res["best"]},
+                       "reason": f"walk-forward 改善 {res['improvement_pct']:+.2f}%"},
+                      open(V34_TUNED_PATH, "w", encoding="utf-8"),
+                      ensure_ascii=False, indent=1)
+        except Exception as e:
+            print(f"  [warn] v34_tuned.json 写入失败: {e}")
+        if verbose:
+            print(f"  ⇒ 采纳 {res['param']}={res['best']}（改善 {res['improvement_pct']:+.2f}%，"
+                  f"已在本次运行生效并写入 v34_tuned.json）")
+    elif verbose:
+        why = []
+        if not cfg.get("apply"):
+            why.append("apply=False")
+        if res.get("improvement_pct") is None or res["improvement_pct"] < cfg.get("min_improve_pct", 0.3):
+            why.append(f"改善 {res.get('improvement_pct')}% < {cfg.get('min_improve_pct', 0.3)}%")
+        if not (lo <= res["best"] <= hi):
+            why.append(f"最优值 {res['best']} 越安全带 {lo}~{hi}")
+        if res["best"] == res["old"]:
+            why.append("与当前值相同")
+        print(f"  ⇒ 不采纳（{'；'.join(why)}）")
+    return out
+
+
+def run_clv_track(verbose=True, max_days=120):
+    """CLV_TRACK 每日执行：算最近快照的 CLV，累计入 clv_log.json。"""
+    pred_root = os.path.join(BASE, "predictions")
+    snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
+    snaps = [s for s in snaps if os.path.basename(os.path.dirname(s)) < TODAY]
+    if not snaps:
+        if verbose:
+            print("\n=== CLV_TRACK === 无可结算的历史快照，跳过")
+        return None
+    snapshot_path = snaps[-1]
+    d = os.path.basename(os.path.dirname(snapshot_path))
+    res = track_clv(snapshot_path)
+    if not res or not res.get("total_matches"):
+        if verbose:
+            print(f"\n=== CLV_TRACK === {d} 无匹配收盘赔率，跳过")
+        return None
+    log = {"entries": []}
+    if os.path.exists(CLV_LOG_PATH):
+        try:
+            log = json.load(open(CLV_LOG_PATH, encoding="utf-8"))
+        except Exception:
+            log = {"entries": []}
+    log.setdefault("entries", [])
+    log["entries"] = [e for e in log["entries"] if e.get("date") != d]
+    log["entries"].append({"date": d, "overall_clv_pct": res["overall_clv_pct"],
+                           "n": res["total_matches"],
+                           "by_league": {k: v["clv_pct"] for k, v in res["by_league"].items()}})
+    log["entries"] = sorted(log["entries"], key=lambda e: e["date"])[-max_days:]
+    try:
+        json.dump(log, open(CLV_LOG_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] clv_log 写入失败: {e}")
+    # 累计口径（近 30 天）
+    recent = log["entries"][-30:]
+    allv = [e["overall_clv_pct"] for e in recent]
+    agg = {}
+    for e in recent:
+        for lg, v in (e.get("by_league") or {}).items():
+            agg.setdefault(lg, []).append(v)
+    agg = {lg: round(sum(v) / len(v), 2) for lg, v in agg.items() if len(v) >= 3}
+    neg = {lg: v for lg, v in agg.items() if v < -5.0}
+    if verbose:
+        print(f"\n=== CLV_TRACK (V3.4 已接线) ===")
+        print(f"  {d} 推荐赔率 vs 收盘: CLV {res['overall_clv_pct']:+.2f}%"
+              f"（{res['total_matches']} 场）| 近30日累计 "
+              f"{sum(allv)/len(allv):+.2f}%（{len(recent)} 天）")
+        if agg:
+            print("  按联赛（≥3 天，越负越该加重市场权重）: "
+                  + " ".join(f"{k}{v:+.1f}%" for k, v in x_sorted(agg)))
+        if neg:
+            print(f"  ⚠️ CLV 持续为负的联赛 {list(neg)} → 提示提高该联赛市场权重")
+    return {"date": d, "overall_clv_pct": res["overall_clv_pct"],
+            "n": res["total_matches"], "recent30_pct": round(sum(allv) / len(allv), 2) if allv else None,
+            "negative_leagues": neg}
+
+
+def x_sorted(d):
+    """按值升序的 (k, v) 列表（CLV 越负越该关注，排前面）。"""
+    return sorted(d.items(), key=lambda kv: kv[1])
+
+
+def run_drift_monitor(verbose=True):
+    """DRIFT_MONITOR 每日执行：PSI/KS 检查，超阈值提示重标定（不自动改参数）。"""
+    res = drift_check(verbose=verbose)
+    if not res:
+        return None
+    flags = [k for k, v in res.items()
+             if isinstance(v, dict) and v.get("drift_detected")]
+    if verbose and flags:
+        print(f"  ⚠️ 漂移模块命中 {flags} → 建议离线重拟合 market_calib / Platt")
+    return {"baseline": res.get("_baseline_date"),
+            "n_samples": res.get("_n_samples"),
+            "drift_detected": bool(res.get("overall_drift_detected")),
+            "flags": flags,
+            "detail": {k: v for k, v in res.items()
+                       if isinstance(v, dict) and ("psi" in v or "std_delta_pct" in v)}}
+
+
+def save_v34_state(patch):
+    """把当日模块结果合并进 v34_state.json（保留最近 60 天 history）。"""
+    st = {}
+    if os.path.exists(V34_STATE_PATH):
+        try:
+            st = json.load(open(V34_STATE_PATH, encoding="utf-8"))
+        except Exception:
+            st = {}
+    hist = [h for h in st.get("history", []) if h.get("date") != TODAY]
+    hist.append({"date": TODAY, "applied": {k: bool(V3_CONFIG[k].get("apply"))
+                                            for k in V3_WIRED_KEYS}})
+    st.update(patch)
+    st["date"] = TODAY
+    st["history"] = sorted(hist, key=lambda h: h["date"])[-60:]
+    try:
+        json.dump(st, open(V34_STATE_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] v34_state 写入失败: {e}")
+    return st
+
+
+V3_WIRED_KEYS = ("BRIER_OPT", "HEDGE_ENSEMBLE", "KALMAN_STRENGTH", "CLV_TRACK", "DRIFT_MONITOR")
+
+
 def read_daily_pred(d):
     """读取某日预测口径。
 
@@ -1913,6 +2352,9 @@ def dump_prediction_snapshot(out_matches, date=None):
             "rq_best_odds": ((m.get("rq") or {}).get("best") or {}).get("odds"),
             "upset_prob": (m.get("upset") or {}).get("prob"),
             "upset_level": (m.get("upset") or {}).get("level"),
+            # CLV 追踪需要「推荐时」的赔率：必须落在快照里，
+            # 否则 CLV_TRACK 只能拿收盘价跟自己比（恒等于 0）或直接失败。
+            "odds": {k: (m.get("odds") or {}).get(k) for k in ("胜", "平", "负")},
         })
     data = {"date": d, "count": len(rows), "engine": "poisson-v2.2", "matches": rows}
     json.dump(data, open(os.path.join(folder, "pred_snapshot.json"), "w", encoding="utf-8"),
@@ -2021,7 +2463,9 @@ def compute_calibration():
 
 
 # ---------------------------------------------------------------- 主计算
-def calc_match(m, calib):
+def calc_match(m, calib, ctx=None):
+    """单场计算。ctx 可选：{"strength_db":..., "kalman_apply":bool, "market_w":float}
+    —— V3.4 接线后由 main() 注入 KALMAN_STRENGTH / HEDGE_ENSEMBLE 的当日状态。"""
     home, away = m["home"], m["away"]
     league = m.get("league") or "其他"
     hr = m.get("home_recent") or []
@@ -2158,22 +2602,45 @@ def calc_match(m, calib):
 
     steps.append(("H2H调整", f"{h2h_info}|{dir_info}", lam_h_B, lam_a_B))
 
+    # ---------- 第三步C：KALMAN_STRENGTH 攻防强度修正（V3.4 已接线）----------
+    # 位置选在「模型 λ 已成形、尚未混市场」处：市场混合占 80%，写在市场之后会把
+    # 修正重新推回市场共识；写在模型侧才是「模型自身对球队偏置的一次校正」。
+    # 门控：V3_CONFIG.KALMAN_STRENGTH.apply=False 时只计算不生效（回测未过前不上线）。
+    _kmod = (1.0, 1.0)
+    if ctx and ctx.get("strength_db"):
+        _kmod = strength_modifiers(home, away, ctx["strength_db"])
+        _k_apply = bool(ctx.get("kalman_apply"))
+        if _k_apply and (_kmod != (1.0, 1.0)):
+            lam_h_B *= _kmod[0]
+            lam_a_B *= _kmod[1]
+            steps.append(("Kalman强度修正",
+                          f"主×{_kmod[0]:.3f}/客×{_kmod[1]:.3f}(相对偏置4维Kalman)", lam_h_B, lam_a_B))
+        else:
+            steps.append(("Kalman强度修正",
+                          f"未生效(apply={_k_apply}, 主×{_kmod[0]:.3f}/客×{_kmod[1]:.3f})",
+                          lam_h_B, lam_a_B))
+
     # ---------- 第四步：市场概率混合（MARKET_BLEND_PROB，V3.2）----------
     # 模型 1X2 与市场去水 1X2 在概率空间加权，再反解 λ（总量守恒）。
     # 方向向市场靠拢，进球总量仍由模型决定（旧 λ 空间混合会把总量带崩，见常量区注释）。
+    # 权重来源：HEDGE_ENSEMBLE 生效时为当日动态权重，否则用固定 MARKET_W。
+    _mw = MARKET_W
+    if ctx and ctx.get("market_w"):
+        _mw = ctx["market_w"]
     _oh, _od, _oa = odds.get("胜"), odds.get("平"), odds.get("负")
     if _oh and _od and _oa:
         try:
             pv = devig_1x2(float(_oh), float(_od), float(_oa))
             total_b = lam_h_B + lam_a_B
             pm = pois_1x2(lam_h_B, lam_a_B)
-            pb = [(1 - MARKET_W) * pm[i] + MARKET_W * pv[i] for i in range(3)]
+            pb = [(1 - _mw) * pm[i] + _mw * pv[i] for i in range(3)]
             st = sum(pb)
             pb = [x / st for x in pb]
             lam_h, lam_a = prob_to_lambda(pb, total_b)
             steps.append(("市场混合",
-                          f"{MARKET_W:.0%}概率混合(总量守恒),市场去水主{pv[0]*100:.0f}%"
-                          f"/平{pv[1]*100:.0f}%/客{pv[2]*100:.0f}%",
+                          f"{_mw:.0%}概率混合(总量守恒),市场去水主{pv[0]*100:.0f}%"
+                          f"/平{pv[1]*100:.0f}%/客{pv[2]*100:.0f}%"
+                          + (f",HEDGE动态" if abs(_mw - MARKET_W) > 1e-9 else ""),
                           lam_h, lam_a))
         except (ValueError, ZeroDivisionError):
             lam_h, lam_a = lam_h_B, lam_a_B
@@ -2186,11 +2653,11 @@ def calc_match(m, calib):
             pv = (1 / oh / s2, 0.0, 1 / oa / s2)
             total_b = lam_h_B + lam_a_B
             pm = pois_1x2(lam_h_B, lam_a_B)
-            pb = [(1 - MARKET_W) * pm[i] + MARKET_W * pv[i] for i in range(3)]
+            pb = [(1 - _mw) * pm[i] + _mw * pv[i] for i in range(3)]
             st = sum(pb)
             pb = [x / st for x in pb]
             lam_h, lam_a = prob_to_lambda(pb, total_b)
-            steps.append(("市场混合", f"{MARKET_W:.0%}概率混合(仅胜/负)", lam_h, lam_a))
+            steps.append(("市场混合", f"{_mw:.0%}概率混合(仅胜/负)", lam_h, lam_a))
         except (ValueError, ZeroDivisionError):
             lam_h, lam_a = lam_h_B, lam_a_B
             steps.append(("市场混合", "赔率异常,跳过", lam_h, lam_a))
@@ -2407,6 +2874,8 @@ def calc_match(m, calib):
         "h2h_count": len(h2h),
         "h2h_factor": round(f, 3),
         "dir_applied": len(h2h) >= 3,
+        "kalman_mods": [round(_kmod[0], 4), round(_kmod[1], 4)],
+        "market_w_used": round(_mw, 4),
         "chain": chain,
         "top_scores": [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)}
                        for (k1, k2), p in ranked],
@@ -2480,7 +2949,36 @@ def main():
     if calib.get("dropped_periods"):
         print(f"  MAD 剔除异常期: {calib['dropped_periods']}")
     print(f"联赛因子: {calib.get('league_factors')}")
-    print("\n=== V3 校准路线图（达到样本量标记 READY 后即可启用）===")
+
+    # ================= V3.4 运行时模块（已接线：日频执行） =================
+    # ① BRIER_OPT：每 7 天最多一次 walk-forward 寻优；达标则写入 v34_tuned.json 并在本次生效
+    brier_res = None
+    try:
+        brier_res = run_brier_opt(calib)
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] BRIER_OPT 失败: {e}")
+    _tuned = load_tuned_params()
+    for k, v in (_tuned or {}).items():
+        if k in globals() and globals()[k] != v:
+            print(f"  [BRIER_OPT 采纳] {k}: {globals()[k]} → {v}")
+            globals()[k] = v
+    # ② KALMAN_STRENGTH：全量重放历史 → 攻防强度库（当日预测用「赛前」状态）
+    strength_db = None
+    try:
+        strength_db = ensure_strength_db()
+    except Exception as e:  # noqa: BLE001 —— 任何异常都不得阻断当日出报告
+        print(f"  [warn] KALMAN_STRENGTH 失败: {e}")
+    # ③ HEDGE_ENSEMBLE：当日动态市场权重
+    hedge = None
+    try:
+        hedge = hedge_daily_weight()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] HEDGE_ENSEMBLE 失败: {e}")
+    _ctx = {"strength_db": strength_db,
+            "kalman_apply": bool(V3_CONFIG["KALMAN_STRENGTH"].get("apply")),
+            "market_w": (hedge or {}).get("w") if (hedge or {}).get("applied") else None}
+
+    print("\n=== V3 校准路线图（ON·生效/ON·观察 = 已接线；ON = 链路内恒定步骤）===")
     for line in roadmap_status(calib.get("labeled_samples", 0)):
         print(line)
 
@@ -2489,7 +2987,7 @@ def main():
     for num in sorted(matches.keys()):
         m = dict(matches[num])
         m.update({k: v for k, v in extra.get(num, {}).items() if v is not None})
-        r = calc_match(m, calib)
+        r = calc_match(m, calib, _ctx)
         out.append(r)
         top = r["top_scores"][0]
         flag = "B✓" if r["dir_applied"] else "B✗"
@@ -2512,6 +3010,29 @@ def main():
     print(f"\n共 {len(out)} 场，已写入 _calc_result.json")
     if snap:
         print(f"预测快照已写入 {snap}（后续校准直接读取，不再解析 HTML）")
+
+    # ================= V3.4 运行时模块（已接线：日频监控） =================
+    clv_res = drift_res = None
+    try:
+        clv_res = run_clv_track()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] CLV_TRACK 失败: {e}")
+    try:
+        drift_res = run_drift_monitor()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] DRIFT_MONITOR 失败: {e}")
+    save_v34_state({
+        "brier_opt": brier_res,
+        "hedge": hedge,
+        "kalman": ({"n_teams": len((strength_db or {}).get("teams", {})),
+                    "applied": bool(V3_CONFIG["KALMAN_STRENGTH"].get("apply")),
+                    "mods_non_neutral": sum(1 for r in out
+                                            if r.get("kalman_mods") not in ([1.0, 1.0], None))}
+                   if strength_db else None),
+        "clv": clv_res,
+        "drift": drift_res,
+    })
+    print(f"模块状态已写入 v34_state.json（BRIER_OPT/HEDGE/KALMAN/CLV/DRIFT）")
 
 
 if __name__ == "__main__":

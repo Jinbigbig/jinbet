@@ -338,9 +338,17 @@ def parse_odds_from_html(html_content):
                     odds_data[key]['league'] = league
                 if not odds_data[key].get('matchId') and matchId:
                     odds_data[key]['matchId'] = matchId
-                if not odds_data[key].get('matchNumStr') and jcNum:
-                    odds_data[key]['matchNumStr'] = jcNum
-                if not odds_data[key].get('matchNo') and matchNo_int:
+                # 编号刷新（2026-09-14 修）：竞彩会在开售后重编号
+                # （例：09-14 亚运女足「中国女足 vs 中国香港女足」周一001 → 周一014，
+                #  matchId 2041458 → 2041524）。旧逻辑「仅在为空时写入」把过期编号永久
+                #  固化在 ODDS 里，报告编号与官方错位且无从自愈 —— 改为同场同日报到新值即覆盖。
+                if jcNum:
+                    _old_num = odds_data[key].get('matchNumStr') or ''
+                    if _old_num != jcNum:
+                        if _old_num:
+                            print(f'    [编号刷新] {key}: {_old_num} → {jcNum}')
+                        odds_data[key]['matchNumStr'] = jcNum
+                if matchNo_int and not odds_data[key].get('matchNo'):
                     odds_data[key]['matchNo'] = matchNo_int
 
             if match_date not in schedule_data:
@@ -1332,27 +1340,41 @@ def main():
         id_map = fetch_match_numbers(start_date, end_date)
         print(f'  赛果API返回 {len(id_map)} 场比赛的编号信息')
         
-        # 额外从赔率API获取即将进行比赛的编号（补充赛果API没有的未来比赛）
+        # 额外从赔率API获取**在售**比赛的编号（补充赛果API没有的未来比赛，并纠正其滞后编号）
+        # 2026-09-14 修：赛果API 对进行中的场次编号滞后（亚运女足仍写 周一001/2041458），
+        # 而在售的体彩计算器API 已更新为 周一014/2041524。旧逻辑「已存在就不覆盖」让滞后值胜出
+        # → 报告编号与官方错位且无法自愈。改为：同键冲突时以**在售**编号为准。
         try:
             lottery_json = fetch_odds_from_lottery()
             if lottery_json:
                 _, lottery_schedule = parse_lottery_json(lottery_json)
-                lottery_count = 0
+                lottery_count = num_fixed = 0
                 for ldate, lgames in lottery_schedule.items():
                     for lg in lgames:
                         lkey = f'{ldate}_{lg["home"]}_{lg["away"]}'
-                        if lg.get('matchId') and lkey not in id_map:
-                            id_map[lkey] = {
-                                'matchId': lg['matchId'],
-                                'matchNumStr': lg.get('matchNumStr', ''),
-                                'matchNo': lg.get('matchNo', ''),
-                                'home': lg['home'],
-                                'away': lg['away'],
-                                'league': lg.get('league', '')
-                            }
+                        if not lg.get('matchId'):
+                            continue
+                        new_entry = {
+                            'matchId': lg['matchId'],
+                            'matchNumStr': lg.get('matchNumStr', ''),
+                            'matchNo': lg.get('matchNo', ''),
+                            'home': lg['home'],
+                            'away': lg['away'],
+                            'league': lg.get('league', '')
+                        }
+                        if lkey not in id_map:
+                            id_map[lkey] = new_entry
                             lottery_count += 1
+                        elif (lg.get('matchNumStr')
+                              and lg['matchNumStr'] != id_map[lkey].get('matchNumStr')):
+                            _old = id_map[lkey].get('matchNumStr')
+                            id_map[lkey].update(new_entry)
+                            num_fixed += 1
+                            print(f'     [编号纠正] {lkey}: {_old} → {lg["matchNumStr"]}（在售编号覆盖赛果API滞后值）')
                 if lottery_count:
                     print(f'  赔率API补充 {lottery_count} 场即将进行比赛的编号')
+                if num_fixed:
+                    print(f'  赔率API纠正 {num_fixed} 场滞后编号')
         except Exception as e:
             print(f'  ⚠️ 赔率API获取编号失败: {e}')
         
@@ -1738,6 +1760,53 @@ def main():
                     schedule[new_date] = []
                 schedule[new_date].extend(new_games_list)
     
+    # ---- 编号刷新（2026-09-14 新增）----
+    # 竞彩会在开售后**重编号**：09-14「中国女足 vs 中国香港女足」由 周一001/2041458
+    # 变为 周一014/2041524（官方重发）。旧逻辑只在编号为空时写入 ⇒ 过期编号被永久固化，
+    # 报告与官方编号错位且无从自愈（用户实测发现：014 在报告里显示成 001）。
+    # 这里按当前官方 id_map 严格覆盖「今日及以后」的同日同向同队场次。
+    def _canon(pair_key):
+        rest = pair_key[11:]
+        if '_' not in rest:
+            return None
+        h, a = rest.rsplit('_', 1)
+        return canonical_team_name(h), canonical_team_name(a)
+
+    id_by_teams = {}
+    for ikey, ids in id_map.items():
+        c = _canon(ikey)
+        if c:
+            id_by_teams[(ikey[:10], c[0], c[1])] = ids
+
+    from datetime import datetime as _dt, timedelta as _td, timezone as _tz
+    _today_cn = _dt.now(_tz(_td(hours=8))).strftime('%Y-%m-%d')
+    num_refreshed = []
+
+    def _refresh_num(date_str, home, away, old_num):
+        if date_str < _today_cn:
+            return old_num
+        ids = id_by_teams.get((date_str, canonical_team_name(home), canonical_team_name(away)))
+        new_num = (ids or {}).get('matchNumStr') or ''
+        if new_num and new_num != (old_num or ''):
+            num_refreshed.append(f'{date_str} {home} vs {away}: {old_num or "（空）"} → {new_num}')
+            return new_num
+        return old_num
+
+    for sdate, games in schedule.items():
+        for game in games:
+            game['matchNumStr'] = _refresh_num(sdate, game['home'], game['away'],
+                                               game.get('matchNumStr'))
+    for okey in list(matched_odds.keys()):
+        parts = okey.split('_', 2)
+        if len(parts) != 3:
+            continue
+        matched_odds[okey]['matchNumStr'] = _refresh_num(parts[0], parts[1], parts[2],
+                                                         matched_odds[okey].get('matchNumStr'))
+    if num_refreshed:
+        print(f'\n[编号刷新] {len(num_refreshed)} 场（官方重编号后覆盖，含 ODDS 与 SCHEDULE）：')
+        for line in num_refreshed:
+            print(f'    - {line}')
+
     print(f'  ✅ 为 {s_id_added} 场赛程补充了编号信息')
     if s_date_fixed > 0:
         print(f'  ✅ 修正了 {s_date_fixed} 场比赛的日期')
