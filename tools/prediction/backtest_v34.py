@@ -134,11 +134,13 @@ for i_d, date in enumerate(dates_sorted):
         continue
 
     calib = {"ratio": 1.0, "factor": 1.0, "league_factors": {}}
+    # V3.4: 注入自维护的 Kalman strength, market_w=None 让 calc_match 走 league_market_w 兜底
+    _ctx = {"strength_db": strength, "kalman_apply": True, "market_w": None}
 
     for r in day_recs:
         m = build_input(r, before)
         try:
-            out = ce.calc_match(m, calib)
+            out = ce.calc_match(m, calib, ctx=_ctx)
         except Exception as e:
             results.append({"date": date, "league": r["league"], "home": r["home"],
                             "away": r["away"], "error": str(e)[:120]})

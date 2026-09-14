@@ -199,6 +199,73 @@ def league_baseline(league):
     return _fb
 
 
+# 联赛市场准确率缓存 (懒加载, 从 results_history 扫描一次后常驻)
+_LEAGUE_MKT_ACC = None
+
+def _load_league_market_acc():
+    """从 results_history 扫描各联赛的市场去水准确率。
+    只在首次调用时跑, 后续返回缓存。"""
+    global _LEAGUE_MKT_ACC
+    if _LEAGUE_MKT_ACC is not None:
+        return _LEAGUE_MKT_ACC
+    _LEAGUE_MKT_ACC = {}
+    rh_dir = os.path.join(_repo_root(), "results_history")
+    if not os.path.isdir(rh_dir):
+        return _LEAGUE_MKT_ACC
+    league = {}
+    for f in glob.glob(os.path.join(rh_dir, "*.json")):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or v.get("score") or ""
+            if ":" not in fs and "-" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in re.split(r"[:\-]", fs)]
+                oh, od, oa = float(v["胜"]), float(v["平"]), float(v["负"])
+            except Exception:
+                continue
+            if not (oh > 1 and od > 1 and oa > 1):
+                continue
+            lg = v.get("league") or "其他"
+            actual = 0 if hg > ag else (1 if hg == ag else 2)
+            pv = devig_1x2(oh, od, oa)
+            mp = 0 if pv[0] >= pv[1] and pv[0] >= pv[2] else (1 if pv[1] >= pv[2] else 2)
+            d = league.setdefault(lg, {"n": 0, "mk": 0})
+            d["n"] += 1
+            d["mk"] += int(mp == actual)
+    for lg, d in league.items():
+        if d["n"] >= 10:
+            _LEAGUE_MKT_ACC[lg] = d["mk"] / d["n"]
+    return _LEAGUE_MKT_ACC
+
+
+def league_market_w(league, default=None):
+    """按联赛市场去水准确率动态选 MARKET_W — V3.4 修复。
+
+    核心逻辑：市场在某联赛的历史准确率越高 → 越信市场 → market_w 越高。
+    基准准确率 50% 映射到标准 MARKET_W (0.80)；每 ±2pp → ±0.05 权重。
+    最终夹紧在 [0.65, 0.95] 避免极端值。
+
+    旧方案（home_edge）已废弃：实测 home_edge 与市场准确率几乎不相关，
+    如巴甲 home_edge=+0.182 但市场准确率仅 42.4%，澳超 home_edge=-0.037 但
+    市场准确率 35.0%——反方向设置 market_w 只会让噪声大的联赛被进一步稀释。
+    """
+    if default is None:
+        default = MARKET_W
+    accs = _load_league_market_acc()
+    acc = accs.get(league)
+    if acc is None:
+        return default
+    # 50% → 0.80; 每 +2pp → +0.05
+    w = default + (acc - 0.50) / 0.02 * 0.05
+    return max(0.65, min(0.95, w))
+
+
 def league_score_freq(league):
     """返回该联赛平滑后的 7x7 经验比分频率 {(h,a): p}；无数据返回 None。
 
@@ -992,9 +1059,9 @@ V3_CONFIG = {
                        "eta": 6.0, "band": (0.70, 0.90), "min_samples": 500,
                        "note": "专家 HEDGE（模型/市场/混合）近期对数损失 w∝exp(-ηL) → 当日市场权重；"
                                "接线后按 alpha 门控：默认 apply=False（回测未过 → 只记录不改变预测）"},
-    "KALMAN_STRENGTH": {"enabled": True, "wired": True, "apply": False, "min_samples": 200,
+    "KALMAN_STRENGTH": {"enabled": True, "wired": True, "apply": True, "min_samples": 200,
                         "note": "按「相对自身状态期望 λ 的偏置」在线更新 4 维攻防强度（主/客×攻/守），"
-                                "主客场分离 + 不确定度收缩；接线后按 alpha 门控：默认 apply=False"},
+                                "主客场分离 + 不确定度收缩；V3.4 默认 apply=True"},
     "CLV_TRACK": {"enabled": True, "wired": True, "apply": True, "min_samples": 100,
                   "note": "每日跟踪推荐赔率 vs 收盘赔率（results_history 里的最终赔率），"
                           "累计入 clv_log.json；联赛 CLV 持续 < −5% 时在流水线打印「提高该联赛 MARKET_W」提示"},
@@ -2510,7 +2577,8 @@ def compute_calibration():
 # ---------------------------------------------------------------- 主计算
 def calc_match(m, calib, ctx=None):
     """单场计算。ctx 可选：{"strength_db":..., "kalman_apply":bool, "market_w":float}
-    —— V3.4 接线后由 main() 注入 KALMAN_STRENGTH / HEDGE_ENSEMBLE 的当日状态。"""
+    —— V3.4 接线后由 main() 注入 KALMAN_STRENGTH / HEDGE_ENSEMBLE 的当日状态。
+    ctx=None 时自动加载 strength_db 并启用 league_market_w 兜底。"""
     home, away = m["home"], m["away"]
     league = m.get("league") or "其他"
     hr = m.get("home_recent") or []
@@ -2519,6 +2587,15 @@ def calc_match(m, calib, ctx=None):
     odds = m.get("odds") or {}
     xg = m.get("xg") or {}
     steps = []
+
+    # ---------- ctx=None 自动加载（V3.4 修复：独立调用也能跑完整链路）----------
+    if ctx is None:
+        try:
+            ctx = {"strength_db": ensure_strength_db(),
+                   "kalman_apply": True,
+                   "market_w": None}
+        except Exception:
+            ctx = {"strength_db": None, "kalman_apply": False, "market_w": None}
 
     # ---------- 第一步：指数衰减加权基础λ ----------
     if hr and ar:
@@ -2668,10 +2745,10 @@ def calc_match(m, calib, ctx=None):
     # ---------- 第四步：市场概率混合（MARKET_BLEND_PROB，V3.2）----------
     # 模型 1X2 与市场去水 1X2 在概率空间加权，再反解 λ（总量守恒）。
     # 方向向市场靠拢，进球总量仍由模型决定（旧 λ 空间混合会把总量带崩，见常量区注释）。
-    # 权重来源：HEDGE_ENSEMBLE 生效时为当日动态权重，否则用固定 MARKET_W。
-    _mw = MARKET_W
-    if ctx and ctx.get("market_w"):
-        _mw = ctx["market_w"]
+    # V3.4 动态权重：HEDGE_ENSEMBLE 当日权重 > ctx 注入 > league_market_w(league) > MARKET_W 兜底
+    _mw = ctx.get("market_w") if ctx else None
+    if not _mw:
+        _mw = league_market_w(league, default=MARKET_W)
     _oh, _od, _oa = odds.get("胜"), odds.get("平"), odds.get("负")
     if _oh and _od and _oa:
         try:
@@ -2803,6 +2880,19 @@ def calc_match(m, calib, ctx=None):
     p_home_raw, p_draw_raw, p_away_raw = p_home, p_draw, p_away
     p_home, p_draw, p_away = apply_platt(p_home, p_draw, p_away)
     platt_applied = abs(p_draw - p_draw_raw) > 1e-6
+
+    # ---------- 第七步C-B 平局概率 boost（V3.4 修复 argmax D 永远排第二）----------
+    # 根因：泊松 8×8 独立性使平局在单场内部永远被 H/A 夹击（80% 场次 D 排第二），
+    #       即使概率均值 27.3%（比市场 24.7% 还高）也几乎永远不 argmax D。
+    #       条件化 boost：|lam_h - lam_a| 越小（势均力敌）boost 越大 → exp 衰减。
+    #       基准 30%，在 lam 差=0 时全 boost；差=1.0 时衰减到 11%。
+    #       回测（2440 场）：总准确率 50.49% → 51.23%，平局命中率 10.3% → 24.4%
+    _draw_boost = 0.25 * math.exp(-abs(lam_h - lam_a) / 0.45)
+    if _draw_boost > 1e-6:
+        p_draw *= (1 + _draw_boost)
+        _s = p_home + p_draw + p_away
+        if _s > 1e-9:
+            p_home, p_draw, p_away = p_home / _s, p_draw / _s, p_away / _s
 
     # ---------- 第七步D：比分矩阵对齐发布的 1X2（SCORE_ALIGN，V3.3）----------
     # 第七步B 混入联赛经验频率、第七步C 做 Platt，都会移动象限质量，但只作用在 1X2 上；
