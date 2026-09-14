@@ -85,6 +85,44 @@ for i, (name, pos) in enumerate(home_spans):
         if txt:
             news_map[name] = txt
 
+# ---------- 2b. 联赛排名反填（7M 积分榜，严格匹配，宁可留空不编造） ----------
+# 数据源：league_data.json（由 _fetch_league_data.py 生成）。仅当旧报告未提供排名时启用。
+_rank_src = "旧报告"
+try:
+    _ld_path = os.path.join(BASE, "league_data.json")
+    if os.path.exists(_ld_path):
+        import importlib.util
+        # 本地副本带下划线前缀（.gitignore），master 正本在 tools/prediction/ 无前缀 → 两种都试
+        _lm_path = None
+        for _cand in ("_league_match.py", "league_match.py"):
+            if os.path.exists(os.path.join(BASE, _cand)):
+                _lm_path = os.path.join(BASE, _cand)
+                break
+        if not _lm_path:
+            raise FileNotFoundError("league_match.py 未找到")
+        _spec = importlib.util.spec_from_file_location("league_match", _lm_path)
+        _lm = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_lm)
+        _ld = json.load(open(_ld_path, encoding="utf-8"))["leagues"]
+        _idx = _lm.build_index(_ld)
+        _ld_rank = {}
+        for _m in matches:
+            for _side in ("home", "away"):
+                _t = _m[_side]
+                _lg = _m["league"]
+                if _t in _ld_rank:
+                    continue
+                _row = _lm.match_team_strict(_t, _lg, _idx)
+                if _row:
+                    _ld_rank[_t] = int(_row["rank"])
+        _rank_src = f"7M积分榜({len(_ld_rank)}队)"
+        for _t, _r in _ld_rank.items():
+            rank_map.setdefault(_t, _r)
+    else:
+        _rank_src = "无 league_data.json"
+except Exception as _e:
+    _rank_src = f"7M积分榜失败({_e})"
+
 # ---------- 3. 逐场注入 ----------
 n_h2h = n_recent = n_rank = n_news = n_venue = 0
 for m in matches:
@@ -152,5 +190,6 @@ for m in matches:
 
 json.dump(md, open(os.path.join(BASE, "scripts", "matches_data.json"), "w",
                    encoding="utf-8"), ensure_ascii=False, indent=2)
-print(f"\n注入完成：H2H≥3场 {n_h2h}/24 | 近期状态 {n_recent}/24 | 主客场分拆 {n_venue}/24 "
-      f"| 排名 {n_rank}/24 | 新闻 {n_news}/24")
+print(f"\n注入完成：H2H≥3场 {n_h2h}/{len(matches)} | 近期状态 {n_recent}/{len(matches)} | "
+      f"主客场分拆 {n_venue}/{len(matches)} | 排名 {n_rank}/{len(matches)}（来源：{_rank_src}）"
+      f" | 新闻 {n_news}/{len(matches)}")

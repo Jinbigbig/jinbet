@@ -28,10 +28,11 @@ import urllib.request
 import gzip
 from datetime import datetime, date
 
-# 我的联赛名 -> 7M country/league id（已逐一验证 14 个联赛均存在）
+# 我的联赛名 -> 7M country/league id（已逐一验证 18 个联赛均存在）
 LEAGUE_7M_ID = {
     '英超': 92, '西甲': 85, '德甲': 39, '意甲': 34, '法甲': 93, '荷甲': 99, '葡超': 88,
     '瑞超': 103, '芬超': 105, '挪超': 104, '巴甲': 160, '日职': 102, '日乙': 347, '美职': 459,
+    '法乙': 171, '意乙': 95, '西乙': 96, '德乙': 140,
 }
 
 BASE = 'https://data.7m.com.cn/matches_data/{id}/big/standing.js'
