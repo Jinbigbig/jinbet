@@ -2664,6 +2664,35 @@ def save_results_json(results_data):
     print(f'  ✅ results_data.json 已更新 ({len(results_data)} 条)')
 
 
+def align_results_history_to_official():
+    """把 results_history/ 的主客方向对齐到体彩官方赛果 API，并清理跨日 matchId 镜像孪生。
+
+    背景（2026-09-14 定位）：归档来源（网易赛果页）对相当比例场次给出「主客反序」，
+    而 fetch_and_save_results 里的 matchId 去重只在「同 matchId 出现多条」时才按 SCHEDULE
+    校正方向——单条记录被原样归档；历史日期又不在 SCHEDULE 内，故只能靠官方赛果 API 兜底。
+    复用 tools/prediction/dedup_results_history.py（官方锚 + 跨日孪生清理）；失败不阻断流水线。
+    """
+    for rel in ('dedup_results_history.py',
+                os.path.join('tools', 'prediction', 'dedup_results_history.py')):
+        script = os.path.join(BASE_DIR, rel)
+        if not os.path.exists(script):
+            continue
+        try:
+            r = subprocess.run([sys.executable, script, '--apply'],
+                               cwd=BASE_DIR, capture_output=True, text=True, timeout=1800)
+            tail = [ln for ln in (r.stdout or '').strip().split('\n') if ln.strip()][-6:]
+            if tail:
+                print('  [DEDUP-ALIGN] ' + '\n  [DEDUP-ALIGN] '.join(tail))
+            if r.returncode != 0:
+                print(f'  [warn] 归档方向对齐退出码 {r.returncode}: {(r.stderr or "")[-200:]}')
+            return r.returncode == 0
+        except Exception as e:  # noqa: BLE001
+            print(f'  [warn] 归档方向对齐执行失败: {e}（不阻断流水线）')
+            return False
+    print('  [warn] 未找到 dedup_results_history.py，跳过归档方向对齐')
+    return False
+
+
 def archive_results(results_data, days=7):
     """归档超过指定天数的旧赛果（days=7 表示近7天保留，更早归档；只归档有有效matchNumStr的比赛）"""
     from datetime import datetime, timedelta
@@ -2956,6 +2985,9 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     archived_count -= len(merged_results)
     if archived_count > 0:
         print(f'  归档旧赛果: {archived_count} 条')
+
+    # 归档后立即校准主客方向（官方赛果 API 锚）+ 跨日孪生去重，避免反序记录污染引擎样本
+    align_results_history_to_official()
 
     # 更新HTML：先回填赛果API拿到的完整编号到SCHEDULE，再写回赛果
     # 解决问题：抓赔率步骤时体彩API可能还没全部入库，导致SCHEDULE缺编号；
