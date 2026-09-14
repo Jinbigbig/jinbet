@@ -439,6 +439,12 @@ def score_cred(m):
     （旧「λ≤2.3 单点 27.3%」为 1591 场小样本口径，已被 4036 场取代。）
     返回 (标签, class)。
     """
+    # 冷启动场次（任一侧无近期战绩）：λ 只能由「联赛基线 + 赔率反推」得到，
+    # 与有战绩场次不可比，其单格概率常因 λ 悬殊而虚高 → 不作为「可照抄」看待。
+    # （2026-09-14 实装：当日 007/014 两场冷启动占据了精选榜第 1、2 名）
+    if m.get('cold') or (m.get('data_n') or {}).get('home', 1) == 0 \
+            or (m.get('data_n') or {}).get('away', 1) == 0:
+        return '数据不足', 'tag-red'
     lt = m['lam_home'] + m['lam_away']
     if lt <= 2.6:
         return '可信', 'tag-green'
@@ -1274,7 +1280,21 @@ def _conf_rank(m):
     return s, pf, lt, pf
 
 
-_picks = sorted((_conf_rank(m) + (m,) for m in MATCHES), key=lambda x: -x[3])
+# 冷启动场次（任一侧无近期战绩）退出排序（2026-09-14）：
+# 这类场次的 λ 靠「联赛基线 + 赔率反推」，分布形状不可信，而众数格概率反而会
+# 因 λ 悬殊而虚高 —— 09-14 就是这两场（周一007/周一014）占了精选榜前两名。
+def _is_cold(m):
+    if m.get('cold'):
+        return True
+    dn = m.get('data_n') or {}
+    return dn.get('home', 1) == 0 or dn.get('away', 1) == 0
+
+
+_all_pk = [_conf_rank(m) + (m,) for m in MATCHES]
+_picks = sorted((x for x in _all_pk if not _is_cold(x[4])), key=lambda x: -x[3])[:5]
+_cold_list = [x[4]['matchNumStr'] for x in sorted(_all_pk, key=lambda x: -x[3]) if _is_cold(x[4])]
+_cold_note = ('注：' + '、'.join(esc(x) for x in _cold_list)
+              + ' 缺少近期战绩，把握度与其他场次不可比，未纳入本榜。') if _cold_list else ''
 _rows_pk = ''
 for _i, (_s, _pf, _lt, _cf, _m) in enumerate(_picks[:5], 1):
     _b2 = hit_band(_m, 2)
@@ -1310,6 +1330,7 @@ picks_sec = f'''
   <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
     排序依据 = 模型给「命中比分」的概率（小字为该场总进球 λ）。
     可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
+    {_cold_note}
   </p>
 </div>
 '''

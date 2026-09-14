@@ -59,6 +59,15 @@ LIMIT_PCT = 0.25    # 单侧调整限幅
 MAX_TOTAL = 4.20
 MIN_TOTAL = 1.60
 MAX_SINGLE = 3.20
+# 单队 λ 下界（2026-09-14 实装）
+# 病灶：prob_to_lambda 在「总量固定」下反解目标 1X2。当市场极端看多一侧时，
+#       一维扫描会把弱侧 λ 推到网格边界，实测出现 λ=0.0002 / 0.0005 ——
+#       一支球队的「期望进球」不可能是 0，后果是 P(弱侧 0 球)≈100%、
+#       头条恒为 x:0、单格概率虚高（09-14 报告 9/12 场头条为 x:0）。
+# 取 0.18：全量 4036 场中该下界只绑定 9 场（0.22%），
+#       单点命中 / ±1 球覆盖一场不变（Brier 变动 <0.0001），属零代价止损。
+# 夹紧时保持总量守恒（差额还给强侧），并允许总量 35% 为上限以免超小总量被撑爆。
+MIN_SINGLE = 0.18
 # 零封修正 (V3.4): 由四档跳变改为连续 sigmoid
 # 标定目标: 原始四档 f(0)=0.6, f(0.15)=0.6, f(0.25)=0.8, f(0.4)=1.0, f(>0.4)=1.2
 # sigmoid: f(r) = FLOOR + (CEIL-FLOOR) * sigmoid(K*(r-MID))
@@ -68,6 +77,17 @@ ZF_FLOOR = 0.6
 ZF_CEIL = 1.2
 ZF_MID = 0.159   # sigmoid 校准使 f(0.25) = 1.00
 ZF_K = 8.0        # sigmoid 陡度
+# 零封修正上限（2026-09-14 实装，原为 1.2 = 允许把 0 球格概率放大 20%）
+# 病灶：该步按球队「近期零封率」放大 0 球格，但近期零封并不预测未来零封
+#       （λ 已含状态信息）→ 模型整体高估零封（P(≥1方0球) 预测 46.5% vs 实际 43.7%），
+#       并把头条进一步推向 x:0。
+# 回测（_score_floor_probe.py，4036 场，同链路）：
+#   ZF_CAP=1.2（原）→ 单点 14.77% / ±1球 66.63% / Brier 0.5904 / 头条含0球 27.9%
+#   ZF_CAP=1.0（现）→ 单点 15.31% / ±1球 67.69% / Brier 0.5898 / 头条含0球 22.3%
+#   ZF_CAP=1.0 且下限也去掉（全中性）→ 单点 14.94% / Brier 0.5899（不如保留削弱侧）
+#   ZF_CAP=1.0 但反向放大低零封率 → 头条 10.8%，单点 14.05%（过度校正，弃）
+# 结论：保留「削弱」侧（最低 ×0.6），去掉「放大」侧 → 三项指标同时改善。
+ZF_CAP = 1.0
 # 第七步B 混合权重随强弱差自适应衰减（2026-09-07 实装，walk-forward 2462 场验证）
 # 背景：固定 w=0.5 会用联赛平均形状稀释极端热门，实测 λ比≥1.8 的场次系统性低估强队 7~9pp
 #       （周一005 利雅新月：纯泊松主胜 73.9% → 混合后 57.8%，市场隐含 79.2%）
@@ -116,6 +136,8 @@ SCORE_ALIGN = True          # 比分矩阵象限质量对齐到发布的 1X2
 #       基础 λ 已由球队近期实际进球隐含了联赛环境，相乘=重复修正，实测 MAE 恶化 2.7%
 LEAGUE_PROFILE = {"_meta": {}, "shrink": {"w": 0.25, "fallback_mean": 2.83, "min_n": 12},
                   "leagues": {}}
+# 小样本联赛基线的经验贝叶斯收缩强度（2026-09-14，详见 league_baseline 注释）
+LEAGUE_EB_K = 40.0
 
 
 def _find_profile_file():
@@ -148,8 +170,21 @@ def load_league_profile():
 
 
 def league_baseline(league):
-    """返回该联赛的基线总进球均值；样本不足时用全局均值。"""
+    """返回该联赛的基线总进球均值；样本不足时用全局均值。
+
+    小样本经验贝叶斯收缩（2026-09-14 实装，见 LEAGUE_EB_K）：
+    联赛场均进球是均值估计，n 小时的抽样噪声极大 —— 亚冠精英 n=24 给出 1.292
+    （全库最低，次低英甲 1.833，全局 2.842），且其样本里混有主客镜像重复记录。
+    直接采用会把该联赛所有场次 λ 总量锚死（09-14 周一007 吉达国民 λ 总 1.29），
+    再用「量级档」当押注依据就会系统性偏低。
+    收缩公式 base' = (n*mean + K*global)/(n+K)，K=40 ≈「一个联赛的均值需 40 场
+    才与全局先验等权」。收缩后：亚冠精英 1.292→2.261、英甲 1.833→2.529，
+    而 n≥300 的主流联赛变动 <0.02 球。
+    回测（_score_floor_probe.py，4036 场）：单点 +2 场、Brier −0.00008（噪声内），
+    属数据质量修复而非 alpha 来源。
+    """
     prof = LEAGUE_PROFILE.get("leagues", {})
+    _fb = float(LEAGUE_PROFILE.get("shrink", {}).get("fallback_mean", 2.83))
     g = prof.get(league)
     if not g:
         # 别名兜底：去掉「杯/联赛」等后缀再试
@@ -158,8 +193,10 @@ def league_baseline(league):
                 g = v
                 break
     if g and g.get("n", 0) >= LEAGUE_PROFILE.get("shrink", {}).get("min_n", 12):
-        return float(g.get("mean") or LEAGUE_PROFILE["shrink"]["fallback_mean"])
-    return float(LEAGUE_PROFILE.get("shrink", {}).get("fallback_mean", 2.83))
+        n = float(g.get("n", 0) or 0)
+        mean = float(g.get("mean") or _fb)
+        return (n * mean + LEAGUE_EB_K * _fb) / (n + LEAGUE_EB_K)
+    return _fb
 
 
 def league_score_freq(league):
@@ -267,6 +304,8 @@ def prob_to_lambda(pb, total):
 
     用法：市场混合后需保持进球总量不变（总量由模型负责，方向交给市场）。
     一维扫描 λh ∈ (0, total)，取与 pb 平方误差最小的解，再局部细化。
+    解完施加单队 λ 下界 MIN_SINGLE（见常量区注释）：目标 1X2 与总量不相容时
+    弱侧会被推到网格边界（λ→0），这里夹紧到物理下界并保持总量守恒。
     """
     best, bl = None, 9.9
     n = 180
@@ -292,7 +331,13 @@ def prob_to_lambda(pb, total):
         e = (P[0] - pb[0]) ** 2 + (P[1] - pb[1]) ** 2 + (P[2] - pb[2]) ** 2
         if e < bl:
             bl, best = e, (lh, la)
-    return best
+    lh, la = best
+    lo = min(MIN_SINGLE, total * 0.35)
+    if lh < lo:
+        lh, la = lo, max(total - lo, total * 0.05)
+    if la < lo:
+        la, lh = lo, max(total - la, total * 0.05)
+    return lh, la
 
 
 # ---------------------------------------------------------------- Platt 概率校准（PLATT_ISOTONIC，V3.1）
@@ -2697,14 +2742,14 @@ def calc_match(m, calib, ctx=None):
         return sum(1 for x in rec if x["gf"] == 0) / len(rec)
 
     def zfactor(rate):
-        """连续 sigmoid: 零封率越高 → 0球格概率乘越大。
+        """连续 sigmoid: 零封率越高 → 0球格概率按 sigmoid 调整（上限 ZF_CAP=1.0）。
         原始四档跳变（0→0.6/0.15→0.6/0.25→0.8/0.4→1.0/>0.4→1.2）已废弃(V3.4)，
-        改为平滑 sigmoid: f(r) = FLOOR + (CEIL-FLOOR) * sigmoid(K*(r-MID))
-        f(0)≈0.60, f(0.25)=1.00, f(0.5)≈1.20"""
+        改为平滑 sigmoid: f(r) = min(ZF_CAP, FLOOR + (CEIL-FLOOR) * sigmoid(K*(r-MID)))
+        语义：只削弱、不放大（2026-09-14，理由见 ZF_CAP 注释）。"""
         if rate < 0 or rate > 1:
             rate = 0.25  # 无数据时中性
         s = 1.0 / (1.0 + math.exp(-clamp(ZF_K * (rate - ZF_MID), -20, 20)))
-        return ZF_FLOOR + (ZF_CEIL - ZF_FLOOR) * s
+        return min(ZF_CAP, ZF_FLOOR + (ZF_CEIL - ZF_FLOOR) * s)
 
     zr_h, zr_a = zero_rate(hr), zero_rate(ar)
     f_h, f_a = zfactor(zr_h), zfactor(zr_a)
@@ -2894,6 +2939,11 @@ def calc_match(m, calib, ctx=None):
         "big": big_out,
         "news": m.get("news", ""),
         "xg": {"home": xg_h, "away": xg_a},
+        # 数据可用性（2026-09-14）：近期战绩条数。任一侧为 0 = 冷启动，
+        # 该场 λ 由「联赛基线 + 赔率反推」得到，与有战绩的场次不可比 ——
+        # 报告侧用 data_n 决定该场是否参与「比分精选」排序、以及可信度标注。
+        "data_n": {"home": len(hr), "away": len(ar)},
+        "cold": (not hr) or (not ar),
     }
 
 
