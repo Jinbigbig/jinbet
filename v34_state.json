@@ -37,13 +37,13 @@
  },
  "hedge": {
   "weights": {
-   "model": 0.3521,
-   "market": 0.6479
+   "model": 0.3648,
+   "market": 0.6352
   },
   "losses": {
-   "model": 1.0964,
-   "market": 0.99477,
-   "blend": 1.00041,
+   "model": 1.07839,
+   "market": 0.98594,
+   "blend": 0.99119,
    "n": 500
   },
   "w": 0.7,
@@ -52,48 +52,50 @@
   "fixed_w": 0.8
  },
  "kalman": {
-  "n_teams": 597,
-  "applied": false,
-  "mods_non_neutral": 9
+  "n_teams": 635,
+  "applied": true,
+  "mods_non_neutral": 10
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 4623,
-  "drift_detected": false,
-  "flags": [],
+  "n_samples": 3058,
+  "drift_detected": true,
+  "flags": [
+   "league_baselines"
+  ],
   "detail": {
    "global_goals": {
-    "psi": 0.0,
-    "ks": 0.0,
+    "psi": 0.0001,
+    "ks": 0.0026,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0,
-    "ks": 0.0,
+    "psi": 0.0276,
+    "ks": 0.0728,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 0.0,
-    "std_delta_pct": 0.0,
+    "mean_delta_pct": 3.43,
+    "std_delta_pct": 7.12,
     "top3_changed": [
      [
-      "世界杯",
-      0.0
+      "德国乙级联赛",
+      50.0
      ],
      [
-      "世预赛",
-      0.0
+      "韩国职业联赛",
+      16.67
      ],
      [
-      "亚冠乙",
-      0.0
+      "荷兰甲级联赛",
+      15.38
      ]
     ],
-    "drift_detected": false,
-    "level": "✅ 稳定"
+    "drift_detected": true,
+    "level": "❌ 漂移"
    }
   }
  },
@@ -104,7 +106,7 @@
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
-    "KALMAN_STRENGTH": false,
+    "KALMAN_STRENGTH": true,
     "CLV_TRACK": true,
     "DRIFT_MONITOR": true
    }
