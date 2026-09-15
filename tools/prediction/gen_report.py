@@ -102,7 +102,7 @@ def build_league_sec(matches):
         parsed = league_data.get(lg)
         if not parsed or not parsed.get('teams'):
             out.append(f'    <h4>{esc(lg)}</h4>')
-            out.append('    <p class="league-note">本联赛积分榜获取失败，跳过。</p>')
+            out.append('    <p class="league-note">本联赛暂无可用积分榜数据源，跳过。</p>')
             out.append('  </div>')
             continue
         season = parsed.get('season_zh') or parsed.get('season', '')
