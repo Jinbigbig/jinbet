@@ -1169,7 +1169,7 @@ for i in range(n_conf_groups):
 
 stars_dist = Counter(m['stars'] for m in MATCHES)
 top_star = max(stars_dist) if stars_dist else 0
-dist_desc = ' / '.join(f"{stars_dist.get(s,0)}场{s}★" for s in (5, 4, 3, 2) if stars_dist.get(s, 0))
+dist_desc = ' / '.join(f"{stars_dist.get(s,0)}场{s}★" for s in (5, 4, 3, 2, 1) if stars_dist.get(s, 0))
 hi_note = '无4★以上场次——' if top_star < 4 else (f"共{stars_dist.get(4,0)+stars_dist.get(5,0)}场高信心场次，" if top_star >= 4 else '')
 cold_cnt = sum(1 for m in MATCHES if m['signals'] != ['无明显冷门信号'])
 dir_cnt = sum(1 for m in MATCHES if m['dir_applied'])
