@@ -1664,7 +1664,7 @@ def track_clv(snapshot_path=None, results_dir=None):
     """
     if snapshot_path is None:
         # 扫描 predictions/*/pred_snapshot.json，取最近一个
-        pred_root = os.path.join(BASE, "predictions")
+        pred_root = os.path.join(_repo_root(), "predictions")
         if not os.path.isdir(pred_root):
             return None
         snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
@@ -2299,7 +2299,7 @@ def run_brier_opt(calib=None, verbose=True, force=False):
 
 def run_clv_track(verbose=True, max_days=120):
     """CLV_TRACK 每日执行：算最近快照的 CLV，累计入 clv_log.json。"""
-    pred_root = os.path.join(BASE, "predictions")
+    pred_root = os.path.join(_repo_root(), "predictions")
     snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
     snaps = [s for s in snaps if os.path.basename(os.path.dirname(s)) < TODAY]
     if not snaps:
@@ -2408,7 +2408,7 @@ def read_daily_pred(d):
     否则回退解析 HTML：先用 λ=主x/客y 求总进球期望，无 λ 才用首选比分（众数口径，天然偏低）。
     返回 {"n": 场次数, "pred_mean": 均值, "caliber": "lambda"/"score"}
     """
-    jp = os.path.join(BASE, "predictions", d, "pred_snapshot.json")
+    jp = os.path.join(_repo_root(), "predictions", d, "pred_snapshot.json")
     if os.path.exists(jp):
         try:
             snap = json.load(open(jp, encoding="utf-8"))
@@ -2418,7 +2418,7 @@ def read_daily_pred(d):
         except Exception:
             pass
 
-    rp = os.path.join(BASE, "predictions", d, "index.html")
+    rp = os.path.join(_repo_root(), "predictions", d, "index.html")
     if not os.path.exists(rp):
         return None
     content = open(rp, encoding="utf-8").read()
@@ -2441,7 +2441,7 @@ def dump_prediction_snapshot(out_matches, date=None):
     目的：不再依赖解析 HTML（版式一变就失效），并为 PLATT/Brier 等后续模块留存标注基础。
     """
     d = date or TODAY
-    folder = os.path.join(BASE, "predictions", d)
+    folder = os.path.join(_repo_root(), "predictions", d)
     if not os.path.isdir(folder):
         return None
     rows = []
@@ -2477,7 +2477,7 @@ def dump_prediction_snapshot(out_matches, date=None):
 # ---------------------------------------------------------------- 动态校准
 def compute_calibration():
     """近7天预测总进球 vs 实际：EWMA+MAD 抗噪求全局因子，再按联赛分层收缩。"""
-    results = json.load(open(os.path.join(BASE, "results_data.json"), encoding="utf-8"))
+    results = json.load(open(os.path.join(_repo_root(), "results_data.json"), encoding="utf-8"))
     daily = []
     league_buckets = {}
 
@@ -3068,7 +3068,7 @@ def main():
     print(f"收缩权重 w={_lp.get('shrink', {}).get('w')} "
           f"(向联赛基线收缩，非相乘——相乘会重复修正，实测恶化)")
 
-    md = json.load(open(os.path.join(BASE, "scripts", "matches_data.json"), encoding="utf-8"))
+    md = json.load(open(os.path.join(_repo_root(), "scripts", "matches_data.json"), encoding="utf-8"))
     matches = {m["matchNumStr"]: m for m in md["matches"]}
 
     extra = {}

@@ -10,7 +10,21 @@ import datetime
 import os
 
 TODAY = datetime.date.today().isoformat()
-BASE = os.path.dirname(os.path.abspath(__file__))
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _repo_root(start=_SCRIPT_DIR):
+    """向上爬找有 results_history/ 的目录作为仓库根（V3.4 统一路径基准）。"""
+    here = start
+    for _ in range(4):
+        if os.path.isdir(os.path.join(here, "results_history")):
+            return here
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return start
+
+BASE = _repo_root()
 HTML = os.path.join(BASE, "index.html")
 OUTPUT = os.path.join(BASE, "scripts", "matches_data.json")
 

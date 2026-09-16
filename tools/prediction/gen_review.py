@@ -25,7 +25,21 @@ import json
 import os
 import re
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _repo_root(start=_SCRIPT_DIR):
+    """向上爬找有 results_history/ 的目录作为仓库根（V3.4 统一路径基准）。"""
+    here = start
+    for _ in range(4):
+        if os.path.isdir(os.path.join(here, "results_history")):
+            return here
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return start
+
+ROOT = _repo_root()
 
 # 竞彩比分盘的列出比分（与 _gen_report._LISTED_LABELS 保持一致；λ 取整结果不在此列时退回象限众数）
 LISTED_LABELS = {

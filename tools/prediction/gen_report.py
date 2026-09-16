@@ -1,10 +1,45 @@
 # -*- coding: utf-8 -*-
-# 由 _calc_result.json + _data_batch*.json 生成 2026-09-05 V2.2 报告
-# 版式严格复刻 2026-07-21 风格（与上午云端旧版一致）：CSS 直接取自 _old_0905.html
-import json, re, html, datetime, math
+# 由 _calc_result.json + _data_batch*.json 生成每日 V3.4 报告
+# 版式复刻风格：CSS 取自 _old_0905.html（多路径 fallback）
+import json, re, html, datetime, math, os
 from collections import Counter
 
-CALC = json.load(open('_calc_result.json', encoding='utf-8'))
+_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _repo_root(start=_SCRIPT_DIR):
+    here = start
+    for _ in range(4):
+        if os.path.isdir(os.path.join(here, "results_history")):
+            return here
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return start
+
+RR = _repo_root()
+
+def _find_file(*names):
+    """多路径 fallback 找文件：cwd → RR → SCRIPT_DIR → RR/tools/prediction"""
+    candidates = []
+    for n in names:
+        candidates.extend([
+            n,
+            os.path.join(RR, n),
+            os.path.join(_SCRIPT_DIR, n),
+            os.path.join(RR, "tools", "prediction", n),
+        ])
+    seen = set()
+    for c in candidates:
+        rp = os.path.abspath(c)
+        if rp in seen: continue
+        seen.add(rp)
+        if os.path.exists(c):
+            return c
+    return None
+
+CALC_PATH = _find_file('_calc_result.json')
+CALC = json.load(open(CALC_PATH, encoding='utf-8'))
 MATCHES = CALC['matches']
 CALIB = CALC['calibration']
 TODAY = CALC['today']
@@ -13,39 +48,35 @@ TODAY = CALC['today']
 H2H = {}
 for i in range(1, 7):
     try:
-        b = json.load(open(f'_data_batch{i}.json', encoding='utf-8'))
+        _bp = _find_file(f'_data_batch{i}.json')
+        b = json.load(open(_bp, encoding='utf-8'))
         for m in b['matches']:
             H2H[m['matchNumStr']] = m.get('h2h') or []
-    except FileNotFoundError:
+    except (FileNotFoundError, TypeError):
         pass
 # 回退：当日 matches_data.json 内自算 H2H（results_data 标定库推导）
 try:
-    _md = json.load(open('scripts/matches_data.json', encoding='utf-8'))
+    _md = json.load(open(_find_file('scripts/matches_data.json'), encoding='utf-8'))
     for m in _md.get('matches', []):
         if m['matchNumStr'] not in H2H or not H2H[m['matchNumStr']]:
             if m.get('h2h'):
                 H2H[m['matchNumStr']] = m['h2h']
-except FileNotFoundError:
+except (FileNotFoundError, TypeError):
     pass
 
 # ---------- 球队历史底蕴档案（展示层，不参与概率计算）----------
 # 数据：club_pedigree.json（联网核查的荣誉档案）
 # 说明：荣誉属公开慢变量，已被市场赔率与长期战绩定价；此处仅作定性背景展示。
-def _find(name):
-    import os
-    here = os.path.dirname(os.path.abspath(__file__))
-    for p in (os.path.join(here, name), os.path.join(here, '..', name), name,
-              os.path.join(here, 'tools', 'prediction', name)):
-        if os.path.exists(p):
-            return p
-    return None
 
-
-_p = _find('club_pedigree.json')
+_p = _find_file('club_pedigree.json')
 PED = json.load(open(_p, encoding='utf-8')).get('teams', {}) if _p else {}
 
-OLD = open('_old_0905.html', encoding='utf-8').read()
-CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
+_old_path = _find_file('_old_0905.html')
+if _old_path:
+    OLD = open(_old_path, encoding='utf-8').read()
+    CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
+else:
+    CSS = '<style>body{font-family:sans-serif}</style>'
 # 追加：队名右下角排名小字（CSS 变量兜底，兼容浅/深色）
 CSS += '''
 <style>
@@ -78,7 +109,7 @@ def build_league_sec(matches):
     from collections import OrderedDict
     league_data = {}
     try:
-        league_data = json.load(open('league_data.json', encoding='utf-8')).get('leagues', {})
+        league_data = json.load(open(_find_file('league_data.json'), encoding='utf-8')).get('leagues', {})
     except Exception:
         league_data = {}
     idx = LM.build_index(league_data)
@@ -1602,7 +1633,8 @@ page = f'''<!DOCTYPE html>
 </body>
 </html>'''
 
-out = f'predictions/{TODAY}/index.html'
+out = os.path.join(RR, f'predictions/{TODAY}/index.html')
+os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, 'w', encoding='utf-8') as f:
     f.write(page)
 print(f'已生成 {out}: {len(page)} 字符, {len(MATCHES)} 场卡片, 串关 {len(parlays)} 组')
