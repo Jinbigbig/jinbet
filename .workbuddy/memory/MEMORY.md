@@ -2,7 +2,7 @@
 
 ## 每日流水线（顺序不可乱）
 0. **最先**：`git show master:update_odds_net.py > update_odds_net.py` → `python update_odds_net.py --no-push` **再** `--no-push --results-only`（顺序错→ODDS 变单引号 JS，`_local_prepare` 报「赔率 0/N」）。步骤0 会自动跑官方锚对齐（`align_results_history_to_official`），无需手工 dedup。
-1. `_local_prepare.py` 2. `_build_today_extras.py` 3. `_fetch_league_data.py`（跑报告前，生成 league_data.json 供第七节积分榜）3.5 `_calc_engine.py`（查 chain 含「市场概率混合(」「比分矩阵对齐发布1X2」、路线图有 **ON·生效/ON·观察** 字样、Platt 已拟合）4. `_gen_report.py` 4.5 `gen_review.py --date <昨日>` 4.6 `_optimize_selection.py`（回放历史刷新 selection_tuning.json，供次日报告）5. 更新 predictions/index.html 索引 → commit 只推 gh-pages（fetch+rebase，禁 force）。
+1. `_local_prepare.py` 2. `_build_today_extras.py` 3. `_fetch_league_data.py`（跑报告前，生成 league_data.json 供第七节积分榜）3.5 `_calc_engine.py`（查 chain 含「市场概率混合(」「比分矩阵对齐发布1X2」、路线图有 **ON·生效/ON·观察** 字样、Platt 已拟合）4. `_gen_report.py` 4.5 `gen_review.py --date <昨日>` 4.6 `_optimize_selection.py`（回放历史刷新 selection_tuning.json，供次日报告；**已挂进 14:00 定时自动化**，幂等、无改善不动文件）5. 更新 predictions/index.html 索引 → commit 只推 gh-pages（fetch+rebase，禁 force）。
 - ⚠️ 引擎读根目录 `_data_batch{1..6}.json` 覆盖注入当日比赛——旧批撞车会污染预测，跑前确认无陈旧批（已备份 `_data_batch_backup_20260912/`）。
 - ⚠️ 首跑当日先 `mkdir -p predictions/<date>`（目录缺失→`dump_prediction_snapshot()` 静默跳过→gen_report FileNotFoundError）。
 - 引擎/脚本改动走 worktree 同步 master（路径必须 `C:/` 风格，用 `git worktree list` 查真实路径）；predictions/ 只归 gh-pages；V3.4 状态文件（strength_db/v34_state/drift_baseline/clv_log.json）属 gh-pages。新脚本勿用 `_` 前缀入库（.gitignore 任意层级匹配）；master 正本放 `tools/prediction/`。
