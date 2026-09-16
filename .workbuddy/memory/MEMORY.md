@@ -2,7 +2,7 @@
 
 ## 每日流水线（顺序不可乱）
 0. **最先**：`git show master:update_odds_net.py > update_odds_net.py` → `python update_odds_net.py --no-push` **再** `--no-push --results-only`（顺序错→ODDS 变单引号 JS，`_local_prepare` 报「赔率 0/N」）。步骤0 会自动跑官方锚对齐（`align_results_history_to_official`），无需手工 dedup。
-1. `_local_prepare.py` 2. `_build_today_extras.py` 3. `_fetch_league_data.py`（跑报告前，生成 league_data.json 供第七节积分榜）3.5 `_calc_engine.py`（查 chain 含「市场概率混合(」「比分矩阵对齐发布1X2」、路线图有 **ON·生效/ON·观察** 字样、Platt 已拟合）4. `_gen_report.py` 4.5 `gen_review.py --date <昨日>` 5. 更新 predictions/index.html 索引 → commit 只推 gh-pages（fetch+rebase，禁 force）。
+1. `_local_prepare.py` 2. `_build_today_extras.py` 3. `_fetch_league_data.py`（跑报告前，生成 league_data.json 供第七节积分榜）3.5 `_calc_engine.py`（查 chain 含「市场概率混合(」「比分矩阵对齐发布1X2」、路线图有 **ON·生效/ON·观察** 字样、Platt 已拟合）4. `_gen_report.py` 4.5 `gen_review.py --date <昨日>` 4.6 `_optimize_selection.py`（回放历史刷新 selection_tuning.json，供次日报告）5. 更新 predictions/index.html 索引 → commit 只推 gh-pages（fetch+rebase，禁 force）。
 - ⚠️ 引擎读根目录 `_data_batch{1..6}.json` 覆盖注入当日比赛——旧批撞车会污染预测，跑前确认无陈旧批（已备份 `_data_batch_backup_20260912/`）。
 - ⚠️ 首跑当日先 `mkdir -p predictions/<date>`（目录缺失→`dump_prediction_snapshot()` 静默跳过→gen_report FileNotFoundError）。
 - 引擎/脚本改动走 worktree 同步 master（路径必须 `C:/` 风格，用 `git worktree list` 查真实路径）；predictions/ 只归 gh-pages；V3.4 状态文件（strength_db/v34_state/drift_baseline/clv_log.json）属 gh-pages。新脚本勿用 `_` 前缀入库（.gitignore 任意层级匹配）；master 正本放 `tools/prediction/`。
@@ -46,12 +46,19 @@
 ## 比分口径（头条=联合众数，双档=第2/第3可能比分）
 - 头条=`top_scores[0]` 联合众数；**不可"大胆化"**（argmax 是单场命中最优解，任何 λ 分档下众数都赢）。「量级参考」列=round(λ) 仅参考。
 - 双档=`top_scores[1]`+`top_scores[2]`（模型排序第 2、第 3 可能比分，2026-09-16 起由"稳档(众数)+胆档(λ取整)"改为纯次优双档）；文案「长期双档命中约 20%」（4036 场：Top2 11.6%+Top3 8.9%≈20.5%）。复盘 `gen_review.predict_scores()` 的 `band` 同步取 `ts[1:3]`。
-- 另有「🔥 大胆档」板块（纯增量，按量级档与头条总进球差取前 5 场）。
+- 另有「🔥 大胆档」板块（独立计算：按「量级档/极限档」模型概率排序，取第一档前 4 场）。
 - 基准（4036 场）：联合众数 14.94% ＞ floor(λ) 13.85% ＞ round(λ) 13.06% ＞ 常数 1:1 12.93%（McNemar p<0.001）；阶梯 Top1 14.94/Top2 26.54/Top3 35.48/±1球 67.24%。
-- 病灶=退化（65.8% 首选 1:1）→ 必须挑场次：「🎯 今日比分精选」按自评概率取前 3（49% 比赛日至少中 1 场）。
+- 病灶=退化（65.8% 首选 1:1）→ 必须挑场次：「🎯 今日比分精选」按质量（命中比分概率×λ质量系数）取第一档前 6 场。
 - λ≤2.6（约 1/3 场）单点 18~22% 最值得看比分；9 月 λ 3.05~3.13 异常高，**严禁 k>1 追高**。
 - ⚠️ 算 ±1 球邻域禁用 `sum(g[max(0,h+da)])`（边界重复计数），须用去重格集合。
 - 提升只在「分布/新信息源」，调因素（坐标上升）实证过拟合死路。
+
+## 比分精选 / 大胆档 分档数量与每日优化（2026-09-16 定调）
+- 分档常量（`_gen_report.py`）：`TIER_PK=6`（比分精选每档）、`TIER_BD=4`（大胆档每档）、`N_TIER2=20`（当日非冷启动场次 ≥20 才启用第二档）、`TIER_MAX=2`（成倍数：1档=6/4，2档=12/8；要第三档就提 TIER_MAX 与阈值）。今日 17 场 → 只出第一档 6/4。
+- **第一档准确率优先**：两档各自按质量降序，第一档取质量最高的 6/4 场，第二档取次优增量（表格内有「第二档」分隔行）；冷启动场次一律排除。
+- 两档**独立计算**：比分精选质量 = 命中比分概率 × λ 质量系数（低 λ 命中率高，见 score_cred 表）+ 1:1 退化降权；大胆档质量 = max(极限档概率, 量级档概率)，可设 `bd_lambda_min` 排除过低 λ。两档互不以对方为输入。
+- 每日优化：新增 `_optimize_selection.py`（步骤 4.6，跑在 `gen_review.py` 之后）回放历史 pred_snapshot + 实际赛果，网格搜索上述旋钮，改善 ≥0.3pp 才采纳、可用天数 <5 则保留默认，写入 **`selection_tuning.json`**（不带下划线故可入库，被 `_gen_report.py` 读取）。首跑 11 天历史无改善→保持默认（防小样本过拟合）。
+- ⚠️ `_gen_report.py` / `_optimize_selection.py` 是 `_` 前缀，被 .gitignore 任意层级忽略，只存在于工作盘（master 目前无 tools/prediction/ 正本）；改这两个脚本后**只需重跑报告+推 gh-pages**，不必同步 master。
 
 ## 报告呈现纪律（红线）
 - 公开页**三不落**：方法论/口径说明、回测统计量（χ²/Brier/McNemar/样本量）、私下对话引用与脚本名。只留「今日可执行结论」+ 量级基准（单点~15%/双档~20%/±1球~67%）。
