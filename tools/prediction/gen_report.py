@@ -1327,6 +1327,7 @@ picks_sec = f'''
     可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
     {_cold_note}
   </p>
+<!--RECAP_PICKS-->
 </div>
 '''
 
@@ -1407,6 +1408,7 @@ bold_sec = f'''
       <tbody>{_rows_bd}</tbody>
     </table>
   </div>
+<!--RECAP_BOLD-->
 </div>
 '''
 
@@ -1482,12 +1484,12 @@ def _build_recap():
     import os as _os
     y = _yesterday_of(TODAY)
     if not y:
-        return ''
+        return '', ''
     snap_p = f'predictions/{y}/pred_snapshot.json'
     if not _os.path.exists(snap_p):
-        return (f'<h2>📅 前日回顾</h2>\n<div class="card">\n'
-                f'  <p style="font-size:0.86rem;color:var(--muted);">前一日（{y}）未生成预测报告，暂无可回顾数据。</p>\n'
-                f'</div>')
+        _note = (f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">'
+                 f'📅 前日回顾：前一日（{y}）未生成预测报告，暂无可回顾数据。</p>')
+        return _note, _note
     ysnap = json.load(open(snap_p, encoding='utf-8'))
     ym = [_norm_snap_match(x) for x in (ysnap.get('matches') or [])]
 
@@ -1540,35 +1542,36 @@ def _build_recap():
             f'<td><span class="tag {_rcls}">{_res}</span></td></tr>')
 
     _pk_done, _bd_done = pk_hit + pk_miss, bd_hit + bd_miss
-    _summ = (f'前日（{y}）比分精选：已出 {_pk_done} 场 · 命中/双档 {pk_hit} · 未中 {pk_miss}'
-             + (f' · 未出 {pk_wait}' if pk_wait else '')
-             + ' ｜ 大胆档：已出 ' + str(_bd_done) + f' 场 · 命中 {bd_hit} · 未中 {bd_miss}'
-             + (f' · 未出 {bd_wait}' if bd_wait else ''))
-    return f'''
-<h2>📅 前日回顾</h2>
-<div class="card">
-  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
-    下表回顾前一日（{y}）的「今日比分精选」与「大胆档」预测落地情况：预测比分 vs 实际赛果，是否猜中。
-  </p>
-  <p style="font-size:0.82rem;font-weight:700;margin:0.4rem 0 0.3rem;">🎯 比分精选回顾（命中比分 / 双档 vs 实际）</p>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th><th>实际</th><th>结果</th></tr></thead>
-      <tbody>{rows_pk}</tbody>
-    </table>
-  </div>
-  <p style="font-size:0.82rem;font-weight:700;margin:0.7rem 0 0.3rem;">🔥 大胆档回顾（量级档 / 极限档 vs 实际）</p>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>量级档</th><th>极限档</th><th>实际</th><th>结果</th></tr></thead>
-      <tbody>{rows_bd}</tbody>
-    </table>
-  </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin-top:0.55rem;">{_summ}。命中 = 实际比分等于预测档位；双档命中也算命中（比分精选），极限档命中也算命中（大胆档）。</p>
-</div>'''
+    _summ_pk = (f'前日（{y}）比分精选：已出 {_pk_done} 场 · 命中/双档 {pk_hit} · 未中 {pk_miss}'
+                + (f' · 未出 {pk_wait}' if pk_wait else ''))
+    _summ_bd = (f'前日（{y}）大胆档：已出 {_bd_done} 场 · 命中 {bd_hit} · 未中 {bd_miss}'
+                + (f' · 未出 {bd_wait}' if bd_wait else ''))
+    _picks = (
+        f'<p style="font-size:0.82rem;font-weight:700;margin:0.9rem 0 0.3rem;color:var(--accent);">'
+        f'📅 前日回顾（{y} 比分精选落地）</p>\n'
+        f'<div class="table-wrap"><table>\n'
+        f'<thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th><th>实际</th><th>结果</th></tr></thead>\n'
+        f'<tbody>{rows_pk}</tbody></table></div>\n'
+        f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{_summ_pk}。'
+        f'命中 = 实际比分等于预测「命中比分」；双档命中也算命中。</p>'
+        if rows_pk else
+        f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">📅 前日回顾：{y} 无比分精选场次。</p>')
+    _bold = (
+        f'<p style="font-size:0.82rem;font-weight:700;margin:0.9rem 0 0.3rem;color:var(--accent3);">'
+        f'📅 前日回顾（{y} 大胆档落地）</p>\n'
+        f'<div class="table-wrap"><table>\n'
+        f'<thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>量级档</th><th>极限档</th><th>实际</th><th>结果</th></tr></thead>\n'
+        f'<tbody>{rows_bd}</tbody></table></div>\n'
+        f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{_summ_bd}。'
+        f'命中 = 实际比分等于「量级档」或「极限档」。</p>'
+        if rows_bd else
+        f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">📅 前日回顾：{y} 无大胆档场次。</p>')
+    return _picks, _bold
 
 
-recap_sec = _build_recap()
+recap_picks, recap_bold = _build_recap()
+picks_sec = picks_sec.replace('<!--RECAP_PICKS-->', recap_picks)
+bold_sec = bold_sec.replace('<!--RECAP_BOLD-->', recap_bold)
 
 # ── 浮动章节导航（右侧目录 + 滚动高亮，窄屏自动折叠为悬浮按钮）────────────
 # 自包含：自动扫描页面内所有 h2/h3，按需分配锚点 id 并生成目录项，
@@ -1736,7 +1739,6 @@ page = f'''<!DOCTYPE html>
 
 {picks_sec}
 {bold_sec}
-{recap_sec}
 {overview_sec}
 {chart_sec}
 {deep_sec}
