@@ -7,8 +7,8 @@
 比分口径（2026-09-13 起与报告同步）：
   - 头条 = 「命中比分」= 已对齐矩阵的联合众数（= top_scores 首个列出比分），
     这是「押中次数」目标函数下的最优解（与 _gen_report.hit_pick 同规则；4036 场回测 14.94%）；
-  - 双档 = 众数排序前两档（_gen_report.hit_band；4036 场回测 26.54%）。
-  旧口径（λ 期望取整 + 同倾向次高，单点 13.8%/双档 26.0%）已弃用，λ 期望值仅作「量级参考」。
+  - 双档 = 模型排序第 2、第 3 可能比分（_gen_report.hit_band；4036 场回测 Top2 11.6% + Top3 8.9% ≈ 20.5%）。
+  旧口径（λ 期望取整 + 同倾向次高，单点 13.8%/双档 26.0%）与「头条+第2档」口径均已弃用，λ 期望值仅作「量级参考」。
 
 特点：
   - 不依赖市场赔率，覆盖该日全部预测场次（含只有让球盘、无 1X2 赔率的场次）。
@@ -25,21 +25,7 @@ import json
 import os
 import re
 
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-def _repo_root(start=_SCRIPT_DIR):
-    """向上爬找有 results_history/ 的目录作为仓库根（V3.4 统一路径基准）。"""
-    here = start
-    for _ in range(4):
-        if os.path.isdir(os.path.join(here, "results_history")):
-            return here
-        parent = os.path.dirname(here)
-        if parent == here:
-            break
-        here = parent
-    return start
-
-ROOT = _repo_root()
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 # 竞彩比分盘的列出比分（与 _gen_report._LISTED_LABELS 保持一致；λ 取整结果不在此列时退回象限众数）
 LISTED_LABELS = {
@@ -67,14 +53,14 @@ def predict_scores(m):
 
     2026-09-13 二次定调（目标函数 = 比分命中次数，概率幅值不作为指标）：
       头条 = 已对齐矩阵的**联合众数**（= top_scores 里首个列出比分）= 押中次数目标函数的最优解；
-      双档 = 众数排序前两档（4036 场回测 Top1 14.94% / Top2 26.54%）；
+      双档 = 模型排序第 2、第 3 可能比分（4036 场回测 Top2 单档 11.6% / Top3 单档 8.9% ≈ 20.5%）；
       量级参考 = λ 期望进球取整（无偏但不为押中，总进球偏差 −0.22 球/场）。
     旧口径「期望比分 + 同倾向次高」为 Top1 13.8% / Top2 26.0%，已弃用。
     """
     ts = [t for t in (m.get('top_scores') or [])
           if _parse_score(t.get('score')) and t.get('score') in LISTED_LABELS]
     hit = ts[0]['score'] if ts else '-'
-    band = {t['score'] for t in ts[:2]}
+    band = {t['score'] for t in ts[1:3]}
     ph, pd, pa = (float(m.get('prob_home', 0) or 0), float(m.get('prob_draw', 0) or 0),
                   float(m.get('prob_away', 0) or 0))
     okey = 'home' if ph >= pd and ph >= pa else ('away' if pa >= pd else 'draw')
@@ -187,7 +173,7 @@ def cumulative_kpi(up_to, since='2026-09-08'):
 
     起点 since 默认 2026-09-08：更早的快照（engine=poisson-v2.2 旧链路）没有 top_scores 字段，
     且 09-10 之前赛果库存在主客颠倒 bug，纳入会污染基准。
-    基准线（4036 场生产口径回测，_baseline_probe.py）：单点 14.94% / 双档 26.54%；
+    基准线（4036 场生产口径回测，_baseline_probe.py）：单点 14.94% / 双档（第2+第3档）≈20.5%；
     常数基线（全场猜 1:1）12.93% —— 模型净多中 81 场，McNemar χ²=19.34（p<0.001）。
     """
     import glob as _g
@@ -294,7 +280,7 @@ def main():
                     f'方向 <b>{_tot[1]}</b>（{_tot[1]/_tot[0]*100:.1f}%）· '
                     f'命中比分单点 <b>{_tot[2]}</b>（{_tot[2]/_tot[0]*100:.1f}%）· '
                     f'双档 <b>{_tot[3]}</b>（{_tot[3]/_tot[0]*100:.1f}%）。'
-                    f'长期基准：单点约 15% · 双档约 26%。</div>')
+                    f'长期基准：单点约 15% · 双档约 20%。</div>')
 
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>

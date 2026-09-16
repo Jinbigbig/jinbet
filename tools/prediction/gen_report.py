@@ -1,45 +1,10 @@
 # -*- coding: utf-8 -*-
-# 由 _calc_result.json + _data_batch*.json 生成每日 V3.4 报告
-# 版式复刻风格：CSS 取自 _old_0905.html（多路径 fallback）
-import json, re, html, datetime, math, os
+# 由 _calc_result.json + _data_batch*.json 生成 2026-09-05 V2.2 报告
+# 版式严格复刻 2026-07-21 风格（与上午云端旧版一致）：CSS 直接取自 _old_0905.html
+import json, re, html, datetime, math
 from collections import Counter
 
-_SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-def _repo_root(start=_SCRIPT_DIR):
-    here = start
-    for _ in range(4):
-        if os.path.isdir(os.path.join(here, "results_history")):
-            return here
-        parent = os.path.dirname(here)
-        if parent == here:
-            break
-        here = parent
-    return start
-
-RR = _repo_root()
-
-def _find_file(*names):
-    """多路径 fallback 找文件：cwd → RR → SCRIPT_DIR → RR/tools/prediction"""
-    candidates = []
-    for n in names:
-        candidates.extend([
-            n,
-            os.path.join(RR, n),
-            os.path.join(_SCRIPT_DIR, n),
-            os.path.join(RR, "tools", "prediction", n),
-        ])
-    seen = set()
-    for c in candidates:
-        rp = os.path.abspath(c)
-        if rp in seen: continue
-        seen.add(rp)
-        if os.path.exists(c):
-            return c
-    return None
-
-CALC_PATH = _find_file('_calc_result.json')
-CALC = json.load(open(CALC_PATH, encoding='utf-8'))
+CALC = json.load(open('_calc_result.json', encoding='utf-8'))
 MATCHES = CALC['matches']
 CALIB = CALC['calibration']
 TODAY = CALC['today']
@@ -48,35 +13,39 @@ TODAY = CALC['today']
 H2H = {}
 for i in range(1, 7):
     try:
-        _bp = _find_file(f'_data_batch{i}.json')
-        b = json.load(open(_bp, encoding='utf-8'))
+        b = json.load(open(f'_data_batch{i}.json', encoding='utf-8'))
         for m in b['matches']:
             H2H[m['matchNumStr']] = m.get('h2h') or []
-    except (FileNotFoundError, TypeError):
+    except FileNotFoundError:
         pass
 # 回退：当日 matches_data.json 内自算 H2H（results_data 标定库推导）
 try:
-    _md = json.load(open(_find_file('scripts/matches_data.json'), encoding='utf-8'))
+    _md = json.load(open('scripts/matches_data.json', encoding='utf-8'))
     for m in _md.get('matches', []):
         if m['matchNumStr'] not in H2H or not H2H[m['matchNumStr']]:
             if m.get('h2h'):
                 H2H[m['matchNumStr']] = m['h2h']
-except (FileNotFoundError, TypeError):
+except FileNotFoundError:
     pass
 
 # ---------- 球队历史底蕴档案（展示层，不参与概率计算）----------
 # 数据：club_pedigree.json（联网核查的荣誉档案）
 # 说明：荣誉属公开慢变量，已被市场赔率与长期战绩定价；此处仅作定性背景展示。
+def _find(name):
+    import os
+    here = os.path.dirname(os.path.abspath(__file__))
+    for p in (os.path.join(here, name), os.path.join(here, '..', name), name,
+              os.path.join(here, 'tools', 'prediction', name)):
+        if os.path.exists(p):
+            return p
+    return None
 
-_p = _find_file('club_pedigree.json')
+
+_p = _find('club_pedigree.json')
 PED = json.load(open(_p, encoding='utf-8')).get('teams', {}) if _p else {}
 
-_old_path = _find_file('_old_0905.html')
-if _old_path:
-    OLD = open(_old_path, encoding='utf-8').read()
-    CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
-else:
-    CSS = '<style>body{font-family:sans-serif}</style>'
+OLD = open('_old_0905.html', encoding='utf-8').read()
+CSS = re.search(r'<style>.*?</style>', OLD, re.S).group(0)
 # 追加：队名右下角排名小字（CSS 变量兜底，兼容浅/深色）
 CSS += '''
 <style>
@@ -109,7 +78,7 @@ def build_league_sec(matches):
     from collections import OrderedDict
     league_data = {}
     try:
-        league_data = json.load(open(_find_file('league_data.json'), encoding='utf-8')).get('leagues', {})
+        league_data = json.load(open('league_data.json', encoding='utf-8')).get('leagues', {})
     except Exception:
         league_data = {}
     idx = LM.build_index(league_data)
@@ -375,33 +344,28 @@ def _pois_cell_prob(m, score):
 
 
 def hit_band(m, k=2):
-    """双档 = 稳档（联合众数，单场命中最优）+ 胆档（λ 量级期望，进球数无偏）。
+    """双档 = 模型排序第 2、第 3 可能比分（top_scores[1]、top_scores[2]）。
 
-    口径依据：众数是分布单点，必然低于均值 → 只取「众数 + 次高众数」时两档同质偏小。
-    实测（时间外检验集 n=1620）：旧双档平均 1.86 球 vs 实际 2.85 球（偏差 −0.99），
-    仅 7.6% 的场次双档里含 ≥3 球。第二档换成量级无偏的期望比分后：
-      头条命中 16.5% 不变 · 含 ≥3 球档 39% → 69%
-    代价：双档命中 27.6% → 26.1%（−1.5pp）。
-    语义：稳档负责押中，胆档负责量级——两档互补而非同质。
-    返回 [(score, prob), ...]，prob 单位 %。
+    口径依据（2026-09-16 定调）：双档不再用「头条众数 + λ 期望取整」的互补口径，
+    而改为模型概率排序的第 2、第 3 高单比分——两档都是「最可能但非头号」的真实次优解，
+    语义统一为「头条若没中，最该补的两档」。
+    4036 场回测：Top2 单档 11.6% + Top3 单档 8.9% ≈ 双档命中 20.5%。
+    返回 [(score, prob), ...]，prob 单位 %（k 档时跳过 top_scores[0] 头条）。
     """
+    ts = [t for t in (m.get('top_scores') or [])
+          if t.get('score') in _LISTED_LABELS]
     out, seen = [], set()
-
-    s1, p1 = hit_pick(m)                      # 稳档：命中最优
-    out.append((s1, p1 if p1 is not None else 0.0))
-    seen.add(s1)
-
-    if k >= 2:
-        s2, p2, _ = expect_score(m)           # 胆档：量级无偏（已约束在倾向象限内）
-        if s2 not in seen:
-            out.append((s2, p2 if p2 is not None else _pois_cell_prob(m, s2)))
-            seen.add(s2)
-
-    for t in (m.get('top_scores') or []):     # 不足则按模型排序补足
+    for t in ts[1:1 + k]:                     # 跳过头条，取第 2、第 3 可能比分
+        sc = t.get('score')
+        if sc in seen:
+            continue
+        out.append((sc, t.get('prob') or 0.0))
+        seen.add(sc)
+    for t in ts:                              # 不足 k 档按模型排序补足
         if len(out) >= k:
             break
         sc = t.get('score')
-        if sc in _LISTED_LABELS and sc not in seen:
+        if sc not in seen:
             out.append((sc, t.get('prob') or 0.0))
             seen.add(sc)
     return out[:k]
@@ -967,8 +931,8 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
       <span class="pred-score">{esc(qp_join)}</span>
-      <span class="pred-value">（稳档押中 + 胆档量级，合计 <b>{qp_sum:.1f}%</b>
-        <span style="color:var(--muted);">· 长期双档命中约 26%</span>）</span>
+      <span class="pred-value">（第 2 / 第 3 可能比分，合计 <b>{qp_sum:.1f}%</b>
+        <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
@@ -1080,8 +1044,8 @@ summary4_sec = f'''
 <b>「命中比分」</b> = 模型按因素推出的最可能比分；<b>「量级」</b>小字 = λ 期望进球取整，只看进球规模、不为押中。
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，且不同场次差别很大：
 见报告开头「🎯 今日比分精选」（只看模型最有把握的几场）；其余场次请看方向与总进球倾向。
-要容错就看 <b>比分双档</b>（约 26%）与 <b>±1球覆盖</b>（约 67%）。</p>
-{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>比分双档</b> = 模型排序前两档（命中约 <b>26%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>可信度</b> 按该场总进球 λ 分档（可信 / 一般 / 不可信，λ 越低越值得看）。<b>冷门概率</b> = 市场首选方向落空的概率。',
+要容错就看 <b>比分双档</b>（约 20%）与 <b>±1球覆盖</b>（约 67%）。</p>
+{_sub_table('4.1 胜负与比分预测', '胜/平/负三率经校准（修正泊松平局低估）；<b>倾向</b> = 三者中概率最高者。<b>命中比分</b> = 按因素链推出的最可能比分（模型首选，长期单点命中约 15%）。<b>比分双档</b> = 模型排序第 2、第 3 可能比分（命中约 <b>20%</b>）。<b>±1球覆盖</b> = 实际比分落在头条比分上下各 1 球范围内的概率（约 <b>67%</b>）—— 容错口径看这个。<b>可信度</b> 按该场总进球 λ 分档（可信 / 一般 / 不可信，λ 越低越值得看）。<b>冷门概率</b> = 市场首选方向落空的概率。',
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>命中比分</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>Top5覆盖</th><th>可信度</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
@@ -1348,7 +1312,7 @@ picks_sec = f'''
 <div class="card">
   <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
     下表按模型把握度从高到低，列出今日最值得跟的几场比分。单比分全场次平均命中约 <b>15%</b>、
-    双档约 <b>26%</b>、±1 球覆盖约 <b>67%</b>；把握度高的场次命中率明显更高，
+    双档约 <b>20%</b>、±1 球覆盖约 <b>67%</b>；把握度高的场次命中率明显更高，
     因此跟单场比分只看这几场，其余场次请看方向与总进球倾向。
   </p>
   <div class="table-wrap">
@@ -1633,8 +1597,7 @@ page = f'''<!DOCTYPE html>
 </body>
 </html>'''
 
-out = os.path.join(RR, f'predictions/{TODAY}/index.html')
-os.makedirs(os.path.dirname(out), exist_ok=True)
+out = f'predictions/{TODAY}/index.html'
 with open(out, 'w', encoding='utf-8') as f:
     f.write(page)
 print(f'已生成 {out}: {len(page)} 字符, {len(MATCHES)} 场卡片, 串关 {len(parlays)} 组')
