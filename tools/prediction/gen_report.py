@@ -1410,6 +1410,166 @@ bold_sec = f'''
 </div>
 '''
 
+# ---------- 📅 前日回顾（比分精选 / 大胆档 昨日命中情况）----------
+import datetime as _dt
+
+
+def _yesterday_of(d):
+    try:
+        return (_dt.datetime.strptime(d, '%Y-%m-%d') - _dt.timedelta(days=1)).strftime('%Y-%m-%d')
+    except Exception:
+        return None
+
+
+def _norm_snap_match(m):
+    """快照里缺 prob/cold/data_n 字段时补默认，以便复用今日同款排序函数。"""
+    nw = dict(m)
+    if not isinstance(nw.get('prob'), dict):
+        nw['prob'] = {
+            'home': float(m.get('prob_home') or 0),
+            'draw': float(m.get('prob_draw') or 0),
+            'away': float(m.get('prob_away') or 0),
+        }
+    nw.setdefault('cold', False)
+    nw.setdefault('data_n', {})
+    return nw
+
+
+_RESULTS_CACHE = None
+
+
+def _results_cache():
+    global _RESULTS_CACHE
+    if _RESULTS_CACHE is not None:
+        return _RESULTS_CACHE
+    import os as _os, glob as _glob
+    recs = {}
+    for f in sorted(_glob.glob(_os.path.join('.', 'results_history', '*.json'))):
+        if _os.path.basename(f) == 'index.json':
+            continue
+        try:
+            d = json.load(open(f, encoding='utf-8'))
+        except Exception:
+            continue
+        if isinstance(d, dict):
+            for k, v in d.items():
+                if isinstance(v, dict):
+                    recs.setdefault(k, v)
+    try:
+        rd = json.load(open('results_data.json', encoding='utf-8'))
+        if isinstance(rd, dict):
+            for k, v in rd.items():
+                if isinstance(v, dict):
+                    recs[k] = v
+    except Exception:
+        pass
+    _RESULTS_CACHE = recs
+    return recs
+
+
+def _lookup_actual(y, home, away):
+    recs = _results_cache()
+    for key in (f'{y}_{home}_{away}', f'{y}_{away}_{home}'):
+        rec = recs.get(key)
+        if rec:
+            s = rec.get('score') or rec.get('fullScore') or ''
+            if isinstance(s, str) and ':' in s:
+                return s
+    return None
+
+
+def _build_recap():
+    import os as _os
+    y = _yesterday_of(TODAY)
+    if not y:
+        return ''
+    snap_p = f'predictions/{y}/pred_snapshot.json'
+    if not _os.path.exists(snap_p):
+        return (f'<h2>📅 前日回顾</h2>\n<div class="card">\n'
+                f'  <p style="font-size:0.86rem;color:var(--muted);">前一日（{y}）未生成预测报告，暂无可回顾数据。</p>\n'
+                f'</div>')
+    ysnap = json.load(open(snap_p, encoding='utf-8'))
+    ym = [_norm_snap_match(x) for x in (ysnap.get('matches') or [])]
+
+    # —— 比分精选回顾（复用今日同款排序：按命中比分概率取前 5，冷启动不计入）——
+    y_pk = [_conf_rank(m) + (m,) for m in ym]
+    y_picks = sorted((x for x in y_pk if not _is_cold(x[4])), key=lambda x: -x[3])[:5]
+    rows_pk, pk_hit, pk_miss, pk_wait = '', 0, 0, 0
+    for i, (_s, _pf, _lt, _pf2, _m) in enumerate(y_picks, 1):
+        _dbl = [t['score'] for t in _m['top_scores'][1:3]]
+        _act = _lookup_actual(y, _m['home'], _m['away'])
+        if _act is None:
+            _res, _rcls, pk_wait = '⏳ 未出', 'tag-yellow', pk_wait + 1
+        elif _act == _s:
+            _res, _rcls, pk_hit = '✅ 命中', 'tag-green', pk_hit + 1
+        elif _act in _dbl:
+            _res, _rcls, pk_hit = '🟡 双档', 'tag-green', pk_hit + 1
+        else:
+            _res, _rcls, pk_miss = '❌ 未中', 'tag-red', pk_miss + 1
+        rows_pk += (
+            f'<tr><td style="text-align:center;font-weight:700;color:var(--accent);">{i}</td>'
+            f'<td><span class="tag tag-blue">{esc(_m.get("matchNumStr") or _m.get("id"))}</span> {esc(_m["league"])}</td>'
+            f'<td>{esc(_m["home"])} vs {esc(_m["away"])}</td>'
+            f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_s)}</td>'
+            f'<td style="font-family:monospace;font-size:0.8rem;">{" + ".join(dash(x) for x in _dbl)}</td>'
+            f'<td style="font-family:monospace;">{dash(_act) if _act else "—"}</td>'
+            f'<td><span class="tag {_rcls}">{_res}</span></td></tr>')
+
+    # —— 大胆档回顾（量级档 / 极限档 vs 实际）——
+    y_bold = sorted((_bold_rank(m) + (m,) for m in ym), key=lambda x: (-x[0], -x[1]))[:5]
+    rows_bd, bd_hit, bd_miss, bd_wait = '', 0, 0, 0
+    for i, (_gap, _lt, _m) in enumerate(y_bold, 1):
+        _e, _ep, _ = expect_score(_m)
+        _x, _xp = _extreme_pick(_m)
+        _act = _lookup_actual(y, _m['home'], _m['away'])
+        if _act is None:
+            _res, _rcls, bd_wait = '⏳ 未出', 'tag-yellow', bd_wait + 1
+        elif _act == _e:
+            _res, _rcls, bd_hit = '✅ 量级', 'tag-green', bd_hit + 1
+        elif _x and _act == _x:
+            _res, _rcls, bd_hit = '✅ 极限', 'tag-green', bd_hit + 1
+        else:
+            _res, _rcls, bd_miss = '❌ 未中', 'tag-red', bd_miss + 1
+        rows_bd += (
+            f'<tr><td style="text-align:center;font-weight:700;color:var(--accent3);">{i}</td>'
+            f'<td><span class="tag tag-blue">{esc(_m.get("matchNumStr") or _m.get("id"))}</span> {esc(_m["league"])}</td>'
+            f'<td>{esc(_m["home"])} vs {esc(_m["away"])}</td>'
+            f'<td style="font-family:monospace;font-weight:700;color:var(--accent3);">{dash(_e)}</td>'
+            f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_x) if _x else "—"}</td>'
+            f'<td style="font-family:monospace;">{dash(_act) if _act else "—"}</td>'
+            f'<td><span class="tag {_rcls}">{_res}</span></td></tr>')
+
+    _pk_done, _bd_done = pk_hit + pk_miss, bd_hit + bd_miss
+    _summ = (f'前日（{y}）比分精选：已出 {_pk_done} 场 · 命中/双档 {pk_hit} · 未中 {pk_miss}'
+             + (f' · 未出 {pk_wait}' if pk_wait else '')
+             + ' ｜ 大胆档：已出 ' + str(_bd_done) + f' 场 · 命中 {bd_hit} · 未中 {bd_miss}'
+             + (f' · 未出 {bd_wait}' if bd_wait else ''))
+    return f'''
+<h2>📅 前日回顾</h2>
+<div class="card">
+  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
+    下表回顾前一日（{y}）的「今日比分精选」与「大胆档」预测落地情况：预测比分 vs 实际赛果，是否猜中。
+  </p>
+  <p style="font-size:0.82rem;font-weight:700;margin:0.4rem 0 0.3rem;">🎯 比分精选回顾（命中比分 / 双档 vs 实际）</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th><th>实际</th><th>结果</th></tr></thead>
+      <tbody>{rows_pk}</tbody>
+    </table>
+  </div>
+  <p style="font-size:0.82rem;font-weight:700;margin:0.7rem 0 0.3rem;">🔥 大胆档回顾（量级档 / 极限档 vs 实际）</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>量级档</th><th>极限档</th><th>实际</th><th>结果</th></tr></thead>
+      <tbody>{rows_bd}</tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;color:var(--muted);margin-top:0.55rem;">{_summ}。命中 = 实际比分等于预测档位；双档命中也算命中（比分精选），极限档命中也算命中（大胆档）。</p>
+</div>'''
+
+
+recap_sec = _build_recap()
+
 # ── 浮动章节导航（右侧目录 + 滚动高亮，窄屏自动折叠为悬浮按钮）────────────
 # 自包含：自动扫描页面内所有 h2/h3，按需分配锚点 id 并生成目录项，
 # 因此板块增减时无需同步维护列表；历史报告回填也复用同一段代码。
@@ -1576,6 +1736,7 @@ page = f'''<!DOCTYPE html>
 
 {picks_sec}
 {bold_sec}
+{recap_sec}
 {overview_sec}
 {chart_sec}
 {deep_sec}
