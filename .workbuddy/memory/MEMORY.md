@@ -9,11 +9,13 @@
 - 引擎/脚本改动走 worktree 同步 master（路径必须 `C:/` 风格）；predictions/ 与 V3.4 状态文件属 gh-pages；master 正本放 `tools/prediction/`；新脚本勿用 `_` 前缀（.gitignore 任意层级匹配）。
 
 ## 分支与推送
-- origin=SSH 免交互；禁 GITHUB_TOKEN/HTTP 代理。**只信 `git ls-remote`**（remote-tracking ref 不可信）。
-- gh-pages 常有外部追加提交：被拒→`git fetch origin gh-pages` + `rebase`；撞数据文件冲突→`reset --hard <云端真实SHA>` 重跑全链单提交推。
+- origin=SSH 免交互；禁 GITHUB_TOKEN/HTTP 代理。**只信 `git ls-remote`**（remote-tracking ref 会被并发会话覆写）。
+- ❗**rebase 必须 `--no-fork-point` 且用 ls-remote 拿到的真实 SHA**（如 `git rebase --no-fork-point <sha>`）。远端被 force-update 后，rebase 的 `--fork-point` 会从 reflog 取到陈旧基点（曾把 b119ac2 当基点 → 误重放 247 个提交、卡在冲突）。推送用 `git push origin HEAD:refs/heads/gh-pages`。
+- gh-pages 常有外部追加提交：被拒→fetch 真实 SHA + rebase；撞数据文件冲突→`reset --hard <云端真实SHA>` 重跑全链单提交推。
 - 判推送只看 ls-remote（SIGTERM 的 push 实际可能已成功）。
 - 根 index.html 3.4MB 程序生成：仅当 `grep -c data-page-node-id index.html` >0 才 `git checkout -- index.html`。
 - 环境坑：bash PATH 偶坏 → `export PATH=/c/Users/Jin/.workbuddy/binaries/PortableGit/versions/1.2.0/usr/bin:$PATH`；`/c/tmp` 不跨调用持久（临时文件写仓库内）；`git stash` 读不出 refs/stash → `cat .git/refs/stash` 取 SHA。
+- worktree：`git worktree add --detach <path> <真实SHA>`（先 `git worktree prune`；曾在并发下 admin 目录消失致 worktree 失效）。
 
 ## 队名归一
 - canonical=短名。SCHEDULE 双行根因=`RESULT_TEAM_NAME_MAP` 缺映射或 identity 映射→先查映射表别手工删。改后重跑步骤0 须见「合并后清理 N 场重复」。
@@ -45,12 +47,15 @@
 - 基准（4036 场）：联合众数 14.94% ＞ floor(λ) 13.85% ＞ round(λ) 13.06% ＞ 常数 1:1 12.93%；Top1/Top2/Top3=14.94/26.54/35.48%，±1球 67.24%。病灶=退化（65.8% 首选 1:1）→必须挑场次。
 - λ≤2.6 时单点最值得看（18~22%）；**严禁 k>1 追高**。算 ±1 球邻域须用去重格集合（禁 `sum(g[max(0,h+da)])`，边界重复计数）。提升只在「分布/新信息源」，调因素=过拟合死路。
 
-## 比分精选 / 大胆档（2026-09-16 定调）
+## 比分精选 / 大胆档（2026-09-16 定调，09-17 修口径）
 - 常量（`selection_algo.py`）：`TIER_PK=6`/`TIER_BD=4`；档数=以 10 场为基准 1 档、每多 8 场加 1 档（`N_TIER_BASE=10`/`N_TIER_STEP=8`/`TIER_MAX=5`），按**非冷启动**场次数算。第一档准确率优先，冷启动场次一律排除。
-- 两档独立计算：比分精选质量=命中比分概率×λ质量系数+1:1 降权（可调 `bd_lambda_min`）；大胆档质量=max(极限档概率, 量级档概率)。互不以对方为输入。
-- ❗**选取算法唯一实现 = `selection_algo.py`**；`_gen_report.py`（渲染）与 `_optimize_selection.py`（回放）一律 `import selection_algo as SA`，命中判定用 `SA.pk_result`/`SA.bd_result`。**禁止另写一份**——曾口径分叉致大胆档命中率虚高成 31.8%（真实 11.4%）。
+- 两档独立计算：比分精选质量=命中比分概率×λ质量系数+1:1 降权；大胆档质量=max(极限档概率, 量级档概率)，**λ 达标者优先占位**。
+- **`bd_lambda_min` 语义=「优先满足」非「硬剔除」**（09-17 改）：未达 λ 门槛者质量分 −1000 整体让位，不足一档时仍按质量补满，低进球日档位不塌缩。实测最优阈值 **3.0**（12 天回放目标 16.25→28.75，命中率 10.4%→14.6%，命中日 3/12→6/12；2.8~3.0 为平台，3.2 起回落）。
+- ❗**选取算法唯一实现 = `selection_algo.py`**；`_gen_report.py`（渲染）与 `_optimize_selection.py`（回放）一律 `import selection_algo as SA`，命中判定用 `SA.pk_result`/`SA.bd_result`。**回放选取也必须调 `SA.rank_pk`/`SA.rank_bold`**（09-17 前优化器自写排序、且不排冷启动 → 4/12 天选出的场次与生产不同，调参等于评估另一个算法）。
+- `bd_tuple` 必须保持 **2 元组**（质量分, λ总量）：`_gen_report.py` 用 `key=lambda x: (-x[0], -x[1])` 且 `_is_cold(x[2])` 解包，改成 3 元组会连环崩。
 - 每日优化护栏：改善≥0.3pp 才采纳、可用天数<5 保留默认（防小样本过拟合；连续保持默认属正常，勿放宽）。
-- ⚠️ `_gen_report.py`/`_optimize_selection.py` 被 gitignore，只在工作盘（master 无正本）→ 改后只需重跑报告+推 gh-pages；但它们依赖的 `selection_algo.py` **必须入库**。
+- ⚠️ `_gen_report.py`/`_optimize_selection.py` 只在工作盘（gh-pages 未跟踪、master `tools/prediction/` 里的 gen_report.py 是 09-05 旧版，勿混用）→ 改后只需重跑报告+推 gh-pages；但它们依赖的 `selection_algo.py` 必须入库（gh-pages 根 + master `tools/prediction/`）。
+- ⚠️ 报告「前日回顾」是用**当前**调参重算的（`_bold_rank` 读今日 `_TUNING`），不是当日实际发布口径 → 命中数会随调参变化（09-17 改后 09-16 大胆档显示 1/4，而当日实发为 0/4）。读回顾数字时须知此口径。
 
 ## 报告呈现纪律（红线）
 - 公开页**三不落**：方法论/口径说明、回测统计量（χ²/Brier/McNemar/样本量）、私下对话引用与脚本名。只留「今日可执行结论」+量级基准（单点~15%/双档~20%/±1球~67%）。章节标题不带解释性括号；脚本注释去个人化。
