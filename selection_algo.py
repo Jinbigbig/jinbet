@@ -7,13 +7,17 @@
   那个算法，会让「每日优化」失去意义。本模块把两边共用的纯函数收拢到一处，
   两侧一律 import 使用，杜绝重复。
 
-两块独立板块（2026-09-17 定调：各自成榜、互不关联）：
-  · 比分精选（pk_*）：命中比分概率 × λ 质量系数，并对退化头条 1:1 降权；
-    模型口径来自引擎的比分矩阵。
-  · 大胆档（bd_*）：**自带模型**——只用引擎 λ 独立算泊松，不看引擎的比分矩阵；
-    量级档/极限档由该分布自主决定，参数与目标函数与比分精选完全分离。
+两块独立板块（2026-09-17 定调：各自成榜、各自计算、互不关联）：
+  · 比分精选（pk_*）：**自带模型**——`pk_dist` 由引擎 λ 自建泊松分布，
+    再自己缩放到引擎已发布 1X2，自己在该分布上取头条 / 双档；
+    随后按「头条概率 × λ 质量系数」排序，退化头条 1:1 降权。
+  · 大胆档（bd_*）：**自带模型**——`bd_ref` 用引擎 λ 自建泊松，取量级档 / 极限档。
+  两榜都**只把引擎输出当输入**（λ、1X2、候选池），展示的预测各自算各自的；
   两榜**互斥成榜**（`split_boards`）：比分精选先占位，大胆档只在剩余场次中选取，
   同一场比赛不会同时出现在两个榜里。
+
+引擎自身的比分矩阵口径（`hit_pick`/`band_scores`）只服务于报告正文（总览/串关等）
+与 gen_review 复盘，不参与两个板块的预测与排序。
 
 档数：以 N_TIER_BASE 场为基准 1 档，每多 N_TIER_STEP 场加 1 档，封顶 TIER_MAX。
 
@@ -36,9 +40,11 @@ N_TIER_BASE = 10   # 基准：10 场 → 1 档
 N_TIER_STEP = 8    # 每多 8 场 → 多 1 档（18场→2档、26场→3档、34场→4档…）
 TIER_MAX = 5       # 档数上限（切片不足时该档自然不出现）
 BD_MAXG = 6        # 大胆档自带泊松网格上限（每侧进球 0..6）
+PK_MAXG = 8        # 比分精选自带泊松网格上限（每侧进球 0..8）
 
 DEFAULT_TUNING = {
-    # —— 板块 A：比分精选（引擎比分矩阵口径）——
+    # —— 板块 A：比分精选（自带分布：λ 泊松 → 自对齐已发布 1X2）——
+    'pk_align_1x2':   1,                        # 1 = 自建分布三象限缩放到引擎已发布 1X2
     'pk_lambda_caps': [2.6, 3.0, 3.4],          # λ 总量质量分界（越低单比分命中率越高）
     'pk_lambda_w':    [1.0, 0.90, 0.78, 0.68],  # 对应质量系数
     'pk_degen_down':  0.85,                     # 退化头条(1:1)低概率降权
@@ -201,11 +207,16 @@ def lambda_quality(lt, tuning):
 
 
 def pk_quality(m, tuning):
-    """比分精选质量 = 命中比分概率 × λ 质量系数；退化头条 1:1 且概率偏低时降权。"""
+    """比分精选的「选场」质量分（取自今日引擎计算结果，不自算）。
+
+    = 引擎正常口径的命中比分概率（`hit_pick`）× λ 质量系数；
+      退化头条 1:1 且概率偏低时降权。
+    注意：这里只用引擎口径**决定选哪几场**；这几场的预测展示由本板块自己在
+    `pk_ref` 里算（自建分布），两者口径分离。
+    """
     s, p = hit_pick(m)
-    lt = lam_total(m)
-    pf = float(p) if p else 0.0
-    q = pf * lambda_quality(lt, tuning)
+    pf = float(p or 0.0)
+    q = pf * lambda_quality(lam_total(m), tuning)
     if s == '1:1' and pf < 16.0:
         q *= tuning['pk_degen_down']
     return q
@@ -288,13 +299,72 @@ def bold_quality(m, tuning):
     return float(ps or 0.0) + float(px or 0.0)
 
 
+# ---------- 比分精选自带模型（输入 = 引擎 λ + 已发布 1X2，自己出分布与预测）----------
+def pk_grid(m):
+    """比分精选自带的比分概率网格（两侧独立泊松，只用引擎 λ）。"""
+    lh = float(m.get('lam_home', 0) or 0)
+    la = float(m.get('lam_away', 0) or 0)
+    return [[_pois(h, lh) * _pois(a, la) for a in range(PK_MAXG + 1)]
+            for h in range(PK_MAXG + 1)], lh, la
+
+
+def _quad_of(h, a):
+    return 'home' if h > a else ('draw' if h == a else 'away')
+
+
+def pk_dist(m, tuning=None):
+    """比分精选自己的比分分布（dict：'主:客' → 概率，只含列出比分，已归一化）。
+
+    自建管线：引擎 λ → 独立泊松网格 → 三象限缩放到引擎已发布 1X2（`pk_align_1x2`）。
+    引擎的比分矩阵（top_scores）**不参与**本分布。
+    """
+    t = tuning or DEFAULT_TUNING
+    d, _, _ = pk_grid(m)
+    dist = {}
+    for h in range(PK_MAXG + 1):
+        for a in range(PK_MAXG + 1):
+            s = f'{h}:{a}'
+            if s in LISTED_LABELS:
+                dist[s] = d[h][a]
+    if int(t.get('pk_align_1x2', 1) or 0):
+        pr = prob1x2(m)
+        for q in ('home', 'draw', 'away'):
+            tgt = float(pr.get(q, 0) or 0) / 100.0
+            mem = [s for s in dist if _quad_of(*(int(x) for x in s.split(':'))) == q]
+            cur = sum(dist[s] for s in mem)
+            if mem and cur > 1e-12 and tgt > 0:
+                k = tgt / cur
+                for s in mem:
+                    dist[s] *= k
+    tot = sum(dist.values())
+    if tot > 0:
+        for s in dist:
+            dist[s] /= tot
+    return dist
+
+
+def pk_ref(m, tuning=None, band_k=2):
+    """比分精选自己的预测：头条 = 本板块分布 argmax；双档 = 第 2/3 高。
+
+    返回 (头条比分, 头条概率%, [(双档比分, 概率%) ...])。
+    """
+    cells = sorted(pk_dist(m, tuning).items(), key=lambda x: -x[1])
+    if not cells:
+        return None, None, []
+    head, hp = cells[0]
+    band = [(s, round(p * 100, 1)) for s, p in cells[1:1 + band_k]]
+    return head, round(hp * 100, 1), band
+
+
 # ---------- 排序与分档 ----------
 def pk_tuple(m, tuning):
-    """比分精选排序键：(比分, 概率%, λ总量, 质量分)。"""
-    s, p = hit_pick(m)
-    lt = lam_total(m)
-    pf = float(p) if p else 0.0
-    return s, pf, lt, pk_quality(m, tuning)
+    """比分精选排序键：(本板块头条, 本板块概率%, λ总量, 选场质量分)。
+
+    排序看第 4 项（引擎正常口径把握度 = 「从今日计算结果里选」）；
+    前三项是展示用的本板块自算预测。报告侧按这四项直接渲染，无需再算一遍。
+    """
+    s, p, _ = pk_ref(m, tuning)
+    return s, float(p or 0.0), lam_total(m), pk_quality(m, tuning)
 
 
 def bd_tuple(m, tuning):
@@ -357,12 +427,12 @@ def split_boards(matches, tuning, pk_per=TIER_PK, bd_per=TIER_BD):
 
 
 # ---------- 命中判定（报告回顾与优化回放共用，避免两套口径）----------
-def pk_result(m, actual):
-    """比分精选命中判定：头条命中 → 'hit'；落在第2/3档 → 'band'；否则 'miss'。"""
-    s, _ = hit_pick(m)
+def pk_result(m, actual, tuning=None):
+    """比分精选命中判定：本板块头条命中 → 'hit'；本板块双档命中 → 'band'；否则 'miss'。"""
+    s, _, band = pk_ref(m, tuning or DEFAULT_TUNING)
     if actual == s:
         return 'hit'
-    if actual in [sc for sc, _ in band_scores(m, 2)]:
+    if actual in [sc for sc, _ in band]:
         return 'band'
     return 'miss'
 
