@@ -11,7 +11,7 @@
     0.68
   ],
   "pk_degen_down": 0.85,
-  "bd_lambda_min": 0.0,
+  "bd_lambda_min": 3.0,
   "_meta": {
     "tuned_at": "2026-09-17",
     "days_used": 12,
@@ -23,8 +23,8 @@
     },
     "bd": {
       "base_obj": 16.25,
-      "best_obj": 16.25,
-      "adopted": false
+      "tuned_obj": 28.75,
+      "adopted": true
     }
   }
 }

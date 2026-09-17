@@ -9,7 +9,7 @@
 
 两条独立赛道（互不以对方为输入）：
   · 比分精选 pk_quality  = 命中比分（联合众数）概率 × λ 质量系数，并对退化头条 1:1 降权。
-  · 大胆档   bold_quality = max(极限档概率, 量级档概率)，可选 λ 总量下限门槛。
+  · 大胆档   bold_quality = max(极限档概率, 量级档概率)，λ 总量达标的场次优先占位。
 
 档数：以 N_TIER_BASE 场为基准 1 档，每多 N_TIER_STEP 场加 1 档，封顶 TIER_MAX。
 
@@ -195,14 +195,10 @@ def pk_quality(m, tuning):
 
 
 def bold_quality(m, tuning):
-    """大胆档质量 = max(极限档概率, 量级档概率)；低于 λ 门槛的场次直接出局。"""
+    """大胆档质量 = max(极限档概率, 量级档概率)。"""
     _, ep, _ = expect_score(m)
     _, xp = extreme_pick(m)
-    lt = lam_total(m)
-    bp = max(xp or 0.0, ep or 0.0)
-    if tuning['bd_lambda_min'] and lt < tuning['bd_lambda_min']:
-        bp = -1.0
-    return bp
+    return max(xp or 0.0, ep or 0.0)
 
 
 # ---------- 排序与分档 ----------
@@ -215,8 +211,17 @@ def pk_tuple(m, tuning):
 
 
 def bd_tuple(m, tuning):
-    """大胆档排序键：(质量分, λ总量)。"""
-    return bold_quality(m, tuning), lam_total(m)
+    """大胆档排序键：(质量分, λ总量)。
+
+    `bd_lambda_min` 语义为「优先满足」而非「硬剔除」：未达 λ 门槛的场次整体降一档
+    （让位给真·进攻环境），但不足一档时仍能按质量补满——避免低进球日把档位掏空。
+    """
+    lt = lam_total(m)
+    q = bold_quality(m, tuning)
+    lm = float(tuning.get('bd_lambda_min') or 0.0)
+    if lm and lt < lm:
+        q -= 1000.0
+    return q, lt
 
 
 def num_tiers(n_total):
@@ -243,7 +248,7 @@ def rank_pk(matches, tuning, per_tier=TIER_PK):
 
 
 def rank_bold(matches, tuning, per_tier=TIER_BD):
-    """大胆档：排除冷启动 → 按质量降序 → 分档。返回 (tier_list, flat_list)。"""
+    """大胆档：排除冷启动 → 按质量降序（λ 达标优先）→ 分档。返回 (tier_list, flat_list)。"""
     allr = [(bd_tuple(m, tuning), m) for m in matches]
     noncold = sorted([x for x in allr if not is_cold(x[1])], key=lambda x: (-x[0][0], -x[0][1]))
     return build_tiers(noncold, per_tier)
