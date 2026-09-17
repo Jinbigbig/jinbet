@@ -558,7 +558,12 @@ def fit_platt_params(force=False):
                 try:
                     _pv = devig_1x2(float(_oh), float(_od), float(_oa))
                     _pm = pois_1x2(lh, la)
-                    _pb = [(1 - MARKET_W) * _pm[i] + MARKET_W * _pv[i] for i in range(3)]
+                    # 【2026-09-16 校准修复】拟合样本的混合权重必须与实跑 calc_match 一致：
+                    # 实跑走 league_market_w(league) 动态权重（夹紧 0.65~0.95），
+                    # 旧代码用固定 MARKET_W=0.80 → 偏离 0.80 的联赛（德乙/荷甲/韩职等）
+                    # 拟合分布与实跑脱节，Platt 校准错配。这里对齐。
+                    _w = league_market_w(lg)
+                    _pb = [(1 - _w) * _pm[i] + _w * _pv[i] for i in range(3)]
                     _st = sum(_pb)
                     _pb = [x / _st for x in _pb]
                     lh, la = prob_to_lambda(_pb, lh + la)
@@ -2464,6 +2469,11 @@ def dump_prediction_snapshot(out_matches, date=None):
             "rq_best_odds": ((m.get("rq") or {}).get("best") or {}).get("odds"),
             "upset_prob": (m.get("upset") or {}).get("prob"),
             "upset_level": (m.get("upset") or {}).get("level"),
+            # 冷启动标记必须落盘：报告回顾与选取回放都要靠它排除冷启动场次。
+            # 缺这两个字段时 is_cold() 会把冷启动当成正常场次（data_n 默认空），
+            # 导致回放/回顾的排序口径与生产分叉。
+            "cold": bool(m.get("cold")),
+            "data_n": m.get("data_n"),
             # CLV 追踪需要「推荐时」的赔率：必须落在快照里，
             # 否则 CLV_TRACK 只能拿收盘价跟自己比（恒等于 0）或直接失败。
             "odds": {k: (m.get("odds") or {}).get(k) for k in ("胜", "平", "负")},
