@@ -11,7 +11,11 @@
     0.68
   ],
   "pk_degen_down": 0.85,
-  "bd_lambda_min": 3.0,
+  "bd_total_shift": -1,
+  "bd_min_total": 2,
+  "bd_gap": 1,
+  "bd_exclusive": 1,
+  "bd_lean_src": "engine",
   "_meta": {
     "tuned_at": "2026-09-17",
     "days_used": 12,
@@ -22,9 +26,9 @@
       "adopted": false
     },
     "bd": {
-      "base_obj": 16.25,
-      "tuned_obj": 28.75,
-      "adopted": true
+      "base_obj": 35.83,
+      "holdout_base": 27.5,
+      "adopted": false
     }
   }
 }
