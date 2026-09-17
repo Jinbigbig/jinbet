@@ -49,12 +49,19 @@
 
 ## 比分精选 / 大胆档（2026-09-16 定调，09-17 修口径）
 - 常量（`selection_algo.py`）：`TIER_PK=6`/`TIER_BD=4`；档数=以 10 场为基准 1 档、每多 8 场加 1 档（`N_TIER_BASE=10`/`N_TIER_STEP=8`/`TIER_MAX=5`），按**非冷启动**场次数算。第一档准确率优先，冷启动场次一律排除。
-- 两档独立计算：比分精选质量=命中比分概率×λ质量系数+1:1 降权；大胆档质量=max(极限档概率, 量级档概率)，**λ 达标者优先占位**。
-- **`bd_lambda_min` 语义=「优先满足」非「硬剔除」**（09-17 改）：未达 λ 门槛者质量分 −1000 整体让位，不足一档时仍按质量补满，低进球日档位不塌缩。实测最优阈值 **3.0**（12 天回放目标 16.25→28.75，命中率 10.4%→14.6%，命中日 3/12→6/12；2.8~3.0 为平台，3.2 起回落）。
+- 两档独立计算：比分精选质量=命中比分概率×λ质量系数+1:1 降权；大胆档质量=量级档概率+极限档概率（由自带模型给出，见下条解耦说明）。
+- ~~`bd_lambda_min` 语义=「优先满足」非「硬剔除」，最优 3.0~~ **已废弃（09-17 解耦改造时移除）**：它是借用的比分精选 λ 口径，与「两档互不关联」冲突，由大胆档自带模型的 `bd_total_shift` 承担激进程度。
 - ❗**选取算法唯一实现 = `selection_algo.py`**；`_gen_report.py`（渲染）与 `_optimize_selection.py`（回放）一律 `import selection_algo as SA`，命中判定用 `SA.pk_result`/`SA.bd_result`。**回放选取也必须调 `SA.rank_pk`/`SA.rank_bold`**（09-17 前优化器自写排序、且不排冷启动 → 4/12 天选出的场次与生产不同，调参等于评估另一个算法）。
 - `bd_tuple` 必须保持 **2 元组**（质量分, λ总量）：`_gen_report.py` 用 `key=lambda x: (-x[0], -x[1])` 且 `_is_cold(x[2])` 解包，改成 3 元组会连环崩。
 - 每日优化护栏：改善≥0.3pp 才采纳、可用天数<5 保留默认（防小样本过拟合；连续保持默认属正常，勿放宽）。
 - ⚠️ `_gen_report.py`/`_optimize_selection.py` 只在工作盘（gh-pages 未跟踪、master `tools/prediction/` 里的 gen_report.py 是 09-05 旧版，勿混用）→ 改后只需重跑报告+推 gh-pages；但它们依赖的 `selection_algo.py` 必须入库（gh-pages 根 + master `tools/prediction/`）。
+- **两块板块彻底解耦（2026-09-17 定调，用户要求「两档单独计算、互不关联」）**：
+  - 唯一生产入口 = `SA.split_boards`：比分精选先占位 → 大胆档只在剩余场次中选取（**同一场次不上两榜**，低场次日 bold 腿数会 <TIER_BD，属正常）。
+  - **大胆档自带模型** `bd_ref`：`bd_grid`(引擎 λ 独立泊松) + `bd_lean`(倾向，默认取引擎 1X2) → 量级档 = 象限内总球数 `max(bd_min_total, round(λ总)+bd_total_shift)` 的最高概率格；极限档 = 再 +`bd_gap`。**不读引擎比分矩阵**。
+  - 参数：`pk_*`（比分精选）/ `bd_*`（大胆档）命名空间分离；`bd_lambda_min` 已退场（那是借用的比分精选口径）。生产值 `bd_total_shift=-1 / bd_min_total=2 / bd_gap=1 / bd_exclusive=1 / bd_lean_src='engine'`。
+  - ❗**结构参数必须用大样本定，小样本只微调**：12 天回放曾把 `shift=+1` 选成最优，178 天/2462 场证伪它最差（+1 → 19.5%，-1 → 31.5%，-9.6pp）。优化器网格已限定 `shift∈{-1,0}`。
+  - 大样本验证工具：`_bd_bigsample.py`（反解 λ 自 `_calib_backup_20260916/backtest_after.json`，2462 场）+ `_bd_indep_probe.py`（12 天回放对照）——均为工作盘探针，**被 gitignore，master 无正本**。
+  - 效果：12 天回放 bold 10.4% → 22.7%（其中互斥贡献 +8.1pp）；大样本 29.5% → 31.5%。
 - ❗**快照必须落盘 `cold`/`data_n`**（2026-09-17 修）：`dump_prediction_snapshot` 此前不写这两字段 → `SA.is_cold()` 对全部历史快照恒 False → 优化器回放与报告「前日回顾」都把冷启动当正常场次排（报告正文不受影响，它读 `_calc_result.json`）。**09-16 及更早的快照已无法回溯**（根目录 `_calc_result.json` 每日覆盖），老回放仍属「冷启动盲」口径。
 - ⚠️ master `tools/prediction/calc_engine.py` 是**另一份**（路径用 `_repo_root()`），曾滞后于工作盘 → 改引擎时要同步两处（worktree 里按同样文本打补丁，勿整体 cp）。2026-09-17 补同步了快照 cold 与动态市场权重两处。
 - ✔️ 报告侧 `_conf_rank`/`_bold_rank` 是 `SA.pk_tuple`/`SA.bd_tuple` 的薄封装，**没有第二份排序实现**（排除冷启动靠 `SA.is_cold`）。
