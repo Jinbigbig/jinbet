@@ -55,6 +55,9 @@
 - `bd_tuple` 必须保持 **2 元组**（质量分, λ总量）：`_gen_report.py` 用 `key=lambda x: (-x[0], -x[1])` 且 `_is_cold(x[2])` 解包，改成 3 元组会连环崩。
 - 每日优化护栏：改善≥0.3pp 才采纳、可用天数<5 保留默认（防小样本过拟合；连续保持默认属正常，勿放宽）。
 - ⚠️ `_gen_report.py`/`_optimize_selection.py` 只在工作盘（gh-pages 未跟踪、master `tools/prediction/` 里的 gen_report.py 是 09-05 旧版，勿混用）→ 改后只需重跑报告+推 gh-pages；但它们依赖的 `selection_algo.py` 必须入库（gh-pages 根 + master `tools/prediction/`）。
+- ❗**快照必须落盘 `cold`/`data_n`**（2026-09-17 修）：`dump_prediction_snapshot` 此前不写这两字段 → `SA.is_cold()` 对全部历史快照恒 False → 优化器回放与报告「前日回顾」都把冷启动当正常场次排（报告正文不受影响，它读 `_calc_result.json`）。**09-16 及更早的快照已无法回溯**（根目录 `_calc_result.json` 每日覆盖），老回放仍属「冷启动盲」口径。
+- ⚠️ master `tools/prediction/calc_engine.py` 是**另一份**（路径用 `_repo_root()`），曾滞后于工作盘 → 改引擎时要同步两处（worktree 里按同样文本打补丁，勿整体 cp）。2026-09-17 补同步了快照 cold 与动态市场权重两处。
+- ✔️ 报告侧 `_conf_rank`/`_bold_rank` 是 `SA.pk_tuple`/`SA.bd_tuple` 的薄封装，**没有第二份排序实现**（排除冷启动靠 `SA.is_cold`）。
 - ⚠️ 报告「前日回顾」是用**当前**调参重算的（`_bold_rank` 读今日 `_TUNING`），不是当日实际发布口径 → 命中数会随调参变化（09-17 改后 09-16 大胆档显示 1/4，而当日实发为 0/4）。读回顾数字时须知此口径。
 
 ## 报告呈现纪律（红线）
