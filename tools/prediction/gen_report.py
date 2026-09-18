@@ -405,7 +405,7 @@ def score_cred(m):
     λ>2.6 之后单点稳定在 11~13%，且不再随 λ 单调下降 → 分档语义是「这段比分能不能照抄」，
     而不是命中率阶梯。高总进球场次请以方向与总量为主。
     （旧「λ≤2.3 单点 27.3%」为 1591 场小样本口径，已被 4036 场取代。）
-    返回 (标签, class)。
+    返回 (标签, class)。标签词表与方向/让球可信度统一：可用 / 慎用 / 别跟。
     """
     # 冷启动场次（任一侧无近期战绩）：λ 只能由「联赛基线 + 赔率反推」得到，
     # 与有战绩场次不可比，其单格概率常因 λ 悬殊而虚高 → 不作为「可照抄」看待。
@@ -415,10 +415,10 @@ def score_cred(m):
         return '数据不足', 'tag-red'
     lt = m['lam_home'] + m['lam_away']
     if lt <= 2.6:
-        return '可信', 'tag-green'
+        return '可用', 'tag-green'
     if lt <= 3.5:
-        return '一般', 'tag-yellow'
-    return '不可信', 'tag-red'
+        return '慎用', 'tag-yellow'
+    return '别跟', 'tag-red'
 
 
 def dir_cred(m):
@@ -442,8 +442,25 @@ def dir_cred(m):
     return '别跟', 'tag-red'
 
 
+def rq_grade(ev, conf):
+    """让球可信度分档（4.1 表与逐场卡片共用同一套词表）。
+
+    EV≥1.10 且置信度≥中 → 可用；EV≥1.00 → 慎用；其余 → 别跟。
+    返回 (标签, class)。
+    """
+    if float(ev) >= 1.10 and str(conf) != '低':
+        return '可用', 'tag-green'
+    if float(ev) >= 1.00:
+        return '慎用', 'tag-yellow'
+    return '别跟', 'tag-red'
+
+
 def rq_cells(m):
-    """4.1 表的「让球盘口 + 让球判读」两格（数据来自引擎 A 的让球盘偏差结论）。"""
+    """4.1 表的「让球盘口 + 让球可信度」两格（数据来自引擎 A 的让球盘偏差结论）。
+
+    第二格给的是**可信度**（与「方向可信度」同一套词表）：这个让球盘能不能跟。
+    价值方向与 EV 以小字附在标签后，便于回查依据。
+    """
     rq = m.get('rq')
     if not rq:
         return ('<td style="text-align:center;color:var(--muted);">—</td>',
@@ -452,29 +469,27 @@ def rq_cells(m):
     show = ('受让 ' + lo[1:]) if lo.startswith('+') else (('让 ' + lo[1:]) if lo.startswith('-') else '平手')
     b = rq['best']
     ev, conf = float(b['ev']), str(rq['conf'])
-    if ev >= 1.10 and conf != '低':
-        cls, txt = 'tag-red', '有偏离'
-    elif ev >= 1.00:
-        cls, tag2 = 'tag-yellow', '临界'
-        txt = tag2
-    else:
-        cls, txt = 'tag-blue', '无价值'
+    txt, cls = rq_grade(ev, conf)
     return (f'<td style="text-align:center;white-space:nowrap;">{esc(show)}'
             f'<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（{esc(lo)}）</span></td>',
-            f'<td style="white-space:nowrap;"><span class="tag {cls}">{esc(b["pick"])}</span>'
-            f' <span style="font-family:monospace;">EV {ev:.2f}</span>'
-            f' <span style="color:var(--muted);font-size:0.76rem;">{txt}·置信{esc(conf)}</span></td>')
+            f'<td style="white-space:nowrap;"><span class="tag {cls}">{txt}</span>'
+            f' <span style="color:var(--muted);font-size:0.76rem;">'
+            f'{esc(b["pick"])} · EV {ev:.2f} · 置信{esc(conf)}</span></td>')
 
 
 def lam_cred(lt):
-    """比分区可信度 = 按该场 λ 总量分档（与逐场卡片同一口径）。"""
+    """比分区可信度 = 按该场 λ 总量分档（与逐场卡片同一口径）。
+
+    词表与「方向可信度 / 让球可信度」统一为可用 / 慎用 / 别跟，
+    语义 = 这段比分能不能照抄单点。
+    """
     if lt is None:
         return '数据不足', 'tag-red'
     if lt <= 2.6:
-        return '可信', 'tag-green'
+        return '可用', 'tag-green'
     if lt <= 3.5:
-        return '一般', 'tag-yellow'
-    return '不可信', 'tag-red'
+        return '慎用', 'tag-yellow'
+    return '别跟', 'tag-red'
 
 
 
@@ -521,7 +536,7 @@ def rq_block(m):
     <b>价值建议：</b><span class="tag {'tag-red' if b['ev'] >= 1.10 and rq['conf'] != '低' else ('tag-yellow' if b['ev'] >= 1.00 else 'tag-blue')}">{esc(b['pick'])} @{esc(b['odds'])}</span>
     EV <strong style="color:{ev_cls};">{b['ev']:.2f}</strong>（校准概率 {b['prob']:.1f}%），
     模型−市场分歧 {rq['calibrated'][b['key']]-rq['market'][b['key']]:+.1f}pp。
-    <span style="color:var(--muted);">EV≥1.10 且置信度≥中才算「有偏离」；本场 {'达标' if b['ev'] >= 1.10 and rq['conf'] != '低' else '不达标（仅观察）'}。</span>{warn_html}
+    <span style="color:var(--muted);">让球可信度分档：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>；本场 <span class="tag {rq_grade(b['ev'], rq['conf'])[1]}">{rq_grade(b['ev'], rq['conf'])[0]}</span>。</span>{warn_html}
   </p>
 '''
 
@@ -672,7 +687,7 @@ def market_dev_section(matches):
         '4.4 让球盘市场偏差清单',
         '模型在 <b>1X2 概率值</b>上没有优势（市场已充分定价，还要付抽水），'
         '但在 <b>让球盘「过滤」</b>上可以挑出价值：月度时间外「每场只买 EV 最高的一注」197 注 ROI <b>+16.86%</b>。'
-        '⚠️ <b>EV&gt;1.10 才算有偏离</b>；|让球|=1 置信高、=2 中、≥3 低（样本不足，不建议跟）。'
+        '⚠️ <b>EV≥1.10 且置信度≥中才算可用</b>（EV≥1.00 慎用，其余别跟）；|让球|=1 置信高、=2 中、≥3 低（样本不足，不建议跟）。'
         '该玩法月度 ROI 波动大（+81%/+53%/−27%/−14%），只用小注。<b>不要用它替换 1X2 判断</b>。',
         '<th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>价值方向</th><th>赔率</th>'
         '<th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>冷门风险</th>',
@@ -970,7 +985,7 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">{dash(hscore)}</span>
-      <span class="pred-value">（{olabel}倾向｜<b>双方进球联合分布的最可能比分</b>{hprob_str}）</span>
+      <span class="pred-value">（{olabel}倾向｜<b>双方进球联合分布的可能比分1</b>{hprob_str}）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -1054,20 +1069,28 @@ for m in MATCHES:
               f'<td><span class="tag {_cred_c}">{_cred_t}</span></td>'
               f'{_hc}{_hj}'
               f'<td style="text-align:center;white-space:nowrap;">{_cold_cell}</td></tr>')
-    # 4.2 比分预测（引擎 B：双方进球联合分布 —— 主/客各进几球 + 联合最可能比分）
+    # 4.2 比分预测（引擎 B：双方进球联合分布 —— 主/客各进几球 + 前两个可能比分）
     sp = score_pred(m)
     if sp and sp.get('top_scores'):
-        _t0 = sp['top_scores'][0]
+        _ts2 = sp['top_scores']
         _lt = sp['lam_h'] + sp['lam_a']
         _bct, _bcc = lam_cred(_lt)
+        _prob1 = (f' <span style="color:var(--muted);font-size:0.76rem;">{_ts2[0]["prob"]:.1f}%</span>')
+        _c1 = (f'<td style="font-family:monospace;white-space:nowrap;">'
+               f'<b style="color:var(--accent);">{esc(_ts2[0]["score"])}</b>{_prob1}</td>')
+        if len(_ts2) > 1:
+            _c2 = (f'<td style="font-family:monospace;white-space:nowrap;">'
+                   f'<b>{esc(_ts2[1]["score"])}</b>'
+                   f' <span style="color:var(--muted);font-size:0.76rem;">{_ts2[1]["prob"]:.1f}%</span></td>')
+        else:
+            _c2 = '<td style="text-align:center;color:var(--muted);">—</td>'
+        _mode_h = (f'<td style="text-align:center;white-space:nowrap;"><b>{sp["home_mode"]}</b> 球'
+                   f' <span style="color:var(--muted);font-size:0.76rem;">{sp["home_mode_p"]:.0f}%</span></td>')
+        _mode_a = (f'<td style="text-align:center;white-space:nowrap;"><b>{sp["away_mode"]}</b> 球'
+                   f' <span style="color:var(--muted);font-size:0.76rem;">{sp["away_mode_p"]:.0f}%</span></td>')
         rowsC += (f'<tr>{num_cell}{pair}'
                   f'<td style="font-family:monospace;white-space:nowrap;">{sp["lam_h"]:.2f} / {sp["lam_a"]:.2f}</td>'
-                  f'<td style="text-align:center;white-space:nowrap;"><b>{sp["home_mode"]}</b> 球'
-                  f' <span style="color:var(--muted);font-size:0.76rem;">{sp["home_mode_p"]:.0f}%</span></td>'
-                  f'<td style="text-align:center;white-space:nowrap;"><b>{sp["away_mode"]}</b> 球'
-                  f' <span style="color:var(--muted);font-size:0.76rem;">{sp["away_mode_p"]:.0f}%</span></td>'
-                  f'<td style="font-family:monospace;font-weight:700;color:var(--accent);white-space:nowrap;">{esc(_t0["score"])}</td>'
-                  f'<td>{_t0["prob"]:.1f}%</td>'
+                  f'{_mode_h}{_mode_a}{_c1}{_c2}'
                   f'<td>{sp["cover1"]:.0f}%</td>'
                   f'<td>{sp["top3"]:.0f}%</td>'
                   f'<td><span class="tag {_bcc}">{_bct}</span></td></tr>')
@@ -1089,13 +1112,13 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
-<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与联合最可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。
+<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
 只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
-{_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球判读</b> = 按赔率与模型的偏离给出的价值方向，<b>EV≥1.10 且置信度≥中才算有偏离</b>。',
-'<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>让球盘</th><th>让球判读</th><th>冷门</th>', rowsA)}
-{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>最可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>最可能比分</b> = 联合分布里概率最高的那一格。单点长期约 <b>15%</b>，<b>±1球覆盖</b>（实际比分落在头条上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
-'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>最可能进球(主)</th><th>最可能进球(客)</th><th>最可能比分</th><th>概率</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC) if rowsC else ''}
+{_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>（小字为该价值方向、EV 与置信度）。',
+'<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
+{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>可能比分1 / 可能比分2</b> = 联合分布里概率最高与前两位的比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
+'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>可能比分1</th><th>可能比分2</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC) if rowsC else ''}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
