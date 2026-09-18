@@ -34,6 +34,10 @@ with open(HTML, "r", encoding="utf-8") as f:
     html = f.read()
 
 # 提取当日比赛
+# 注意：SCHEDULE 偶发同一 matchNumStr 出现两行（官方简称 + 长名/旧ID 的别名行），
+#      别名行的赔率与战绩全空。若不去重，下游按「后写胜」保留别名行 →
+#      该场丢掉让球盘/比分盘/球队战绩（曾致 4 场报告显示「无让球盘」）。
+_sched = {}
 matches = []
 sm = re.search(r"const SCHEDULE\s*=\s*\{([\s\S]*?)\};", html)
 if sm:
@@ -47,14 +51,23 @@ if sm:
                 return m.group(1) if m else ""
             home, away = g("home"), g("away")
             if home and away:
-                matches.append({
+                rec = {
                     "matchNumStr": g("matchNumStr"),
                     "home": home,
                     "away": away,
                     "league": g("league"),
                     "matchId": g("matchId"),
                     "odds": {},
-                })
+                }
+                key = rec["matchNumStr"] or f"{home}_{away}"
+                prev = _sched.get(key)
+                # 取舍：带官方 matchId 的一行为准；都带或都不带时保留先出现的
+                if prev is None or (not prev.get("matchId") and rec["matchId"]):
+                    if prev is not None:
+                        print(f"  [去重] {key} {home} vs {away} 覆盖别名行 "
+                              f"{prev['home']} vs {prev['away']}")
+                    _sched[key] = rec
+matches = list(_sched.values())
 print(f"从 SCHEDULE 提取到 {len(matches)} 场 {TODAY} 的比赛")
 
 # 提取 ODDS
@@ -79,10 +92,44 @@ if o >= 0:
             break
         except json.JSONDecodeError:
             continue
-    for m in matches:
-        key = f"{TODAY}_{m['home']}_{m['away']}"
+    def _squash(s):
+        """队名粗归一：去空格/数字/常见后缀，便于容错匹配（不改变落库名称）。"""
+        s = re.sub(r"[\s\d\u3000]", "", str(s or ""))
+        for suf in ("足球俱乐部", "足球", "俱乐部", "亚足", "足"):
+            if s.endswith(suf) and len(s) > len(suf):
+                s = s[: -len(suf)]
+        return s
+
+    def _find_odds(home, away):
+        """精确键优先；未命中则同日按队名容错匹配（防同义写法静默丢盘口）。"""
+        key = f"{TODAY}_{home}_{away}"
         if key in odds_obj:
-            m["odds"] = odds_obj[key]
+            return odds_obj[key], key
+        sh, sa = _squash(home), _squash(away)
+        for k, v in odds_obj.items():
+            if not k.startswith(TODAY + "_"):
+                continue
+            parts = k[len(TODAY) + 1:].split("_")
+            if len(parts) < 2:
+                continue
+            kh, ka = _squash(parts[0]), _squash("_".join(parts[1:]))
+            if (kh == sh and ka == sa) or (len(sh) >= 3 and len(sa) >= 3
+                                           and (sh in kh or kh in sh) and (sa in ka or ka in sa)):
+                return v, k
+        return None, None
+
+    _miss = []
+    for m in matches:
+        v, k = _find_odds(m["home"], m["away"])
+        if v is not None:
+            m["odds"] = v
+            if k != f"{TODAY}_{m['home']}_{m['away']}":
+                print(f"  [盘口容错] {m['matchNumStr']} {m['home']} vs {m['away']} "
+                      f"→ 命中键 {k}")
+        else:
+            _miss.append(f"{m['matchNumStr']} {m['home']} vs {m['away']}")
+    if _miss:
+        print(f"  [注意] {len(_miss)} 场未在 ODDS 找到键：{'；'.join(_miss)}")
 
 # 用 odds_data.json 补全
 try:
