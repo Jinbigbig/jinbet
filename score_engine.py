@@ -62,6 +62,7 @@ DEFAULT = {
     "max_goal": 8,         # 联合矩阵最大格（0..8）
     "mc_n": 20000,         # 蒙特卡洛抽样场数
     "league_eb_k": 40.0,   # 联赛基准向全局收缩的等效场数
+    "prob_temp": 1.20,     # 申明概率的温度校准指数（混合分布系统性低估，见 predict）
 }
 
 LISTED = ["%d:%d" % (h, a) for h in range(6) for a in range(6)]
@@ -508,6 +509,16 @@ class Engine:
         P = {("%d:%d" % (h, a)): m[h][a] for h in range(n) for a in range(n)}
         pm = market_dist(sd)
         dist = self.blend_market(P, pm)
+        # 申明概率的温度校准。混合分布的申明值系统性低于实际频率：
+        # 1248 场样本外，±1 球申明 62.9% 而实际 68.9%、Top3 申明 31.7% 而实际 38.0%、
+        # 头条比分申明 11.8% 而实际 16.4%。按 p^T 重归一（T=1.2：±1 球 68.8%、Top3 36.1%，
+        # 与实际基本吻合；前半段拟合、后半段验证 LogLoss −0.49%）。
+        # 该变换单调 → 不改变任何选取（头条/Top3/±1 的格集合完全不变），只让申明概率说实话。
+        _T = float(self.p.get("prob_temp", 1.0) or 1.0)
+        if _T != 1.0:
+            _s = sum(max(0.0, v) ** _T for v in dist.values())
+            if _s > 0:
+                dist = {k: max(0.0, v) ** _T / _s for k, v in dist.items()}
         cells = sorted(dist.items(), key=lambda x: -x[1])
         top = [{"score": s, "prob": round(p * 100, 1)} for s, p in cells[:6] if p > 0]
 
