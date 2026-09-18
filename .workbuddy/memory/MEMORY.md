@@ -16,7 +16,12 @@
 - bash PATH 偶坏 → `export PATH=/c/Users/Jin/.workbuddy/binaries/PortableGit/versions/1.2.0/usr/bin:$PATH`；临时文件写仓库内（/c/tmp 不持久）。
 
 ## 队名归一
-- canonical=短名；SCHEDULE 双行=RESULT_TEAM_NAME_MAP 缺映射，先查表别手工删。当日盘口只认 index.html `YYYY-MM-DD_主_客` 键。编号不符先怀疑竞彩重编号（已修），别改映射表。
+- canonical=短名（**results_history / ODDS 键 / SCHEDULE 三处统一用官方简称**：沃夫斯堡、布城、奥斯KFUM、卡塔尔23、达姆施塔。长名如 沃尔夫斯堡/布里斯托尔城/奥斯陆KFUM/卡塔尔亚足 一律视为别名）。
+- ❗**同编号多行（别名行）是本项目最贵的坑**：SCHEDULE 同时出现「简称行（带赔率/让球/比分盘/matchId 5498xxx）」与「长名行（2041xxx 旧ID，赔率与战绩全空）」，下游 `{m["matchNumStr"]: m}` 按「后写胜」保留空行 → 该场**同时丢掉让球盘、比分盘、球队评级历史**。症状：报告 4.1 显示「无让球盘」、比分引擎 λ 退化到 1:1。
+  - **排查**：`matches_data.json` 行数 > 实际场次（如 18 vs 14）；`_calc_result.json` 中该场 `rq` 为空。
+  - **防护（09-18 已加，勿删）**：① `update_odds_net.RESULT_TEAM_NAME_MAP` 补别名映射（源头消除）；② `calc_engine._odds_richness` 按赔率完整度择行（1X2>让球>比分盘>战绩）；③ `_local_prepare.py` SCHEDULE 去重 + ODDS 键容错匹配（工作盘脚本，无仓库正本）。
+  - **修完必重跑步骤 1→4**（不是重跑报告就够：让球来自引擎 A、比分盘与评级来自引擎 B 的输入）。
+- SCHEDULE 双行根因=`RESULT_TEAM_NAME_MAP` 缺映射或 identity 映射→先查映射表别手工删。当日盘口只认 index.html `YYYY-MM-DD_主_客` 键。编号不符先怀疑竞彩重编号（已修），别改映射表。
 
 ## 引擎 V3.4（勿回退）
 - λ=期望值；联赛进球环境 w=0.25；score_mix.w=0.3；EWMA(0.25)+MAD；基础λ窗口 N=25/DECAY=0.96；市场权重=`league_market_w(league)` 动态（50%→0.80，±2pp→±0.05，夹 0.65~0.95）。**改市场混合必重拟合 platt_params.json**（已入库）。
@@ -56,6 +61,7 @@
 - 引擎 B 实现：**双变量泊松**（Karlis–Ntzoufras 共同分量 λ3：X=Y1+Y3, Y=Y2+Y3）+ 主客分拆攻防评级（指数衰减 半衰期120天、向 1.0 收缩 k=4、Gauss-Seidel 对手强度）+ λ 由市场 1X2 去水一维反解分配 + 竞彩比分盘去水分布按 70% 融合 + 蒙特卡洛 2 万次校验解析网格。
 - 引擎 B `DEFAULT`：`half_life=120, k_shrink=4, opp_adj=1, score_w=0.50, lam3=0.08, tau 全关, market_mix=0.70, max_goal=8, mc_n=20000, league_eb_k=40`。**`market_dist()` 只取 LISTED（0:0~5:5），必须排除「胜其他/平其他/负其他」**（否则 `int()` 抛错且与网格重复计数，尾部交给模型补）。`bd_tuple`/`top_scores` 口径不变。
 - 引擎 B 实测（2478 场 walk-forward）：Top1 **13.88%** / Top3 34.26% / ±1球 66.18% / 1X2 51.61%，**未超基线**（基线经 1X2 校准被结构抬升），但完全独立符合"重做一套"要求；lam3/tau 扫描均在噪声内 → 取小值/关闭，勿再调。
+- ✅ 09-18 配置复核（1248 场含比分盘）：**当前配置已是最优**——生产（引擎 λ + 70% 市场融合）Top1 **16.43%** / Top3 37.98% / ±1球 68.91%，优于「改用市场隐含 λ」(14.90%) 与「市场权重 100%」(14.90%)。λ 总量无系统性偏差（引擎λ总/市场隐含λ总 中位 **0.981**、均值 0.964、P10 0.649/P90 1.247）。→ 再调 score_w/market_mix 是过拟合。
 - 落盘：gh-pages `66ed89f`(score_engine.py) → `e51ac27`(报告 4.1 拆分) → `562624d`(赛果库对锚)；master `ed5735f` = `tools/prediction/score_engine.py` 正本。离线资产（未跟踪）：`_fit_score_engine.py`（2478 场参数扫描）、`_bt_rows2.json`。
 - 用户偏好：**不要反复提示"比分准确率天花板"** —— 已知悉，按要求做并尽力提升即可。
 
