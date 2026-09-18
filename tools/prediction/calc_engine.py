@@ -3047,6 +3047,21 @@ def calc_match(m, calib, ctx=None):
     }
 
 
+def _odds_richness(m):
+    """同编号多行时的取舍判据：赔率/让球/比分盘/近期战绩越全越优先。
+
+    上游 SCHEDULE 偶发同场出现「官方简称」与「长名/旧ID」两行（队名别名未归一），
+    后者赔率与战绩全空。比较元组按重要性从高到低：1X2 > 让球盘 > 比分盘 > 战绩条数。
+    """
+    od = m.get("odds") or {}
+    if not isinstance(od, dict):
+        od = {}
+    return (1 if od.get("胜") else 0,
+            len(od.get("让球") or []),
+            len(od.get("比分") or {}) if isinstance(od.get("比分"), dict) else 0,
+            len(m.get("home_recent") or []) + len(m.get("away_recent") or []))
+
+
 def main():
     # 加载联赛进球环境画像（先验收缩 + H2H 阈值归一 + 赔率反推锚点）
     load_league_profile()
@@ -3079,7 +3094,22 @@ def main():
           f"(向联赛基线收缩，非相乘——相乘会重复修正，实测恶化)")
 
     md = json.load(open(os.path.join(_repo_root(), "scripts", "matches_data.json"), encoding="utf-8"))
-    matches = {m["matchNumStr"]: m for m in md["matches"]}
+    # 同一 matchNumStr 出现多行时（上游 SCHEDULE 队名别名导致），必须保留「数据完整」
+    # 的那一行。曾因简单 dict 覆盖（后写胜）而让 4 场丢掉让球盘/比分盘/球队战绩——
+    # 表现为报告 4.1 显示「无让球盘」、比分引擎无评级历史。判据见 _odds_richness。
+    matches = {}
+    _dup = 0
+    for m in md["matches"]:
+        num = m.get("matchNumStr")
+        prev = matches.get(num)
+        if prev is None:
+            matches[num] = m
+            continue
+        _dup += 1
+        if _odds_richness(m) > _odds_richness(prev):
+            matches[num] = m
+    if _dup:
+        print(f"\n[场次去重] 同编号多行 {_dup} 处 → 已各保留数据最完整的一行")
 
     extra = {}
     for i in range(1, 7):
