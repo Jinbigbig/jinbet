@@ -12,6 +12,7 @@
 ## 分支与推送
 - origin=SSH 免交互；禁 GITHUB_TOKEN/HTTP 代理。**只信 `git ls-remote`**（remote-tracking ref 被并发覆写）。判推送只看 ls-remote。
 - ❗rebase 必须 `--no-fork-point <ls-remote 真实SHA>`（reflog 基点可能陈旧）。推 `git push origin HEAD:refs/heads/gh-pages`，禁 force。被拒→fetch 真实 SHA + `rebase -X theirs`（数据文件冲突自动留本地新数据）；撞死→`reset --hard <云端SHA>` 重跑全链单提交推。
+- ❗rebase 报 `untracked working tree files would be overwritten by checkout`（典型：外部 data 提交把 `odds_history/*.json`/`results_history/*.json` 纳入跟踪，而本地是 untracked）→ **别 rebase/abort 兜圈子**：abort 的 `reset --hard` 会把这些 untracked 文件直接删掉、并让 `.workbuddy/memory/2026-09-*.md` 显示为已删除。正确动作：`cp 目标文件 → git reset --hard <ls-remote 真实SHA> → cp 回去 → 单提交 → push`，事后 `git checkout -- .` 恢复被删的 tracked 日志。
 - bash PATH 偶坏 → `export PATH=/c/Users/Jin/.workbuddy/binaries/PortableGit/versions/1.2.0/usr/bin:$PATH`；临时文件写仓库内（/c/tmp 不持久）。
 
 ## 队名归一
