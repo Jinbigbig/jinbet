@@ -1,5 +1,12 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-09-18（晚3：工作盘脚本/资产全量纳管到 master，非流水线）
+**触发**：用户「`_local_prepare.py` 需要纳管，另外其他的文件也要放到云上」。
+**做法（可复用）**：逐文件比对不能只按文件名 —— master 副本做过**仓库根自适应**（`BASE=dirname(__file__)` → `_repo_root()` 向上找 `results_history/`）。先「去自适应」再 diff，才能区分「真旧」与「仅路径改造」。本次 46 个完全一致、6 个仅路径差异（master 更健壮，不动）、仅 2 个真需同步。
+**动作**：master `tools/prediction/` 补 47 个脚本（去 `_` 前缀）→ 该目录现 101 个 .py；`gen_report.py` 覆盖为今日三引擎版；`local_prepare.py` 用逆变换重建（保留 `_repo_root()` + 今日去重/容错）；补 `bt_rows2.json`/`dir_rows.json`/`official_results_cache.json`/`league_data.json`；刷 master 根 `platt_params.json`(→09-18/n=2020) 与 `league_profile.json`；`tools/archive/workbench_20260918.tar.gz` 收工作盘其余产物（4.49MB/215 文件）。101 个脚本 py_compile 全通过。
+**落盘**：master `2b7ecc5` → `c2ccdec`（ls-remote 核验）。
+**下次要点**：① 新增脚本一律「工作盘 `_foo.py` ↔ master `tools/prediction/foo.py`」两处同步，**带 `_` 前缀会被 master `.gitignore` 任意层级忽略**；② 同步时须把文件内 `_xxx.py` 引用与 `import _xxx` 一起去下划线；③ master 副本的 `_repo_root()` 改造**别用本地文件直接覆盖**；④ 重拟合 `platt_params.json`/`league_profile.json` 后要刷 master 根的快照。
+
 ## 2026-09-18（晚2：修复上游别名行——4 场丢让球盘/比分盘）
 **触发**：用户反馈「003/004/012 明明有让球盘却说没有；引擎B的比分还是原来的」。
 **根因**：`scripts/matches_data.json` 18 行而真实 14 场 —— SCHEDULE 同场生成「官方简称行（带赔率/让球/比分盘/matchId 5498xxx）」+「长名行（2041xxx，赔率与战绩全空）」两行，`_calc_engine.py` 用 dict 覆盖后写胜 → 保留空行 → 该场同时丢让球盘（4.1 显示「无让球盘」）+ 比分盘 + 球队评级历史（引擎 B 退化成 1:1）。核对 results_history：沃夫斯堡 20 场 / 布城 6 / 奥斯KFUM 11 → **官方简称才是 canonical，长名是污染**。
@@ -75,5 +82,6 @@
 
 **待办/注意**
 - `_gen_report.py`、`_optimize_selection.py` 为 `_` 前缀被 gitignore 忽略，只在工作盘；master 当前**无** `tools/prediction/` 目录 → 改这两个脚本只需重跑报告 + 推 gh-pages。
+  - ⚠️ 已过时（2026-09-18 起）：master `tools/prediction/` 已是全部脚本正本（`gen_report.py`/`optimize_selection.py` 等，去 `_` 前缀）。改脚本必须两处同步。
 - 每日跑完 `gen_review.py` 后记得执行 `_optimize_selection.py`，否则选取参数不会随复盘进化。
 - 若用户觉得「比赛很多」的门槛 20 场偏高/偏低，调 `N_TIER2` 即可；要第三档则同时提 `TIER_MAX`。
