@@ -104,3 +104,15 @@
   - ⚠️ 已过时（2026-09-18 起）：master `tools/prediction/` 已是全部脚本正本（`gen_report.py`/`optimize_selection.py` 等，去 `_` 前缀）。改脚本必须两处同步。
 - 每日跑完 `gen_review.py` 后记得执行 `_optimize_selection.py`，否则选取参数不会随复盘进化。
 - 若用户觉得「比赛很多」的门槛 20 场偏高/偏低，调 `N_TIER2` 即可；要第三档则同时提 `TIER_MAX`。
+
+## 2026-09-19（14:00 常规流水线）
+**结果**：全链跑通，30 场（赔率 30/30）。gh-pages `8e17078 → 13d93da → 9e3d1ca`（ls-remote 核验），线上报告/复盘/selection_tuning 均 200，红线 grep 为空。
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/244）；无陈旧 batch 文件；matches_data 无别名行（防护正常）。
+- 复盘 09-18：方向 7/14=50%、单点 14%、双档 29%、λ偏差 -0.09（阈值内）。
+- 4.6：比分精选保持默认；**大胆档采纳 bd_min_total 2→3**（30.71→32.50），重跑报告+提交。
+- DRIFT 连续第 2 日 league_baselines 漂移（德乙/韩职/荷甲）→ 回复中提示离线重拟合。
+
+**❗新踩坑（下次照做）**
+- `git rebase --no-fork-point <SHA> origin/gh-pages` 带第二参数会把 HEAD detached 到 origin 做空操作、本地提交不动 → **rebase 时不带第二个参数**，在 gh-pages 上 `git rebase --no-fork-point <SHA>`。
+- 本地曾出现外部作业（Trae Bot 13:52）的未推送提交 a0bbeab（同日早版报告+odds），与远端分叉致 rebase 冲突 → 处置=`reset --hard <云端SHA>` + `git checkout <本地好提交> -- .` + 单提交推。**但严禁 `git add -A`**——本次把 2147 个 `_` 临时文件/备份/pycache 误入裤，靠二次 `git rm -r --cached`（保留 predictions/2026-09-19、odds_history、results_history 五项）清理（9e3d1ca）。提交永远 `git add -u` + 显式 add。
+- MEMORY.md 已精简至约 3000 字符（此前超限被截断）。
