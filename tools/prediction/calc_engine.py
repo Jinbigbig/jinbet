@@ -34,14 +34,17 @@ except Exception:                       # 缺失时保持原概率排序，不�
     _SEB_HEAD = None
 
 
-def _headline_rank(top, dir_key=None):
-    """对概率排序的比分列表套用统一头条口径（委托引擎 B，避免第二份实现）。"""
-    if _SEB_HEAD is None or not top:
-        return top
+def _headline_pick(top, dir_key=None):
+    """在概率降序的比分列表上取首选（委托引擎 B 的唯一实现，避免第二份口径）。"""
+    if not top:
+        return None, None
+    if _SEB_HEAD is None:
+        return top[0].get("score"), top[0].get("prob")
     try:
-        return _SEB_HEAD.headline_reorder(top, float(_SEB_HEAD.DEFAULT.get("head_gap", 5.0)), dir_key)
+        r = _SEB_HEAD.headline_reorder(top, float(_SEB_HEAD.DEFAULT.get("head_gap", 5.0)), dir_key)
+        return r[0].get("score"), r[0].get("prob")
     except Exception:
-        return top
+        return top[0].get("score"), top[0].get("prob")
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 # 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
@@ -2476,6 +2479,9 @@ def dump_prediction_snapshot(out_matches, date=None):
             "prob_draw": (m.get("prob") or {}).get("draw"),
             "prob_away": (m.get("prob") or {}).get("away"),
             "top_scores": m.get("top_scores"),
+            # headline = 倾向象限内优选（押注口径，报告 4.2「比分预测」与命中判定用它）；
+            # top_score/top_prob 仍是**概率最高**格（口径事实，勿混用）。
+            "headline": m.get("headline"),
             "quad_top": m.get("quad_top"),
             # V3.3 二级盘（供后续结算/CLV 追踪）
             "rq_handicap": (m.get("rq") or {}).get("handicap"),
@@ -3024,6 +3030,9 @@ def calc_match(m, calib, ctx=None):
     if upset_out:
         chain += f" → 冷门风险{upset_out['prob']:.0f}%({upset_out['level']})"
 
+    _ts_cells = [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)} for (k1, k2), p in ranked]
+    _dk = "home" if (p_home >= p_draw and p_home >= p_away) else ("draw" if p_draw >= p_away else "away")
+    _hs, _hp = _headline_pick(_ts_cells, _dk)
     return {
         "matchNumStr": m["matchNumStr"], "league": league,
         "home": home, "away": away,
@@ -3037,9 +3046,9 @@ def calc_match(m, calib, ctx=None):
         "kalman_mods": [round(_kmod[0], 4), round(_kmod[1], 4)],
         "market_w_used": round(_mw, 4),
         "chain": chain,
-        "top_scores": _headline_rank(
-            [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)} for (k1, k2), p in ranked],
-            "home" if (p_home >= p_draw and p_home >= p_away) else ("draw" if p_draw >= p_away else "away")),
+        # top_scores = 联合分布纯概率降序（口径事实）；headline = 倾向象限内优选（押注口径）
+        "top_scores": _ts_cells,
+        "headline": {"score": _hs, "prob": _hp},
         "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
                  "away": round(p_away * 100, 1)},
         "quad_top": quad_top,

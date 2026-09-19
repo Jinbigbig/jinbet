@@ -521,18 +521,10 @@ class Engine:
             if _s > 0:
                 dist = {k: max(0.0, v) ** _T / _s for k, v in dist.items()}
         cells = sorted(dist.items(), key=lambda x: -x[1])
+        # top_scores = 联合分布的**纯概率排序**（口径事实，不套头条规则）。
+        # 头条口径只在「选取/展示层」用 headline_reorder 现算（见该函数说明），
+        # 保证本列表始终是概率降序，报告列 / 双档 / Top3 覆盖都据此。
         top = [{"score": s, "prob": round(p * 100, 1)} for s, p in cells[:6] if p > 0]
-        # 头条口径：平局众数须在本场倾向象限内明显领先才作首选（详见 headline_reorder）
-        _ph = _pd = 0.0
-        for _h in range(n):
-            for _a in range(n):
-                if _h > _a:
-                    _ph += m[_h][_a]
-                elif _h == _a:
-                    _pd += m[_h][_a]
-        _pa = max(0.0, 1.0 - _ph - _pd)
-        _dir = "home" if (_ph >= _pd and _ph >= _pa) else ("draw" if _pd >= _pa else "away")
-        top = headline_reorder(top, float(self.p.get("head_gap", 5.0)), _dir)
 
         n_dist = len(dist)
         home_dist = [0.0] * n
@@ -602,9 +594,16 @@ def headline_reorder(top, gap=5.0, dir_key=None):
     2478 场 walk-forward 实测（象限 + gap=5.0）：
       单点命中 15.58%（众数口径 15.13%；分半样本 14.29%/16.87%，两半均不劣于基线），
       1:1 占比 56%→24%，且倾向=平局时保持 1:1、绝不与发布倾向矛盾。
-    gap=3 时为 15.33%，gap=7 起开始掉分（13.57%）、gap=6 为 15.05% → 取 5。
+    gap=3 时为 15.33%，gap=7 起开始掉分（13.24%/15.17%）、gap=10 掉到 13.44% → 取 5。
     dir_key: 'home'/'draw'/'away'（发布倾向）。给定时只在该象限内顺延；为 None 时退化为「顺延到最好的非平局比分」。
-    本函数是头条口径的唯一实现：直接重排 top_scores，下游（报告列 / SA.hit_pick / SA.band_scores）自动跟随。
+
+    参数 top 是**任意概率降序的比分列表**（引擎 B 的联合分布、或比分精选自建分布的同构列表），
+    返回同样降序的列表，只是把「够格的首选」提到第一位。
+    ⚠️ 头条口径的唯一实现就在这里，但**只用于取首位（首选）**：
+    - `selection_algo.headline_pick` / `hit_pick` / `pk_ref`：头条与命中判定
+    - `calc_engine` 快照的 `headline` 字段、`_gen_report` 的比分预测列
+    ❌ 不要用它去重排 `top_scores` 本身 —— 那样「可能比分1/2」「Top3 覆盖」「双档」这些
+       概率事实列就不再是降序（2026-09-19 曾因此出现「可能比分1 概率 < 可能比分2」的错位）。
     """
     if not top or len(top) < 2:
         return top
@@ -632,6 +631,27 @@ def headline_reorder(top, gap=5.0, dir_key=None):
     if float(top[0]["prob"]) - float(best["prob"]) < float(gap):
         idx = top.index(best)
         return [top[idx]] + top[:idx] + top[idx + 1:]
+    return top
+
+
+def engine_asof(cutoff_date=None):
+    if not top or len(top) < 2:
+        return top
+
+    def _draw(s):
+        try:
+            h, a = (int(x) for x in str(s).split(":"))
+        except Exception:
+            return False
+        return h == a
+
+    if not _draw(top[0]["score"]):
+        return top
+    alt = next((i for i, t in enumerate(top[1:], 1) if not _draw(t["score"])), None)
+    if alt is None:
+        return top
+    if float(top[0]["prob"]) - float(top[alt]["prob"]) < float(gap):
+        return [top[alt]] + top[:alt] + top[alt + 1:]
     return top
 
 

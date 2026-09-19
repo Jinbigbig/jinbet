@@ -113,31 +113,77 @@ def is_cold(m):
 
 
 # ---------- 比分口径 ----------
-def hit_pick(m):
-    """头条「命中比分」= 已对齐比分矩阵的联合众数（top_scores[0] 中的首个列出比分）。
+# 头条口径（2026-09-19）：首选比分必须与**本场发布倾向同象限**，避免均衡场次清一色
+# 平局比分（联合众数在两队 λ 同落 [1,2) 时恒为 1:1，2478 场里占 56%）。
+# 规则实现只有一份：`score_engine.headline_reorder`。本模块只做转发，不另写第二份。
+_HEAD_RULE = None
 
-    目标函数为单场命中次数，argmax 即最优解，故不做任何"大胆化"变换。
+
+def _head_rule():
+    """返回 (规则函数, gap)。score_engine 缺失时返回 (None, 5.0) → 退化为纯概率首选。"""
+    global _HEAD_RULE
+    if _HEAD_RULE is None:
+        try:
+            import score_engine as _se
+            _HEAD_RULE = (_se.headline_reorder, float(_se.DEFAULT.get('head_gap', 5.0) or 5.0))
+        except Exception:
+            _HEAD_RULE = (None, 5.0)
+    return _HEAD_RULE
+
+
+def headline_pick(cells, okey):
+    """在**概率降序**的比分列表上取首选（套用统一的头条口径）。
+
+    cells: [(score, prob%) ...] 概率降序（引擎矩阵或本板块自建分布皆可）。
+    okey:  本场倾向 'home'/'draw'/'away'。
+    返回 (首选比分, 首选概率%)；口径不可用时退化为概率最高格。
+    """
+    cells = [c for c in cells if c and c[0]]
+    if not cells:
+        return None, None
+    fn, gap = _head_rule()
+    if fn is None:
+        return cells[0]
+    try:
+        ranked = fn([{'score': s, 'prob': p} for s, p in cells], gap, okey)
+    except Exception:
+        return cells[0]
+    return ranked[0]['score'], ranked[0].get('prob')
+
+
+def hit_pick(m):
+    """头条「命中比分」= 倾向象限内优选（概率最高格在倾向不一致时顺延，规则见 headline_reorder）。
+
+    取数顺序：快照 `headline` 字段 → 用本模块方向现算 → 矩阵首个列出比分。
     返回 (比分, 模型给该比分的概率% 或 None)。
     """
-    for t in (m.get('top_scores') or []):
-        if t.get('score') in LISTED_LABELS:
-            return t['score'], t.get('prob')
+    hl = m.get('headline') or {}
+    if hl.get('score'):
+        return hl['score'], hl.get('prob')
+    ts = [t for t in (m.get('top_scores') or []) if t.get('score') in LISTED_LABELS]
+    if ts:
+        okey = direction_key(m)
+        s, p = headline_pick([(t['score'], t.get('prob')) for t in ts], okey)
+        return s, p
     return quad_score(m, direction_key(m)), None
 
 
 def band_scores(m, k=2):
-    """双档 = 模型排序第 2、第 3 可能比分（跳过头条）。
+    """双档 = **除头条外**概率最高的 k 个比分（跳过头条，避免与首选重复）。
 
     返回 [(score, prob) ...]，prob 单位 %；不足 k 档时按模型排序补足。
     """
     ts = [t for t in (m.get('top_scores') or []) if t.get('score') in LISTED_LABELS]
-    out, seen = [], set()
-    for t in ts[1:1 + k]:
+    head, _ = hit_pick(m)
+    out, seen = [], {head}
+    for t in ts:
         sc = t.get('score')
         if sc in seen:
             continue
         out.append((sc, t.get('prob') or 0.0))
         seen.add(sc)
+        if len(out) >= k:
+            break
     for t in ts:
         if len(out) >= k:
             break
@@ -344,16 +390,19 @@ def pk_dist(m, tuning=None):
 
 
 def pk_ref(m, tuning=None, band_k=2):
-    """比分精选自己的预测：头条 = 本板块分布 argmax；双档 = 第 2/3 高。
+    """比分精选自己的预测：头条 = 本板块分布上套统一头条口径（倾向象限内优选）；双档 = 除头条外概率最高的 2 个。
 
+    λ 推导的分布里，均衡场次 argmax 同样是 1:1（结构性退化），故头条走同一份
+    `headline_pick` 规则；回放 225 场实测（pk_head_probe.py，14 天）：
+    头条 11.11%→8.89%、双档 17.33%→19.56%**合计不变（28.44%）**，头条 1:1 占比 63%→14%。
     返回 (头条比分, 头条概率%, [(双档比分, 概率%) ...])。
     """
-    cells = sorted(pk_dist(m, tuning).items(), key=lambda x: -x[1])
+    cells = sorted(((s, round(p * 100, 1)) for s, p in pk_dist(m, tuning).items()), key=lambda x: -x[1])
     if not cells:
         return None, None, []
-    head, hp = cells[0]
-    band = [(s, round(p * 100, 1)) for s, p in cells[1:1 + band_k]]
-    return head, round(hp * 100, 1), band
+    head, hp = headline_pick(cells, direction_key(m))
+    band = [(s, p) for s, p in cells if s != head][:band_k]
+    return head, (round(hp, 1) if hp is not None else None), band
 
 
 # ---------- 排序与分档 ----------

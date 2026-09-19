@@ -51,16 +51,17 @@ def _in_quad(c, okey):
 def predict_scores(m):
     """按报告口径取 (命中比分, 双档集合, 量级参考比分)。
 
-    2026-09-13 二次定调（目标函数 = 比分命中次数，概率幅值不作为指标）：
-      头条 = 已对齐矩阵的**联合众数**（= top_scores 里首个列出比分）= 押中次数目标函数的最优解；
-      双档 = 模型排序第 2、第 3 可能比分（4036 场回测 Top2 单档 11.6% / Top3 单档 8.9% ≈ 20.5%）；
+    2026-09-19 三次定调（头条口径 = 倾向象限内优选）：
+      头条 = 快照 `headline` 字段（= 倾向象限内优选；老快照无该字段时回退联合众数）；
+      双档 = 除头条外概率最高的 2 个比分（老快照回退 top_scores 第 2/3 位约 20%）；
       量级参考 = λ 期望进球取整（无偏但不为押中，总进球偏差 −0.22 球/场）。
-    旧口径「期望比分 + 同倾向次高」为 Top1 13.8% / Top2 26.0%，已弃用。
     """
     ts = [t for t in (m.get('top_scores') or [])
           if _parse_score(t.get('score')) and t.get('score') in LISTED_LABELS]
-    hit = ts[0]['score'] if ts else '-'
-    band = {t['score'] for t in ts[1:3]}
+    _hl = (m.get('headline') or {}).get('score')
+    hit = _hl if _hl in LISTED_LABELS else (ts[0]['score'] if ts else '-')
+    band = {t['score'] for t in ts if t['score'] != hit}     # 除头条外概率最高的两个
+    band = set([s for s in dict.fromkeys(t['score'] for t in ts) if s != hit][:2])
     ph, pd, pa = (float(m.get('prob_home', 0) or 0), float(m.get('prob_draw', 0) or 0),
                   float(m.get('prob_away', 0) or 0))
     okey = 'home' if ph >= pd and ph >= pa else ('away' if pa >= pd else 'draw')
