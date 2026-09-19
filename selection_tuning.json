@@ -3,7 +3,7 @@
   "pk_lambda_caps": [
     2.6,
     3.0,
-    3.4
+    3.0
   ],
   "pk_lambda_w": [
     1.0,
@@ -11,8 +11,8 @@
     0.78,
     0.68
   ],
-  "pk_degen_down": 0.85,
-  "bd_total_shift": -1,
+  "pk_degen_down": 1.0,
+  "bd_total_shift": 0,
   "bd_min_total": 3,
   "bd_gap": 1,
   "bd_exclusive": 1,
@@ -22,17 +22,17 @@
     "days_used": 14,
     "note": "grid search on rolling history",
     "pk": {
-      "base_obj": 60.71,
-      "best_obj": 60.71,
-      "adopted": false
+      "base_obj": 60.0,
+      "tuned_obj": 61.43,
+      "adopted": true
     },
     "bd": {
-      "base_obj": 30.71,
-      "tuned_obj": 32.5,
-      "holdout_base": 13.75,
-      "holdout_tuned": 27.5,
+      "base_obj": 26.79,
+      "tuned_obj": 36.79,
+      "holdout_base": 0.0,
+      "holdout_tuned": 56.25,
       "params": {
-        "bd_total_shift": -1,
+        "bd_total_shift": 0,
         "bd_min_total": 3,
         "bd_gap": 1
       },

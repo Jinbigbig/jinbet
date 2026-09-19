@@ -37,13 +37,13 @@
  },
  "hedge": {
   "weights": {
-   "model": 0.3525,
-   "market": 0.6475
+   "model": 0.3311,
+   "market": 0.6689
   },
   "losses": {
-   "model": 1.08013,
-   "market": 0.97881,
-   "blend": 0.98587,
+   "model": 1.09799,
+   "market": 0.98082,
+   "blend": 0.98932,
    "n": 500
   },
   "w": 0.7,
@@ -52,34 +52,34 @@
   "fixed_w": 0.8
  },
  "kalman": {
-  "n_teams": 635,
+  "n_teams": 598,
   "applied": true,
-  "mods_non_neutral": 27
+  "mods_non_neutral": 24
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3134,
+  "n_samples": 4665,
   "drift_detected": true,
   "flags": [
    "league_baselines"
   ],
   "detail": {
    "global_goals": {
-    "psi": 0.0003,
-    "ks": 0.0063,
+    "psi": 0.0001,
+    "ks": 0.0029,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0289,
-    "ks": 0.0741,
+    "psi": 0.0,
+    "ks": 0.0014,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 3.65,
-    "std_delta_pct": 7.23,
+    "mean_delta_pct": 2.31,
+    "std_delta_pct": 7.16,
     "top3_changed": [
      [
       "德国乙级联赛",
