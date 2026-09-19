@@ -20,6 +20,9 @@
 与 gen_review 复盘，不参与两个板块的预测与排序。
 
 档数：以 N_TIER_BASE 场为基准 1 档，每多 N_TIER_STEP 场加 1 档，封顶 TIER_MAX。
+  档数按**当日全部非冷启动场次**计算，两榜取同一档数（`split_boards` 算好再传给两榜）。
+  若让大胆档按「比分精选占位后的剩余池」自算档数，剩余池恒被削去大半，档数会退化回 1 档
+  （例如 30 场 → 比分精选已占 18 场、剩 12 场 → 只剩 1 档 × 4 场），与「当日比赛越多则按倍数增档」不符。
 
 本模块只依赖 match dict（引擎输出或历史快照），不读文件、不产生副作用；
 快照缺 `prob` 字段时自动由 prob_home/prob_draw/prob_away 还原。
@@ -438,11 +441,14 @@ def build_tiers(ranked, per_tier, n_tiers=None):
     return tiers, [x for t in tiers for x in t]
 
 
-def rank_pk(matches, tuning, per_tier=TIER_PK):
-    """比分精选：排除冷启动 → 按质量降序 → 分档。返回 (tier_list, flat_list, cold_matches)。"""
+def rank_pk(matches, tuning, per_tier=TIER_PK, n_tiers=None):
+    """比分精选：排除冷启动 → 按质量降序 → 分档。返回 (tier_list, flat_list, cold_matches)。
+
+    n_tiers 为 None 时按本池（非冷启动）场数自算；生产走 split_boards，两榜统一按全场次档数。
+    """
     allr = [(pk_tuple(m, tuning), m) for m in matches]
     noncold = sorted([x for x in allr if not is_cold(x[1])], key=lambda x: -x[0][3])
-    tiers, flat = build_tiers(noncold, per_tier)
+    tiers, flat = build_tiers(noncold, per_tier, n_tiers)
     colds = [x[1] for x in sorted(allr, key=lambda x: -x[0][3]) if is_cold(x[1])]
     return tiers, flat, colds
 
@@ -452,26 +458,31 @@ def match_key(m):
     return m.get('id') or m.get('matchNumStr') or str(id(m))
 
 
-def rank_bold(matches, tuning, per_tier=TIER_BD, exclude=None):
+def rank_bold(matches, tuning, per_tier=TIER_BD, exclude=None, n_tiers=None):
     """大胆档：排除冷启动 + 排除已被比分精选占用的场次 → 按质量降序 → 分档。
 
-    返回 (tier_list, flat_list)。
+    n_tiers 为 None 时按本池（占位后的剩余场次）自算；生产由 split_boards 传入**全场次**档数，
+    使大胆档场数与当日比赛数量同步（切片不足时该档自然不出现）。
     """
     ex = set(exclude or ())
     allr = [(bd_tuple(m, tuning), m) for m in matches if match_key(m) not in ex]
     noncold = sorted([x for x in allr if not is_cold(x[1])], key=lambda x: (-x[0][0], -x[0][1]))
-    return build_tiers(noncold, per_tier)
+    nt = num_tiers(len(noncold)) if n_tiers is None else n_tiers
+    return build_tiers(noncold, per_tier, nt)
 
 
 def split_boards(matches, tuning, pk_per=TIER_PK, bd_per=TIER_BD):
     """两块独立成榜（生产的唯一入口）：比分精选先占位 → 大胆档只在剩余场次中独立选取。
 
     互斥由 `bd_exclusive` 控制（0 = 允许两榜重叠，仅供对照实验）。
+    档数由**当日全部非冷启动场次**统一计算并同时交给两榜：两榜档数一致，
+    大胆档场数随之与当日比赛数量同步（不被比分精选的占位削成只剩 1 档）。
     返回 (pk_tiers, pk_flat, bd_tiers, bd_flat, colds)。
     """
-    pk_tiers, pk_flat, colds = rank_pk(matches, tuning, pk_per)
+    n_tiers = num_tiers(sum(1 for m in matches if not is_cold(m)))
+    pk_tiers, pk_flat, colds = rank_pk(matches, tuning, pk_per, n_tiers)
     ex = {match_key(x[1]) for x in pk_flat} if int(tuning.get('bd_exclusive', 1) or 0) else set()
-    bd_tiers, bd_flat = rank_bold(matches, tuning, bd_per, exclude=ex)
+    bd_tiers, bd_flat = rank_bold(matches, tuning, bd_per, exclude=ex, n_tiers=n_tiers)
     return pk_tiers, pk_flat, bd_tiers, bd_flat, colds
 
 
