@@ -1,0 +1,3189 @@
+#!/usr/bin/env python3
+"""JinBet 泊松模型 V3.4 计算引擎。
+
+七步主链路 + 三级后处理：
+  ① 基础λ(指数衰减RECENT_N=25, DECAY=0.96, 主客场分拆+经验贝叶斯K=4)
+  ② xG融合(40%权重，数据源缺失时跳过)
+  ②B 联赛先验收收缩(λ*(1-w)+联赛基线*w, w=0.25)
+  ③ H2H(A总量因子 + B方向再分配, ALPHA_H2H=0.35)
+  ④ 市场概率混合(0.80权重, 概率空间, 总量守恒反解λ)
+  ⑤ 动态校准(EWMA+MAD去极值 + 联赛分层因子 + 总量约束)
+  ⑥ 零封修正(连续sigmoid, f(0)=0.6→f(0.25)=1.0→f(0.5)=1.2)
+  ⑦ 泊松8×8网格 → 联赛经验比分频率混合(w=0.3+自适应衰减) → Platt校准 → 比分矩阵对齐发布1X2
+  ⑧ 二级盘(让球联合校准/冷门风险/大比分观察) + 信心评级 + 凯利信号
+
+V3.4 变更(2026-09-14):
+  - 废弃全局 HOME_BOOST/AWAY_DISCOUNT(1.15/0.90): results_history 全局主/客比=0.942,
+    硬编码加成方向与实测矛盾, 且第四步市场混合已隐含主场优势, 双重修正导致动态校准整体下调
+  - 零封修正从四档跳变改为连续 sigmoid(参数标定后 f(0)=0.6→f(0.25)=1.0→f(0.5)=1.2)
+  - 引擎头部 docstring 由 V2.2 更新到 V3.4(此前与实跑脱节多版)
+"""
+import glob
+import importlib.util
+import json
+import math
+import os
+import re
+import statistics
+import datetime
+from collections import Counter
+
+BASE = os.path.dirname(os.path.abspath(__file__))
+# 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
+TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else datetime.date.today().isoformat()
+# 【2026-09-08 回测调优】基础λ的历史窗口与衰减
+# 依据 window_sweep.py（2961 场 walk-forward，泊松对数似然）：
+#   现行 N=10/DECAY=0.85 → 场均 logL -3.1314, 进球 MSE 1.6451
+#   最优 N=30/DECAY=1.00 → -3.1029, MSE 1.5996（+0.91%）
+#   平台区 N=20~30 × DECAY=0.95~1.00（+0.024~0.029），取保守值 N=25/DECAY=0.96
+# 说明：长窗口降低估计噪声的收益 > 时效性的损失；DECAY=1.0 虽最优但完全丢弃近期
+#       变化（换帅/转会/伤停），故保留轻微衰减 0.96（有效样本约 25 场）。
+# 注意：RECENT_N 需与 _build_today_extras.py 的 recent 切片长度保持一致。
+RECENT_N = 25
+DECAY = 0.96
+HOME_BOOST = 1.00   # 【V3.4 废弃】全局主客场加成 = 1.15/0.90 → 1.00/1.00
+                    # results_history 全局主/客比=0.942(客队进球反而略多), 硬编码 1.15/0.90
+                    # 方向与实测矛盾; 且第四步市场混合已隐含主场优势, 双重修正让动态校准
+                    # 整体下调 λ 均值. 经验贝叶斯(VENUE_SHRINK_K=4) + 市场混合足以处理主客效应
+AWAY_DISCOUNT = 1.00
+# 【2026-09-10】主客场分拆：基础λ 的观测改用「该队作为主队/客队」的分主客口径，
+# 主客效应已含在观测里故不再乘 HOME_BOOST/AWAY_DISCOUNT，再按有效样本量向
+# 不分主客口径收缩（经验贝叶斯）。分主客场次少（均值约 6 场），必须收缩。
+# 回测依据：venue_probe.py（泊松 logL +1.32%，进球 MSE −4.3%）
+#           venue_brier_check.py（1X2 Brier 0.6292→0.6247，Z=+5.41，5/5 段改善）
+# K 越大越保守（K→∞ 退化为不分主客）；K=4 为 logL 最优点。
+VENUE_SHRINK_K = 4.0
+ALPHA_H2H = 0.35    # B部分 H2H 权重上限
+LIMIT_PCT = 0.25    # 单侧调整限幅
+# 合理性约束：多重因子复合放大后需守住足球统计的合理区间
+MAX_TOTAL = 4.20
+MIN_TOTAL = 1.60
+MAX_SINGLE = 3.20
+# 单队 λ 下界（2026-09-14 实装）
+# 病灶：prob_to_lambda 在「总量固定」下反解目标 1X2。当市场极端看多一侧时，
+#       一维扫描会把弱侧 λ 推到网格边界，实测出现 λ=0.0002 / 0.0005 ——
+#       一支球队的「期望进球」不可能是 0，后果是 P(弱侧 0 球)≈100%、
+#       头条恒为 x:0、单格概率虚高（09-14 报告 9/12 场头条为 x:0）。
+# 取 0.18：全量 4036 场中该下界只绑定 9 场（0.22%），
+#       单点命中 / ±1 球覆盖一场不变（Brier 变动 <0.0001），属零代价止损。
+# 夹紧时保持总量守恒（差额还给强侧），并允许总量 35% 为上限以免超小总量被撑爆。
+MIN_SINGLE = 0.18
+# 零封修正 (V3.4): 由四档跳变改为连续 sigmoid
+# 标定目标: 原始四档 f(0)=0.6, f(0.15)=0.6, f(0.25)=0.8, f(0.4)=1.0, f(>0.4)=1.2
+# sigmoid: f(r) = FLOOR + (CEIL-FLOOR) * sigmoid(K*(r-MID))
+# 参数求解: f(0.25)=1.00 → MID = 0.25 - ln(CEIL/FLOOR*2-1)/K ≈ 0.159
+# 验证: f(0)≈0.73, f(0.15)≈0.89, f(0.25)=1.00, f(0.40)≈1.12, f(0.50)≈1.16
+ZF_FLOOR = 0.6
+ZF_CEIL = 1.2
+ZF_MID = 0.159   # sigmoid 校准使 f(0.25) = 1.00
+ZF_K = 8.0        # sigmoid 陡度
+# 零封修正上限（2026-09-14 实装，原为 1.2 = 允许把 0 球格概率放大 20%）
+# 病灶：该步按球队「近期零封率」放大 0 球格，但近期零封并不预测未来零封
+#       （λ 已含状态信息）→ 模型整体高估零封（P(≥1方0球) 预测 46.5% vs 实际 43.7%），
+#       并把头条进一步推向 x:0。
+# 回测（_score_floor_probe.py，4036 场，同链路）：
+#   ZF_CAP=1.2（原）→ 单点 14.77% / ±1球 66.63% / Brier 0.5904 / 头条含0球 27.9%
+#   ZF_CAP=1.0（现）→ 单点 15.31% / ±1球 67.69% / Brier 0.5898 / 头条含0球 22.3%
+#   ZF_CAP=1.0 且下限也去掉（全中性）→ 单点 14.94% / Brier 0.5899（不如保留削弱侧）
+#   ZF_CAP=1.0 但反向放大低零封率 → 头条 10.8%，单点 14.05%（过度校正，弃）
+# 结论：保留「削弱」侧（最低 ×0.6），去掉「放大」侧 → 三项指标同时改善。
+ZF_CAP = 1.0
+# 第七步B 混合权重随强弱差自适应衰减（2026-09-07 实装，walk-forward 2462 场验证）
+# 背景：固定 w=0.5 会用联赛平均形状稀释极端热门，实测 λ比≥1.8 的场次系统性低估强队 7~9pp
+#       （周一005 利雅新月：纯泊松主胜 73.9% → 混合后 57.8%，市场隐含 79.2%）
+# 公式：w_eff = w0 * max(FLOOR, 1 - K*(λ比-1))，λ比 = max(λh,λa)/min(λh,λa)
+ADAPTIVE_MIX_K = 0.20      # 衰减斜率：λ比=2 → w0×0.80；λ比=3 → w0×0.60
+ADAPTIVE_MIX_FLOOR = 0.35  # 衰减下限，保留一部分经验形状修正
+
+# ---------------------------------------------------------------- 市场混合（V3.2）
+# 【2026-09-10】由「λ 空间线性混合」改为「概率空间混合」，权重 0.35 → 0.80。
+# 旧实现：市场λ = 1/赔率×2.5（只用胜/负两个赔率），再与模型 λ 线性插值。
+#   问题：该粗映射系统性低估总进球，权重一提高就把进球数预测带崩
+#        （80% 权重：预测总量 2.270 vs 实际 3.005，偏差 −0.735 球）。
+# 新实现：模型 1X2 与「市场去水 1X2」在概率空间加权，再反解 λ（**总量守恒**）。
+#   因此方向信息向市场靠拢，而进球总量仍由模型决定。
+# 回测（market_blend_probe.py，401 场带完整 1X2 赔率，walk-forward）：
+#   1X2 Brier  0.5940 → 0.5739    方向Top1 53.4% → 55.1%
+#   总进球偏差 −0.422 → −0.178（P(≥3) Brier 0.2435 → 0.2363）
+#   对照：同权重 λ 空间混合 Brier 0.5710 略优，但总量偏差 −0.735、P(≥3) 劣化至 0.2687
+# 【关键】Platt 必须在「混合后」的分布上拟合，否则校准与实跑脱节：
+#   market_platt_order.py 样本外（121 场）：
+#     不校准 0.5247 ｜ 用纯模型拟合再应用（旧逻辑）0.5596 ← 反而变差
+#     ｜ 在混合后分布上拟合 0.5231 ｜ 纯市场 0.5221
+MARKET_W = 0.80            # 市场去水概率的混合权重
+MARKET_BLEND_MODE = "prob"  # "prob"=概率空间混合（当前）；"lambda"=旧 λ 空间（已弃用）
+
+# ---------------------------------------------------------------- 比分矩阵与 1X2 对齐（V3.3）
+# 起因（2026-09-10）：“发动机把 λ 混了市场、又把 1X2 做了 Platt，那预测的比分也应该跟着变”。
+# 事实：第四步（市场混合）改了 λ、第七步B（联赛经验频率混合）改了形状、第七步C（Platt）
+# 又移了象限质量——但这三步都只作用在 1X2 上，而报告头条的「比分概率组 Top5 / 方向首选」
+# 是从**未对齐的比分矩阵**里取的。实测 09-10 七场：矩阵的胜/平/负边际与同页发布的
+# 1X2 最多差 **9.9pp**（周四006：矩阵客 51.5% vs 发布客 58.2%）＝报告自相矛盾。
+# 做法：把矩阵三个象限的**质量**缩放到**已发布的**（Platt 后）1X2，象限内形状不变
+#      （只需一步精确投影，无需迭代；不引入新参数、不需要外部数据）。
+# 时间外验证（_probe_score_align.py，3599 场带完整比分盘+总进球盘，逐场配对）：
+#   比分 LogLoss 2.7909 → 2.7779（Δ−0.0131，t=−4.15，2551 场改善 / 1048 场恶化）
+#   1X2 Brier   0.5914 → 0.5830（−1.4%）｜方向命中 52.3% → 52.8%（+0.47pp）
+#   Top5 覆盖   53.7% → 53.5%（−0.64pp，噪声内；Top3 +0.22pp）
+#   对照（均更差，已否决）：市场比分盘混合 w=0.2~0.5（ΔLL +0.003~+0.017）、
+#   总进球盘 IPF 约束（+0.020）、纯市场比分盘（+0.068）、对齐到 pre-Platt（−0.007，弱于对齐发布值）
+SCORE_ALIGN = True          # 比分矩阵象限质量对齐到发布的 1X2
+
+# ---------------------------------------------------------------- 联赛进球环境画像
+# 来源：results_history/ 全量赛果离线标定（7174 场）
+# 用途：作为「先验收缩」目标，降低球队近5场小样本噪声
+# 铁律：只做收缩（向联赛均值靠拢），禁止把 index 直接乘到 λ 上——
+#       基础 λ 已由球队近期实际进球隐含了联赛环境，相乘=重复修正，实测 MAE 恶化 2.7%
+LEAGUE_PROFILE = {"_meta": {}, "shrink": {"w": 0.25, "fallback_mean": 2.83, "min_n": 12},
+                  "leagues": {}}
+# 小样本联赛基线的经验贝叶斯收缩强度（2026-09-14，详见 league_baseline 注释）
+LEAGUE_EB_K = 40.0
+
+
+def _find_profile_file():
+    """在脚本目录及其上两级目录查找 league_profile.json。"""
+    here = BASE
+    for _ in range(3):
+        p = os.path.join(here, "league_profile.json")
+        if os.path.exists(p):
+            return p
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return None
+
+
+def load_league_profile():
+    """加载联赛画像，失败则保持内置默认值（不阻断流水线）。"""
+    global LEAGUE_PROFILE
+    p = _find_profile_file()
+    if not p:
+        return LEAGUE_PROFILE
+    try:
+        d = json.load(open(p, encoding="utf-8"))
+        if isinstance(d, dict) and d.get("leagues"):
+            LEAGUE_PROFILE = d
+    except Exception as e:  # noqa: BLE001
+        print(f"[warn] league_profile.json 读取失败({e})，使用内置默认")
+    return LEAGUE_PROFILE
+
+
+def league_baseline(league):
+    """返回该联赛的基线总进球均值；样本不足时用全局均值。
+
+    小样本经验贝叶斯收缩（2026-09-14 实装，见 LEAGUE_EB_K）：
+    联赛场均进球是均值估计，n 小时的抽样噪声极大 —— 亚冠精英 n=24 给出 1.292
+    （全库最低，次低英甲 1.833，全局 2.842），且其样本里混有主客镜像重复记录。
+    直接采用会把该联赛所有场次 λ 总量锚死（09-14 周一007 吉达国民 λ 总 1.29），
+    再用「量级档」当押注依据就会系统性偏低。
+    收缩公式 base' = (n*mean + K*global)/(n+K)，K=40 ≈「一个联赛的均值需 40 场
+    才与全局先验等权」。收缩后：亚冠精英 1.292→2.261、英甲 1.833→2.529，
+    而 n≥300 的主流联赛变动 <0.02 球。
+    回测（_score_floor_probe.py，4036 场）：单点 +2 场、Brier −0.00008（噪声内），
+    属数据质量修复而非 alpha 来源。
+    """
+    prof = LEAGUE_PROFILE.get("leagues", {})
+    _fb = float(LEAGUE_PROFILE.get("shrink", {}).get("fallback_mean", 2.83))
+    g = prof.get(league)
+    if not g:
+        # 别名兜底：去掉「杯/联赛」等后缀再试
+        for k, v in prof.items():
+            if k and league and (k in league or league in k):
+                g = v
+                break
+    if g and g.get("n", 0) >= LEAGUE_PROFILE.get("shrink", {}).get("min_n", 12):
+        n = float(g.get("n", 0) or 0)
+        mean = float(g.get("mean") or _fb)
+        return (n * mean + LEAGUE_EB_K * _fb) / (n + LEAGUE_EB_K)
+    return _fb
+
+
+# 联赛市场准确率缓存 (懒加载, 从 results_history 扫描一次后常驻)
+_LEAGUE_MKT_ACC = None
+
+def _load_league_market_acc():
+    """从 results_history 扫描各联赛的市场去水准确率。
+    只在首次调用时跑, 后续返回缓存。"""
+    global _LEAGUE_MKT_ACC
+    if _LEAGUE_MKT_ACC is not None:
+        return _LEAGUE_MKT_ACC
+    _LEAGUE_MKT_ACC = {}
+    rh_dir = os.path.join(_repo_root(), "results_history")
+    if not os.path.isdir(rh_dir):
+        return _LEAGUE_MKT_ACC
+    league = {}
+    for f in glob.glob(os.path.join(rh_dir, "*.json")):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or v.get("score") or ""
+            if ":" not in fs and "-" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in re.split(r"[:\-]", fs)]
+                oh, od, oa = float(v["胜"]), float(v["平"]), float(v["负"])
+            except Exception:
+                continue
+            if not (oh > 1 and od > 1 and oa > 1):
+                continue
+            lg = v.get("league") or "其他"
+            actual = 0 if hg > ag else (1 if hg == ag else 2)
+            pv = devig_1x2(oh, od, oa)
+            mp = 0 if pv[0] >= pv[1] and pv[0] >= pv[2] else (1 if pv[1] >= pv[2] else 2)
+            d = league.setdefault(lg, {"n": 0, "mk": 0})
+            d["n"] += 1
+            d["mk"] += int(mp == actual)
+    for lg, d in league.items():
+        if d["n"] >= 10:
+            _LEAGUE_MKT_ACC[lg] = d["mk"] / d["n"]
+    return _LEAGUE_MKT_ACC
+
+
+def league_market_w(league, default=None):
+    """按联赛市场去水准确率动态选 MARKET_W — V3.4 修复。
+
+    核心逻辑：市场在某联赛的历史准确率越高 → 越信市场 → market_w 越高。
+    基准准确率 50% 映射到标准 MARKET_W (0.80)；每 ±2pp → ±0.05 权重。
+    最终夹紧在 [0.65, 0.95] 避免极端值。
+
+    旧方案（home_edge）已废弃：实测 home_edge 与市场准确率几乎不相关，
+    如巴甲 home_edge=+0.182 但市场准确率仅 42.4%，澳超 home_edge=-0.037 但
+    市场准确率 35.0%——反方向设置 market_w 只会让噪声大的联赛被进一步稀释。
+    """
+    if default is None:
+        default = MARKET_W
+    accs = _load_league_market_acc()
+    acc = accs.get(league)
+    if acc is None:
+        return default
+    # 50% → 0.80; 每 +2pp → +0.05
+    w = default + (acc - 0.50) / 0.02 * 0.05
+    return max(0.65, min(0.95, w))
+
+
+def league_score_freq(league):
+    """返回该联赛平滑后的 7x7 经验比分频率 {(h,a): p}；无数据返回 None。
+
+    数据来自 league_profile.json 的 score_freq（已按 K=50 向均匀分布收缩），
+    用于第七步泊松矩阵的形状混合（walk-forward: Brier -0.45%，低比分四格校准改善）。
+    """
+    prof = LEAGUE_PROFILE.get("leagues", {})
+    g = prof.get(league)
+    if not g:
+        for k, v in prof.items():
+            if k and league and (k in league or league in k):
+                g = v
+                break
+    if not g or "score_freq" not in g:
+        return None
+    freq = {}
+    try:
+        for k, v in g["score_freq"].items():
+            h, a = k.split("-")
+            freq[(int(h), int(a))] = float(v)
+    except (ValueError, KeyError):
+        return None
+    return freq or None
+
+
+def mix_score_matrix(grid, league, lam_ratio=None):
+    """第七步形状后处理：模型矩阵与联赛经验比分频率按 w=0.5 混合。
+
+    依据（2026-09-06 晚 二次 walk-forward 2438 场，前60%训练/后40%验证，双指标一致）：
+      Top1 命中率随 w 单调升：w=0 → 11.03%，w=0.3 → 12.43%，w=0.5 → 13.37%，w=0.6 → 13.90%；
+      Brier 同步改善：0.9376 → 0.9317 → 0.9296 → 0.9291；后40%段同样成立（14.14%/14.55%）。
+      w=0.5~0.7 为平台区，取保守值 0.5（保留更多比赛特异性信号）。
+      对照：「大球导向」（P(≥3)≥58% 时强选 3+ 球比分）Top1 降至 11.36%/8.66%，否决。
+
+    【2026-09-07 自适应衰减】lam_ratio = max(λh,λa)/min(λh,λa) 越大（强弱越悬殊），
+    经验频率的稀释越有害——联赛平均形状会把强队胜率拉回 40% 出头。
+    故 w_eff = w0 * max(FLOOR, 1 - K*(λ比-1))。walk-forward 2462 场验证（k=0.20）：
+      1X2 Brier 0.6303 → 0.6279（配对 +0.0025，Z=+2.3 显著）；后40%段 0.6203 → 0.6149；
+      5 段时序中 4 段一致改善；
+      Top1 13.28% → 13.04%（-0.24pp，Z=-0.8 不显著，噪声范围内）；
+      强队方向校准偏差：λ比≥2.5 桶 -7.2pp → +1.0pp，λ比1.8~2.5 桶 -9.1pp → -6.8pp。
+    注意：这里的衰减只作用于「形状混合」，与 λ clamp（MAX_TOTAL 等）无关。
+    """
+    freq = league_score_freq(league)
+    if not freq:
+        return grid
+    w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
+    if lam_ratio and lam_ratio > 1.0:
+        w *= max(ADAPTIVE_MIX_FLOOR, 1.0 - ADAPTIVE_MIX_K * (lam_ratio - 1.0))
+    out = {}
+    for key, p in grid.items():
+        out[key] = (1 - w) * p + w * freq.get(key, 0.0)
+    tot = sum(out.values())
+    if tot <= 0:
+        return grid
+    return {k: v / tot for k, v in out.items()}
+
+
+def shrink_to_league(total_lambda, league, league_note_out=None):
+    """联赛先验收缩：λ_total_final = λ_total*(1-w) + 联赛基线均值*w
+
+    与「动态校准的联赛因子」职责不同：
+      - 本函数处理的是**球队近5场小样本噪声**（先验，降方差）
+      - 动态校准处理的是**模型系统性残差**（后验，纠偏差）
+    两者串联不冲突。
+    """
+    w = float(LEAGUE_PROFILE.get("shrink", {}).get("w", 0.25))
+    base = league_baseline(league)
+    new_total = total_lambda * (1 - w) + base * w
+    return new_total, w, base
+
+
+def clamp(v, lo, hi):
+    return max(lo, min(hi, v))
+
+
+def pois_1x2(lam_h, lam_a, kmax=12):
+    """独立泊松的 1X2 概率（含 12 球尾部，供市场混合使用）。"""
+    ph = [pmf(k, lam_h) for k in range(kmax + 1)]
+    pa = [pmf(k, lam_a) for k in range(kmax + 1)]
+    ch = []
+    acc = 0.0
+    for x in ph:
+        acc += x
+        ch.append(acc)
+    win = drw = los = 0.0
+    for j in range(kmax + 1):
+        win += pa[j] * (1.0 - ch[j])
+        drw += pa[j] * ph[j]
+        los += pa[j] * (ch[j - 1] if j > 0 else 0.0)
+    tot = win + drw + los
+    return (win / tot, drw / tot, los / tot) if tot > 0 else (0.0, 0.0, 0.0)
+
+
+def devig_1x2(oh, od, oa):
+    """1X2 赔率去水 → 隐含概率。"""
+    s = 1.0 / oh + 1.0 / od + 1.0 / oa
+    return (1.0 / oh / s, 1.0 / od / s, 1.0 / oa / s)
+
+
+def prob_to_lambda(pb, total):
+    """把目标 1X2 概率 pb 反解为 (λh, λa)，且 λ 总量固定为 total。
+
+    用法：市场混合后需保持进球总量不变（总量由模型负责，方向交给市场）。
+    一维扫描 λh ∈ (0, total)，取与 pb 平方误差最小的解，再局部细化。
+    解完施加单队 λ 下界 MIN_SINGLE（见常量区注释）：目标 1X2 与总量不相容时
+    弱侧会被推到网格边界（λ→0），这里夹紧到物理下界并保持总量守恒。
+    """
+    best, bl = None, 9.9
+    n = 180
+    for i in range(1, n):
+        lh = total * i / n
+        la = total - lh
+        if la <= 1e-6:
+            break
+        P = pois_1x2(lh, la)
+        e = (P[0] - pb[0]) ** 2 + (P[1] - pb[1]) ** 2 + (P[2] - pb[2]) ** 2
+        if e < bl:
+            bl, best = e, (lh, la)
+    if best is None:
+        return total / 2.0, total / 2.0
+    bh = best[0]
+    step = total / 180.0
+    for k in range(-30, 31):
+        lh = bh + k * step / 30.0
+        la = total - lh
+        if lh <= 0 or la <= 0:
+            continue
+        P = pois_1x2(lh, la)
+        e = (P[0] - pb[0]) ** 2 + (P[1] - pb[1]) ** 2 + (P[2] - pb[2]) ** 2
+        if e < bl:
+            bl, best = e, (lh, la)
+    lh, la = best
+    lo = min(MIN_SINGLE, total * 0.35)
+    if lh < lo:
+        lh, la = lo, max(total - lo, total * 0.05)
+    if la < lo:
+        la, lh = lo, max(total - la, total * 0.05)
+    return lh, la
+
+
+# ---------------------------------------------------------------- Platt 概率校准（PLATT_ISOTONIC，V3.1）
+# 病灶：泊松独立性导致平局全桶系统性低估（预测 22.6% vs 实际 26.6%，各概率桶 -3~-7pp）。
+# 方案：胜/平/负三类各自做一维逻辑回归（特征=logit(p)），牛顿法拟合，缓存 platt_params.json。
+# 验证（2026-09-06 walk-forward 2364 场测试集）：多类 Brier -0.37%，LogLoss -0.61%，
+#       平局偏差 -3.8pp → +0.2pp；5 折时序 CV 3/5 折改善、另 2 折近似持平。
+# 对照弃用：isotonic -0.15%、温度缩放 -0.02%、对角线膨胀 δ=1.2 虽修平局但比分 Top1 命中率 -1pp。
+# 注意：不动比分矩阵（1X2 后处理），星级（基于首选比分概率）不受影响；
+#       凯利信号改用校准后概率，方向不变但更贴近真实命中率。
+PLATT_W = 1.0          # 校准强度（1.0=全量；若线上发现与市场混合叠加过修可降到 0.5）
+PLATT_PARAMS = None
+
+
+def _repo_root():
+    here = BASE
+    for _ in range(3):
+        if os.path.isdir(os.path.join(here, "results_history")):
+            return here
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return BASE
+
+
+def _logit(p):
+    p = clamp(p, 1e-4, 1 - 1e-4)
+    return math.log(p / (1 - p))
+
+
+def _fit_platt_1d(X, Y, iters=30):
+    """牛顿法一维逻辑回归。X=logit(模型概率)，Y=0/1。返回 (a, b)。"""
+    a, b = 1.0, 0.0
+    for _ in range(iters):
+        ga = gb = haa = hab = hbb = 0.0
+        for x, y in zip(X, Y):
+            p = 1 / (1 + math.exp(-clamp(a * x + b, -30, 30)))
+            w = p * (1 - p) + 1e-9
+            e = y - p
+            ga += e * x
+            gb += e
+            haa -= w * x * x
+            hab -= w * x
+            hbb -= w
+        haa -= 1e-6
+        hbb -= 1e-6
+        det = haa * hbb - hab * hab
+        if abs(det) < 1e-12:
+            break
+        da = (hbb * ga - hab * gb) / det
+        db = (haa * gb - hab * ga) / det
+        a -= da
+        b -= db
+        if abs(da) < 1e-8 and abs(db) < 1e-8:
+            break
+    return a, b
+
+
+def fit_platt_params(force=False):
+    """从 results_history 重建模型流水线样本并拟合 Platt 参数。
+
+    样本重建复刻引擎主链路（联赛收缩 + 经验形状混合 + 零封修正），
+    保证拟合分布与应用分布一致。结果缓存 platt_params.json，当日已拟合则跳过。
+    """
+    global PLATT_PARAMS
+    root = _repo_root()
+    cache_path = os.path.join(root, "platt_params.json")
+    today = datetime.date.today().isoformat()
+    if not force and os.path.exists(cache_path):
+        try:
+            d = json.load(open(cache_path, encoding="utf-8"))
+            if d.get("fitted_at") == today and d.get("params"):
+                PLATT_PARAMS = d
+                return PLATT_PARAMS
+        except Exception:  # noqa: BLE001
+            pass
+    load_league_profile()
+    recs = []
+    rh = os.path.join(root, "results_history")
+    if not os.path.isdir(rh):
+        return None
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if f.endswith("index.json"):
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:  # noqa: BLE001
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            recs.append({"lg": v.get("league") or "其他", "home": v.get("home"),
+                         "away": v.get("away"), "hg": hg, "ag": ag,
+                         # 市场混合需与实跑同源：带入当时的 1X2 赔率
+                         "oh": v.get("胜"), "od": v.get("平"), "oa": v.get("负")})
+    recs.sort(key=lambda r: r.get("date", ""))
+    gf, ga, zr = {}, {}, {}
+    # 分主客场观测：与 calc_match 第一步B 同源（否则校准分布与实跑脱节）
+    gfH, gaH, gfA, gaA = {}, {}, {}, {}
+    lg_tot, lg_hist = {}, {}
+    MAXG = 8
+    # 与 mix_score_matrix 同源：实际值取 league_profile.json 的 score_mix.w —— **线上真值是 0.3**。
+    # 【2026-09-13 核查】本注释长期写作「当前 0.5」，且 build_league_profile.py 亦被口头描述为 0.5，
+    # 但档案里自 w=0.3 时代起一直是 0.3，即线上实跑 w_eff ≤ 0.3（w=0.5 从未生效）。
+    # 实测（_mixw_probe.py，4036 场）：0.3→0.5 全样本命中 609→630（+21 场），
+    # 但时间外（前60%训练/后40%检验）0.3=272 / 0.5=270 / 0.6=275，差 ≤5 场（噪声地板 16 场 = 1pp）
+    # → 不显著，故维持 0.3（升到 0.5 会连带触发 Platt 重拟合，收益不可证）。
+    # 另：ADAPTIVE_MIX_K=0.20 是在 w0=0.3 的实测环境下标定的，上文中「w0×0.80」的表述仅指比例关系。
+    # 注意：实跑已启用自适应衰减(w_eff 随 λ比)，此处仍是固定 w —— 轻微不同源，影响有限。
+    mix_w = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
+    k_shrink = float(LEAGUE_PROFILE.get("score_mix", {}).get("k_shrink", 50))
+    shrink_w = float(LEAGUE_PROFILE.get("shrink", {}).get("w", 0.25))
+    samples = []
+    for r in recs:
+        H, A, lg = r["home"], r["away"], r["lg"]
+        gh, ga_ = gf.get(H, []), ga.get(A, [])
+        if len(gh) >= 3 and len(gf.get(A, [])) >= 3 and len(ga.get(H, [])) >= 3 and len(ga_) >= 3:
+            # 【2026-09-08】与实跑同源：近 RECENT_N 场 + DECAY 加权（原为近 5 场简单均值）
+            h_gf = recent_avg(gh)
+            h_ga = recent_avg(ga[H])
+            a_gf = recent_avg(gf[A])
+            a_ga = recent_avg(ga_)
+            lh = h_gf * 0.75 + a_ga * 0.25
+            la = a_gf * 0.75 + h_ga * 0.25
+            # 主客场分拆（与 calc_match 第一步B 同源：观测已含主客效应，不乘系数）
+            _gh, _ga = gfH.get(H), gaA.get(A)
+            if _gh and _ga:
+                _ne = min(eff_n(len(_gh)), eff_n(len(_ga)))
+                lh = (_ne * (recent_avg(_gh) * 0.75 + recent_avg(_ga) * 0.25)
+                      + VENUE_SHRINK_K * lh) / (_ne + VENUE_SHRINK_K)
+            _gf, _gh2 = gfA.get(A), gaH.get(H)
+            if _gf and _gh2:
+                _ne = min(eff_n(len(_gf)), eff_n(len(_gh2)))
+                la = (_ne * (recent_avg(_gf) * 0.75 + recent_avg(_gh2) * 0.25)
+                      + VENUE_SHRINK_K * la) / (_ne + VENUE_SHRINK_K)
+            base = league_baseline(lg)
+            t = (lh + la) * (1 - shrink_w) + base * shrink_w
+            if lh + la > 0:
+                lh, la = lh * t / (lh + la), la * t / (lh + la)
+            # 【2026-09-10】市场概率混合（与 calc_match 第四步同源）
+            # Platt 必须在「混合后」分布上拟合，否则校准与实跑脱节：
+            # 样本外测试显示错配会把混合收益吃掉一半（0.5247 → 0.5596）。
+            _oh, _od, _oa = r.get("oh"), r.get("od"), r.get("oa")
+            if _oh and _od and _oa:
+                try:
+                    _pv = devig_1x2(float(_oh), float(_od), float(_oa))
+                    _pm = pois_1x2(lh, la)
+                    # 【2026-09-16 校准修复】拟合样本的混合权重必须与实跑 calc_match 一致：
+                    # 实跑走 league_market_w(league) 动态权重（夹紧 0.65~0.95），
+                    # 旧代码用固定 MARKET_W=0.80 → 偏离 0.80 的联赛（德乙/荷甲/韩职等）
+                    # 拟合分布与实跑脱节，Platt 校准错配。这里对齐。
+                    _w = league_market_w(lg)
+                    _pb = [(1 - _w) * _pm[i] + _w * _pv[i] for i in range(3)]
+                    _st = sum(_pb)
+                    _pb = [x / _st for x in _pb]
+                    lh, la = prob_to_lambda(_pb, lh + la)
+                except (ValueError, ZeroDivisionError):
+                    pass
+            zh = zr.get(H, [])
+            za = zr.get(A, [])
+            f_h = (0.6 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.15 else
+                   0.8 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.25 else
+                   1.0 if len(zh) and sum(zh[-5:]) / len(zh[-5:]) <= 0.40 else 1.2) if zh else 0.8
+            f_a = (0.6 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.15 else
+                   0.8 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.25 else
+                   1.0 if len(za) and sum(za[-5:]) / len(za[-5:]) <= 0.40 else 1.2) if za else 0.8
+            ph = [pmf(i, lh) * (f_h if i == 0 else 1.0) for i in range(MAXG + 1)]
+            pa = [pmf(j, la) * (f_a if j == 0 else 1.0) for j in range(MAXG + 1)]
+            m = [[ph[i] * pa[j] for j in range(MAXG + 1)] for i in range(MAXG + 1)]
+            s = sum(sum(row) for row in m)
+            m = [[v / s for v in row] for row in m]
+            hist = lg_hist.get(lg, [])
+            if len(hist) >= 40 and mix_w > 0:
+                cnt = Counter(hist)
+                n2 = len(hist)
+                tot = 0.0
+                out = [[0.0] * (MAXG + 1) for _ in range(MAXG + 1)]
+                for i in range(MAXG + 1):
+                    for j in range(MAXG + 1):
+                        ev_ = (n2 * cnt.get((i, j), 0) / n2 + k_shrink * (1 / 81)) / (n2 + k_shrink)
+                        out[i][j] = (1 - mix_w) * m[i][j] + mix_w * ev_
+                        tot += out[i][j]
+                m = [[v / tot for v in row] for row in out]
+            p_hw = sum(m[i][j] for i in range(MAXG + 1) for j in range(MAXG + 1) if i > j)
+            p_dr = sum(m[i][i] for i in range(MAXG + 1))
+            y = 0 if r["hg"] > r["ag"] else (1 if r["hg"] == r["ag"] else 2)
+            samples.append((p_hw, p_dr, 1 - p_hw - p_dr, y))
+        for team, gs, gc in ((H, r["hg"], r["ag"]), (A, r["ag"], r["hg"])):
+            gf.setdefault(team, []).append(gs)
+            ga.setdefault(team, []).append(gc)
+            zr.setdefault(team, []).append(1 if gc == 0 else 0)
+        gfH.setdefault(H, []).append(r["hg"])
+        gaH.setdefault(H, []).append(r["ag"])
+        gfA.setdefault(A, []).append(r["ag"])
+        gaA.setdefault(A, []).append(r["hg"])
+        lg_tot.setdefault(lg, []).append(r["hg"] + r["ag"])
+        lg_hist.setdefault(lg, []).append((r["hg"], r["ag"]))
+    if len(samples) < 300:
+        return None
+    params = {}
+    for k, name in enumerate(("home", "draw", "away")):
+        X = [_logit(s[k]) for s in samples]
+        Y = [1.0 if s[3] == k else 0.0 for s in samples]
+        params[name] = [round(v, 4) for v in _fit_platt_1d(X, Y)]
+    PLATT_PARAMS = {"fitted_at": today, "n_samples": len(samples), "w": PLATT_W,
+                    "params": params,
+                    "note": "胜平负 Platt 校准；样本复刻引擎主链路（收缩+形状混合+零封）"}
+    try:
+        json.dump(PLATT_PARAMS, open(cache_path, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except OSError:
+        pass
+    return PLATT_PARAMS
+
+
+def apply_platt(p_home, p_draw, p_away):
+    """胜平负概率 Platt 校准；无参数时原样返回。"""
+    if not PLATT_PARAMS or PLATT_W <= 0:
+        return p_home, p_draw, p_away
+    w = float(PLATT_PARAMS.get("w", PLATT_W))
+    params = PLATT_PARAMS.get("params", {})
+    if not params:
+        return p_home, p_draw, p_away
+    out = []
+    for k, p in enumerate((p_home, p_draw, p_away)):
+        name = ("home", "draw", "away")[k]
+        a, b = params.get(name, (1.0, 0.0))
+        q = 1 / (1 + math.exp(-clamp(a * _logit(p) + b, -30, 30)))
+        out.append((1 - w) * p + w * q)
+    tot = sum(out)
+    return tuple(v / tot for v in out)
+
+
+# ---------------------------------------------------------------- 二级盘校准（V3.3）
+# 【2026-09-10 实装】方法论：①市场 vs 赛果得偏差 → ②模型再跑得三方偏差 →
+# ③学出修正函数让预测向赛果趋同（数据越多偏差越小）→ ④冷门路线（次数概率+影响因素）。
+# 三条路线的判决（tri_calib_probe.py，3941 场 × 3 方向，自写 IRLS 逻辑回归）：
+#   · 偏差查表 + 收缩 = **证伪**（全局最优 0.19226 仍劣于纯市场 0.19217，且 K 越大越好）
+#   · 1X2 联合校准 = **无增量**（样本外 0.19130 ≈ 生产@0.80 0.19141；分月 b2 由 +0.39 跳到 −0.16）
+#   · 让球盘联合校准 = **有效**（样本外对比见下）
+#   · 冷门分层 = **成立**（时间外低风险 1/3 翻车 22.98% vs 高风险 1/3 44.10%）
+# → 结论：模型在 1X2 的**概率值**上没有 alpha，硬校准跑不赢纯市场（还要付 12% 抽水）；
+#   但在**条件事件**（"哪盘口有价值"、"这场会不会翻车"）上有 alpha。
+#   因此本引擎 **一律不动 1X2 概率**，只在下面两处接入修正函数 —— 只做过滤，不做加权。
+#
+# ① 让球盘联合校准： logit(P) = a + b1·logit(p_mkt) + b2·logit(p_model)
+#    月度时间外（每月用 <M 月样本拟合，在 M 月实测，每场只买 EV 最高的一注）：
+#      纯模型同口径 498 注 +4.78%(t=0.76) → 联合校准 197 注 **+16.86%**（滚动6月窗口）
+#    注意：月度 ROI 波动大（+81%/+53%/−27%/−14%），属小样本高赔玩法，只用小注。
+# ② 冷门风险：P(市场首选翻车) = sigmoid(β·x)，x=[1, 市场首选概率, 模型−市场分歧,
+#    |让球|, λ和, 市场熵]。时间外 Brier 0.2342 vs 常数基线 0.2498；低风险 1/3 翻车
+#    约 25%、高风险 1/3 约 44%（5 个月 4 个月同向，2026-09 仅 46 场不显著）。
+#    用途：高风险场次降串关权重（不参与信心串关）、并在报告里显式标注。
+#
+# 参数由 market_calib_fit.py 拟合 → market_calib.json。滚动策略 = **按月滚动**
+# （fitted_month 与当前月不同即重拟合；窗口长度由月度时间外验证选出，当前 6 个月）
+# + **样本量收缩** beta_used = (n·beta_fit + K·beta_prior)/(n+K)（让球 K=300、
+# 冷门 K=300；样本越少越靠近"纯市场/常数基线"先验，即"数据越多偏差越小"）。
+MARKET_CALIB = None
+MARKET_CALIB_FILE = "market_calib.json"
+UPSET_THRESHOLDS = ((0.40, "低"), (0.52, "中"), (2.0, "高"))
+
+
+def _find_repo_file(name):
+    """在脚本目录及其上两级目录查找文件。"""
+    here = BASE
+    for _ in range(3):
+        p = os.path.join(here, name)
+        if os.path.exists(p):
+            return p
+        parent = os.path.dirname(here)
+        if parent == here:
+            break
+        here = parent
+    return None
+
+
+def _fit_module():
+    """载入 market_calib_fit.py（仓库根或 tools/prediction/）。"""
+    for c in (os.path.join(BASE, "_market_calib_fit.py"),
+              os.path.join(BASE, "market_calib_fit.py"),
+              os.path.join(BASE, "tools", "prediction", "market_calib_fit.py")):
+        if os.path.exists(c):
+            spec = importlib.util.spec_from_file_location("mkcal_fit", c)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return mod
+    return None
+
+
+def load_market_calib(force=False):
+    """读取 market_calib.json；缺失或已跨月（按月滚动）则自动重拟合。
+
+    重拟合失败不阻断流水线（退回旧参数或 None → 报告侧自动隐藏该模块）。
+    """
+    global MARKET_CALIB
+    p = _find_repo_file(MARKET_CALIB_FILE)
+    if p and not force:
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+            fitted = d.get("_meta", {}).get("fitted_month")
+            if fitted and fitted >= TODAY[:7]:
+                MARKET_CALIB = d
+                return MARKET_CALIB
+        except Exception:  # noqa: BLE001
+            pass
+    mod = _fit_module()
+    if not mod:
+        if p:
+            try:
+                MARKET_CALIB = json.load(open(p, encoding="utf-8"))
+            except Exception:  # noqa: BLE001
+                MARKET_CALIB = None
+        return MARKET_CALIB
+    try:
+        rows = mod.build_rows()
+        mw = mod.ROLL_MONTHS
+        # 窗口长度按 --valid 的月度时间外结果取，若缓存的 roll_months 已验证过则沿用
+        if p and MARKET_CALIB is None:
+            try:
+                prev = json.load(open(p, encoding="utf-8"))
+                mw = prev.get("_meta", {}).get("roll_months", mw)
+            except Exception:  # noqa: BLE001
+                pass
+        MARKET_CALIB = {
+            "_meta": {"source": "market_calib_fit.py",
+                      "fitted_month": mod.month_of(rows[-1]["date"]),
+                      "built_at": datetime.date.today().isoformat(),
+                      "roll_months": mw, "sample_rows": len(rows)},
+            "handicap": mod.fit_handicap(rows, months=mw),
+            "upset": mod.fit_upset(rows, months=mw),
+            "total_goals": (mod.fit_big(rows, months=mw)
+                            if hasattr(mod, "fit_big") else None),
+        }
+        out = p or os.path.join(BASE, MARKET_CALIB_FILE)
+        json.dump(MARKET_CALIB, open(out, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1, sort_keys=True)
+    except Exception as e:  # noqa: BLE001
+        print(f"[warn] market_calib 重拟合失败({e})，本轮跳过二级盘模块")
+    return MARKET_CALIB
+
+
+def _rq_line(handicap):
+    """让球字符串 → 整数（竞彩让球恒为整数，"+1" = 主队受让 1 球）。"""
+    try:
+        return int(str(handicap).replace("+", ""))
+    except (TypeError, ValueError):
+        return 0
+
+
+def rq_model_probs(lam_h, lam_a, handicap, kmax=12):
+    """纯模型（**未混市场**的 λ）在让球盘上的 W/D/L 概率。
+
+    用未混市场的 λ 是刻意的：市场信息已由 p_mkt 单独进入修正函数，
+    若这里也混市场会造成双重计数（且与拟合脚本口径不一致）。
+    """
+    h = _rq_line(handicap)
+    ph = [pmf(i, lam_h) for i in range(kmax + 1)]
+    pa = [pmf(j, lam_a) for j in range(kmax + 1)]
+    d = {"W": 0.0, "D": 0.0, "L": 0.0}
+    for i in range(kmax + 1):
+        pi = ph[i]
+        if pi < 1e-12:
+            continue
+        for j in range(kmax + 1):
+            dd = i - j + h
+            d["W" if dd > 0 else ("L" if dd < 0 else "D")] += pi * pa[j]
+    t = sum(d.values())
+    return {k: v / t for k, v in d.items()} if t > 0 else d
+
+
+def _logit1(p):
+    p = clamp(p, 1e-4, 1 - 1e-4)
+    return math.log(p / (1 - p))
+
+
+def _sigmoid1(z):
+    if z >= 0:
+        return 1.0 / (1.0 + math.exp(-clamp(z, -30, 30)))
+    e = math.exp(clamp(z, -30, 30))
+    return e / (1.0 + e)
+
+
+def handicap_analysis(odds, lam_mh, lam_ma, has_1x2=None):
+    """让球盘：市场去水 vs 纯模型 vs 联合校准 → EV 与建议。
+
+    返回 None 表示无让球盘（当日该场未开盘）。
+
+    【置信度门槛】2026-09-10 实测发现两类"假价值"：
+      ① 无 1X2 市场锚点（赔率缺失）时 λ 完全由模型决定，而模型有已知的
+         「跨联赛实力差未校准」缺陷（曼联vs萨巴赫：模型 λ2.11/1.75，让球−2 给
+         让球负 74.6% vs 市场 22.9%）；
+      ② 模型−市场分歧过大本身就是在提示模型错了（同一缺陷的另一表现）。
+    因此 conf 同时受 |让球| 与最大分歧约束，低置信只作观察、不参与串关。
+    """
+    if not MARKET_CALIB or not MARKET_CALIB.get("handicap"):
+        return None
+    rq = odds.get("让球")
+    if not (isinstance(rq, list) and rq and isinstance(rq[0], dict)):
+        return None
+    it = rq[0]
+    try:
+        o = {"W": float(it.get("胜")), "D": float(it.get("平")), "L": float(it.get("负"))}
+    except (TypeError, ValueError):
+        return None
+    if min(o.values()) <= 1.0:
+        return None
+    s = sum(1.0 / v for v in o.values())
+    mkt = {k: (1.0 / v) / s for k, v in o.items()}
+    mod = rq_model_probs(lam_mh, lam_ma, it.get("handicap"))
+    b = MARKET_CALIB["handicap"]["beta"]
+    cal = {}
+    for k in ("W", "D", "L"):
+        z = b[0] + b[1] * _logit1(mkt[k]) + b[2] * _logit1(max(mod[k], 1e-4))
+        cal[k] = _sigmoid1(z)
+    tot = sum(cal.values())
+    cal = {k: v / tot for k, v in cal.items()}
+    ev = {k: cal[k] * o[k] for k in ("W", "D", "L")}
+    best = max(ev, key=lambda k: ev[k])
+    lb = {"W": "让球胜", "D": "让球平", "L": "让球负"}[best]
+    # 置信度分级：|让球| 决定样本量（=1 有 3429 场、=2 仅 170、≥3 样本不足），
+    # 模型−市场分歧决定"模型是否可能错了"。
+    h = abs(_rq_line(it.get("handicap")))
+    div_pp = max(abs(mod[k] - mkt[k]) for k in ("W", "D", "L")) * 100
+    warns = []
+    if h >= 3:
+        warns.append(f"|让球|={h} 历史样本不足")
+    if div_pp > 25:
+        warns.append(f"模型−市场分歧 {div_pp:.0f}pp 超阈值（跨联赛实力差为已知缺陷）")
+    if has_1x2 is False:
+        warns.append("无 1X2 市场锚点，λ 未经市场混合")
+    if h == 1 and div_pp <= 12 and has_1x2 is not False:
+        conf = "高"
+    elif h <= 2 and div_pp <= 25 and has_1x2 is not False:
+        conf = "中"
+    else:
+        conf = "低"
+    return {
+        "handicap": str(it.get("handicap")), "abs": h, "conf": conf,
+        "div_pp": round(div_pp, 1), "warns": warns,
+        "odds": o,
+        "market": {k: round(mkt[k] * 100, 1) for k in ("W", "D", "L")},
+        "model": {k: round(mod[k] * 100, 1) for k in ("W", "D", "L")},
+        "calibrated": {k: round(cal[k] * 100, 1) for k in ("W", "D", "L")},
+        "ev": {k: round(ev[k], 3) for k in ("W", "D", "L")},
+        "best": {"pick": lb, "key": best, "ev": round(ev[best], 3),
+                 "odds": o[best], "prob": round(cal[best] * 100, 1)},
+        "n_samples": MARKET_CALIB["handicap"].get("n_samples"),
+    }
+
+
+def upset_analysis(odds, lam_mh, lam_ma):
+    """冷门风险：P(市场首选翻车) + 等级 + 影响因素分解。"""
+    if not MARKET_CALIB or not MARKET_CALIB.get("upset"):
+        return None
+    oh, od, oa = odds.get("胜"), odds.get("平"), odds.get("负")
+    try:
+        mkt = devig_1x2(float(oh), float(od), float(oa))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
+    mod = pois_1x2(lam_mh, lam_ma)
+    top = max(range(3), key=lambda i: mkt[i])
+    ent = -sum(p * math.log(max(p, 1e-6)) for p in mkt)
+    rq = odds.get("让球")
+    hc = 1.5
+    if isinstance(rq, list) and rq and isinstance(rq[0], dict):
+        try:
+            hc = abs(int(str(rq[0].get("handicap")).replace("+", "")))
+        except (TypeError, ValueError):
+            hc = 1.5
+    x = [1.0, mkt[top], mod[top] - mkt[top], float(hc), lam_mh + lam_ma, ent]
+    b = MARKET_CALIB["upset"]["beta"]
+    p = _sigmoid1(sum(b[i] * x[i] for i in range(len(b))))
+    level = next(lb for th, lb in UPSET_THRESHOLDS if p < th)
+    return {
+        "prob": round(p * 100, 1), "level": level,
+        "market_top": ["主胜", "平局", "客胜"][top],
+        "market_top_prob": round(mkt[top] * 100, 1),
+        "div_pp": round((mod[top] - mkt[top]) * 100, 1),
+        "abs_handicap": hc, "lam_sum": round(lam_mh + lam_ma, 2),
+        "entropy": round(ent, 3),
+        "base_rate": round(MARKET_CALIB["upset"].get("base_rate", 0) * 100, 1),
+        "n_samples": MARKET_CALIB["upset"].get("n_samples"),
+    }
+
+
+TOT_GOALS_KEYS = ("0", "1", "2", "3", "4", "5", "6", "7+")
+BIG_THRESHOLDS = ((20.0, "高"), (10.0, "中"), (0.0, "低"))
+
+
+def big_goals_analysis(odds):
+    """大比分（总进球 6+ / 7+）：市场去水 → 校准概率 → 赔率 EV。
+
+    为什么要校准：市场对 6+/7+ 系统性定价偏高 —— 4217 场实测，总进球盘去水后
+    P(6+) 均值 9.41% vs 实际 6.28%（−3.13pp）、P(7+) 4.09% vs 2.37%（−1.72pp），
+    且概率越高越离谱（去水 ≥18% 档：21.95% vs 15.45%）。直接按赔率回测：
+    买「恰好 6 球」ROI −41.1%、买「7+」ROI −54.1%（所有赔率区间全负）。
+    故本模块只用于「哪场最像出大比分」的观察排序，**不构成投注建议**。
+    """
+    if not MARKET_CALIB or not MARKET_CALIB.get("total_goals"):
+        return None
+    tot = odds.get("总进球")
+    if isinstance(tot, list) and tot and isinstance(tot[0], dict):
+        tot = tot[0]
+    if not isinstance(tot, dict):
+        return None
+    raw = {}
+    for k in TOT_GOALS_KEYS:
+        try:
+            o = float(tot.get(k))
+        except (TypeError, ValueError):
+            return None
+        if o <= 1.0:
+            return None
+        raw[k] = 1.0 / o
+    s = sum(raw.values())
+    pmk = {k: v / s for k, v in raw.items()}
+    p6m, p7m = pmk["6"] + pmk["7+"], pmk["7+"]
+    tb = MARKET_CALIB["total_goals"]
+    p6 = _sigmoid1(tb["p6"]["beta"][0] + tb["p6"]["beta"][1] * _logit1(max(p6m, 1e-4)))
+    p7 = _sigmoid1(tb["p7"]["beta"][0] + tb["p7"]["beta"][1] * _logit1(max(p7m, 1e-4)))
+    p6 = min(max(p6, p7), 0.999)
+    o6, o7 = float(tot["6"]), float(tot["7+"])
+    return {
+        "market6": round(p6m * 100, 2), "market7": round(p7m * 100, 2),
+        "cal6": round(p6 * 100, 2), "cal7": round(p7 * 100, 2),
+        "p_eq6": round(max(p6 - p7, 0.0) * 100, 2),
+        "odd6": o6, "odd7": o7,
+        "ev6": round(max(p6 - p7, 0.0) * o6, 3), "ev7": round(p7 * o7, 3),
+        "lam_mkt": round(sum((7 if k == "7+" else int(k)) * v for k, v in pmk.items()), 2),
+        "level": next(lb for th, lb in BIG_THRESHOLDS if p6 * 100 >= th),
+        "overround": round(s, 3),
+        "n_samples": tb.get("n_samples"),
+    }
+
+
+def pmf(k, lam):
+    return math.exp(-lam) * lam ** k / math.factorial(k)
+
+def wavg(vals):
+    """指数衰减加权平均，vals[0] 为最近一场。"""
+    w = [DECAY ** i for i in range(len(vals))]
+    return sum(v * wi for v, wi in zip(vals, w)) / sum(w)
+
+
+def recent_avg(seq_oldest_first):
+    """历史场均（由旧到新的序列）→ 取最近 RECENT_N 场做 DECAY 加权。
+
+    【2026-09-08】Platt 拟合原本写死近 5 场简单均值，与实跑（近 N 场 + 指数衰减）
+    不同源；统一走此函数，保证校准拟合与实跑分布一致。
+    """
+    return wavg(list(seq_oldest_first)[-RECENT_N:][::-1])
+
+
+def eff_n(n):
+    """指数衰减口径下的「有效样本量」= Σ DECAY^i。
+
+    分主客观测样本很少（各队约 6 场），收缩时必须用有效样本量而非原始场次，
+    否则会低估噪声、让收缩权重失真。
+    """
+    return sum(DECAY ** i for i in range(min(n, RECENT_N)))
+
+
+# ------------------------------------------------- V3 自适应校准路线图
+# 说明：每个模块登记"是否启用 + 启用所需样本量"。运行时 roadmap_status() 打印进度，
+# 达到样本量却仍未启用的会标记为 READY，提醒及时接入，避免改进项被遗忘。
+V3_CONFIG = {
+    "EWMA_MAD": {"enabled": True, "min_samples": 0, "alpha": 0.25, "mad_k": 3.0,
+                 "damp": 0.6, "clamp": (0.88, 1.15),
+                 "note": "EWMA(a=0.25)+MAD去极值求全局偏差比，替代三档跳变系数"},
+    "LEAGUE_SHRINK": {"enabled": True, "min_samples": 0, "prior_k": 8, "min_n": 5,
+                      "damp": 0.6, "clamp": (0.85, 1.15),
+                      "note": "按联赛分层+经验贝叶斯收缩，样本不足时向全局因子收缩"},
+    # ---- V3.1 联赛进球环境（2026-09-06 实装，经 walk-forward + 5折时序CV 验证）----
+    "LEAGUE_PRIOR_SHRINK": {"enabled": True, "min_samples": 0, "w": 0.25,
+                            "note": "联赛先验收缩 λ*(1-w)+联赛基线*w（w=0.25）。"
+                                    "实测MAE 1.2892→1.2538(-2.75%)，配对Z=5.06；5折时序CV各折一致改善(-2.19%)。"
+                                    "数据: league_profile.json（7174场/44联赛）。"
+                                    "警告: 禁止改成 index 直接相乘——实测恶化+2.69%"},
+    # ---- V3.2 主客场分拆（2026-09-10 实装，按提议引入）----
+    "VENUE_SPLIT_LAMBDA": {"enabled": True, "min_samples": 0, "k": 4.0,
+                           "note": "基础λ观测改用分主客口径（主队作为主队的进球/客队作为客队的失球），"
+                                   "不再乘 HOME_BOOST/AWAY_DISCOUNT，按有效样本量向不分主客口径收缩 K=4。"
+                                   "实测：泊松logL -3.1076→-3.0665(+1.32%)、进球MSE 1.6101→1.5404(-4.3%)、"
+                                   "1X2 Brier 0.6292→0.6247(Z=+5.41)、5/5时序段改善。"
+                                   "数据: scripts/matches_data.json 的 home_recent_home/away_recent_away。"
+                                   "警告: 分主客场次均值仅约6场，K 不可调小（K=2 虽 Brier 略优但噪声大）"},
+    "VENUE_H2H": {"enabled": False, "min_samples": 0, "rejected": True,
+                  "note": "❌ 2026-09-10 验证不可行：同一主客方向的交手记录 ≥3 场占比 0.00%"
+                          "（1496场样本中一场都没有；任意方向H2H≥3也仅0.33%）。"
+                          "赛果库仅覆盖2026年，待跨赛季数据后再评估"},
+    "H2H_LEAGUE_NORM": {"enabled": True, "min_samples": 0,
+                        "note": "H2H分档阈值按联赛基线归一(1.41/1.06/0.88/0.71×)，"
+                                "解决德甲3.0球≠韩职3.0球的问题。弱验证(样本80场)，需持续观察"},
+    "LEAGUE_DIST_SHAPE": {"enabled": True, "min_samples": 0,
+                          "note": "联赛经验比分频率混合(第七步B, w=0.5, K=50收缩)："
+                                  "walk-forward Brier -0.45%，0-0高估+3.0pp→+1.6pp，1-1校准改善。"
+                                  "数据: league_profile.json score_freq(34联赛)。"
+                                  "2026-09-07 加自适应衰减 w_eff=w0×max(0.35,1-0.20×(λ比-1))："
+                                  "1X2 Brier -0.38%(Z=+2.3)，λ比≥2.5桶强队低估-7.2pp→+1.0pp，Top1 -0.24pp(不显著)"},
+    "PLATT_ISOTONIC": {"enabled": True, "min_samples": 300,
+                       "note": "胜平负 Platt 校准已启用(V3.1)：Brier -0.37%、平局偏差-3.8pp→+0.2pp；"
+                               "isotonic/温度缩放/对角线膨胀均已验证劣于 Platt，弃用"},
+    "DIXON_COLES_TAU": {"enabled": False, "min_samples": 0, "rejected": True,
+                        "note": "❌ 2026-09-06 验证不通过：全局ρ网格搜索最优-0.12，Brier仅-0.09%，"
+                                "且0-0校准恶化(9.5%→10.7%，实际6.5%)。由 LEAGUE_DIST_SHAPE 经验混合替代"},
+    "MARKET_BLEND_PROB": {"enabled": True, "min_samples": 0,
+                          "note": "市场概率混合已启用(V3.2)：模型1X2 与 市场去水1X2 按 0.8 加权后"
+                                  "反解λ（总量守恒）。1X2 Brier 0.5940→0.5739，方向Top1 53.4%→55.1%，"
+                                  "进球总量零损失（旧λ空间混合同权重下总量偏差−0.735，已弃用）"},
+    "MARKET_SCORE_DIST": {"enabled": False, "min_samples": 0, "rejected": True,
+                          "note": "❌ 2026-09-10 验证否决：比分盘去水分布并入网格可再降 1X2 Brier "
+                                  "(0.5902→0.5800@w=0.5)，但比分 Top5 覆盖 48.4%→47.1%、Top3 34.7%→34.2%，"
+                                  "方向收益与覆盖损失相抵且覆盖是报告头条 → 不采纳。见 market_scoreblend_probe.py"},
+    "MARKET_HANDICAP": {"enabled": True, "min_samples": 0,
+                        "note": "让球盘联合校准已启用(V3.3)：logit(P)=a+b1·logit(p_mkt)+b2·logit(p_mod)，"
+                                "月度时间外每月重拟合：EV>1.10 每场1注 197注 ROI +16.86%"
+                                "（纯模型同口径 498注 +4.78% t=0.76）。价值在过滤不在加权。"
+                                "参数 market_calib.json（按月滚动 + 样本量收缩 K=300）"},
+    "UPSET_ROUTE": {"enabled": True, "min_samples": 0,
+                    "note": "冷门风险已启用(V3.3)：P(市场首选翻车) logistic，特征=市场首选概率/"
+                            "模型-市场分歧/|让球|/λ和/市场熵。时间外 Brier 0.2342 vs 常数基线 0.2498；"
+                            "低风险1/3翻车22.98% vs 高风险1/3 44.10%（5个月中4个月同向）。"
+                            "用途：高风险场次不进信心串关 + 报告显式标注"},
+    "BIG_GOALS": {"enabled": True, "min_samples": 0,
+                  "note": "大比分(总进球6+/7+)观察模块启用(2026-09-10)：市场总进球盘去水 → "
+                          "logit 校准（P(6+) a=−0.4288 b=+0.9858；P(7+) a=−0.2273 b=+1.0838）→ EV。"
+                          "校准动机：市场系统性高估大比分 —— 4217 场去水 P(6+) 均值 9.41% vs 实际 6.28%、"
+                          "P(7+) 4.09% vs 2.37%；直接按赔率回测买「恰好6球」ROI −41.1%、买「7+」−54.1%。"
+                          "仅用于「哪场最像出大比分」排序，不构成投注建议。"},
+    "SCORE_ALIGN": {"enabled": True, "min_samples": 0,
+                    "note": "比分矩阵对齐发布的 1X2 已启用(V3.3)：把矩阵三象限质量缩放到 Platt 后的"
+                            "发布概率（象限内形状不变，一步精确投影）。修复「报告一边说客胜58%，"
+                            "比分组却按客胜51%排」的自相矛盾（实测最大差 9.9pp）。"
+                            "时间外 3599 场逐场配对：比分 LogLoss −0.0131(t=−4.15)、1X2 Brier −1.4%、"
+                            "方向命中 +0.47pp、Top5 覆盖 −0.64pp(噪声内)。"
+                            "市场比分盘混合/总进球盘 IPF 约束/对齐 pre-Platt 均实测更差，已否决。"
+                            "见 _probe_score_align.py / tools/prediction/score_align_probe.py"},
+    "REST_DAYS": {"enabled": False, "min_samples": 0, "rejected": True,
+                  "note": "❌ 2026-09-10 验证否决：休息天数对净胜球看似有 −0.6 球效应（多休反而更差），"
+                          "但用市场赔率控制实力后残差仅 +0.09/−0.13 且符号不一致；"
+                          "「休息少」实为「强队参赛密」的代理。见 rest_days_probe.py"},
+    # ---- V3.4 五模块（2026-09-14 接线：main() 每日调用，见文件末尾「V3.4 运行时」节）----
+    # 此前这五项 enabled=True 只在路线图打印 ON，main() 从未调用（已落库、未接线）。
+    "BRIER_OPT": {"enabled": True, "wired": True, "apply": True, "min_samples": 500,
+                  "every_days": 7, "min_improve_pct": 0.3, "band": (0.60, 0.85),
+                  "note": "周期寻优 MARKET_W/DECAY/LEAGUE_SHRINK_W（walk-forward 分折），"
+                          "达标才采纳（改善≥0.3% 且落在 0.60~0.85 安全带），每 7 天最多一次；"
+                          "当前最优值落 v34_state.json，采纳值存 v34_tuned.json"},
+    "HEDGE_ENSEMBLE": {"enabled": True, "wired": True, "apply": False,
+                       "eta": 6.0, "band": (0.70, 0.90), "min_samples": 500,
+                       "note": "专家 HEDGE（模型/市场/混合）近期对数损失 w∝exp(-ηL) → 当日市场权重；"
+                               "接线后按 alpha 门控：默认 apply=False（回测未过 → 只记录不改变预测）"},
+    "KALMAN_STRENGTH": {"enabled": True, "wired": True, "apply": True, "min_samples": 200,
+                        "note": "按「相对自身状态期望 λ 的偏置」在线更新 4 维攻防强度（主/客×攻/守），"
+                                "主客场分离 + 不确定度收缩；V3.4 默认 apply=True"},
+    "CLV_TRACK": {"enabled": True, "wired": True, "apply": True, "min_samples": 100,
+                  "note": "每日跟踪推荐赔率 vs 收盘赔率（results_history 里的最终赔率），"
+                          "累计入 clv_log.json；联赛 CLV 持续 < −5% 时在流水线打印「提高该联赛 MARKET_W」提示"},
+    "DRIFT_MONITOR": {"enabled": True, "wired": True, "apply": True, "min_samples": 200,
+                      "note": "每日 PSI/KS 监控进球/主客比/联赛基线分布，基准 drift_baseline.json；"
+                              "超阈值时置位 state.drift.retrain_suggested，提示重拟合（不自动改参数）"},
+}
+
+
+def ratio_to_factor(ratio, damp=0.6, bounds=(0.88, 1.12)):
+    """平滑映射偏差比→λ系数：模型高估(ratio>1)则下调λ；damp<1 表示只修正部分偏差。"""
+    if not ratio or ratio <= 0:
+        return 1.0
+    return clamp((1.0 / ratio) ** damp, *bounds)
+
+
+def robust_ewma(daily, cfg):
+    """先按中位数绝对偏差剔除异常期（如8球大战），再对 ratio 做指数加权，抗单期噪声。"""
+    pairs = [(d["date"], d["pred"] / d["actual"])
+             for d in sorted(daily, key=lambda x: x["date"]) if d.get("actual") and d.get("pred")]
+    if not pairs:
+        return 1.0, [], []
+    vals = [r for _, r in pairs]
+    med = statistics.median(vals)
+    mad = statistics.median([abs(v - med) for v in vals]) or 1e-9
+    thr = cfg["mad_k"] * 1.4826 * mad
+    kept = [(dt, r) for dt, r in pairs if abs(r - med) <= thr] or pairs
+    dropped = [{"date": dt, "ratio": round(r, 3)}
+               for dt, r in pairs if abs(r - med) > thr]
+    ewma, series = None, []
+    for dt, r in kept:
+        ewma = r if ewma is None else cfg["alpha"] * r + (1 - cfg["alpha"]) * ewma
+        series.append({"date": dt, "ratio": round(r, 3), "ewma": round(ewma, 3)})
+    return ewma, dropped, series
+
+
+def shrink_league(buckets, pred_mean, global_factor, cfg):
+    """按联赛分层：f = (n·f_local + K·f_global) / (n + K)，样本少自动向全局收缩。"""
+    factors, detail = {}, {}
+    for lg, b in buckets.items():
+        n = b["n"]
+        if n < cfg["min_n"]:
+            factors[lg] = round(global_factor, 3)
+            detail[lg] = {"n": n, "factor": round(global_factor, 3), "shrunk": True}
+            continue
+        am = b["actual"] / n
+        f_local = ratio_to_factor(pred_mean / am if am else 1.0, cfg["damp"], cfg["clamp"])
+        f = clamp((n * f_local + cfg["prior_k"] * global_factor) / (n + cfg["prior_k"]), *cfg["clamp"])
+        factors[lg] = round(f, 3)
+        detail[lg] = {"n": n, "actual_mean": round(am, 2), "local": round(f_local, 3),
+                      "factor": round(f, 3), "shrunk": False}
+    return factors, detail
+
+
+def roadmap_status(n_samples):
+    """返回各模块启用进度；已接线 / 未接线（工具态）分别标注，避免 ON 被读成已生效。"""
+    lines = []
+    for name, cfg in V3_CONFIG.items():
+        need = cfg["min_samples"]
+        if cfg.get("rejected"):
+            state = "REJECTED"
+        elif cfg["enabled"]:
+            if cfg.get("wired"):
+                state = "ON·生效" if cfg.get("apply") else "ON·观察"
+            else:
+                state = "ON"
+        elif need and n_samples >= need:
+            state = "READY"
+        else:
+            state = f"{n_samples}/{need}"
+        lines.append(f"  [{'x' if cfg['enabled'] else ' '}] {name:<15} {state:<9} {cfg['note'][:40]}")
+    return lines
+
+
+# ------------------------------------------------- 待启用模块占位（达到样本量后实现）
+def platt_calibrate(probs, outcomes):
+    """TODO(V3)：Platt/isotonic 概率校准，让"说60%的场次真有60%命中"。触发：≥300场带结果样本。"""
+    raise NotImplementedError("PLATT_ISOTONIC 未实现：需先累积标注样本并评估可靠性曲线")
+
+
+def dixon_coles_tau(score_matrix):
+    """TODO(V3)：拟合低比分相依参数 τ，修正 0-0/1-0/0-1/1-1。触发：≥200场。"""
+    raise NotImplementedError("DIXON_COLES_TAU 未实现")
+
+
+def brier_optimize(param_name="MARKET_W", candidates=None, n_folds=5, min_labeled=500):
+    """walk-forward 寻优单一超参 — V3.4 实装。
+
+    简化链路（重写整条 calc_match 太慢，这里只用主要步骤）:
+      赔率反推 λ（无历史数据时）→ 联赛收缩 → 市场概率混合 → 泊松 1X2 → Brier
+
+    参数:
+      param_name: 要扫描的参数名 ("MARKET_W" / "DECAY" / "LEAGUE_SHRINK_W")
+      candidates: 候选值列表; None 则用内置默认
+      n_folds: walk-forward 折数 (按日期分, 第 k 折用 <k 的日期训练, 在 k 上测)
+      min_labeled: 最少需要的带结果样本数
+
+    返回: {"best": 值, "scores": [(值, Brier)], "improvement": 相对默认 Brier 改善}
+    """
+    load_league_profile()
+    root = _repo_root()
+    rh = os.path.join(root, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    # 收集有完整结果+赔率的比赛 (V3.4 简化: 不用 home_recent 等)
+    recs = []
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        date_str = os.path.basename(f).replace(".json", "")
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            oh, od, oa = v.get("胜"), v.get("平"), v.get("负")
+            if ":" not in fs or not oh or not od or not oa:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+                oh, od, oa = float(oh), float(od), float(oa)
+            except (ValueError, TypeError):
+                continue
+            recs.append({
+                "date": date_str, "league": v.get("league") or "其他",
+                "hg": hg, "ag": ag, "oh": oh, "od": od, "oa": oa,
+                "y": 0 if hg > ag else (1 if hg == ag else 2),
+            })
+
+    if len(recs) < min_labeled:
+        print(f"  BRIER_OPT: 样本 {len(recs)} < {min_labeled}, 跳过")
+        return None
+
+    # 按日期分折
+    dates = sorted(set(r["date"] for r in recs))
+    if len(dates) < n_folds:
+        n_folds = len(dates)
+    fold_size = len(dates) // n_folds
+    folds = []
+    for k in range(n_folds):
+        start = k * fold_size
+        end = start + fold_size if k < n_folds - 1 else len(dates)
+        fold_dates = set(dates[start:end])
+        folds.append([r for r in recs if r["date"] in fold_dates])
+
+    # 候选值
+    defaults = {
+        "MARKET_W": [0.50, 0.60, 0.70, 0.80, 0.85, 0.90],
+        "DECAY": [0.90, 0.94, 0.96, 0.98, 1.00],
+        "LEAGUE_SHRINK_W": [0.10, 0.20, 0.25, 0.30, 0.40],
+        "VENUE_SHRINK_K": [3.0, 4.0, 5.0, 6.0, 8.0],
+    }
+    if param_name not in defaults:
+        print(f"  BRIER_OPT: 未知参数 {param_name}, 可选 {list(defaults.keys())}")
+        return None
+    if candidates is None:
+        candidates = defaults[param_name]
+
+    old_val = globals().get(param_name)
+    results = []
+    w_shrink = LEAGUE_PROFILE.get("shrink", {}).get("w", 0.25)
+
+    for cand in candidates:
+        globals()[param_name] = cand
+        fold_briers = []
+        for test_fold in folds:
+            briers = []
+            for r in test_fold:
+                try:
+                    total = league_baseline(r["league"])
+                    # 赔率反推 λ
+                    lam_h = (1.0 / r["oh"]) * total * 0.5
+                    lam_a = (1.0 / r["oa"]) * total * 0.4
+                    # 联赛收缩
+                    t = lam_h + lam_a
+                    new_t = t * (1 - w_shrink) + total * w_shrink
+                    if t > 0:
+                        lam_h, lam_a = lam_h * new_t / t, lam_a * new_t / t
+                    # 市场混合 (MARKET_W)
+                    pv = devig_1x2(r["oh"], r["od"], r["oa"])
+                    pm = pois_1x2(lam_h, lam_a)
+                    if param_name == "MARKET_W":
+                        w_use = cand
+                    else:
+                        w_use = MARKET_W
+                    pb = [(1 - w_use) * pm[i] + w_use * pv[i] for i in range(3)]
+                    st = sum(pb)
+                    if st > 0:
+                        pb = [x / st for x in pb]
+                    # Brier
+                    y = [1.0 if r["y"] == i else 0.0 for i in range(3)]
+                    br = sum((pb[i] - y[i]) ** 2 for i in range(3)) / 3
+                    briers.append(br)
+                except Exception:
+                    continue
+            if briers:
+                fold_briers.append(sum(briers) / len(briers))
+        if fold_briers:
+            avg_brier = sum(fold_briers) / len(fold_briers)
+            results.append((cand, avg_brier))
+
+    globals()[param_name] = old_val  # 恢复原参数
+
+    if not results:
+        return None
+    results.sort(key=lambda x: x[1])
+    best_val, best_brier = results[0]
+    default_brier = next((b for v, b in results if v == old_val), None)
+    improvement = ((default_brier - best_brier) / default_brier * 100) if default_brier else None
+
+    print(f"\n=== BRIER_OPT: {param_name} (walk-forward {n_folds}折, {len(recs)}场) ===")
+    for v, br in results:
+        mark = " ← 最优" if v == best_val else (" (当前)" if v == old_val else "")
+        print(f"  {param_name}={v:g}: Brier={br:.5f}{mark}")
+    if improvement is not None:
+        print(f"  相对默认改善: {improvement:+.2f}%")
+
+    return {
+        "param": param_name, "old": old_val, "best": best_val,
+        "best_brier": round(best_brier, 5),
+        "default_brier": round(default_brier, 5) if default_brier else None,
+        "improvement_pct": round(improvement, 2) if improvement else None,
+        "scores": [(v, round(b, 5)) for v, b in results],
+    }
+
+
+def hedge_weights(losses, eta=0.5):
+    """Hedge 专家加权 — V3.4 实装（算法正确性验证版）。
+
+    Hedge (Schapire & Freund 2012) 的核心：每个专家权重 ∝ exp(-η·L_i)
+    L_i = 该专家近期累计损失（对数损失或 Brier 均可）
+    η = 学习率（loss 越大 → 权重衰减越快）
+
+    使用方式 (在 calc_match 里调用):
+      losses = {
+          "model": recent_logloss_model,      # 纯泊松的近期损失
+          "market": recent_logloss_market,    # 纯市场去水 1X2 的近期损失
+          "blend": recent_logloss_blend,      # 当前 MARKET_W 混合的近期损失
+      }
+      w = hedge_weights(losses, eta=0.5)
+      final_probs = sum(w[k] * probs[k] for k in w)
+
+    参数:
+      losses: dict {专家名: 累计损失 (float)}
+      eta: 学习率 (越大越激进惩罚差专家, 0.5~2.0 常用)
+
+    返回: dict {专家名: 权重}, 归一化后和为 1; 若某专家损失不可用则跳过
+    """
+    valid = {k: v for k, v in losses.items()
+             if v is not None and isinstance(v, (int, float)) and not math.isnan(v)}
+    if not valid:
+        return None
+    # 数值稳定: 先减最小 loss 再 exp, 避免 float overflow
+    min_loss = min(valid.values())
+    raw = {k: math.exp(-eta * (v - min_loss)) for k, v in valid.items()}
+    total = sum(raw.values())
+    if total <= 0:
+        # 等权兜底
+        eq = 1.0 / len(valid)
+        return {k: eq for k in valid}
+    return {k: raw[k] / total for k in raw}
+
+
+def compute_hedge_losses(results_dir=None, window=500):
+    """计算各专家的近期损失（walk-forward 简化版）。
+
+    专家定义:
+      - "model": 纯泊松（用 league 场均 λ）
+      - "market": 纯市场去水 1X2
+      - "blend": 当前 MARKET_W 混合结果
+
+    返回: dict {"model": loss, "market": loss, "blend": loss, "n": 样本数}
+    """
+    if results_dir is None:
+        results_dir = _repo_root()
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    load_league_profile()
+
+    # 收集样本
+    recs = []
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            oh, od, oa = v.get("胜"), v.get("平"), v.get("负")
+            if ":" not in fs or not oh or not od or not oa:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+                oh, od, oa = float(oh), float(od), float(oa)
+            except (ValueError, TypeError):
+                continue
+            league = v.get("league") or "其他"
+            recs.append({
+                "league": league, "hg": hg, "ag": ag,
+                "oh": oh, "od": od, "oa": oa,
+                "y": 0 if hg > ag else (1 if hg == ag else 2),
+            })
+
+    if len(recs) < 200:
+        return None
+    # 取最近 window 场
+    recs = recs[-window:]
+
+    lm = lmkt = lb = 0.0
+    n = 0
+    for r in recs:
+        try:
+            total = league_baseline(r["league"])
+            # model: 纯泊松, λ=联赛基线拆分
+            lam_h = total * 0.45
+            lam_a = total * 0.40
+            pm = pois_1x2(lam_h, lam_a)
+            # market
+            pv = devig_1x2(r["oh"], r["od"], r["oa"])
+            # blend
+            pb = [(1 - MARKET_W) * pm[i] + MARKET_W * pv[i] for i in range(3)]
+            # 对数损失
+            lm += -math.log(max(pm[r["y"]], 1e-9))
+            lmkt += -math.log(max(pv[r["y"]], 1e-9))
+            lb += -math.log(max(pb[r["y"]], 1e-9))
+            n += 1
+        except Exception:
+            continue
+
+    if n == 0:
+        return None
+    return {"model": round(lm / n, 5), "market": round(lmkt / n, 5),
+            "blend": round(lb / n, 5), "n": n}
+
+
+def half_score_adjust(lam_h, lam_a, half_score_str):
+    """半场比分 → 调整泊松 λ — V3.4 实装（预测进行中的比赛）。
+
+    足球半场比分对全场预测有强信号：
+      - 半场 0-0 → 全场 λ 下调 30%（比赛趋于谨慎）、平局概率 +15pp
+      - 半场 A:B (A>B) → λ_A 上调 20%, λ_B 下调 10%（领先方控制节奏）
+      - 半场 A:B (A<B) → λ_A 上调 15%, λ_B 下调 5%（落后方施压但防守松懈）
+      - 半场 1:1 → λ 保持不变（正常走势），平局概率 +5pp
+      - 半场 2+:2+ → λ 各上调 10%（比赛开放）
+
+    参数:
+      lam_h, lam_a: 调整前的主客 λ
+      half_score_str: "主:客" 格式的半场比分; None/空字符串则跳过
+
+    返回: (new_lam_h, new_lam_a, note) 或原 λ+note=None
+    """
+    if not half_score_str or ":" not in half_score_str:
+        return lam_h, lam_a, None
+    try:
+        h_half, a_half = [int(x) for x in half_score_str.split(":")]
+    except (ValueError, TypeError):
+        return lam_h, lam_a, None
+
+    note_parts = [f"半场{half_score_str}"]
+
+    if h_half == 0 and a_half == 0:
+        # 0-0: 比赛趋于谨慎
+        nh, na = lam_h * 0.70, lam_a * 0.70
+        note_parts.append("全场λ×0.70(谨慎)")
+    elif h_half > a_half:
+        lead = h_half - a_half
+        # 主队领先: 主 λ +20%, 客 λ -10% (领先方保守)
+        nh, na = lam_h * 1.20, lam_a * 0.90
+        note_parts.append(f"主+20%/客-10%(主领先{lead})")
+        if h_half >= 2:
+            nh *= 1.10  # 半场 2+ 比赛开放
+            na *= 0.95
+    elif h_half < a_half:
+        lead = a_half - h_half
+        nh, na = lam_h * 1.15, lam_a * 0.95
+        note_parts.append(f"主+15%/客-5%(客领先{lead})")
+        if a_half >= 2:
+            nh *= 1.05
+            na *= 0.90
+    else:  # 1:1 或 2:2 等
+        if h_half >= 2:
+            nh, na = lam_h * 1.10, lam_a * 1.10
+            note_parts.append("λ×1.10(开放)")
+        else:
+            nh, na = lam_h, lam_a
+            note_parts.append("λ不变(势均)")
+
+    # 守住合理区间
+    nh = clamp(nh, 0.1, MAX_SINGLE)
+    na = clamp(na, 0.1, MAX_SINGLE)
+    return nh, na, " → ".join(note_parts)
+
+
+def load_strength_db(db_path=None):
+    """加载球队攻防强度状态字典。不存在返回空 dict。"""
+    if db_path is None:
+        db_path = os.path.join(BASE, "strength_db.json")
+    if os.path.exists(db_path):
+        try:
+            return json.load(open(db_path, encoding="utf-8"))
+        except Exception:
+            return {"_meta": {}, "teams": {}}
+    return {"_meta": {"created": datetime.datetime.now().isoformat(),
+                      "note": "KALMAN_STRENGTH V3.4: 4维(主/客 × 攻/守) + Kalman增益在线更新"},
+            "teams": {}}
+
+
+def save_strength_db(db, db_path=None):
+    """持久化 strength 字典。"""
+    if db_path is None:
+        db_path = os.path.join(BASE, "strength_db.json")
+    json.dump(db, open(db_path, "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2)
+
+
+def kalman_update_strength(team, is_home, metric, residual, db=None, db_path=None):
+    """Kalman 在线更新球队攻防强度 — V3.4 实装。
+
+    4 个 metric 维度:
+      "attack": 进球能力 (主队进球多→attack↑)
+      "defend": 失球能力 (主队失球多→defend↑)
+    结合 is_home 分主客场 → 实际存储 ha/hd/aa/ad 四个独立强度。
+
+    Kalman 增益控制:
+      K = P / (P + R)     观测噪声 R=0.20 (单次进球的方差, 足球进球方差大)
+      strength += K * residual
+      P = (1-K) * P + Q   过程噪声 Q=0.01 (赛季中强度缓慢变化)
+
+    strength=1.0 代表联赛基线水平; 实际 lambda 修正: λ *= strength/1.0
+
+    参数:
+      team: 球队名 (str)
+      is_home: 是否主队 (bool)
+      metric: "attack" 或 "defend"
+      residual: 实际进球/失球 - 期望进球/失球 (float)
+      db: strength 字典; None 则从 db_path 读
+      db_path: 文件路径; None 则用默认 strength_db.json
+
+    返回: 更新后的 strength 字典 (会自动 save)
+    """
+    if db is None:
+        db = load_strength_db(db_path)
+
+    teams = db.setdefault("teams", {})
+    t = teams.setdefault(team, {
+        "ha": 1.0, "hd": 1.0, "aa": 1.0, "ad": 1.0,  # 主/客 × 攻/守
+        "P_ha": 1.0, "P_hd": 1.0, "P_aa": 1.0, "P_ad": 1.0,  # 不确定性 (0→完全确定, 1→完全不确定)
+        "n_ha": 0, "n_hd": 0, "n_aa": 0, "n_ad": 0,
+    })
+
+    # 映射到实际键
+    prefix = "h" if is_home else "a"
+    suffix = "a" if metric == "attack" else "d"
+    skey = f"{prefix}{suffix}"      # ha / hd / aa / ad
+    pkey = f"P_{skey}"
+    nkey = f"n_{skey}"
+
+    R = 3.0    # 观测噪声 (足球进球方差大, 稳态 K≈0.005)
+    Q = 0.005  # 过程噪声 (赛季中强度缓慢变化)
+
+    P = t[pkey]
+    K = P / (P + R)                           # Kalman 增益
+    t[skey] += K * residual                   # 更新强度
+    t[pkey] = (1 - K) * P + Q                 # 降低不确定性 + 加过程噪声
+    t[nkey] = t.get(nkey, 0) + 1
+
+    # 守住合理区间: 0.7 ~ 1.4 (强度偏离基线不超过 ±40%)
+    t[skey] = clamp(t[skey], 0.70, 1.40)
+
+    # 持久化
+    save_strength_db(db, db_path)
+    return db
+
+
+def strength_to_lambda_modifier(team, is_home, db):
+    """把 strength 字典转成 λ 乘法修正项 — V3.4。
+
+    返回: (attack_mod, defend_mod) — 主队 λ 乘 attack_mod, 客队 λ 乘 defend_mod
+    若球队无记录则返回 (1.0, 1.0) (中性)。
+    """
+    teams = db.get("teams", {}) if db else {}
+    t = teams.get(team)
+    if not t:
+        return (1.0, 1.0)
+
+    prefix = "h" if is_home else "a"
+    attack_s = t.get(f"{prefix}a", 1.0)
+    defend_s = t.get(f"{prefix}d", 1.0)
+
+    # 不确定性高时向 1.0 收缩 (经验贝叶斯)
+    p_a = t.get(f"P_{prefix}a", 0.5)
+    p_d = t.get(f"P_{prefix}d", 0.5)
+    shrink_a = clamp(1.0 - p_a, 0.3, 1.0)   # P=1(完全不确定)→shrink=0.3
+    shrink_d = clamp(1.0 - p_d, 0.3, 1.0)
+
+    attack_mod = 1.0 + (attack_s - 1.0) * shrink_a
+    defend_mod = 1.0 + (defend_s - 1.0) * shrink_d
+    return (clamp(attack_mod, 0.7, 1.3), clamp(defend_mod, 0.7, 1.3))
+
+
+def backfill_strength_from_history(results_dir=None, db_path=None, verbose=True):
+    """从 results_history 遍历历史赛果, 初始化所有球队的攻防强度 — V3.4。
+
+    做法:
+      1. 先按队聚合所有比赛的进球/失球数据
+      2. 用联赛基线均值做"期望进球"的粗估计
+      3. 每场打完后跑 Kalman update
+
+    返回: (db, n_teams, n_updates)
+    """
+    if results_dir is None:
+        results_dir = _repo_root()
+    load_league_profile()
+
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    db = load_strength_db(db_path)
+    updates = 0
+
+    # 遍历所有历史比赛 (按时间顺序)
+    matches = []
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        date_str = os.path.basename(f).replace(".json", "")
+        for key, v in data.items():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            league = v.get("league") or "其他"
+            parts = key.split("_", 2)
+            if len(parts) < 3:
+                continue
+            d, home, away = parts
+            matches.append({"date": d, "league": league, "home": home, "away": away,
+                           "hg": hg, "ag": ag})
+
+    # 按日期排序 (升序, 早的先处理)
+    matches.sort(key=lambda x: x["date"])
+
+    for m in matches:
+        total = league_baseline(m["league"])
+        # 更合理的期望: 用不分主客的基础拆分 (主场略高)
+        exp_home = total * 0.47
+        exp_away = total * 0.42
+        # 残差限幅: 单场最多贡献 ±1.5 的残差, 避免异常球 (7:0, 0:8) 一次推爆
+        hg_res = clamp(m["hg"] - exp_home, -1.5, 1.5)
+        ag_res = clamp(m["ag"] - exp_away, -1.5, 1.5)
+
+        # 主队进攻残差, 主队防守残差, 客队进攻, 客队防守
+        kh = kalman_update_strength(m["home"], True, "attack", hg_res, db, db_path)
+        kh = kalman_update_strength(m["home"], True, "defend", ag_res, db, db_path)
+        kh = kalman_update_strength(m["away"], False, "attack", ag_res, db, db_path)
+        kh = kalman_update_strength(m["away"], False, "defend", hg_res, db, db_path)
+        updates += 1
+
+    n_teams = len(db.get("teams", {}))
+    if verbose:
+        print(f"\n=== KALMAN_STRENGTH V3.4 backfill ===")
+        print(f"  历史比赛数: {updates}")
+        print(f"  覆盖球队数: {n_teams}")
+        # 打印 top 5 进攻最强/最弱
+        teams = db["teams"]
+        by_ha = sorted(teams.items(), key=lambda x: -x[1].get("ha", 1.0))[:5]
+        by_hd = sorted(teams.items(), key=lambda x: -x[1].get("hd", 1.0))[:5]
+        print(f"  主队进攻 Top5: {[(t, round(v['ha'],2)) for t,v in by_ha]}")
+        print(f"  主队防守 Top5(失球最多): {[(t, round(v['hd'],2)) for t,v in by_hd]}")
+    return db, n_teams, updates
+
+
+def track_clv(snapshot_path=None, results_dir=None):
+    """CLV (Closing Line Value) 跟踪 — V3.4 实装。
+
+    读取 pred_snapshot.json 里推荐时的赔率，对比 results_history 里比赛结束后
+    网易抓取的收盘赔率，计算 CLV = (pick_prob - close_prob) / close_prob * 100%。
+
+    含义: CLV > 0 表示推荐赔率优于市场最终共识（下注价格好）;
+          CLV < 0 表示推荐赔率劣于市场最终共识（市场后来走了相反方向）。
+
+    按月统计后，CLV 长期 < -5% 的联赛说明 MARKET_W 过低，
+    模型方向与市场分歧被市场后来修正了 → 应提高该联赛 MARKET_W。
+
+    返回: {"by_league": {联赛: CLV%}, "overall": CLV%, "n_analyzed": int}
+    """
+    if snapshot_path is None:
+        # 扫描 predictions/*/pred_snapshot.json，取最近一个
+        pred_root = os.path.join(BASE, "predictions")
+        if not os.path.isdir(pred_root):
+            return None
+        snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
+        if not snaps:
+            return None
+        snapshot_path = snaps[-1]
+
+    if results_dir is None:
+        results_dir = _repo_root()
+
+    try:
+        snap = json.load(open(snapshot_path, encoding="utf-8"))
+    except Exception:
+        return None
+
+    # 载入 results_history
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+    all_results = {}
+    for f in glob.glob(os.path.join(rh, "*.json")):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for key, v in data.items():
+            all_results[key] = v
+
+    league_clv = {}
+    league_count = {}
+    total_clv = 0.0
+    total_n = 0
+
+    for m in snap.get("matches", []):
+        date = snapshot_path.split(os.sep)[-2]
+        home = m.get("home", "")
+        away = m.get("away", "")
+        league = m.get("league", "")
+        pred_odds = m.get("odds", {})
+        if not home or not away:
+            continue
+
+        # 找 results_history 里对应的收盘赔率
+        close = None
+        candidate_keys = [f"{date}_{home}_{away}", f"{date}_{away}_{home}"]
+        for ck in candidate_keys:
+            if ck in all_results:
+                close = all_results[ck]
+                break
+
+        if not close:
+            continue
+
+        # 取主胜赔率算 CLV (主胜是最常用的下注方向)
+        try:
+            oh_pick = float(pred_odds.get("胜"))
+            oh_close = float(close.get("胜"))
+        except (TypeError, ValueError):
+            continue
+
+        if oh_pick <= 1.0 or oh_close <= 1.0:
+            continue
+
+        # CLV = (pick_prob - close_prob) / close_prob * 100%
+        pick_prob = 1.0 / oh_pick
+        close_prob = 1.0 / oh_close
+        clv = (pick_prob - close_prob) / close_prob * 100.0
+
+        if league:
+            league_clv[league] = league_clv.get(league, 0.0) + clv
+            league_count[league] = league_count.get(league, 0) + 1
+        total_clv += clv
+        total_n += 1
+
+    if total_n == 0:
+        return None
+
+    by_league = {}
+    for lg in league_clv:
+        n = league_count[lg]
+        by_league[lg] = {"clv_pct": round(league_clv[lg] / n, 2), "n": n}
+
+    return {
+        "date": snap.get("date"),
+        "overall_clv_pct": round(total_clv / total_n, 2),
+        "total_matches": total_n,
+        "by_league": by_league,
+        "note": "CLV<0: 推荐赔率劣于市场收盘价, 该联赛应提高 MARKET_W; "
+               "CLV>0: 推荐赔率优于市场, 模型有增量",
+    }
+
+
+def drift_check(baseline_path=None, results_dir=None, verbose=True):
+    """PSI + KS 漂移监控 — V3.4 实装。
+
+    监控对象:
+      1. 联赛基线进球分布 (league_mean_goals): 各联赛的总进球均值
+      2. 全局进球分布 (global_goals_dist): 所有比赛的总进球数直方图
+      3. 主/客进球比率分布 (home_away_ratio): 主队进球 / 客队进球
+
+    PSI 阈值 (经验):
+      PSI < 0.10: 稳定 ✅
+      0.10 ≤ PSI < 0.25: 警惕 ⚠️
+      PSI ≥ 0.25: 漂移严重 ❌ (应触发重标定)
+
+    KS 阈值 (α=0.05):
+      KS > 1.36/√n: 拒绝同分布假设 (应触发重标定)
+
+    返回: {metric_name: {"psi": float, "ks": float, "drift_detected": bool, "level": str}}
+    """
+    if results_dir is None:
+        results_dir = _repo_root()
+    if baseline_path is None:
+        baseline_path = os.path.join(BASE, "drift_baseline.json")
+
+    # 收集当前数据
+    rh = os.path.join(results_dir, "results_history")
+    if not os.path.isdir(rh):
+        return None
+
+    league_means = {}
+    global_totals = []
+    ratios = []
+    league_sums = {}
+    league_counts = {}
+
+    for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+        if "index" in f:
+            continue
+        try:
+            data = json.load(open(f, encoding="utf-8"))
+        except Exception:
+            continue
+        for v in data.values():
+            fs = v.get("fullScore") or ""
+            if ":" not in fs:
+                continue
+            try:
+                hg, ag = [int(x) for x in fs.split(":")]
+            except ValueError:
+                continue
+            league = v.get("league") or "其他"
+            total = hg + ag
+            global_totals.append(total)
+            if ag > 0:
+                ratios.append(hg / ag)
+            league_sums[league] = league_sums.get(league, 0) + total
+            league_counts[league] = league_counts.get(league, 0) + 1
+
+    if len(global_totals) < 50:
+        return None
+    for lg in league_sums:
+        league_means[lg] = league_sums[lg] / league_counts[lg]
+
+    # 基准快照（不存在就创建）
+    baseline = None
+    if os.path.exists(baseline_path):
+        try:
+            baseline = json.load(open(baseline_path, encoding="utf-8"))
+        except Exception:
+            baseline = None
+
+    if baseline is None or not baseline.get("_created"):
+        baseline = {
+            "_created": datetime.datetime.now().isoformat(),
+            "_note": "首次自动生成的漂移监控基准快照; 若后续 PSI 持续超阈值应手动重建",
+            "league_means": league_means,
+            "global_totals_hist": _histogram(global_totals, bins=[0, 1.5, 2.5, 3.5, 4.5, 6, 10]),
+            "ratios_hist": _histogram(ratios, bins=[0, 0.6, 0.9, 1.1, 1.5, 2.5, 10]),
+        }
+        json.dump(baseline, open(baseline_path, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=2)
+        if verbose:
+            print(f"\n=== DRIFT_MONITOR (V3.4) ===")
+            print(f"基准快照不存在, 已创建: {baseline_path}")
+            print(f"后续对比基准时间: {baseline['_created']}")
+        return None
+
+    # 当前分箱
+    cur_hist = _histogram(global_totals, bins=[0, 1.5, 2.5, 3.5, 4.5, 6, 10])
+    cur_ratio_hist = _histogram(ratios, bins=[0, 0.6, 0.9, 1.1, 1.5, 2.5, 10])
+    cur_league_means = league_means
+    base_league_means = baseline.get("league_means", {})
+
+    result = {}
+    drift_count = 0
+
+    # 1. 全局进球 PSI
+    base_hist = baseline.get("global_totals_hist", {})
+    psi1 = _psi(base_hist, cur_hist)
+    # KS
+    ks1 = _ks_from_hist(base_hist, cur_hist)
+    drift1 = psi1 is not None and psi1 >= 0.25
+    level1 = "⚠️ 警惕" if (psi1 is not None and psi1 >= 0.10 and psi1 < 0.25) else ("❌ 漂移" if drift1 else "✅ 稳定")
+    drift_count += int(drift1)
+    result["global_goals"] = {"psi": round(psi1, 4) if psi1 is not None else None,
+                              "ks": round(ks1, 4) if ks1 is not None else None,
+                              "drift_detected": drift1, "level": level1}
+
+    # 2. 主客比 PSI
+    base_rhist = baseline.get("ratios_hist", {})
+    psi2 = _psi(base_rhist, cur_ratio_hist)
+    ks2 = _ks_from_hist(base_rhist, cur_ratio_hist)
+    drift2 = psi2 is not None and psi2 >= 0.25
+    level2 = "⚠️ 警惕" if (psi2 is not None and psi2 >= 0.10 and psi2 < 0.25) else ("❌ 漂移" if drift2 else "✅ 稳定")
+    drift_count += int(drift2)
+    result["home_away_ratio"] = {"psi": round(psi2, 4) if psi2 is not None else None,
+                                 "ks": round(ks2, 4) if ks2 is not None else None,
+                                 "drift_detected": drift2, "level": level2}
+
+    # 3. 联赛基线（按联赛均值逐年 PSI 的简化版: 只看 top 10 联赛的均值变化率）
+    league_deltas = []
+    for lg in sorted(set(list(cur_league_means.keys()) + list(base_league_means.keys()))):
+        cm = cur_league_means.get(lg)
+        bm = base_league_means.get(lg)
+        if cm and bm and bm > 0:
+            league_deltas.append((lg, abs(cm - bm) / bm))
+    if league_deltas:
+        league_deltas.sort(key=lambda x: -x[1])
+        top3 = league_deltas[:3]
+        # 简化: 用各联赛均值变化率的标准差做简单漂移指数
+        mean_delta = sum(d for _, d in league_deltas) / len(league_deltas)
+        std_delta = math.sqrt(sum((d - mean_delta) ** 2 for _, d in league_deltas) / len(league_deltas))
+        drift3 = std_delta >= 0.05  # 各联赛均值变化率标准差 ≥ 5%
+        level3 = "⚠️ 警惕" if 0.02 <= std_delta < 0.05 else ("❌ 漂移" if drift3 else "✅ 稳定")
+        drift_count += int(drift3)
+        result["league_baselines"] = {
+            "mean_delta_pct": round(mean_delta * 100, 2),
+            "std_delta_pct": round(std_delta * 100, 2),
+            "top3_changed": [(lg, round(d * 100, 2)) for lg, d in top3],
+            "drift_detected": drift3, "level": level3,
+        }
+
+    if verbose:
+        print(f"\n=== DRIFT_MONITOR (V3.4) — 基准 {baseline['_created']} ===")
+        for name, info in result.items():
+            if "psi" in info and info["psi"] is not None:
+                print(f"  {name:20s} PSI={info['psi']:.4f} KS={info['ks']:.4f}  {info['level']}")
+            elif "mean_delta_pct" in info:
+                print(f"  {name:20s} 均值变化率={info['mean_delta_pct']}% 标准差={info['std_delta_pct']}%  {info['level']}")
+                for lg, d in info.get("top3_changed", []):
+                    print(f"    ↑ {lg}: {d}%")
+        if drift_count > 0:
+            print(f"\n  ❌ 检测到 {drift_count} 项漂移 — 建议执行 compute_calibration() 重标定")
+        else:
+            print(f"\n  ✅ 全部稳定 (PSI < 0.10)")
+
+    result["_baseline_date"] = baseline.get("_created")
+    result["_n_samples"] = len(global_totals)
+    result["overall_drift_detected"] = drift_count > 0
+    return result
+
+
+# ---------- DRIFT_MONITOR 工具函数 ----------
+
+def _histogram(values, bins):
+    """把 values 按 bins 分箱, 返回 {bin_label: 计数占比}。bins 必须升序。"""
+    h = {}
+    n = len(values)
+    for i in range(len(bins) - 1):
+        lo, hi = bins[i], bins[i + 1]
+        label = f"[{lo},{hi})" if i < len(bins) - 2 else f"[{lo},∞)"
+        h[label] = 0
+    if n == 0:
+        return h
+    for v in values:
+        for i in range(len(bins) - 1):
+            lo, hi = bins[i], bins[i + 1]
+            if i < len(bins) - 2:
+                if lo <= v < hi:
+                    label = f"[{lo},{hi})"
+                    h[label] = h.get(label, 0) + 1
+                    break
+            else:
+                if v >= lo:
+                    label = f"[{lo},∞)"
+                    h[label] = h.get(label, 0) + 1
+                    break
+    return {k: round(v / n, 5) for k, v in h.items()}
+
+
+def _psi(base_dict, cur_dict):
+    """PSI = Σ((actual - expected) × ln(actual/expected))。两 dict 必须同 bin key。"""
+    all_keys = sorted(set(list(base_dict.keys()) + list(cur_dict.keys())))
+    psi = 0.0
+    for k in all_keys:
+        b = base_dict.get(k, 0.001)
+        c = cur_dict.get(k, 0.001)
+        b = max(b, 0.001)
+        c = max(c, 0.001)
+        psi += (c - b) * math.log(c / b)
+    return psi
+
+
+def _ks_from_hist(base_dict, cur_dict):
+    """从两个直方图近似 KS 统计量 (最大累积分布差)。"""
+    all_keys = sorted(set(list(base_dict.keys()) + list(cur_dict.keys())))
+    cum_base = cum_cur = 0.0
+    max_diff = 0.0
+    for k in all_keys:
+        cum_base += base_dict.get(k, 0)
+        cum_cur += cur_dict.get(k, 0)
+        diff = abs(cum_base - cum_cur)
+        if diff > max_diff:
+            max_diff = diff
+    return max_diff
+
+
+# ================================================================ V3.4 运行时（2026-09-14 接线至每日链路）
+# 这 5 个模块此前只登记在 V3_CONFIG（路线图打印 ON），main() 从未调用 —— 即「已落库、未接线」。
+# 本节把它们真正接进每日流程，分三类：
+#   ① 改变预测：KALMAN_STRENGTH（λ 修正，接入第三步C）/ HEDGE_ENSEMBLE（当日市场权重）
+#      —— 用 alpha 门控：默认 apply=False（回测未过则只记录、不改预测，避免噪声改动上线）
+#   ② 周期调参：BRIER_OPT（每 7 天最多一次 walk-forward 寻优，达标才采纳全局超参）
+#   ③ 每日监控：CLV_TRACK / DRIFT_MONITOR（产出落 v34_state.json / clv_log.json，不改预测）
+# 状态文件均随 gh-pages 提交，保证 CI 与本地共用同一份状态。
+
+STRENGTH_DB_PATH = os.path.join(BASE, "strength_db.json")
+V34_STATE_PATH = os.path.join(BASE, "v34_state.json")
+CLV_LOG_PATH = os.path.join(BASE, "clv_log.json")
+V34_TUNED_PATH = os.path.join(BASE, "v34_tuned.json")
+
+KALMAN_R = 3.0            # 观测噪声（相对偏置方差）
+KALMAN_Q = 0.005          # 过程噪声（强度缓慢漂移）
+STRENGTH_MIN_OBS = 5      # 每个维度至少观测数，未达则该维中性
+STRENGTH_CLAMP = (0.75, 1.25)   # 单维强度上下限（相对偏置 ±25%）
+STRENGTH_APPLY_CLAMP = (0.88, 1.12)  # 合成分对 λ 的修正上限（更保守）
+
+
+def _ewma_form(hist):
+    """从「按时间升序的进球序列」算 EWMA 均值（与第一步同式：DECAY^i，窗口 RECENT_N）。"""
+    if not hist:
+        return None
+    seq = hist[-RECENT_N:][::-1]        # 由近及远
+    s = c = 0.0
+    for i, v in enumerate(seq):
+        w = DECAY ** i
+        s += v * w
+        c += w
+    return s / c if c else None
+
+
+def _form_expectation(form_h, form_a):
+    """赛前「状态期望 λ」：与第一步基础和同式（主队 gf 0.75 + 客队 ga 0.25，反之亦然）。
+
+    只用于算 Kalman 残差（球队相对自身状态期望的偏置），不参与发布 λ。
+    """
+    if form_h is None or form_a is None:
+        return None
+    gf_h, ga_h = form_h
+    gf_a, ga_a = form_a
+    exp_h = gf_h * 0.75 + ga_a * 0.25
+    exp_a = gf_a * 0.75 + ga_h * 0.25
+    return exp_h, exp_a
+
+
+def strength_modifiers(home, away, db):
+    """从 strength db 取本场合成的 λ 修正（主/客各一）。无记录或样本不足 → 1.0 中性。
+
+    合成：λ_h *= (攻_主 + 守_客)/2 ，λ_a *= (攻_客 + 守_主)/2
+    （用均值而非乘积，避免与基础 λ 里已含的「自身近期进球」双重计数放大）
+    """
+    teams = (db or {}).get("teams", {})
+    out = []
+    for role in ("h", "a"):
+        t = teams.get(home if role == "h" else away)
+        o = teams.get(away if role == "h" else home)
+        if not t or not o:
+            return (1.0, 1.0)
+        pref, oref = role, ("a" if role == "h" else "h")
+        own_att = t.get(f"{pref}a", 1.0)
+        own_n = t.get(f"n_{pref}a", 0)
+        opp_def = o.get(f"{oref}d", 1.0)
+        opp_n = o.get(f"n_{oref}d", 0)
+        if own_n < STRENGTH_MIN_OBS or opp_n < STRENGTH_MIN_OBS:
+            out.append(1.0)
+            continue
+        # 不确定度收缩（P 越大越不信任）
+        sa = clamp(1.0 - t.get(f"P_{pref}a", 1.0), 0.25, 1.0)
+        sd = clamp(1.0 - o.get(f"P_{oref}d", 1.0), 0.25, 1.0)
+        ma = 1.0 + (own_att - 1.0) * sa
+        md = 1.0 + (opp_def - 1.0) * sd
+        out.append(clamp((ma + md) / 2.0, *STRENGTH_APPLY_CLAMP))
+    return (out[0], out[1])
+
+
+def replay_strength(matches, db=None, collect=False, verbose=False):
+    """按日期升序重放历史比赛 → 维护 4 维攻防强度（Kalman，相对偏置口径）。
+
+    与旧 backfill 的差别：残差改为**相对值** (实际 − 状态期望)/状态期望，
+    与 strength_to_lambda_modifier 的「乘法修正」单位一致（旧版把进球数加进乘数，量纲不符）。
+
+    matches: [{"date","league","home","away","hg","ag"}] 升序
+    collect: True 时额外返回每场**赛前**的修正值（供回测逐场取用，无前视泄漏）
+    返回 (db, snaps)
+    """
+    if db is None:
+        db = {"_meta": {"updated": datetime.datetime.now().isoformat(),
+                        "note": "KALMAN_STRENGTH: 相对偏置口径，4维(主/客×攻/守)+不确定度收缩"},
+              "teams": {}}
+    teams = db.setdefault("teams", {})
+    gf, ga = {}, {}      # 队 -> 进球序列 / 失球序列（全部比赛，用于算赛前状态期望）
+
+    snaps = []
+    for m in matches:
+        hm, aw = m["home"], m["away"]
+        fh = _ewma_form(gf.get(hm))
+        ch = _ewma_form(ga.get(hm))
+        fa = _ewma_form(gf.get(aw))
+        ca = _ewma_form(ga.get(aw))
+        form_h = (fh, ch) if (fh is not None and ch is not None) else None
+        form_a = (fa, ca) if (fa is not None and ca is not None) else None
+        exp = _form_expectation(form_h, form_a)
+        if collect and exp:
+            snaps.append({"date": m["date"], "home": hm, "away": aw,
+                          "mods": strength_modifiers(hm, aw, db),
+                          "exp": exp})
+        elif collect:
+            snaps.append({"date": m["date"], "home": hm, "away": aw,
+                          "mods": (1.0, 1.0), "exp": None})
+        if exp:
+            e_h, e_a = exp[0], max(exp[1], 0.30)
+            e_h = max(e_h, 0.30)
+            res_att_h = (m["hg"] - e_h) / e_h
+            res_def_h = (m["ag"] - e_a) / e_a
+            res_att_a = (m["ag"] - e_a) / e_a
+            res_def_a = (m["hg"] - e_h) / e_h
+            strength_update(hm, True, "attack", res_att_h, db)
+            strength_update(hm, True, "defend", res_def_h, db)
+            strength_update(aw, False, "attack", res_att_a, db)
+            strength_update(aw, False, "defend", res_def_a, db)
+        gf.setdefault(hm, []).append(m["hg"])
+        ga.setdefault(hm, []).append(m["ag"])
+        gf.setdefault(aw, []).append(m["ag"])
+        ga.setdefault(aw, []).append(m["hg"])
+    db["_meta"]["updated"] = datetime.datetime.now().isoformat()
+    db["_meta"]["n_matches"] = len(matches)
+    return db, snaps
+
+
+def strength_update(team, is_home, metric, resid_rel, db, persist=False, db_path=None):
+    """Kalman 更新单维强度（相对偏置，1.0 = 与自身状态期望一致）。
+
+    K = P/(P+R)，state += K·resid；P ← (1−K)P + Q。R=3 → 稳态 K≈0.04（有效窗口≈25 场）。
+    """
+    teams = db.setdefault("teams", {})
+    t = teams.setdefault(team, {"ha": 1.0, "hd": 1.0, "aa": 1.0, "ad": 1.0,
+                                "P_ha": 1.0, "P_hd": 1.0, "P_aa": 1.0, "P_ad": 1.0,
+                                "n_ha": 0, "n_hd": 0, "n_aa": 0, "n_ad": 0})
+    skey = ("h" if is_home else "a") + ("a" if metric == "attack" else "d")
+    pkey, nkey = "P_" + skey, "n_" + skey
+    P = t[pkey]
+    K = P / (P + KALMAN_R)
+    t[skey] = clamp(t[skey] + K * resid_rel, *STRENGTH_CLAMP)
+    t[pkey] = (1 - K) * P + KALMAN_Q
+    t[nkey] = t.get(nkey, 0) + 1
+    if persist:
+        db_path = db_path or STRENGTH_DB_PATH
+        json.dump(db, open(db_path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    return db
+
+
+def collect_history_matches(include_results_data=True):
+    """汇总 results_history（+ results_data 当日新增）里带完整比分的比赛，按日期升序。"""
+    root = _repo_root()
+    lib = {}
+    rh = os.path.join(root, "results_history")
+    if os.path.isdir(rh):
+        for f in sorted(glob.glob(os.path.join(rh, "*.json"))):
+            if "index" in os.path.basename(f):
+                continue
+            try:
+                lib.update(json.load(open(f, encoding="utf-8")))
+            except Exception:
+                continue
+    if include_results_data:
+        try:
+            for k, v in json.load(open(os.path.join(root, "results_data.json"),
+                                       encoding="utf-8")).items():
+                lib.setdefault(k, v)
+        except Exception:
+            pass
+    out = []
+    for k, v in lib.items():
+        s = v.get("fullScore") or v.get("score") or ""
+        if not isinstance(s, str) or ":" not in s:
+            continue
+        parts = k.split("_", 2)
+        if len(parts) < 3:
+            continue
+        try:
+            hg, ag = (int(x) for x in s.split(":")[:2])
+        except ValueError:
+            continue
+        out.append({"date": parts[0], "league": v.get("league") or "其他",
+                    "home": parts[1], "away": parts[2], "hg": hg, "ag": ag})
+    out.sort(key=lambda x: x["date"])
+    return out
+
+
+def ensure_strength_db(verbose=True, force=False):
+    """重建 strength_db.json（全量重放，确定性，每日 1~3 秒）。
+
+    全量重放而非增量：EWMA 状态期望依赖完整历史，增量维护需要额外保存 form 序列，
+    且一处错位会静默污染后续所有场次 —— 重放更稳。
+    """
+    matches = collect_history_matches()
+    if not matches:
+        return {"_meta": {}, "teams": {}}
+    db, _ = replay_strength(matches)
+    n_teams = len(db.get("teams", {}))
+    if verbose:
+        print(f"\n=== KALMAN_STRENGTH (V3.4 已接线) ===")
+        print(f"  重放 {len(matches)} 场（{matches[0]['date']} ~ {matches[-1]['date']}）"
+              f" | 覆盖球队 {n_teams}")
+        teams = db["teams"]
+        ready = [t for t, v in teams.items()
+                 if min(v.get("n_ha", 0), v.get("n_aa", 0)) >= STRENGTH_MIN_OBS]
+        by_a = sorted(teams.items(), key=lambda kv: -kv[1].get("ha", 1.0))[:5]
+        by_d = sorted(teams.items(), key=lambda kv: -kv[1].get("hd", 1.0))[:5]
+        print(f"  样本达标(≥{STRENGTH_MIN_OBS}场)球队: {len(ready)}/{n_teams}"
+              f" | 开关 apply={V3_CONFIG['KALMAN_STRENGTH']['apply']}")
+        print(f"  主队进攻偏置 Top5: {[(t, round(v['ha'], 3)) for t, v in by_a]}")
+        print(f"  主队防守偏置 Top5（失球多于期望）: {[(t, round(v['hd'], 3)) for t, v in by_d]}")
+    try:
+        json.dump(db, open(STRENGTH_DB_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] strength_db 写入失败: {e}")
+    return db
+
+
+def hedge_daily_weight(verbose=True, results_dir=None, window=500):
+    """HEDGE_ENSEMBLE 当日市场权重：专家近期对数损失 → w∝exp(−ηL)。
+
+    专家 = 纯模型（泊松）/ 纯市场（去水 1X2）/ 当前混合，损失取最近 window 场均值。
+    与固定 MARKET_W=0.80 的差别：市场近期明显更准时自动加重市场、反之回撤模型权重。
+    """
+    cfg = V3_CONFIG["HEDGE_ENSEMBLE"]
+    losses = compute_hedge_losses(results_dir, window)
+    if not losses:
+        return {"weights": None, "losses": None, "w": MARKET_W, "applied": False,
+                "note": "样本不足"}
+    eta = cfg.get("eta", 6.0)
+    w = hedge_weights({"model": losses["model"], "market": losses["market"]}, eta=eta)
+    lo, hi = cfg.get("band", (0.70, 0.90))
+    w_mkt = clamp(w.get("market", MARKET_W) if w else MARKET_W, lo, hi)
+    applied = bool(cfg.get("apply")) and w is not None
+    if verbose:
+        print(f"\n=== HEDGE_ENSEMBLE (V3.4 已接线) ===")
+        print(f"  近 {losses['n']} 场对数损失: 模型 {losses['model']:.4f} "
+              f"| 市场 {losses['market']:.4f} | 混合 {losses['blend']:.4f}")
+        print(f"  HEDGE 权重(η={eta}): 模型 {w.get('model'):.3f} / 市场 {w.get('market'):.3f}"
+              f" → 当日市场权重 {w_mkt:.3f}（安全带 {lo}~{hi}，固定值 {MARKET_W}）")
+        print(f"  开关 apply={applied}"
+              + ("（生效）" if applied else "（只记录，不改预测）"))
+    return {"weights": {k: round(v, 4) for k, v in w.items()} if w else None,
+            "losses": losses, "w": round(w_mkt, 4), "eta": eta,
+            "applied": applied, "fixed_w": MARKET_W}
+
+
+def load_tuned_params(verbose=True):
+    """读取 BRIER_OPT 上一轮采纳的超参（若存在且已 apply）。"""
+    if not os.path.exists(V34_TUNED_PATH):
+        return {}
+    try:
+        d = json.load(open(V34_TUNED_PATH, encoding="utf-8"))
+    except Exception:
+        return {}
+    if not d.get("params"):
+        return {}
+    if verbose:
+        print(f"=== BRIER_OPT 已采纳超参（{d.get('date', '?')}）: {d['params']} ===")
+    return d["params"]
+
+
+def run_brier_opt(calib=None, verbose=True, force=False):
+    """BRIER_OPT 周期执行：每 7 天最多一次，达标才采纳（改善 ≥0.3% 且落在安全带内）。"""
+    cfg = V3_CONFIG["BRIER_OPT"]
+    st = {}
+    if os.path.exists(V34_STATE_PATH):
+        try:
+            st = json.load(open(V34_STATE_PATH, encoding="utf-8"))
+        except Exception:
+            st = {}
+    last = (st.get("brier_opt") or {}).get("date")
+    today = datetime.date.fromisoformat(TODAY)
+    if last and not force:
+        try:
+            gap = (today - datetime.date.fromisoformat(last)).days
+        except ValueError:
+            gap = 99
+        if gap < cfg.get("every_days", 7):
+            if verbose:
+                print(f"\n=== BRIER_OPT === 上次 {last}（{gap} 天前 < {cfg.get('every_days', 7)} 天），跳过")
+            return st.get("brier_opt")
+    res = brier_optimize("MARKET_W")
+    if not res:
+        return None
+    out = {"date": TODAY, **res, "applied": False}
+    # 采纳门控：walk-forward 改善够大 + 最优值不越过安全带（保 alpha：市场权重上限 0.85）
+    lo, hi = cfg.get("band", (0.60, 0.85))
+    if (cfg.get("apply") and res.get("improvement_pct") is not None
+            and res["improvement_pct"] >= cfg.get("min_improve_pct", 0.3)
+            and lo <= res["best"] <= hi and res["best"] != res["old"]):
+        out["applied"] = True
+        try:
+            json.dump({"date": TODAY, "params": {res["param"]: res["best"]},
+                       "reason": f"walk-forward 改善 {res['improvement_pct']:+.2f}%"},
+                      open(V34_TUNED_PATH, "w", encoding="utf-8"),
+                      ensure_ascii=False, indent=1)
+        except Exception as e:
+            print(f"  [warn] v34_tuned.json 写入失败: {e}")
+        if verbose:
+            print(f"  ⇒ 采纳 {res['param']}={res['best']}（改善 {res['improvement_pct']:+.2f}%，"
+                  f"已在本次运行生效并写入 v34_tuned.json）")
+    elif verbose:
+        why = []
+        if not cfg.get("apply"):
+            why.append("apply=False")
+        if res.get("improvement_pct") is None or res["improvement_pct"] < cfg.get("min_improve_pct", 0.3):
+            why.append(f"改善 {res.get('improvement_pct')}% < {cfg.get('min_improve_pct', 0.3)}%")
+        if not (lo <= res["best"] <= hi):
+            why.append(f"最优值 {res['best']} 越安全带 {lo}~{hi}")
+        if res["best"] == res["old"]:
+            why.append("与当前值相同")
+        print(f"  ⇒ 不采纳（{'；'.join(why)}）")
+    return out
+
+
+def run_clv_track(verbose=True, max_days=120):
+    """CLV_TRACK 每日执行：算最近快照的 CLV，累计入 clv_log.json。"""
+    pred_root = os.path.join(BASE, "predictions")
+    snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
+    snaps = [s for s in snaps if os.path.basename(os.path.dirname(s)) < TODAY]
+    if not snaps:
+        if verbose:
+            print("\n=== CLV_TRACK === 无可结算的历史快照，跳过")
+        return None
+    snapshot_path = snaps[-1]
+    d = os.path.basename(os.path.dirname(snapshot_path))
+    res = track_clv(snapshot_path)
+    if not res or not res.get("total_matches"):
+        if verbose:
+            print(f"\n=== CLV_TRACK === {d} 无匹配收盘赔率，跳过")
+        return None
+    log = {"entries": []}
+    if os.path.exists(CLV_LOG_PATH):
+        try:
+            log = json.load(open(CLV_LOG_PATH, encoding="utf-8"))
+        except Exception:
+            log = {"entries": []}
+    log.setdefault("entries", [])
+    log["entries"] = [e for e in log["entries"] if e.get("date") != d]
+    log["entries"].append({"date": d, "overall_clv_pct": res["overall_clv_pct"],
+                           "n": res["total_matches"],
+                           "by_league": {k: v["clv_pct"] for k, v in res["by_league"].items()}})
+    log["entries"] = sorted(log["entries"], key=lambda e: e["date"])[-max_days:]
+    try:
+        json.dump(log, open(CLV_LOG_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] clv_log 写入失败: {e}")
+    # 累计口径（近 30 天）
+    recent = log["entries"][-30:]
+    allv = [e["overall_clv_pct"] for e in recent]
+    agg = {}
+    for e in recent:
+        for lg, v in (e.get("by_league") or {}).items():
+            agg.setdefault(lg, []).append(v)
+    agg = {lg: round(sum(v) / len(v), 2) for lg, v in agg.items() if len(v) >= 3}
+    neg = {lg: v for lg, v in agg.items() if v < -5.0}
+    if verbose:
+        print(f"\n=== CLV_TRACK (V3.4 已接线) ===")
+        print(f"  {d} 推荐赔率 vs 收盘: CLV {res['overall_clv_pct']:+.2f}%"
+              f"（{res['total_matches']} 场）| 近30日累计 "
+              f"{sum(allv)/len(allv):+.2f}%（{len(recent)} 天）")
+        if agg:
+            print("  按联赛（≥3 天，越负越该加重市场权重）: "
+                  + " ".join(f"{k}{v:+.1f}%" for k, v in x_sorted(agg)))
+        if neg:
+            print(f"  ⚠️ CLV 持续为负的联赛 {list(neg)} → 提示提高该联赛市场权重")
+    return {"date": d, "overall_clv_pct": res["overall_clv_pct"],
+            "n": res["total_matches"], "recent30_pct": round(sum(allv) / len(allv), 2) if allv else None,
+            "negative_leagues": neg}
+
+
+def x_sorted(d):
+    """按值升序的 (k, v) 列表（CLV 越负越该关注，排前面）。"""
+    return sorted(d.items(), key=lambda kv: kv[1])
+
+
+def run_drift_monitor(verbose=True):
+    """DRIFT_MONITOR 每日执行：PSI/KS 检查，超阈值提示重标定（不自动改参数）。"""
+    res = drift_check(verbose=verbose)
+    if not res:
+        return None
+    flags = [k for k, v in res.items()
+             if isinstance(v, dict) and v.get("drift_detected")]
+    if verbose and flags:
+        print(f"  ⚠️ 漂移模块命中 {flags} → 建议离线重拟合 market_calib / Platt")
+    return {"baseline": res.get("_baseline_date"),
+            "n_samples": res.get("_n_samples"),
+            "drift_detected": bool(res.get("overall_drift_detected")),
+            "flags": flags,
+            "detail": {k: v for k, v in res.items()
+                       if isinstance(v, dict) and ("psi" in v or "std_delta_pct" in v)}}
+
+
+def save_v34_state(patch):
+    """把当日模块结果合并进 v34_state.json（保留最近 60 天 history）。"""
+    st = {}
+    if os.path.exists(V34_STATE_PATH):
+        try:
+            st = json.load(open(V34_STATE_PATH, encoding="utf-8"))
+        except Exception:
+            st = {}
+    hist = [h for h in st.get("history", []) if h.get("date") != TODAY]
+    hist.append({"date": TODAY, "applied": {k: bool(V3_CONFIG[k].get("apply"))
+                                            for k in V3_WIRED_KEYS}})
+    st.update(patch)
+    st["date"] = TODAY
+    st["history"] = sorted(hist, key=lambda h: h["date"])[-60:]
+    try:
+        json.dump(st, open(V34_STATE_PATH, "w", encoding="utf-8"),
+                  ensure_ascii=False, indent=1)
+    except Exception as e:
+        print(f"  [warn] v34_state 写入失败: {e}")
+    return st
+
+
+V3_WIRED_KEYS = ("BRIER_OPT", "HEDGE_ENSEMBLE", "KALMAN_STRENGTH", "CLV_TRACK", "DRIFT_MONITOR")
+
+
+def read_daily_pred(d):
+    """读取某日预测口径。
+
+    优先 predictions/<d>/pred_snapshot.json（λ 期望口径，最准）；
+    否则回退解析 HTML：先用 λ=主x/客y 求总进球期望，无 λ 才用首选比分（众数口径，天然偏低）。
+    返回 {"n": 场次数, "pred_mean": 均值, "caliber": "lambda"/"score"}
+    """
+    jp = os.path.join(BASE, "predictions", d, "pred_snapshot.json")
+    if os.path.exists(jp):
+        try:
+            snap = json.load(open(jp, encoding="utf-8"))
+            lams = [m["lam_total"] for m in snap.get("matches", []) if m.get("lam_total")]
+            if lams:
+                return {"n": len(lams), "pred_mean": sum(lams) / len(lams), "caliber": "lambda"}
+        except Exception:
+            pass
+
+    rp = os.path.join(BASE, "predictions", d, "index.html")
+    if not os.path.exists(rp):
+        return None
+    content = open(rp, encoding="utf-8").read()
+    # λ 口径：取每处 λ=主a/客b 的总进球（同一场多处以最终值为准，取均值仍无偏）
+    lam = re.findall(r'λ[^0-9]{0,8}([0-9]+\.[0-9]+)\s*/\s*(?:客)?([0-9]+\.[0-9]+)', content)
+    if lam:
+        tots = [float(a) + float(b) for a, b in lam]
+        return {"n": len(tots), "pred_mean": sum(tots) / len(tots), "caliber": "lambda"}
+    # 兜底：首选比分口径（旧版冒号 / 新版连字符，且带 data-page-node-id 等属性）
+    scores = re.findall(r'class="pred-score"[^>]*>\s*(\d+)\s*[:\-]\s*(\d+)\s*<', content)
+    if not scores:
+        return None
+    tot = sum(int(a) + int(b) for a, b in scores)
+    return {"n": len(scores), "pred_mean": tot / len(scores), "caliber": "score"}
+
+
+def dump_prediction_snapshot(out_matches, date=None):
+    """把当日预测写成 predictions/<date>/pred_snapshot.json，供后续校准直接读取。
+
+    目的：不再依赖解析 HTML（版式一变就失效），并为 PLATT/Brier 等后续模块留存标注基础。
+    """
+    d = date or TODAY
+    folder = os.path.join(BASE, "predictions", d)
+    if not os.path.isdir(folder):
+        return None
+    rows = []
+    for m in out_matches:
+        top = (m.get("top_scores") or [{}])[0]
+        rows.append({
+            "id": m.get("matchNumStr"), "home": m.get("home"), "away": m.get("away"),
+            "league": m.get("league"), "lam_home": m.get("lam_home"), "lam_away": m.get("lam_away"),
+            "lam_total": m.get("lam_total"), "top_score": top.get("score"),
+            "top_prob": top.get("prob"), "stars": m.get("stars"),
+            "prob_home": (m.get("prob") or {}).get("home"),
+            "prob_draw": (m.get("prob") or {}).get("draw"),
+            "prob_away": (m.get("prob") or {}).get("away"),
+            "top_scores": m.get("top_scores"),
+            "quad_top": m.get("quad_top"),
+            # V3.3 二级盘（供后续结算/CLV 追踪）
+            "rq_handicap": (m.get("rq") or {}).get("handicap"),
+            "rq_best_pick": ((m.get("rq") or {}).get("best") or {}).get("pick"),
+            "rq_best_ev": ((m.get("rq") or {}).get("best") or {}).get("ev"),
+            "rq_best_odds": ((m.get("rq") or {}).get("best") or {}).get("odds"),
+            "upset_prob": (m.get("upset") or {}).get("prob"),
+            "upset_level": (m.get("upset") or {}).get("level"),
+            # 冷启动标记必须落盘：报告回顾与选取回放都要靠它排除冷启动场次。
+            # 缺这两个字段时 is_cold() 会把冷启动当成正常场次（data_n 默认空），
+            # 导致回放/回顾的排序口径与生产分叉。
+            "cold": bool(m.get("cold")),
+            "data_n": m.get("data_n"),
+            # CLV 追踪需要「推荐时」的赔率：必须落在快照里，
+            # 否则 CLV_TRACK 只能拿收盘价跟自己比（恒等于 0）或直接失败。
+            "odds": {k: (m.get("odds") or {}).get(k) for k in ("胜", "平", "负")},
+        })
+    data = {"date": d, "count": len(rows), "engine": "poisson-v2.2", "matches": rows}
+    json.dump(data, open(os.path.join(folder, "pred_snapshot.json"), "w", encoding="utf-8"),
+              ensure_ascii=False, indent=1)
+    return os.path.join(folder, "pred_snapshot.json")
+
+
+# ---------------------------------------------------------------- 动态校准
+def compute_calibration():
+    """近7天预测总进球 vs 实际：EWMA+MAD 抗噪求全局因子，再按联赛分层收缩。"""
+    results = json.load(open(os.path.join(BASE, "results_data.json"), encoding="utf-8"))
+    daily = []
+    league_buckets = {}
+
+    for i in range(1, 8):
+        d = (datetime.date.fromisoformat(TODAY) - datetime.timedelta(days=i)).isoformat()
+        pred = read_daily_pred(d)
+        if not pred:
+            continue
+        pred_mean = pred["pred_mean"]
+
+        actuals = [v for k, v in results.items() if k.startswith(d + "_")]
+        tot, cnt = 0, 0
+        for v in actuals:
+            m = re.match(r"(\d+)\s*[:-]\s*(\d+)", str(v.get("fullScore") or ""))
+            if m:
+                tot += int(m.group(1)) + int(m.group(2))
+                cnt += 1
+        if cnt:
+            daily.append({"date": d, "pred": round(pred_mean, 2),
+                          "actual": round(tot / cnt, 2), "n": cnt,
+                          "caliber": pred["caliber"], "pred_n": pred["n"]})
+            # 按联赛累积（用当日所有实际比赛）
+            for v in actuals:
+                m = re.match(r"(\d+)\s*[:-]\s*(\d+)", str(v.get("fullScore") or ""))
+                if not m:
+                    continue
+                lg = v.get("league") or "其他"
+                b = league_buckets.setdefault(lg, {"actual": 0, "n": 0})
+                b["actual"] += int(m.group(1)) + int(m.group(2))
+                b["n"] += 1
+
+    labeled = sum(1 for v in results.values() if v.get("fullScore"))
+    if not daily:
+        return {"ratio": 1.0, "factor": 1.0, "daily": [], "note": "无历史数据",
+                "labeled_samples": labeled}
+
+    # 口径统一：只保留与主流口径一致的期（λ期望口径优先），
+    # 避免"首选比分(众数)口径"与"实际均值(期望)口径"混算造成恒定低估。
+    cnt_cal = Counter(d["caliber"] for d in daily)
+    main_cal = "lambda" if cnt_cal.get("lambda") else cnt_cal.most_common(1)[0][0]
+    used = [d for d in daily if d["caliber"] == main_cal] or daily
+    excluded = [{"date": d["date"], "caliber": d["caliber"],
+                 "pred": d["pred"], "actual": d["actual"]}
+                for d in daily if d["caliber"] != main_cal]
+
+    p_mean = sum(d["pred"] for d in used) / len(used)
+    a_mean = sum(d["actual"] for d in used) / len(used)
+    raw_ratio = p_mean / a_mean if a_mean else 1.0
+
+    cfg_e = V3_CONFIG["EWMA_MAD"]
+    ewma_ratio, dropped, series = robust_ewma(used, cfg_e)
+    if cfg_e["enabled"]:
+        ratio = ewma_ratio
+        factor = ratio_to_factor(ratio, cfg_e["damp"], cfg_e["clamp"])
+    else:  # 旧版三档跳变（保留回退）
+        ratio = raw_ratio
+        factor = 0.92 if ratio > 1.10 else (1.08 if ratio < 0.90 else 1.00)
+
+    if ratio > 1.10:
+        desc = "模型系统性高估"
+    elif ratio < 0.90:
+        desc = "模型系统性低估"
+    else:
+        desc = "偏差在容忍区间"
+
+    # 按联赛分组：V3 经验贝叶斯收缩，否则旧版三档
+    cfg_l = V3_CONFIG["LEAGUE_SHRINK"]
+    if cfg_l["enabled"]:
+        lg_cal, lg_detail = shrink_league(league_buckets, p_mean, factor, cfg_l)
+    else:
+        lg_cal, lg_detail = {}, {}
+        for lg, b in league_buckets.items():
+            if b["n"] >= 5:
+                am = b["actual"] / b["n"]
+                r = p_mean / am if am else 1.0
+                lg_cal[lg] = 0.92 if r > 1.10 else (1.08 if r < 0.90 else 1.00)
+
+    return {
+        "ratio": round(ratio, 3),
+        "raw_ratio": round(raw_ratio, 3),
+        "factor": round(factor, 3),
+        "desc": desc,
+        "pred_mean": round(p_mean, 2),
+        "actual_mean": round(a_mean, 2),
+        "daily": daily,
+        "league_factors": lg_cal,
+        "league_detail": lg_detail,
+        "ewma_series": series,
+        "dropped_periods": dropped,
+        "caliber": main_cal,
+        "excluded_periods": excluded,
+        "labeled_samples": labeled,
+        "v3_enabled": [k for k, v in V3_CONFIG.items() if v["enabled"]],
+    }
+
+
+# ---------------------------------------------------------------- 主计算
+def calc_match(m, calib, ctx=None):
+    """单场计算。ctx 可选：{"strength_db":..., "kalman_apply":bool, "market_w":float}
+    —— V3.4 接线后由 main() 注入 KALMAN_STRENGTH / HEDGE_ENSEMBLE 的当日状态。
+    ctx=None 时自动加载 strength_db 并启用 league_market_w 兜底。"""
+    home, away = m["home"], m["away"]
+    league = m.get("league") or "其他"
+    hr = m.get("home_recent") or []
+    ar = m.get("away_recent") or []
+    h2h = m.get("h2h") or []
+    odds = m.get("odds") or {}
+    xg = m.get("xg") or {}
+    steps = []
+
+    # ---------- ctx=None 自动加载（V3.4 修复：独立调用也能跑完整链路）----------
+    if ctx is None:
+        try:
+            ctx = {"strength_db": ensure_strength_db(),
+                   "kalman_apply": True,
+                   "market_w": None}
+        except Exception:
+            ctx = {"strength_db": None, "kalman_apply": False, "market_w": None}
+
+    # ---------- 第一步：指数衰减加权基础λ ----------
+    if hr and ar:
+        h_gf, h_ga = wavg([x["gf"] for x in hr]), wavg([x["ga"] for x in hr])
+        a_gf, a_ga = wavg([x["gf"] for x in ar]), wavg([x["ga"] for x in ar])
+        lam_h = (h_gf * 0.75 + a_ga * 0.25) * HOME_BOOST
+        lam_a = (a_gf * 0.75 + h_ga * 0.25) * AWAY_DISCOUNT
+        note = f"主{h_gf:.2f}进/{h_ga:.2f}失 客{a_gf:.2f}进/{a_ga:.2f}失"
+        # ---------- 第一步B：主客场分拆（2026-09-10 新增）----------
+        # 观测换成：主队「作为主队」的进球 + 客队「作为客队」的失球 → λ_home
+        #           客队「作为客队」的进球 + 主队「作为主队」的失球 → λ_away
+        # 观测本身已含主客效应，故不再乘 HOME_BOOST/AWAY_DISCOUNT；
+        # 再按有效样本量向不分主客口径收缩 K，样本不足时自动退回原口径。
+        hrh = m.get("home_recent_home") or []
+        ara = m.get("away_recent_away") or []
+        if hrh and ara:
+            vh_gf = wavg([x["gf"] for x in hrh])
+            vh_ga = wavg([x["ga"] for x in hrh])
+            va_gf = wavg([x["gf"] for x in ara])
+            va_ga = wavg([x["ga"] for x in ara])
+            lam_h_v = vh_gf * 0.75 + va_ga * 0.25
+            lam_a_v = va_gf * 0.75 + vh_ga * 0.25
+            _ne = min(eff_n(len(hrh)), eff_n(len(ara)))
+            lam_h = (_ne * lam_h_v + VENUE_SHRINK_K * lam_h) / (_ne + VENUE_SHRINK_K)
+            lam_a = (_ne * lam_a_v + VENUE_SHRINK_K * lam_a) / (_ne + VENUE_SHRINK_K)
+            note += (f" | 主客场分拆(主{len(hrh)}场{lam_h_v:.2f}/客{len(ara)}场{lam_a_v:.2f}, "
+                     f"n_eff={_ne:.1f}, K={VENUE_SHRINK_K:g})")
+        else:
+            note += " | 无主客场分拆数据"
+    else:
+        oh, oa = odds.get("胜"), odds.get("负")
+        # 【V3.1】赔率反推的锚点改用联赛基线均值，而非硬编码全局 2.5
+        # 例：解放者杯基线 2.11 vs 德甲 3.31，用错锚点会系统性偏离 1.2 球
+        _anchor = league_baseline(league)
+        lam_h = (1 / float(oh) * _anchor) if oh else _anchor * 0.5
+        lam_a = (1 / float(oa) * _anchor) if oa else _anchor * 0.4
+        note = f"无近期战绩，按{league}基线{_anchor:.2f}赔率反推"
+    steps.append(("基础λ", f"指数衰减{DECAY:g}^i,{note}", lam_h, lam_a))
+
+    # ---------- 第二步：xG融合 ----------
+    xg_h, xg_a = xg.get("home"), xg.get("away")
+    if xg_h and xg_a:
+        lam_h_xg = float(xg_h) * HOME_BOOST
+        lam_a_xg = float(xg_a) * AWAY_DISCOUNT
+        lam_h = 0.6 * lam_h + 0.4 * lam_h_xg
+        lam_a = 0.6 * lam_a + 0.4 * lam_a_xg
+        steps.append(("xG融合", f"40%,xG主{xg_h}/客{xg_a}", lam_h, lam_a))
+    else:
+        steps.append(("无xG数据", "无xG数据，沿用进球λ", lam_h, lam_a))
+
+    # ---------- 第二步B：联赛先验收缩（V3.1 新增）----------
+    # 球队近5场均值噪声大，向该联赛基线均值收缩 w=0.25（保持主客比例=总进球方向不变）
+    # 实测（walk-forward 2364 场）：MAE 1.2892→1.2538(-2.75%)，5折时间序列CV各折一致改善
+    # 注意：这里是「收缩」不是「相乘」——相乘会重复修正联赛环境，实测恶化 2.69%
+    _tot = lam_h + lam_a
+    if _tot > 0:
+        _new_tot, _w, _base = shrink_to_league(_tot, league)
+        _r = _new_tot / _tot
+        lam_h *= _r
+        lam_a *= _r
+        steps.append(("联赛收缩", f"向{league}基线{_base:.2f}收缩{_w:.0%} "
+                                  f"(总{_tot:.2f}→{_new_tot:.2f})", lam_h, lam_a))
+
+    # ---------- 第三步 A：H2H 总进球（对称，改变总量） ----------
+    h2h_info = ""
+    if len(h2h) >= 3:
+        h2h_avg = sum(x["home_goals"] + x["away_goals"] for x in h2h) / len(h2h)
+        base_total = lam_h + lam_a
+        f = h2h_avg / base_total if base_total else 1.0
+        # 【V3.1】阈值按联赛基线归一：同样的 H2H 3.0 球，在韩职(基线2.40)是「极高频」，
+        # 在德甲(基线3.31)只是「偏低」——绝对阈值会系统性误判。
+        # 归一化系数由全局基线 2.83 反推：4.0→1.41× / 3.0→1.06× / 2.5→0.88× / 2.0→0.71×
+        _lb = league_baseline(league)
+        _t4, _t3, _t25, _t2 = _lb * 1.41, _lb * 1.06, _lb * 0.88, _lb * 0.71
+        h2h_rel = h2h_avg / _lb if _lb else 1.0
+        if h2h_avg >= _t4:
+            f = max(f, 1.5)
+        elif h2h_avg >= _t3:
+            f = max(f, 1.3)
+        elif h2h_avg >= _t25:
+            f = max(f, 1.15)
+        elif h2h_avg >= _t2:
+            f = max(f, 1.0)
+        else:
+            f = min(f, 0.9)
+        f = clamp(f, 0.85, 1.40)
+        lam_h_A, lam_a_A = lam_h * f, lam_a * f
+        h2h_info = f"近{len(h2h)}场场均{h2h_avg:.2f}球,总量因子{f:.3f}x"
+    else:
+        lam_h_A, lam_a_A = lam_h, lam_a
+        f = 1.0
+        h2h_info = f"H2H数据不足3场(仅{len(h2h)}场),跳过总量调整"
+
+    # ---------- 第三步 B：方向性再分配（非对称，总量守恒） ----------
+    dir_info = ""
+    if len(h2h) >= 3:
+        w = [DECAY ** i for i in range(len(h2h))]
+        sw = sum(w)
+        score_sum = 0.0
+        hg_wsum = 0.0
+        tot_wsum = 0.0
+        for x, wi in zip(h2h, w):
+            hg, ag = x["home_goals"], x["away_goals"]
+            sc = 1.0 if hg > ag else (0.5 if hg == ag else 0.0)
+            score_sum += wi * sc
+            hg_wsum += wi * hg
+            tot_wsum += wi * (hg + ag)
+        s_h2h = score_sum / sw
+        p_h2h = hg_wsum / tot_wsum if tot_wsum else 0.5
+        adv = 0.6 * p_h2h + 0.4 * s_h2h
+        total_A = lam_h_A + lam_a_A
+        p_base = lam_h_A / total_A if total_A else 0.5
+        p_mix = (1 - ALPHA_H2H) * p_base + ALPHA_H2H * adv
+        lam_h_B = total_A * p_mix
+        lam_a_B = total_A * (1 - p_mix)
+        # ±25% 限幅并重新配平
+        lam_h_B = clamp(lam_h_B, lam_h_A * (1 - LIMIT_PCT), lam_h_A * (1 + LIMIT_PCT))
+        lam_a_B = clamp(total_A - lam_h_B,
+                        lam_a_A * (1 - LIMIT_PCT), lam_a_A * (1 + LIMIT_PCT))
+        lam_h_B = total_A - lam_a_B
+        dir_info = (f"方向再分配:加权胜率{s_h2h*100:.0f}%+进球占比{p_h2h*100:.0f}%"
+                    f"→优势度{adv:.3f},混合占比{p_mix:.3f},总量守恒{total_A:.2f}")
+    else:
+        lam_h_B, lam_a_B = lam_h_A, lam_a_A
+        dir_info = "H2H数据不足3场,跳过方向调整"
+
+    steps.append(("H2H调整", f"{h2h_info}|{dir_info}", lam_h_B, lam_a_B))
+
+    # ---------- 第三步C：KALMAN_STRENGTH 攻防强度修正（V3.4 已接线）----------
+    # 位置选在「模型 λ 已成形、尚未混市场」处：市场混合占 80%，写在市场之后会把
+    # 修正重新推回市场共识；写在模型侧才是「模型自身对球队偏置的一次校正」。
+    # 门控：V3_CONFIG.KALMAN_STRENGTH.apply=False 时只计算不生效（回测未过前不上线）。
+    _kmod = (1.0, 1.0)
+    if ctx and ctx.get("strength_db"):
+        _kmod = strength_modifiers(home, away, ctx["strength_db"])
+        _k_apply = bool(ctx.get("kalman_apply"))
+        if _k_apply and (_kmod != (1.0, 1.0)):
+            lam_h_B *= _kmod[0]
+            lam_a_B *= _kmod[1]
+            steps.append(("Kalman强度修正",
+                          f"主×{_kmod[0]:.3f}/客×{_kmod[1]:.3f}(相对偏置4维Kalman)", lam_h_B, lam_a_B))
+        else:
+            steps.append(("Kalman强度修正",
+                          f"未生效(apply={_k_apply}, 主×{_kmod[0]:.3f}/客×{_kmod[1]:.3f})",
+                          lam_h_B, lam_a_B))
+
+    # ---------- 第四步：市场概率混合（MARKET_BLEND_PROB，V3.2）----------
+    # 模型 1X2 与市场去水 1X2 在概率空间加权，再反解 λ（总量守恒）。
+    # 方向向市场靠拢，进球总量仍由模型决定（旧 λ 空间混合会把总量带崩，见常量区注释）。
+    # V3.4 动态权重：HEDGE_ENSEMBLE 当日权重 > ctx 注入 > league_market_w(league) > MARKET_W 兜底
+    _mw = ctx.get("market_w") if ctx else None
+    if not _mw:
+        _mw = league_market_w(league, default=MARKET_W)
+    _oh, _od, _oa = odds.get("胜"), odds.get("平"), odds.get("负")
+    if _oh and _od and _oa:
+        try:
+            pv = devig_1x2(float(_oh), float(_od), float(_oa))
+            total_b = lam_h_B + lam_a_B
+            pm = pois_1x2(lam_h_B, lam_a_B)
+            pb = [(1 - _mw) * pm[i] + _mw * pv[i] for i in range(3)]
+            st = sum(pb)
+            pb = [x / st for x in pb]
+            lam_h, lam_a = prob_to_lambda(pb, total_b)
+            steps.append(("市场混合",
+                          f"{_mw:.0%}概率混合(总量守恒),市场去水主{pv[0]*100:.0f}%"
+                          f"/平{pv[1]*100:.0f}%/客{pv[2]*100:.0f}%"
+                          + (f",HEDGE动态" if abs(_mw - MARKET_W) > 1e-9 else ""),
+                          lam_h, lam_a))
+        except (ValueError, ZeroDivisionError):
+            lam_h, lam_a = lam_h_B, lam_a_B
+            steps.append(("市场混合", "赔率异常,跳过", lam_h, lam_a))
+    elif _oh and _oa:
+        # 仅胜/负（无平赔）：仍做概率混合，平局概率由两路归一化后补足
+        try:
+            oh, oa = float(_oh), float(_oa)
+            s2 = 1 / oh + 1 / oa
+            pv = (1 / oh / s2, 0.0, 1 / oa / s2)
+            total_b = lam_h_B + lam_a_B
+            pm = pois_1x2(lam_h_B, lam_a_B)
+            pb = [(1 - _mw) * pm[i] + _mw * pv[i] for i in range(3)]
+            st = sum(pb)
+            pb = [x / st for x in pb]
+            lam_h, lam_a = prob_to_lambda(pb, total_b)
+            steps.append(("市场混合", f"{_mw:.0%}概率混合(仅胜/负)", lam_h, lam_a))
+        except (ValueError, ZeroDivisionError):
+            lam_h, lam_a = lam_h_B, lam_a_B
+            steps.append(("市场混合", "赔率异常,跳过", lam_h, lam_a))
+    else:
+        lam_h, lam_a = lam_h_B, lam_a_B
+        steps.append(("市场混合", "无赔率数据,跳过", lam_h, lam_a))
+    # 供后续冷门信号/排名信号复用（保持旧变量名，避免大范围改动）
+    oh, oa = _oh, _oa
+
+    # ---------- 第五步：动态校准 + 总量合理性约束 ----------
+    lg_factor = calib.get("league_factors", {}).get(league, calib["factor"])
+    lam_h *= lg_factor
+    lam_a *= lg_factor
+    cnote = f"×{lg_factor:.2f}({league})"
+    # 多重因子复合放大后守住合理区间，避免产出统计上不可能的总进球
+    total = lam_h + lam_a
+    if total > MAX_TOTAL:
+        s = MAX_TOTAL / total
+        lam_h, lam_a = lam_h * s, lam_a * s
+        cnote += f",总量约束→{MAX_TOTAL}"
+    elif total < MIN_TOTAL:
+        s = MIN_TOTAL / total
+        lam_h, lam_a = lam_h * s, lam_a * s
+        cnote += f",总量托底→{MIN_TOTAL}"
+    if lam_h > MAX_SINGLE:
+        lam_h = MAX_SINGLE
+        cnote += ",主λ封顶"
+    if lam_a > MAX_SINGLE:
+        lam_a = MAX_SINGLE
+        cnote += ",客λ封顶"
+    steps.append(("动态校准", cnote, lam_h, lam_a))
+
+    # ---------- 第六步：零封修正 (V3.4 改为连续 sigmoid) ----------
+    def zero_rate(rec):
+        if not rec:
+            return 0.25
+        return sum(1 for x in rec if x["gf"] == 0) / len(rec)
+
+    def zfactor(rate):
+        """连续 sigmoid: 零封率越高 → 0球格概率按 sigmoid 调整（上限 ZF_CAP=1.0）。
+        原始四档跳变（0→0.6/0.15→0.6/0.25→0.8/0.4→1.0/>0.4→1.2）已废弃(V3.4)，
+        改为平滑 sigmoid: f(r) = min(ZF_CAP, FLOOR + (CEIL-FLOOR) * sigmoid(K*(r-MID)))
+        语义：只削弱、不放大（2026-09-14，理由见 ZF_CAP 注释）。"""
+        if rate < 0 or rate > 1:
+            rate = 0.25  # 无数据时中性
+        s = 1.0 / (1.0 + math.exp(-clamp(ZF_K * (rate - ZF_MID), -20, 20)))
+        return min(ZF_CAP, ZF_FLOOR + (ZF_CEIL - ZF_FLOOR) * s)
+
+    zr_h, zr_a = zero_rate(hr), zero_rate(ar)
+    f_h, f_a = zfactor(zr_h), zfactor(zr_a)
+    steps.append(("零封修正",
+                  f"P0主×{f_h:.2f}(零封{zr_h*100:.0f}%)/客×{f_a:.2f}(零封{zr_a*100:.0f}%),"
+                  f"sigmoid k={ZF_K}",
+                  lam_h, lam_a))
+
+    # ---------- 第六步B：半场比分调整 (V3.4 可选) ----------
+    _hs = m.get("halfScore")
+    if _hs:
+        lam_h, lam_a, _hs_note = half_score_adjust(lam_h, lam_a, _hs)
+        steps.append(("半场比分调整", _hs_note, lam_h, lam_a))
+
+    # ---------- 第七步：泊松计算 ----------
+    grid = {}
+    for k1 in range(7):
+        for k2 in range(7):
+            p = pmf(k1, lam_h) * pmf(k2, lam_a)
+            if k1 == 0:
+                p *= f_h
+            if k2 == 0:
+                p *= f_a
+            grid[(k1, k2)] = p
+    tot = sum(grid.values())
+    grid = {k: v / tot for k, v in grid.items()}
+    # ---------- 第七步B：联赛经验比分频率混合（LEAGUE_DIST_SHAPE，V3.1）----------
+    # 泊松形状与联赛实测比分分布存在系统性偏差（0-0 高估、1-1 低估45%），
+    # 与联赛平滑经验频率混合 w=0.3：walk-forward Brier -0.45%，低比分四格校准改善
+    _lam_lo, _lam_hi = min(lam_h, lam_a), max(lam_h, lam_a)
+    _lam_ratio = (_lam_hi / _lam_lo) if _lam_lo > 1e-9 else 99.0
+    grid = mix_score_matrix(grid, league, _lam_ratio)
+    # 取 6 个：报告以「概率排序比分组 + 累计覆盖」呈现（单比分众数结构性退化为 1:1，
+    # 见 score_mode_audit.py；实际需要的是覆盖率而非单点）
+    ranked = sorted(grid.items(), key=lambda x: -x[1])[:6]
+
+    # 胜平负概率（由修正后的分布求和）
+    p_home = sum(p for (k1, k2), p in grid.items() if k1 > k2)
+    p_draw = sum(p for (k1, k2), p in grid.items() if k1 == k2)
+    p_away = sum(p for (k1, k2), p in grid.items() if k1 < k2)
+    # ---------- 象限内首选比分（条件口径）：若倾向=主胜/平/负，该象限内概率最高的比分 ----------
+    quad_top = {}
+    for qname, qfilter in (("home", lambda k: k[0] > k[1]),
+                           ("draw", lambda k: k[0] == k[1]),
+                           ("away", lambda k: k[0] < k[1])):
+        qcells = [(k, v) for k, v in grid.items() if qfilter(k)]
+        (bk, bv) = max(qcells, key=lambda x: x[1])
+        quad_top[qname] = {"score": f"{bk[0]}:{bk[1]}", "prob": round(bv * 100, 1)}
+    # ---------- 第七步C：胜平负 Platt 校准（PLATT_ISOTONIC，V3.1）----------
+    # 泊松独立性使平局系统性低估约 4pp；walk-forward Brier -0.37%、LogLoss -0.61%
+    p_home_raw, p_draw_raw, p_away_raw = p_home, p_draw, p_away
+    p_home, p_draw, p_away = apply_platt(p_home, p_draw, p_away)
+    platt_applied = abs(p_draw - p_draw_raw) > 1e-6
+
+    # ---------- 第七步C-B 平局概率 boost（V3.4 修复 argmax D 永远排第二）----------
+    # 根因：泊松 8×8 独立性使平局在单场内部永远被 H/A 夹击（80% 场次 D 排第二），
+    #       即使概率均值 27.3%（比市场 24.7% 还高）也几乎永远不 argmax D。
+    #       条件化 boost：|lam_h - lam_a| 越小（势均力敌）boost 越大 → exp 衰减。
+    #       基准 30%，在 lam 差=0 时全 boost；差=1.0 时衰减到 11%。
+    #       回测（2440 场）：总准确率 50.49% → 51.23%，平局命中率 10.3% → 24.4%
+    _draw_boost = 0.25 * math.exp(-abs(lam_h - lam_a) / 0.45)
+    if _draw_boost > 1e-6:
+        p_draw *= (1 + _draw_boost)
+        _s = p_home + p_draw + p_away
+        if _s > 1e-9:
+            p_home, p_draw, p_away = p_home / _s, p_draw / _s, p_away / _s
+
+    # ---------- 第七步D：比分矩阵对齐发布的 1X2（SCORE_ALIGN，V3.3）----------
+    # 第七步B 混入联赛经验频率、第七步C 做 Platt，都会移动象限质量，但只作用在 1X2 上；
+    # 而报告头条的「比分概率组 / 方向首选」取自比分矩阵 → 两者会自相矛盾（实测最多 9.9pp）。
+    # 这里把三象限的质量缩放到**发布值**（象限内条件分布不变，一步精确投影，无需迭代）。
+    align_ratio = None
+    if SCORE_ALIGN:
+        _gm = [p_home_raw, p_draw_raw, p_away_raw]
+        _gt = [p_home, p_draw, p_away]
+        _fq = [_gt[i] / _gm[i] if _gm[i] > 1e-9 else 1.0 for i in range(3)]
+        align_ratio = _fq
+        grid = {k: v * _fq[0 if k[0] > k[1] else (1 if k[0] == k[1] else 2)]
+                for k, v in grid.items()}
+        _gn = sum(grid.values())
+        if _gn > 0:
+            grid = {k: v / _gn for k, v in grid.items()}
+        # 矩阵口径的 1X2 现在与 prob 完全一致（校验用；不等则说明对齐失效）
+        ranked = sorted(grid.items(), key=lambda x: -x[1])[:6]
+        quad_top = {}
+        for qname, qfilter in (("home", lambda k: k[0] > k[1]),
+                               ("draw", lambda k: k[0] == k[1]),
+                               ("away", lambda k: k[0] < k[1])):
+            qcells = [(k, v) for k, v in grid.items() if qfilter(k)]
+            (bk, bv) = max(qcells, key=lambda x: x[1])
+            quad_top[qname] = {"score": f"{bk[0]}:{bk[1]}", "prob": round(bv * 100, 1)}
+
+    # ---------- 第八步：二级盘校准 + 冷门风险（V3.3）----------
+    # 输入用**未混市场**的模型 λ（lam_h_B/lam_a_B）：市场信息已由各自的市场概率单独承载，
+    # 若这里再用混过市场的 λ 会造成双重计数（也与 market_calib_fit.py 的拟合口径脱节）。
+    rq_out = handicap_analysis(odds, lam_h_B, lam_a_B,
+                               has_1x2=bool(odds.get("胜") and odds.get("平") and odds.get("负")))
+    upset_out = upset_analysis(odds, lam_h_B, lam_a_B)
+    big_out = big_goals_analysis(odds)
+
+    # ---------- 冷门信号 ----------
+    signals = []
+    try:
+        if oh and p_home * float(oh) > 1.0:
+            signals.append(f"凯利指数{p_home*float(oh):.2f}>1.0(主胜有价值)")
+        if oa and p_away * float(oa) > 1.0:
+            signals.append(f"凯利指数{p_away*float(oa):.2f}>1.0(客胜有价值)")
+    except (ValueError, TypeError):
+        pass
+    rk_h, rk_a = m.get("home_rank"), m.get("away_rank")
+    if rk_h and rk_a and oh and oa:
+        try:
+            # 排名明显占优却赔率更高 → 赔率与实力背离
+            if rk_h < rk_a - 4 and float(oh) > float(oa):
+                signals.append(f"排名背离(主{rk_h}位优于客{rk_a}位却赔率更高)")
+            if rk_a < rk_h - 4 and float(oa) > float(oh):
+                signals.append(f"排名背离(客{rk_a}位优于主{rk_h}位却赔率更高)")
+        except (ValueError, TypeError):
+            pass
+    if len(signals) == 0:
+        signals.append("无明显冷门信号")
+
+    # ---------- 信心评级（2026-09-13 重构：由「比分概率」改为「方向确定性」）----------
+    # 旧口径 top_p = 比分矩阵最高格概率（全局众数），实测对方向的判别力仅 +13.6pp
+    # （五等分档方向命中 46.9%→60.5%，中间档非单调）；期望比分概率更差（−1.7pp，完全无效）。
+    # 新口径 = Platt 后 max(1X2) 倾向概率：五等分档方向命中 38.1%→74.6%（跨度 +36.6pp，
+    # 完美单调），且控制 λ 后仍有 +10~24pp 增量（star_value_probe.py，1591 场）。
+    # 阈值取五等分位：0.44 / 0.50 / 0.57 / 0.66。
+    top_p = max(p_home, p_draw, p_away)
+    if top_p >= 0.66:
+        stars = 5
+    elif top_p >= 0.57:
+        stars = 4
+    elif top_p >= 0.50:
+        stars = 3
+    elif top_p >= 0.44:
+        stars = 2
+    else:
+        stars = 1
+    if any("凯利指数" in s or "排名背离" in s for s in signals):
+        stars = max(1, stars - 1)
+    if calib.get("ratio", 1.0) > 1.15:
+        stars = max(1, stars - 1)
+
+    # ---------- 链路字符串 ----------
+    chain = " → ".join(
+        f"{name}({info},主{lh:.2f}客{la:.2f})" if name != "零封修正"
+        else f"{name}({info})"
+        for name, info, lh, la in steps
+    )
+    chain += f" → 最终λ 主{lam_h:.2f} 客{lam_a:.2f}"
+    # 【2026-09-13 补齐】第七步B 的比分形状混合此前**没有出现在因素链里**，导致
+    # 「比分是怎么推出来的」缺最后一环（也是它长期与文档口径 0.5/0.3 不一致却没被发现的原因）。
+    try:
+        _w0 = float(LEAGUE_PROFILE.get("score_mix", {}).get("w", 0.5))
+        _ratio = (max(lam_h, lam_a) / min(lam_h, lam_a)) if min(lam_h, lam_a) > 1e-9 else 99.0
+        _weff = _w0 * max(ADAPTIVE_MIX_FLOOR, 1.0 - ADAPTIVE_MIX_K * (_ratio - 1.0))
+        chain += (f" → 比分形状混合(与{league}经验比分频率混合, w={_weff:.3f}"
+                  f"=档案{_w0:g}×自适应衰减(λ比{_ratio:.2f},K={ADAPTIVE_MIX_K:g},下限{ADAPTIVE_MIX_FLOOR:g}))")
+    except Exception:
+        pass
+    if platt_applied:
+        chain += (f" → Platt校准(1X2: 平局{p_draw_raw*100:.1f}%→{p_draw*100:.1f}%)")
+    if align_ratio:
+        chain += (f" → 比分矩阵对齐发布1X2(主×{align_ratio[0]:.2f}/平×{align_ratio[1]:.2f}"
+                  f"/客×{align_ratio[2]:.2f})")
+    if rq_out:
+        chain += (f" → 让球盘校准(建议{rq_out['best']['pick']}"
+                  f" EV{rq_out['best']['ev']:.2f} 置信{rq_out['conf']})")
+    if upset_out:
+        chain += f" → 冷门风险{upset_out['prob']:.0f}%({upset_out['level']})"
+
+    return {
+        "matchNumStr": m["matchNumStr"], "league": league,
+        "home": home, "away": away,
+        "home_rank": rk_h, "away_rank": rk_a,
+        "odds": odds,
+        "lam_home": round(lam_h, 3), "lam_away": round(lam_a, 3),
+        "lam_total": round(lam_h + lam_a, 3),
+        "h2h_count": len(h2h),
+        "h2h_factor": round(f, 3),
+        "dir_applied": len(h2h) >= 3,
+        "kalman_mods": [round(_kmod[0], 4), round(_kmod[1], 4)],
+        "market_w_used": round(_mw, 4),
+        "chain": chain,
+        "top_scores": [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)}
+                       for (k1, k2), p in ranked],
+        "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
+                 "away": round(p_away * 100, 1)},
+        "quad_top": quad_top,
+        "score_align": ({"ratio": [round(x, 4) for x in align_ratio],
+                         "raw": [round(p_home_raw * 100, 1), round(p_draw_raw * 100, 1),
+                                 round(p_away_raw * 100, 1)]} if align_ratio else None),
+        "zero": {"home_rate": round(zr_h, 3), "away_rate": round(zr_a, 3),
+                 "f_home": f_h, "f_away": f_a},
+        "signals": signals,
+        "stars": stars,
+        "rq": rq_out,
+        "upset": upset_out,
+        "big": big_out,
+        "news": m.get("news", ""),
+        "xg": {"home": xg_h, "away": xg_a},
+        # 数据可用性（2026-09-14）：近期战绩条数。任一侧为 0 = 冷启动，
+        # 该场 λ 由「联赛基线 + 赔率反推」得到，与有战绩的场次不可比 ——
+        # 报告侧用 data_n 决定该场是否参与「比分精选」排序、以及可信度标注。
+        "data_n": {"home": len(hr), "away": len(ar)},
+        "cold": (not hr) or (not ar),
+    }
+
+
+def main():
+    # 加载联赛进球环境画像（先验收缩 + H2H 阈值归一 + 赔率反推锚点）
+    load_league_profile()
+    # Platt 胜平负概率校准（当日已拟合则读缓存）
+    pp = fit_platt_params()
+    if pp:
+        print(f"=== Platt 概率校准 === 样本 {pp['n_samples']} 场 | "
+              f"home={pp['params']['home']} draw={pp['params']['draw']} away={pp['params']['away']}")
+    # 二级盘校准参数（按月滚动，跨月自动重拟合）
+    mc = load_market_calib()
+    if mc:
+        _h, _u = mc.get("handicap"), mc.get("upset")
+        print(f"=== 二级盘校准 V3.3 === 拟合月份 {mc['_meta'].get('fitted_month')} "
+              f"| 窗口 {mc['_meta'].get('roll_months')} 月 | 样本 {mc['_meta'].get('sample_rows')} 场")
+        if _h:
+            print(f"  让球盘 logit(P)=a+b1·logit(p_mkt)+b2·logit(p_mod)  "
+                  f"a={_h['beta'][0]:+.3f} b1={_h['beta'][1]:+.3f} b2={_h['beta'][2]:+.3f}  "
+                  f"(拟合 b2={_h['beta_fit'][2]:+.3f} t={_h['beta_fit'][2]/_h['se'][2]:+.1f}, n={_h['n_samples']})")
+        if _u:
+            print(f"  冷门风险 P(首选翻车) 基础率 {_u['base_rate']*100:.1f}%  "
+                  f"β={[round(v,3) for v in _u['beta']]}  n={_u['n_samples']}")
+    else:
+        print("=== 二级盘校准 V3.3 === 未启用（无 market_calib.json）")
+    _lp = LEAGUE_PROFILE
+    print("=== 联赛进球环境画像 ===")
+    print(f"来源 {_lp.get('_meta', {}).get('source', '?')} | "
+          f"{_lp.get('_meta', {}).get('sample_matches', '?')} 场 | "
+          f"{len(_lp.get('leagues', {}))} 个联赛 | 全局基线 {_lp.get('_meta', {}).get('global_mean', '?')}")
+    print(f"收缩权重 w={_lp.get('shrink', {}).get('w')} "
+          f"(向联赛基线收缩，非相乘——相乘会重复修正，实测恶化)")
+
+    md = json.load(open(os.path.join(BASE, "scripts", "matches_data.json"), encoding="utf-8"))
+    matches = {m["matchNumStr"]: m for m in md["matches"]}
+
+    extra = {}
+    for i in range(1, 7):
+        p = os.path.join(BASE, f"_data_batch{i}.json")
+        if os.path.exists(p):
+            for m in json.load(open(p, encoding="utf-8")).get("matches", []):
+                extra[m["matchNumStr"]] = m
+
+    print("=== 动态校准 ===")
+    calib = compute_calibration()
+    print(f"偏差比 {calib['ratio']} (预测均值{calib.get('pred_mean')} vs 实际均值{calib.get('actual_mean')}) "
+          f"→ λ×{calib['factor']}  [{calib.get('desc')}]")
+    for d in calib.get("daily", []):
+        print(f"  {d['date']}  预测{d['pred']}  实际{d['actual']}  ({d['n']}场)")
+    if calib.get("ewma_series"):
+        print(f"  EWMA 轨迹: " + " → ".join(f"{s['date'][5:]}:{s['ewma']}" for s in calib["ewma_series"]))
+    if calib.get("dropped_periods"):
+        print(f"  MAD 剔除异常期: {calib['dropped_periods']}")
+    print(f"联赛因子: {calib.get('league_factors')}")
+
+    # ================= V3.4 运行时模块（已接线：日频执行） =================
+    # ① BRIER_OPT：每 7 天最多一次 walk-forward 寻优；达标则写入 v34_tuned.json 并在本次生效
+    brier_res = None
+    try:
+        brier_res = run_brier_opt(calib)
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] BRIER_OPT 失败: {e}")
+    _tuned = load_tuned_params()
+    for k, v in (_tuned or {}).items():
+        if k in globals() and globals()[k] != v:
+            print(f"  [BRIER_OPT 采纳] {k}: {globals()[k]} → {v}")
+            globals()[k] = v
+    # ② KALMAN_STRENGTH：全量重放历史 → 攻防强度库（当日预测用「赛前」状态）
+    strength_db = None
+    try:
+        strength_db = ensure_strength_db()
+    except Exception as e:  # noqa: BLE001 —— 任何异常都不得阻断当日出报告
+        print(f"  [warn] KALMAN_STRENGTH 失败: {e}")
+    # ③ HEDGE_ENSEMBLE：当日动态市场权重
+    hedge = None
+    try:
+        hedge = hedge_daily_weight()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] HEDGE_ENSEMBLE 失败: {e}")
+    _ctx = {"strength_db": strength_db,
+            "kalman_apply": bool(V3_CONFIG["KALMAN_STRENGTH"].get("apply")),
+            "market_w": (hedge or {}).get("w") if (hedge or {}).get("applied") else None}
+
+    print("\n=== V3 校准路线图（ON·生效/ON·观察 = 已接线；ON = 链路内恒定步骤）===")
+    for line in roadmap_status(calib.get("labeled_samples", 0)):
+        print(line)
+
+    out = []
+    print("\n=== 逐场计算 ===")
+    for num in sorted(matches.keys()):
+        m = dict(matches[num])
+        m.update({k: v for k, v in extra.get(num, {}).items() if v is not None})
+        r = calc_match(m, calib, _ctx)
+        out.append(r)
+        top = r["top_scores"][0]
+        flag = "B✓" if r["dir_applied"] else "B✗"
+        _rqx = ""
+        if r.get("rq"):
+            _b = r["rq"]["best"]
+            _rqx = f" | 让球{r['rq']['handicap']} {_b['pick']} EV{_b['ev']:.2f}({r['rq']['conf']})"
+        _upx = f" | 冷门{r['upset']['prob']:.0f}%({r['upset']['level']})" if r.get("upset") else ""
+        _bgx = (f" | 大比分6+ 市场{r['big']['market6']:.1f}%→校准{r['big']['cal6']:.1f}%"
+                f"({r['big']['level']}) EV7+{r['big']['ev7']:.2f}") if r.get("big") else ""
+        print(f"{num} {r['home']}vs{r['away']:<10} λ{r['lam_home']:.2f}/{r['lam_away']:.2f} "
+              f"总分{r['lam_total']:.2f} | {top['score']}({top['prob']}%) "
+              f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}{_rqx}{_upx}{_bgx}")
+
+    # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
+    json.dump({"today": TODAY, "calibration": calib, "matches": out},
+              open(os.path.join(BASE, "_calc_result.json"), "w", encoding="utf-8"),
+              ensure_ascii=False, indent=2, sort_keys=True)
+    snap = dump_prediction_snapshot(out)
+    print(f"\n共 {len(out)} 场，已写入 _calc_result.json")
+    if snap:
+        print(f"预测快照已写入 {snap}（后续校准直接读取，不再解析 HTML）")
+
+    # ================= V3.4 运行时模块（已接线：日频监控） =================
+    clv_res = drift_res = None
+    try:
+        clv_res = run_clv_track()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] CLV_TRACK 失败: {e}")
+    try:
+        drift_res = run_drift_monitor()
+    except Exception as e:  # noqa: BLE001
+        print(f"  [warn] DRIFT_MONITOR 失败: {e}")
+    save_v34_state({
+        "brier_opt": brier_res,
+        "hedge": hedge,
+        "kalman": ({"n_teams": len((strength_db or {}).get("teams", {})),
+                    "applied": bool(V3_CONFIG["KALMAN_STRENGTH"].get("apply")),
+                    "mods_non_neutral": sum(1 for r in out
+                                            if r.get("kalman_mods") not in ([1.0, 1.0], None))}
+                   if strength_db else None),
+        "clv": clv_res,
+        "drift": drift_res,
+    })
+    print(f"模块状态已写入 v34_state.json（BRIER_OPT/HEDGE/KALMAN/CLV/DRIFT）")
+
+
+if __name__ == "__main__":
+    main()

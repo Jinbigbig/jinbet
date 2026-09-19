@@ -1,0 +1,135 @@
+{
+ "brier_opt": {
+  "date": "2026-09-14",
+  "param": "MARKET_W",
+  "old": 0.8,
+  "best": 0.8,
+  "best_brier": 0.19518,
+  "default_brier": 0.19518,
+  "improvement_pct": null,
+  "scores": [
+   [
+    0.8,
+    0.19518
+   ],
+   [
+    0.85,
+    0.19518
+   ],
+   [
+    0.9,
+    0.19522
+   ],
+   [
+    0.7,
+    0.19525
+   ],
+   [
+    0.6,
+    0.19544
+   ],
+   [
+    0.5,
+    0.19574
+   ]
+  ],
+  "applied": false
+ },
+ "hedge": {
+  "weights": {
+   "model": 0.3539,
+   "market": 0.6461
+  },
+  "losses": {
+   "model": 1.07635,
+   "market": 0.97605,
+   "blend": 0.98293,
+   "n": 500
+  },
+  "w": 0.7,
+  "eta": 6.0,
+  "applied": false,
+  "fixed_w": 0.8
+ },
+ "kalman": {
+  "n_teams": 635,
+  "applied": true,
+  "mods_non_neutral": 8
+ },
+ "clv": null,
+ "drift": {
+  "baseline": "2026-09-14T16:46:37.940980",
+  "n_samples": 3085,
+  "drift_detected": true,
+  "flags": [
+   "league_baselines"
+  ],
+  "detail": {
+   "global_goals": {
+    "psi": 0.0001,
+    "ks": 0.0037,
+    "drift_detected": false,
+    "level": "✅ 稳定"
+   },
+   "home_away_ratio": {
+    "psi": 0.0294,
+    "ks": 0.0745,
+    "drift_detected": false,
+    "level": "✅ 稳定"
+   },
+   "league_baselines": {
+    "mean_delta_pct": 3.59,
+    "std_delta_pct": 7.19,
+    "top3_changed": [
+     [
+      "德国乙级联赛",
+      50.0
+     ],
+     [
+      "韩国职业联赛",
+      16.67
+     ],
+     [
+      "荷兰甲级联赛",
+      15.38
+     ]
+    ],
+    "drift_detected": true,
+    "level": "❌ 漂移"
+   }
+  }
+ },
+ "date": "2026-09-16",
+ "history": [
+  {
+   "date": "2026-09-14",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-09-15",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-09-16",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+  "pk_lambda_caps": [
+    2.6,
+    3.0,
+    3.4
+  ],
+  "pk_lambda_w": [
+    1.0,
+    0.9,
+    0.78,
+    0.68
+  ],
+  "pk_degen_down": 0.85,
+  "bd_lambda_min": 0.0,
+  "_meta": {
+    "tuned_at": "2026-09-16",
+    "days_used": 11,
+    "note": "grid search on rolling history",
+    "pk": {
+      "base_obj": 56.36,
+      "best_obj": 56.36,
+      "adopted": false
+    },
+    "bd": {
+      "base_obj": 17.73,
+      "best_obj": 17.73,
+      "adopted": false
+    }
+  }
+}
