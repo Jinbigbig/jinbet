@@ -125,3 +125,21 @@
 - ❗坑：`_calc_engine.py` 自己重建快照 top_scores（不经引擎 B），必须在该处也调用同一函数（`_headline_rank(top, dir_key)`，dir_key 取引擎 A 倾向），否则报告变了、快照没变。
 - 今日效果：1:1 26/30 → 5/30。落盘 gh-pages `d12fe5b→fba2ce1`、master `7f1d7d0→f3f7c96→b58204b`。
 - ❗并发作业提示：master 与 gh-pages 都有外部自动化在推（master 出现 09-19 09:19 数据提交、gh-pages 被推到 d12fe5b）→ 推送前必须重新 `ls-remote` 取真实 SHA 并 fetch（本地 tracking ref 会滞后，直接 rebase 会报 invalid upstream）。
+
+## 2026-09-19（21:00 修复「比分列颠倒」，非流水线）
+**触发**：用户「你把可能比分1和2颠倒了一下？？？1:1都在比分2里显示了」。
+**根因**：20:30 改造时**直接重排了 `top_scores` 位次**，使「可能比分1/2」不再是概率降序（001 场 11.7% 在左、12.0% 在右）。
+**定稿口径（勿回退）**：
+- `top_scores` **恒为联合分布纯概率降序**（口径事实）；首选另存 `headline`（快照字段）/`SA.headline_pick(cells, direction_key(m))` 现算。规则实现唯一 = `score_engine.headline_reorder`（gap=5.0）。
+- 双档 = **除头条外概率最高的两个**（`SA.band_scores`）。
+- 报告 4.2 列：`可能比分1/可能比分2` → `比分预测` + `比分双档`；卡片「命中比分」→「比分预测」文案同步。
+**实测（新增探针，已入 master tools/prediction/）**：
+- `band_rule_probe.py`（2478 场）：象限内排序 首选14.21/双档15.78/前三29.98 ≪ 纯概率 15.13/24.01/39.14 → 象限口径**不可**用于比分列/双档。
+- `pk_head_probe.py`（回放 225 场，复用 `_optimize_selection` 回放）：比分精选榜头条改同口径后 头条 11.11%→8.89%、双档 17.33%→19.56%、**并集不变 28.44%**、1:1 63%→14%。
+**今日效果**：1:1 占比 4.2 首选 26/30→1/30；比分精选榜 18/18→6/18；大胆档 0/4。
+**连带**：口径变更后重跑 4.6，`selection_tuning.json` 采纳 pk（`pk_degen_down` 0.85→1.0、caps 3.4→3.0）与 bd（`bd_total_shift` -1→0）。
+**落盘**：gh-pages `6883217→d38d942`；master `b58204b→43be6da`。
+**❗踩坑**：
+- master 副本是 **CRLF**，逐段替换式同步必须先按行尾归一，否则锚点 0 命中（本次已改为自动识别）。
+- GitHub Pages **CDN 会返回旧缓存**（本次拿到另一作业的 V3.3 版报告）→ 核验线上务必带 `?v=$(date +%s)` 破缓存，否则会误判成「没生效/被覆盖」。
+- 并发作业（Trae Bot）也在写同一个 `predictions/<date>/index.html`，推送前照例先 `ls-remote` 取真实 SHA。
