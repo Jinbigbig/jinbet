@@ -28,6 +28,21 @@ import statistics
 import datetime
 from collections import Counter
 
+try:                                    # 头条口径的唯一实现在 score_engine.headline_reorder
+    import score_engine as _SEB_HEAD    # （平局众数须领先非平局 head_gap pp 才作首选）
+except Exception:                       # 缺失时保持原概率排序，不影响主链路
+    _SEB_HEAD = None
+
+
+def _headline_rank(top, dir_key=None):
+    """对概率排序的比分列表套用统一头条口径（委托引擎 B，避免第二份实现）。"""
+    if _SEB_HEAD is None or not top:
+        return top
+    try:
+        return _SEB_HEAD.headline_reorder(top, float(_SEB_HEAD.DEFAULT.get("head_gap", 5.0)), dir_key)
+    except Exception:
+        return top
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 # 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
 TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else datetime.date.today().isoformat()
@@ -3022,8 +3037,9 @@ def calc_match(m, calib, ctx=None):
         "kalman_mods": [round(_kmod[0], 4), round(_kmod[1], 4)],
         "market_w_used": round(_mw, 4),
         "chain": chain,
-        "top_scores": [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)}
-                       for (k1, k2), p in ranked],
+        "top_scores": _headline_rank(
+            [{"score": f"{k1}:{k2}", "prob": round(p * 100, 1)} for (k1, k2), p in ranked],
+            "home" if (p_home >= p_draw and p_home >= p_away) else ("draw" if p_draw >= p_away else "away")),
         "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
                  "away": round(p_away * 100, 1)},
         "quad_top": quad_top,

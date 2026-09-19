@@ -63,6 +63,7 @@ DEFAULT = {
     "mc_n": 20000,         # 蒙特卡洛抽样场数
     "league_eb_k": 40.0,   # 联赛基准向全局收缩的等效场数
     "prob_temp": 1.20,     # 申明概率的温度校准指数（混合分布系统性低估，见 predict）
+    "head_gap": 5.0,       # 头条「平局众数须领先非平局」的阈值(pp)，见 headline_reorder
 }
 
 LISTED = ["%d:%d" % (h, a) for h in range(6) for a in range(6)]
@@ -521,6 +522,17 @@ class Engine:
                 dist = {k: max(0.0, v) ** _T / _s for k, v in dist.items()}
         cells = sorted(dist.items(), key=lambda x: -x[1])
         top = [{"score": s, "prob": round(p * 100, 1)} for s, p in cells[:6] if p > 0]
+        # 头条口径：平局众数须在本场倾向象限内明显领先才作首选（详见 headline_reorder）
+        _ph = _pd = 0.0
+        for _h in range(n):
+            for _a in range(n):
+                if _h > _a:
+                    _ph += m[_h][_a]
+                elif _h == _a:
+                    _pd += m[_h][_a]
+        _pa = max(0.0, 1.0 - _ph - _pd)
+        _dir = "home" if (_ph >= _pd and _ph >= _pa) else ("draw" if _pd >= _pa else "away")
+        top = headline_reorder(top, float(self.p.get("head_gap", 5.0)), _dir)
 
         n_dist = len(dist)
         home_dist = [0.0] * n
@@ -581,6 +593,46 @@ class Engine:
 
 # ---------- 生产入口 ----------
 _ENGINE_CACHE = {}
+
+
+def headline_reorder(top, gap=5.0, dir_key=None):
+    """头条口径：联合众数退化为平局比分时，若它领先「本场倾向象限内的最高概率比分」不足 gap(pp)，顺延到后者。
+
+    众数口径下只要两队 λ 同落 [1,2)，首选就恒为 1:1（2478 场里占 56%），单日连片、区分度差。
+    2478 场 walk-forward 实测（象限 + gap=5.0）：
+      单点命中 15.58%（众数口径 15.13%；分半样本 14.29%/16.87%，两半均不劣于基线），
+      1:1 占比 56%→24%，且倾向=平局时保持 1:1、绝不与发布倾向矛盾。
+    gap=3 时为 15.33%，gap=7 起开始掉分（13.57%）、gap=6 为 15.05% → 取 5。
+    dir_key: 'home'/'draw'/'away'（发布倾向）。给定时只在该象限内顺延；为 None 时退化为「顺延到最好的非平局比分」。
+    本函数是头条口径的唯一实现：直接重排 top_scores，下游（报告列 / SA.hit_pick / SA.band_scores）自动跟随。
+    """
+    if not top or len(top) < 2:
+        return top
+
+    def _quad(s):
+        try:
+            h, a = (int(x) for x in str(s).split(":"))
+        except Exception:
+            return None
+        return "home" if h > a else ("away" if a > h else "draw")
+
+    q0 = _quad(top[0]["score"])
+    if q0 != "draw":                      # 众数已是非平局：不动（是否与倾向一致交由展示层）
+        return top
+    want = dir_key if dir_key in ("home", "away") else None
+    if want is None:
+        if dir_key == "draw":             # 倾向就是平局 → 保留众数
+            return top
+        cands = [t for t in top[1:] if _quad(t["score"]) != "draw"]
+    else:
+        cands = [t for t in top[1:] if _quad(t["score"]) == want]
+    if not cands:
+        return top
+    best = max(cands, key=lambda t: t["prob"])
+    if float(top[0]["prob"]) - float(best["prob"]) < float(gap):
+        idx = top.index(best)
+        return [top[idx]] + top[:idx] + top[idx + 1:]
+    return top
 
 
 def engine_asof(cutoff_date=None):
