@@ -116,3 +116,12 @@
 - `git rebase --no-fork-point <SHA> origin/gh-pages` 带第二参数会把 HEAD detached 到 origin 做空操作、本地提交不动 → **rebase 时不带第二个参数**，在 gh-pages 上 `git rebase --no-fork-point <SHA>`。
 - 本地曾出现外部作业（Trae Bot 13:52）的未推送提交 a0bbeab（同日早版报告+odds），与远端分叉致 rebase 冲突 → 处置=`reset --hard <云端SHA>` + `git checkout <本地好提交> -- .` + 单提交推。**但严禁 `git add -A`**——本次把 2147 个 `_` 临时文件/备份/pycache 误入裤，靠二次 `git rm -r --cached`（保留 predictions/2026-09-19、odds_history、results_history 五项）清理（9e3d1ca）。提交永远 `git add -u` + 显式 add。
 - MEMORY.md 已精简至约 3000 字符（此前超限被截断）。
+
+## 2026-09-19（20:30 头条比分口径改造，非流水线）
+**触发**：用户「连续12场预测1:1？？？」→「我不需要这种数学概率，我不要这种众数分布」。
+**结论**：众数口径结构性退化（两队 λ 同落 [1,2) → 首选恒 1:1，长期占 56%），已改为**倾向象限内优选**。
+- 唯一实现 `score_engine.headline_reorder(top, gap=5.0, dir_key)`；`DEFAULT.head_gap=5.0`。规则：众数为平局比分且领先「倾向象限内最高概率比分」<5pp → 顺延；倾向=平局保留 1:1。**直接重排 top_scores 位次**，故报告 4.2 列、SA.hit_pick、SA.band_scores 全部自动跟随（无需改 _gen_report/selection_algo）。
+- 实测（2478 场，probe 已入 master `headline_rule_probe.py`）：象限+gap5 = **15.58%**、1:1→24%（众数 15.13%/56%）；gap6 15.05、gap7 14.57、gap10 13.44 → 取 5。纯非平局顺延(gap5) 15.54% 但 36% 场次与倾向矛盾 → 弃用。
+- ❗坑：`_calc_engine.py` 自己重建快照 top_scores（不经引擎 B），必须在该处也调用同一函数（`_headline_rank(top, dir_key)`，dir_key 取引擎 A 倾向），否则报告变了、快照没变。
+- 今日效果：1:1 26/30 → 5/30。落盘 gh-pages `d12fe5b→fba2ce1`、master `7f1d7d0→f3f7c96→b58204b`。
+- ❗并发作业提示：master 与 gh-pages 都有外部自动化在推（master 出现 09-19 09:19 数据提交、gh-pages 被推到 d12fe5b）→ 推送前必须重新 `ls-remote` 取真实 SHA 并 fetch（本地 tracking ref 会滞后，直接 rebase 会报 invalid upstream）。
