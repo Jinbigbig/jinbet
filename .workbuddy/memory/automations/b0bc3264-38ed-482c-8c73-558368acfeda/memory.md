@@ -1,5 +1,14 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-09-20（14:00 常规流水线）
+**结果**：全链跑通，30 场（赔率 30/30，无别名行/重复对）。gh-pages `e7d4e95 → 1fe3188`（ls-remote 核验），线上报告/复盘/selection_tuning 均 200，红线 grep 为空。
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/245）；无陈旧 batch；复跑 results-only 落日志验证 DEDUP 行（tail 会截掉该行，**必须落文件再 grep**）。
+- 复盘 09-19：方向 13/30=43%、单点 7%、双档 20%、λ偏差 +0.33（单日超阈；09-18 为 -0.09，非持续，未触发重拟合，继续观察）。
+- DRIFT 第 3 日 league_baselines 漂移（德乙 50%/韩职 16.67%）→ 已回复提示离线重拟合 market_calib/Platt。
+- 4.6：**参数旋钮全部未变**，仅 `_meta` 随 15 天窗口刷新（pk 60.67 vs base 59.33、bd 38.0 vs 29.67 均为既有参数再确认）；重跑报告+提交 selection_tuning.json。
+- rebase 冲突照例 3 文件（index.html/odds_data.json/results_data.json），`--theirs` 一次通过。
+- league_data.json 历来不入库（untracked，保持）。
+
 ## 2026-09-18（晚6：009–013 五连 1:1 质疑 → 引擎 B 概率校准，非流水线）
 **触发**：用户「009-013，五场1：1，从概率学上说，可能性低到不可能发生」。
 **核查（重要，下次同类质疑照此回答）**
