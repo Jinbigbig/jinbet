@@ -78,8 +78,12 @@ try:
         return _CC.convert(s) if s else s
 except Exception:
     _CC = None
+    _CC = None
+    # 缺 opencc 时降级：用 league_match 内置的繁简字表+别名反查
+    # （拿玻里→那不勒斯、祖雲達斯→尤文图斯；其余逐字繁转简），不再是繁体直出
+    import league_match as _LM
     def _t2s(s):
-        return s  # 缺 opencc 时降级：简体字段回退为原始（繁体）文本
+        return _LM.to_simp(s) if s else s
 
 
 def parse_standing(txt):
