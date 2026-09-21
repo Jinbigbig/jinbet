@@ -159,3 +159,11 @@
 **新增2（前日回顾）**：报告「五、核心策略」的串关推荐下方新增 `📅 前日回顾`（`_gen_report._build_parlay_recap()`，占位符 `<!--RECAP_PARLAY-->`）：解析**昨日已发布 index.html** 的串关表（方向/信心/冷门）逐腿核对赛果（`_lookup_actual`），逐腿 ✅/❌ + 实际比分，整组「✅ 全中 / ❌ 挂 N 腿 / ⏳ 待赛果」，末行给「共 N 组、全中 M 组 + 当日单场战绩（复用 `gen_review.day_rows/tally`）」。**刻意读昨日 HTML 而非重算**：口径迭代不污染历史串关回顾；昨日无报告/无串关表时输出说明行。
 **落盘**：gh-pages `e7a40b6→2b68ac3`；master `43be6da→15aefde`。红线 grep 空；线上 472315 字符已复核。
 **❗踩坑**：`_gen_report.py` 的词组拼接易出「方向串关串关 A」类重复 → 标签直接用昨日原表组名（方向串关/信心串关/冷门串关 + A-D），不要再手工拼「串关」。MEMORY.md 二次超限（4315→已压至 ~3.1k）。
+
+## 2026-09-20（19:45 修复第六节繁体字，非流水线）
+**触发**：用户「六、当日赛事联赛形势里面还是繁体字」。
+**根因**：`_fetch_league_data.py` 简体字段（name_zh/season_zh/note_zh）设计上用 opencc(t2s) 生成，运行环境无 opencc → 静默回退繁体直出。
+**修法（不引入 opencc 依赖）**：`_league_match.py` 新增 `_TRAD2SIMP` 字表 + `ALIAS_REV`（ALIAS 反查，港译还原大陆译名：拿玻里→那不勒斯、巴塞隆拿→巴萨）+ `to_simp()`；fetch 回退改调 `LM.to_simp`。顺带补 23+ 条 ALIAS（勒沃库森→利華古遜、马赛→馬賽、尼斯→奈斯、富勒姆→富咸、波尔图→波圖等），队名匹配 31/54→51/54（米亚尔比 7M 瑞超榜无此队，宁缺勿错；韩职无数据源）。
+**连带修复**：此前「排名—」的队（亚特兰大/町田泽维/柏太阳神等）因 ALIAS 补齐而出现真实排名。
+**落盘**：gh-pages `2cf82f2`、master `272b9f4`（league_match.py 直接 cp + fetch_league_data.py CRLF 锚点行级替换）。线上破缓存核验繁体关键词全 0。
+**❗要点**：① master fetch_league_data.py 是**混合行尾**文件（CRLF 为主、个别 LF），锚点替换必须按行 splitlines(keepends=True) 定位；② rebase 若报 untracked 会覆盖（本次 odds_history/results_history 单文件），先备份移走再 rebase（备份在 _backup_20260920/）；③ 以后新增 7M 队名映射一律加 `_league_match.ALIAS`（展示名自动经 ALIAS_REV 反转为简体名，匹配与显示一处维护）。
