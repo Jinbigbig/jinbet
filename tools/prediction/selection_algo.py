@@ -2,7 +2,7 @@
 """「今日比分精选 / 大胆档」选取算法——单一事实源（single source of truth）。
 
 背景（2026-09-16）：
-  报告渲染（`_gen_report.py`）与每日优化回放（`_optimize_selection.py`）原本各写了一份
+  报告渲染（`gen_report.py`）与每日优化回放（`optimize_selection.py`）原本各写了一份
   选取逻辑，属近似重复实现，存在口径漂移风险——优化器调出来的旋钮可能不是报告真用的
   那个算法，会让「每日优化」失去意义。本模块把两边共用的纯函数收拢到一处，
   两侧一律 import 使用，杜绝重复。
@@ -134,30 +134,63 @@ def _head_rule():
     return _HEAD_RULE
 
 
-def headline_pick(cells, okey):
+def headline_pick(cells, okey, mkt=None):
     """在**概率降序**的比分列表上取首选（套用统一的头条口径）。
 
-    cells: [(score, prob%) ...] 概率降序（引擎矩阵或本板块自建分布皆可）。
+    cells: [(score, prob%) ...] 或 [{'score','prob'[,'mkt']} ...]，概率降序
+           （引擎矩阵或本板块自建分布皆可）。
     okey:  本场倾向 'home'/'draw'/'away'。
+    mkt:   可选 {score: 比分盘去水概率}；元素自带 mkt 时以元素为准。
     返回 (首选比分, 首选概率%)；口径不可用时退化为概率最高格。
     """
-    cells = [c for c in cells if c and c[0]]
-    if not cells:
+    items = []
+    for c in cells or []:
+        if not c:
+            continue
+        if isinstance(c, dict):
+            s = c.get('score')
+            if not s:
+                continue
+            it = {'score': s, 'prob': c.get('prob'), 'mkt': c.get('mkt')}
+        else:
+            if not c[0]:
+                continue
+            it = {'score': c[0], 'prob': c[1] if len(c) > 1 else None,
+                  'mkt': c[2] if len(c) > 2 else None}
+        if it['mkt'] is None and mkt:
+            it['mkt'] = mkt.get(it['score'])
+        items.append(it)
+    if not items:
         return None, None
     fn, gap = _head_rule()
     if fn is None:
-        return cells[0]
+        return items[0]['score'], items[0].get('prob')
     try:
-        ranked = fn([{'score': s, 'prob': p} for s, p in cells], gap, okey)
+        ranked = fn(items, gap, okey)
     except Exception:
-        return cells[0]
+        return items[0]['score'], items[0].get('prob')
     return ranked[0]['score'], ranked[0].get('prob')
 
 
-def hit_pick(m):
-    """头条「命中比分」= 倾向象限内优选（概率最高格在倾向不一致时顺延，规则见 headline_reorder）。
+def plan_headlines(items, cap=None):
+    """按日给全天场次分配首选（唯一入口，含「同日同一比分上限」）。
 
-    取数顺序：快照 `headline` 字段 → 用本模块方向现算 → 矩阵首个列出比分。
+    items: [{'key','cells','dir_key','date'}]，cells 同 headline_pick。
+    返回 {key: score}。委托 score_engine.plan_headlines，保证快照与报告同口径。
+    """
+    try:
+        import score_engine as _se
+        return _se.plan_headlines(
+            [{'key': it['key'], 'date': it.get('date'), 'dir_key': it.get('dir_key'),
+              'cells': it['cells']} for it in items], cap)
+    except Exception:
+        return {}
+
+
+def hit_pick(m):
+    """头条「命中比分」= 发布首选（快照 `headline` 字段，规则见 score_engine.headline_reorder）。
+
+    取数顺序：快照 `headline` → 用同口径现算（含各类 mkt）→ 矩阵首个列出比分。
     返回 (比分, 模型给该比分的概率% 或 None)。
     """
     hl = m.get('headline') or {}
@@ -166,7 +199,7 @@ def hit_pick(m):
     ts = [t for t in (m.get('top_scores') or []) if t.get('score') in LISTED_LABELS]
     if ts:
         okey = direction_key(m)
-        s, p = headline_pick([(t['score'], t.get('prob')) for t in ts], okey)
+        s, p = headline_pick(ts, okey)
         return s, p
     return quad_score(m, direction_key(m)), None
 
@@ -403,7 +436,13 @@ def pk_ref(m, tuning=None, band_k=2):
     cells = sorted(((s, round(p * 100, 1)) for s, p in pk_dist(m, tuning).items()), key=lambda x: -x[1])
     if not cells:
         return None, None, []
-    head, hp = headline_pick(cells, direction_key(m))
+    # 首选以**已发布口径**（快照 headline）为准：它由 plan_headlines 按日统一分配，
+    # 若本板块另算一份，同一场会在 4.2「比分预测」与精选榜「命中比分」上出现两个分数。
+    hl = (m.get('headline') or {}).get('score')
+    if hl and any(s == hl for s, _ in cells):
+        head, hp = hl, next((p for s, p in cells if s == hl), None)
+    else:
+        head, hp = headline_pick(cells, direction_key(m))
     band = [(s, p) for s, p in cells if s != head][:band_k]
     return head, (round(hp, 1) if hp is not None else None), band
 

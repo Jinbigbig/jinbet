@@ -41,11 +41,30 @@ def score_pred(m):
     return _SCORE.get('%s_%s' % (m.get('home') or '', m.get('away') or ''))
 
 
+def _pub_head(m, cells=None):
+    """发布首选比分（以快照 `headline` 为准 —— 它由按日统一分配的口径算出）。
+
+    cells 给定时，概率百分比取该列表里的值（保持表格数字与自己的分布一致）；
+    快照没有 headline 时才现算（此时按元素自带的 mkt 走新口径）。
+    """
+    hl = m.get('headline') or {}
+    s = hl.get('score')
+    if s:
+        if cells:
+            p = next((t.get('prob') for t in cells if t.get('score') == s), None)
+            if p is not None:
+                return s, p
+        return s, hl.get('prob')
+    if cells:
+        return SA.headline_pick(cells, SA.direction_key(m))
+    return hit_pick(m)
+
+
 def head_score(m):
-    """头条比分 = 引擎 B（独立比分引擎）的联合分布 argmax；不可用时回退引擎 A。"""
+    """头条比分 = 发布首选（快照 headline 为准），不可用时回退引擎 B → 引擎 A。"""
     sp = score_pred(m)
     if sp and sp.get('top_scores'):
-        return sp['top_scores'][0]['score'], sp['top_scores'][0]['prob']
+        return _pub_head(m, sp['top_scores'])
     return hit_pick(m)
 
 # 合并采集数据中的 H2H 明细（history 表用）
@@ -889,8 +908,8 @@ def match_card(m):
     _sp = score_pred(m)
     if _sp and _sp.get('top_scores'):
         _tsB = _sp['top_scores']
-        hscore, hprob = _tsB[0]['score'], _tsB[0]['prob']
-        qp = [(t['score'], t['prob']) for t in _tsB[1:3]]
+        hscore, hprob = _pub_head(m, _tsB)
+        qp = [(t['score'], t['prob']) for t in _tsB if t['score'] != hscore][:2]
         bp = _sp['cover1'] / 100.0
         _lhB, _laB = _sp['lam_h'], _sp['lam_a']
         _grpB = ' · '.join(f'{dash(t["score"])} {t["prob"]:.1f}%' for t in _tsB[:7])
@@ -985,12 +1004,12 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">{dash(hscore)}</span>
-      <span class="pred-value">（{olabel}倾向｜<b>双方进球联合分布的可能比分1</b>{hprob_str}）</span>
+      <span class="pred-value">（{olabel}倾向｜<b>方向倾向内的首选比分</b>{hprob_str}）</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
       <span class="pred-score">{esc(qp_join)}</span>
-      <span class="pred-value">（第 2 / 第 3 可能比分，合计 <b>{qp_sum:.1f}%</b>
+      <span class="pred-value">（除首选外概率最高的两个比分，合计 <b>{qp_sum:.1f}%</b>
         <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
     </div>
     <div class="pred-row">
@@ -1069,19 +1088,23 @@ for m in MATCHES:
               f'<td><span class="tag {_cred_c}">{_cred_t}</span></td>'
               f'{_hc}{_hj}'
               f'<td style="text-align:center;white-space:nowrap;">{_cold_cell}</td></tr>')
-    # 4.2 比分预测（引擎 B：双方进球联合分布 —— 主/客各进几球 + 前两个可能比分）
+    # 4.2 比分预测（引擎 B：双方进球联合分布 —— 主/客各进几球 + 首选比分 + 双档比分）
     sp = score_pred(m)
     if sp and sp.get('top_scores'):
         _ts2 = sp['top_scores']
         _lt = sp['lam_h'] + sp['lam_a']
         _bct, _bcc = lam_cred(_lt)
-        _prob1 = (f' <span style="color:var(--muted);font-size:0.76rem;">{_ts2[0]["prob"]:.1f}%</span>')
+        _pk2, _pkp2 = _pub_head(m, _ts2)
+        _bd2 = [(t['score'], t['prob']) for t in _ts2 if t['score'] != _pk2][:2]
+        _pp = (f' <span style="color:var(--muted);font-size:0.76rem;">{float(_pkp2):.1f}%</span>'
+               if _pkp2 is not None else '')
         _c1 = (f'<td style="font-family:monospace;white-space:nowrap;">'
-               f'<b style="color:var(--accent);">{esc(_ts2[0]["score"])}</b>{_prob1}</td>')
-        if len(_ts2) > 1:
-            _c2 = (f'<td style="font-family:monospace;white-space:nowrap;">'
-                   f'<b>{esc(_ts2[1]["score"])}</b>'
-                   f' <span style="color:var(--muted);font-size:0.76rem;">{_ts2[1]["prob"]:.1f}%</span></td>')
+               f'<b style="color:var(--accent);">{esc(_pk2)}</b>{_pp}</td>')
+        if _bd2:
+            _c2 = ('<td style="font-family:monospace;white-space:nowrap;">'
+                   + ' + '.join(f'{esc(s)} <span style="color:var(--muted);font-size:0.76rem;">'
+                                f'{float(p):.1f}%</span>' for s, p in _bd2)
+                   + '</td>')
         else:
             _c2 = '<td style="text-align:center;color:var(--muted);">—</td>'
         _mode_h = (f'<td style="text-align:center;white-space:nowrap;"><b>{sp["home_mode"]}</b> 球'
@@ -1112,13 +1135,13 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
-<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。
+<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 结合本场方向倾向的首选比分（小字为模型给该比分的概率，与逐场卡片一致）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率，两者可能不同象限）。
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
 只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
 {_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>（小字为该价值方向、EV 与置信度）。',
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
-{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>可能比分1 / 可能比分2</b> = 联合分布里概率最高与前两位的比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
-'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>可能比分1</th><th>可能比分2</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC) if rowsC else ''}
+{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
+'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC) if rowsC else ''}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th>', rowsB)}
 {market_dev_section(MATCHES)}
@@ -1300,6 +1323,8 @@ strategy_sec = f'''
   </table>
   <div class="parlay-note">注：综合概率为各场比分腿概率连乘。<b>比分串关 3 腿全中率不到 1%</b>，组合概率常低至 0.1%~0.4%——请当买彩票而非投资建议，切勿重注。想提高命中率请看上表 <b>Top3 覆盖 / ±1球覆盖</b>，而非串关。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）；组数与腿数随当日场次数量调整。</div>
 </div>
+
+<!--RECAP_PARLAY-->
 '''
 
 # ---------- 📊 动态校准与历史命中率 ----------
@@ -1413,7 +1438,7 @@ picks_sec = f'''
 <div class="card">
   <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
     下表按模型把握度从高到低列出今日最值得跟的比分。<b>第一档 {TIER_PK} 场（准确率优先）</b>，
-    当日比赛越多则按倍数增档（今日 {len(MATCHES)} 场 → 共 {len(_picks)} 场）。
+    当日比赛越多则按倍数增档（今日 {len(MATCHES)} 场 → {len(_pk_t)} 档、共 {len(_picks)} 场）。
     单比分全场次平均命中约 <b>15%</b>、双档约 <b>20%</b>、±1 球覆盖约 <b>67%</b>；
     把握度高的场次命中率明显更高，因此跟单场比分只看这几场，其余场次请看方向与总进球倾向。
     本榜与下方「🔥 大胆档」各自独立成榜、同一场次不会重复出现。
@@ -1461,15 +1486,19 @@ for _ti, _tier in enumerate(_bd_tier_list, 1):
         _i += 1
         _s, _sp = head_score(_m)
         _e, _ep, _x, _xp = _bold_ref(_m)
+        # 注：Python 3.11 的 f-string 表达式内禁止反斜杠，故把带引号的 <span> 前缀先拼好
+        _MUTED_OPEN = '<span style="color:var(--muted);font-weight:400;">'
+        _ep_txt = (" " + _MUTED_OPEN + f"{_ep:.1f}%" + "</span>") if _ep is not None else ""
+        _xp_txt = (" " + _MUTED_OPEN + f"{_xp:.1f}%" + "</span>") if _xp is not None else ""
         _rows_bd += (
             f'<tr><td style="text-align:center;font-weight:700;color:var(--accent3);">{_i}</td>'
             f'<td><span class="tag tag-blue">{esc(_m["matchNumStr"])}</span> {esc(_m["league"])}</td>'
             f'<td>{esc(_m["home"])} vs {esc(_m["away"])}</td>'
             f'<td style="font-family:monospace;color:var(--muted);">{dash(_s)}</td>'
             f'<td style="font-family:monospace;font-weight:700;color:var(--accent3);">{dash(_e)}'
-            f'{" <span style=\"color:var(--muted);font-weight:400;\">" + (f"{_ep:.1f}%" if _ep is not None else "") + "</span>" if _ep is not None else ""}</td>'
+            f'{_ep_txt}</td>'
             f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_x) if _x else "—"}'
-            f'{" <span style=\"color:var(--muted);font-weight:400;\">" + f"{_xp:.1f}%" + "</span>" if _xp is not None else ""}</td>'
+            f'{_xp_txt}</td>'
             f'<td style="font-family:monospace;">{_lt:.2f}</td></tr>')
 
 bold_sec = f'''
@@ -1479,7 +1508,7 @@ bold_sec = f'''
     头条比分是分布里的单个最高格，进球数必然偏小。下表是<b>独立于比分精选的另一块榜单</b>
     （两榜不重复同一场比赛，已进入比分精选的场次不再出现在这里），
     挑出模型给出<b>高置信进攻结果</b>的场次（<b>第一档 {TIER_BD} 场</b>，
-    当日比赛越多则按倍数增档，今日 {len(_bold)} 场），
+    当日比赛越多则按倍数增档，今日 {len(MATCHES)} 场 → {len(_bd_t)} 档、共 {len(_bold)} 场），
     另给两档进攻型参考：<b>量级档</b>（该场按进攻量级最可能的比分）、
     <b>极限档</b>（同倾向下总进球再上一档）。这两档赔率明显更高、命中率低于头条——
     想搏赔率看这里，跟单仍以稳档为准。
@@ -1550,6 +1579,15 @@ def _results_cache():
         pass
     _RESULTS_CACHE = recs
     return recs
+
+
+def _outcome_key(score_str):
+    """比数字符串 → 'home'/'draw'/'away'；解析失败返回 None。"""
+    try:
+        h, a = (int(x) for x in str(score_str).replace('-', ':').split(':')[:2])
+    except Exception:
+        return None
+    return 'home' if h > a else ('away' if a > h else 'draw')
 
 
 def _lookup_actual(y, home, away):
@@ -1667,10 +1705,113 @@ def _build_recap():
     return _picks, _bold
 
 
+def _build_parlay_recap():
+    """串关推荐下的「前日回顾」：按昨日**已发布报告**的串关表格逐腿核对赛果。
+
+    数据源 = predictions/<昨日>/index.html 的串关表（= 当时实发内容，不受后续口径迭代影响）；
+    赛果走 _lookup_actual（results_history 官方锚）；另附当日单场战绩（复用 gen_review 口径）。
+    """
+    import os as _os
+    import re as _re
+    y = _yesterday_of(TODAY)
+    if not y:
+        return ''
+
+    def _wrap(inner):
+        return ('<div class="parlay-section">\n  <h3>📅 前日回顾</h3>\n  ' + inner + '\n</div>\n')
+
+    page_p = f'predictions/{y}/index.html'
+    if not _os.path.exists(page_p):
+        return _wrap(f'<div class="parlay-note">前一日（{y}）未生成预测报告，无可回顾的串关。</div>')
+    html = open(page_p, encoding='utf-8').read()
+
+    _KIND = {'方向串关': 'direction', '信心串关': 'score', '冷门串关': 'score'}
+    _DKEY = {'主胜': 'home', '平局': 'draw', '客胜': 'away'}
+    groups = []
+    for cls in ('parlay-confident', 'parlay-upset'):
+        for row in _re.findall(r'<tr class="%s">(.*?)</tr>' % cls, html, _re.S):
+            cells = _re.findall(r'<td[^>]*>(.*?)</td>', row, _re.S)
+            if len(cells) < 2:
+                continue
+            name = _re.sub(r'\s+', ' ', _re.sub(r'<[^>]+>', ' ', cells[0])).strip()
+            mh = _re.match(r'(方向串关|信心串关|冷门串关)\s*([A-D])', name)
+            if not mh:
+                continue
+            prefix, gname = mh.group(1), mh.group(2)
+            label, kind = prefix, _KIND[prefix]
+            combo = _re.sub(r'<[^>]+>', '', cells[1]).strip()
+            legs_html, n_bad, n_wait = [], 0, 0
+            for leg in combo.split('×'):
+                m2 = _re.match(r'\s*\[([^\]]+)\](.+?)vs(.+?)\s+(\S+)\s*$', leg)
+                if not m2:
+                    continue
+                num, home, away = m2.group(1).strip(), m2.group(2).strip(), m2.group(3).strip()
+                pick = m2.group(4).strip()
+                pick_sc = pick.replace('-', ':')
+                act = _lookup_actual(y, home, away)
+                if act is None:
+                    ok, n_wait = None, n_wait + 1
+                elif kind == 'direction':
+                    ok = _DKEY.get(pick) == _outcome_key(act)
+                else:
+                    ok = pick_sc == act.replace('-', ':')
+                if act is None:
+                    _mark, _mc = '⏳ 待赛果', 'var(--muted)'
+                else:
+                    _mark, _mc = ('✅', 'var(--accent2)') if ok else ('❌', 'var(--accent3)')
+                    n_bad += 0 if ok else 1
+                _show = pick_sc if kind == 'score' else pick
+                legs_html.append(
+                    f'<span class="tag tag-blue">{esc(num)}</span> {esc(home)} vs {esc(away)} '
+                    f'<b style="font-family:monospace;">{esc(_show)}</b> '
+                    f'<span style="color:{_mc};font-weight:700;">{_mark}</span>'
+                    + (f' <span style="color:var(--muted);font-size:0.76rem;">实际 {esc(act)}</span>' if act else ''))
+            if not legs_html:
+                continue
+            if n_wait:
+                _v, _vc = '⏳ 待赛果', 'var(--muted)'
+            elif n_bad == 0:
+                _v, _vc = '✅ 全中', 'var(--accent2)'
+            else:
+                _v, _vc = f'❌ 挂 {n_bad} 腿', 'var(--accent3)'
+            groups.append({'label': label, 'name': gname, 'kind': kind, 'legs': legs_html,                           'verdict': f'<span style="font-weight:700;color:{_vc};">{_v}</span>'})
+
+    if not groups:
+        return _wrap(f'<div class="parlay-note">前一日（{y}）报告无串关表格，无可回顾内容。</div>')
+
+    rows = ''
+    for g in groups:
+        rows += ('<tr><td><strong>' + esc(g['label']) + ' ' + esc(g['name']) + '</strong>'
+                 '<br><span style="font-size:0.72rem;color:var(--muted);">'
+                 + ('方向腿' if g['kind'] == 'direction' else '比分腿') + '</span></td>'
+                 '<td style="font-size:0.84rem;line-height:1.75;">' + '<br>'.join(g['legs']) + '</td>'
+                 '<td>' + g['verdict'] + '</td></tr>')
+    _d = [g for g in groups if g['kind'] == 'direction']
+    _s = [g for g in groups if g['kind'] == 'score']
+    _full = sum(1 for g in groups if g['verdict'].find('全中') >= 0)
+    _summ = (f'前日（{y}）共 {len(groups)} 组串关：方向 {len(_d)} 组、比分 {len(_s)} 组，全部命中 {_full} 组。')
+    _kpi = ''
+    try:
+        import gen_review as _GR
+        _, _rows = _GR.day_rows(y)
+        if _rows:
+            _n, _dh, _hh, _bh = _GR.tally(_rows)
+            if _n:
+                _kpi = (f' 当日单场战绩：方向 <b>{_dh}/{_n}</b>（{_dh / _n * 100:.0f}%）、'
+                        f'比分单点 <b>{_hh}/{_n}</b>、双档 <b>{_bh}/{_n}</b>（{_bh / _n * 100:.0f}%）。')
+    except Exception:
+        pass
+    return _wrap(
+        '<div class="table-wrap"><table>\n'
+        '<thead><tr><th>组别</th><th>逐腿核对（预测 · 结果）</th><th>整组</th></tr></thead>\n'
+        '<tbody>' + rows + '</tbody></table></div>\n'
+        f'  <div class="parlay-note">{_summ}{_kpi} 赛果取官方锚；方向腿错一场即整组挂，比分腿同理。</div>')
+
+
 recap_picks, recap_bold = _build_recap()
 picks_sec = picks_sec.replace('<!--RECAP_PICKS-->', recap_picks)
 bold_sec = bold_sec.replace('<!--RECAP_BOLD-->', recap_bold)
-
+strategy_sec = strategy_sec.replace('<!--RECAP_PARLAY-->', _build_parlay_recap())
 # ── 浮动章节导航（右侧目录 + 滚动高亮，窄屏自动折叠为悬浮按钮）────────────
 # 自包含：自动扫描页面内所有 h2/h3，按需分配锚点 id 并生成目录项，
 # 因此板块增减时无需同步维护列表；历史报告回填也复用同一段代码。

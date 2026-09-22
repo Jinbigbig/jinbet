@@ -35,7 +35,11 @@ except Exception:                       # 缺失时保持原概率排序，不�
 
 
 def _headline_pick(top, dir_key=None):
-    """在概率降序的比分列表上取首选（委托引擎 B 的唯一实现，避免第二份口径）。"""
+    """在概率降序的比分列表上取首选（委托引擎 B 的唯一实现，避免第二份口径）。
+
+    top 元素若带 `mkt`（该格比分盘去水概率），引擎 B 走**新口径**（比分盘×模型联合打分）；
+    否则退回旧口径。单场版本；全天版本见 `_apply_headline_plan`。
+    """
     if not top:
         return None, None
     if _SEB_HEAD is None:
@@ -45,6 +49,89 @@ def _headline_pick(top, dir_key=None):
         return r[0].get("score"), r[0].get("prob")
     except Exception:
         return top[0].get("score"), top[0].get("prob")
+
+
+# 当日比分盘去水分布 {matchNumStr: {score: p}}，由 load_score_market() 填充。
+SCORE_MKT = {}
+
+
+def load_score_market():
+    """读 scripts/matches_data.json 里的比分盘 → {matchNumStr: 去水分布}。
+
+    头条新口径需要它（首选 = argmax[log p_比分盘 + w·log p_模型]）。
+    拿不到就留空 → 该场退回旧口径，不会报错。
+    """
+    SCORE_MKT.clear()
+    if _SEB_HEAD is None:
+        return SCORE_MKT
+    try:
+        data = json.load(open(os.path.join(BASE, "scripts", "matches_data.json"), encoding="utf-8"))
+    except Exception:
+        return SCORE_MKT
+    ms = data if isinstance(data, list) else (data.get("matches") or [])
+    for m in ms:
+        try:
+            num = m.get("matchNumStr")
+            sd = m.get("score_odds") or (m.get("odds") or {}).get("比分") or {}
+            pm = _SEB_HEAD.market_dist(sd)
+            if num and pm:
+                SCORE_MKT[num] = pm
+        except Exception:
+            continue
+    return SCORE_MKT
+
+
+def _apply_headline_plan(out_matches, date=None):
+    """全天一次性分配首选比分（含「同日同一比分上限」），写回每场的 `headline`。
+
+    这是首选口径的**唯一落地点**：报告 4.2「比分预测」、比分精选榜「命中比分」、
+    命中判定都读快照的 `headline`，不各自现算，避免出现两个不同的分数。
+    """
+    if _SEB_HEAD is None or not out_matches:
+        return
+    if not SCORE_MKT:
+        load_score_market()
+    day = date or TODAY
+    items = []
+    for m in out_matches:
+        ts = m.get("top_scores") or []
+        if not ts:
+            continue
+        pm = SCORE_MKT.get(m.get("matchNumStr")) or {}
+        cells = []
+        for t in ts:
+            s = t.get("score")
+            if not s:
+                continue
+            cells.append({"score": s, "prob": t.get("prob"),
+                          "mkt": (pm.get(s) if s in pm else None)})
+        if not any(c["mkt"] is not None for c in cells):
+            continue
+        pr = m.get("prob") or {}
+        dk = ("home" if (pr.get("home") or 0) >= max(pr.get("draw") or 0, pr.get("away") or 0)
+              else ("draw" if (pr.get("draw") or 0) >= (pr.get("away") or 0) else "away"))
+        items.append({"key": m.get("matchNumStr"), "date": day,
+                      "dir_key": dk, "cells": cells})
+    if not items:
+        return
+    plan = _SEB_HEAD.plan_headlines(items)
+    changed = []
+    for m in out_matches:
+        s = plan.get(m.get("matchNumStr"))
+        if not s:
+            continue
+        ts = m.get("top_scores") or []
+        p = next((t.get("prob") for t in ts if t.get("score") == s), None)
+        old = (m.get("headline") or {}).get("score")
+        if old and old != s:
+            changed.append("%s %s vs %s → %s" % (m.get("matchNumStr"), m.get("home"),
+                                                 m.get("away"), s))
+        m["headline"] = {"score": s, "prob": p}
+    print("  [头条口径] 比分盘覆盖 %d 场 / 首选落位 %d 场 / 相对旧口径变更 %d 场"
+          % (len(SCORE_MKT), len(plan), len(changed)))
+    for c in changed[:8]:
+        print("    · %s" % c)
+
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 # 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
@@ -56,7 +143,7 @@ TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else dateti
 #   平台区 N=20~30 × DECAY=0.95~1.00（+0.024~0.029），取保守值 N=25/DECAY=0.96
 # 说明：长窗口降低估计噪声的收益 > 时效性的损失；DECAY=1.0 虽最优但完全丢弃近期
 #       变化（换帅/转会/伤停），故保留轻微衰减 0.96（有效样本约 25 场）。
-# 注意：RECENT_N 需与 _build_today_extras.py 的 recent 切片长度保持一致。
+# 注意：RECENT_N 需与 build_today_extras.py 的 recent 切片长度保持一致。
 RECENT_N = 25
 DECAY = 0.96
 HOME_BOOST = 1.00   # 【V3.4 废弃】全局主客场加成 = 1.15/0.90 → 1.00/1.00
@@ -1687,7 +1774,7 @@ def track_clv(snapshot_path=None, results_dir=None):
     """
     if snapshot_path is None:
         # 扫描 predictions/*/pred_snapshot.json，取最近一个
-        pred_root = os.path.join(_repo_root(), "predictions")
+        pred_root = os.path.join(BASE, "predictions")
         if not os.path.isdir(pred_root):
             return None
         snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
@@ -2322,7 +2409,7 @@ def run_brier_opt(calib=None, verbose=True, force=False):
 
 def run_clv_track(verbose=True, max_days=120):
     """CLV_TRACK 每日执行：算最近快照的 CLV，累计入 clv_log.json。"""
-    pred_root = os.path.join(_repo_root(), "predictions")
+    pred_root = os.path.join(BASE, "predictions")
     snaps = sorted(glob.glob(os.path.join(pred_root, "*/pred_snapshot.json")))
     snaps = [s for s in snaps if os.path.basename(os.path.dirname(s)) < TODAY]
     if not snaps:
@@ -2431,7 +2518,7 @@ def read_daily_pred(d):
     否则回退解析 HTML：先用 λ=主x/客y 求总进球期望，无 λ 才用首选比分（众数口径，天然偏低）。
     返回 {"n": 场次数, "pred_mean": 均值, "caliber": "lambda"/"score"}
     """
-    jp = os.path.join(_repo_root(), "predictions", d, "pred_snapshot.json")
+    jp = os.path.join(BASE, "predictions", d, "pred_snapshot.json")
     if os.path.exists(jp):
         try:
             snap = json.load(open(jp, encoding="utf-8"))
@@ -2441,7 +2528,7 @@ def read_daily_pred(d):
         except Exception:
             pass
 
-    rp = os.path.join(_repo_root(), "predictions", d, "index.html")
+    rp = os.path.join(BASE, "predictions", d, "index.html")
     if not os.path.exists(rp):
         return None
     content = open(rp, encoding="utf-8").read()
@@ -2464,7 +2551,7 @@ def dump_prediction_snapshot(out_matches, date=None):
     目的：不再依赖解析 HTML（版式一变就失效），并为 PLATT/Brier 等后续模块留存标注基础。
     """
     d = date or TODAY
-    folder = os.path.join(_repo_root(), "predictions", d)
+    folder = os.path.join(BASE, "predictions", d)
     if not os.path.isdir(folder):
         return None
     rows = []
@@ -2508,7 +2595,7 @@ def dump_prediction_snapshot(out_matches, date=None):
 # ---------------------------------------------------------------- 动态校准
 def compute_calibration():
     """近7天预测总进球 vs 实际：EWMA+MAD 抗噪求全局因子，再按联赛分层收缩。"""
-    results = json.load(open(os.path.join(_repo_root(), "results_data.json"), encoding="utf-8"))
+    results = json.load(open(os.path.join(BASE, "results_data.json"), encoding="utf-8"))
     daily = []
     league_buckets = {}
 
@@ -3118,7 +3205,7 @@ def main():
     print(f"收缩权重 w={_lp.get('shrink', {}).get('w')} "
           f"(向联赛基线收缩，非相乘——相乘会重复修正，实测恶化)")
 
-    md = json.load(open(os.path.join(_repo_root(), "scripts", "matches_data.json"), encoding="utf-8"))
+    md = json.load(open(os.path.join(BASE, "scripts", "matches_data.json"), encoding="utf-8"))
     # 同一 matchNumStr 出现多行时（上游 SCHEDULE 队名别名导致），必须保留「数据完整」
     # 的那一行。曾因简单 dict 覆盖（后写胜）而让 4 场丢掉让球盘/比分盘/球队战绩——
     # 表现为报告 4.1 显示「无让球盘」、比分引擎无评级历史。判据见 _odds_richness。
@@ -3207,6 +3294,9 @@ def main():
               f"总分{r['lam_total']:.2f} | {top['score']}({top['prob']}%) "
               f"{r['stars']}★ | H2H{r['h2h_count']}场 f={r['h2h_factor']} {flag}{_rqx}{_upx}{_bgx}")
 
+    # 首选口径必须在落盘前算完：_calc_result.json 与 pred_snapshot.json 两份都要带同一份
+    # headline（报告读前者、命中判定/回放读后者），否则同一场会出现两个首选比分。
+    _apply_headline_plan(out, TODAY)
     # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
     json.dump({"today": TODAY, "calibration": calib, "matches": out},
               open(os.path.join(BASE, "_calc_result.json"), "w", encoding="utf-8"),
