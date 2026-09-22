@@ -167,3 +167,11 @@
 **连带修复**：此前「排名—」的队（亚特兰大/町田泽维/柏太阳神等）因 ALIAS 补齐而出现真实排名。
 **落盘**：gh-pages `2cf82f2`、master `272b9f4`（league_match.py 直接 cp + fetch_league_data.py CRLF 锚点行级替换）。线上破缓存核验繁体关键词全 0。
 **❗要点**：① master fetch_league_data.py 是**混合行尾**文件（CRLF 为主、个别 LF），锚点替换必须按行 splitlines(keepends=True) 定位；② rebase 若报 untracked 会覆盖（本次 odds_history/results_history 单文件），先备份移走再 rebase（备份在 _backup_20260920/）；③ 以后新增 7M 队名映射一律加 `_league_match.ALIAS`（展示名自动经 ALIAS_REV 反转为简体名，匹配与显示一处维护）。
+
+## 2026-09-21（比分引擎口径收口，非流水线）
+**结果**：master `0f66b3b → 96c1ecb`（ls-remote 核验，快进）；**gh-pages 无需改动**。
+- 关键认知：`_calc_engine.py`/`_gen_report.py` 等 root `_` 脚本在 **gh-pages 并未跟踪**，其正本只在 master `tools/prediction/` → 改这类脚本只同步 master，不必推 gh-pages（gh-pages 仅跟踪 score_engine.py/selection_algo.py/score_pick_optimize.py 三个 root .py）。
+- 本次修两处：① 头条落位的候选格改走**引擎B**（新增 `_headline_cells`，调用点 `_apply_headline_plan(out,TODAY,raw)`），此前用引擎A自己的比分矩阵 → 实测 3 场里 1 场首选分歧；② 卡片文案去「方向倾向内的首选比分」，并启用此前**从未渲染**的死变量 `hm_mark`（跨象限提示）。
+- 操作要点（已入 MEMORY.md）：`origin/*` 本地跟踪引用会滞后（origin/master 停在 3b855cd 而真实是 0f66b3b）→ 取正本必须 `git show $(git ls-remote origin <br>|cut -f1):路径`；推 master 用 worktree，路径**必须写 `C:/...`**（写 `/c/...` 会被建成 `C:\c\...`）。
+- 报告「串关推荐」下方有「📅 前日回顾」（占位符 `<!--RECAP_PARLAY-->`），读**昨日已发布** index.html 逐腿核赛果（不重算 → 不受口径迭代影响）；`_gen_report.py` 的词组拼接易出重复标签，标签直接用昨日原表组名。
+- 09-22 报告已按新口径本地重生成（3 场：周二002=2:1 12.5%、周二003=1:1 12.5%、周二004=2:1 11.3%），快照/4.2/卡片三处概率一致、红线 grep 空；**未发布**，交明日 14:00 流水线。
