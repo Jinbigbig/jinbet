@@ -1,6 +1,6 @@
 """JinBet 独立比分引擎 (score_engine) —— 三套引擎中的「比分引擎」。
 
-设计目标：与胜平负引擎（`_calc_engine.py`）、两档选取引擎（`selection_algo.py`）
+设计目标：与胜平负引擎（`calc_engine.py`）、两档选取引擎（`selection_algo.py`）
 **完全解耦** —— 自带数据读取、自带球队评级、自带参数档，运行期不读写任何一方的
 中间状态；改本文件的任何参数都不会改变另两套引擎的输出。
 
@@ -63,7 +63,12 @@ DEFAULT = {
     "mc_n": 20000,         # 蒙特卡洛抽样场数
     "league_eb_k": 40.0,   # 联赛基准向全局收缩的等效场数
     "prob_temp": 1.20,     # 申明概率的温度校准指数（混合分布系统性低估，见 predict）
-    "head_gap": 5.0,       # 头条「平局众数须领先非平局」的阈值(pp)，见 headline_reorder
+    "head_gap": 5.0,       # 旧头条口径阈值(pp)，仅在无比分盘信息时的兜底路径使用
+    # ---- 头条口径（2026-09-22 重定，由赛果直接优化）----
+    # 见 headline_reorder 的说明：首选不再要求与发布倾向同象限，改由「比分盘×模型」联合打分，
+    # 并在选取层按日限制同一比分出现次数。
+    "head_model_log_w": 0.3,   # 效用里模型对数概率的权重（比分盘权重恒为 1）
+    "head_day_cap": 4,         # 同一首选比分单日最多出现次数（0=不限制）
 }
 
 LISTED = ["%d:%d" % (h, a) for h in range(6) for a in range(6)]
@@ -524,7 +529,11 @@ class Engine:
         # top_scores = 联合分布的**纯概率排序**（口径事实，不套头条规则）。
         # 头条口径只在「选取/展示层」用 headline_reorder 现算（见该函数说明），
         # 保证本列表始终是概率降序，报告列 / 双档 / Top3 覆盖都据此。
-        top = [{"score": s, "prob": round(p * 100, 1)} for s, p in cells[:6] if p > 0]
+        # `mkt` = 该格的比分盘去水概率（0~1，模型的尾部格为 None）——头条新口径要用它，
+        # 缺了就会退回旧口径，所以必须逐格落下。
+        top = [{"score": s, "prob": round(p * 100, 1),
+                "mkt": (round(pm[s], 6) if (pm and s in pm) else None)}
+               for s, p in cells[:6] if p > 0]
 
         n_dist = len(dist)
         home_dist = [0.0] * n
@@ -562,6 +571,9 @@ class Engine:
             "prob": {"home": round(ph * 100, 1), "draw": round(pd * 100, 1),
                      "away": round(max(0.0, 1 - ph - pd) * 100, 1)},
             "top_scores": top,
+            "headline": (lambda _h: {"score": _h[0]["score"], "prob": _h[0]["prob"],
+                                     "mkt": _h[0].get("mkt")})(
+                headline_reorder(top, float(self.p.get("head_gap", 5.0)), None)),
             "home_dist": home_dist, "away_dist": away_dist,
             "home_mode": hm, "home_mode_p": home_dist[hm],
             "away_mode": am, "away_mode_p": away_dist[am],
@@ -587,26 +599,106 @@ class Engine:
 _ENGINE_CACHE = {}
 
 
+def headline_util(model_p, market_p, w_model=None):
+    """单格「选取效用」（不是概率）：log 比分盘概率 + w×log 模型概率。
+
+    这是决策层的打分，天然不必等于任何概率的单调变换 —— 谁的历史命中率高就用谁。
+    market_p/model_p 为 0~1 小数。
+    """
+    w = float(DEFAULT["head_model_log_w"] if w_model is None else w_model)
+    return (math.log(max(float(market_p or 0.0), 1e-9))
+            + w * math.log(max(float(model_p or 0.0), 1e-12)))
+
+
+_HEAD_DAY_CAP = {}          # {(日期, 比分): 已用次数}，仅由 plan_headlines 维护
+
+
+def plan_headlines(items, cap=None):
+    """按日给多场分配首选比分（唯一入口）：同一比分当天最多 cap 次。
+
+    items: [{'key': 任意, 'cells': [{'score','prob'[, 'mkt']}], 'dir_key': ..., 'date': ...}]
+    返回 {key: score}。落位顺序固定为「首选效用降序 + key 升序」，与场次输入次序无关，
+    保证不同调用方（快照/报告）算出同一结果。
+    """
+    cap = int(DEFAULT["head_day_cap"] if cap is None else cap)
+    out = {}
+    if not cap or cap <= 0:
+        return {it["key"]: headline_reorder(it["cells"], DEFAULT["head_gap"], it.get("dir_key"))[0]
+                ["score"] for it in items}
+    by_day = {}
+    for it in items:
+        by_day.setdefault(it.get("date") or "", []).append(it)
+    for day, group in by_day.items():
+        used = {}
+        ranked = []
+        for it in group:
+            first = headline_reorder(it["cells"], DEFAULT["head_gap"], it.get("dir_key"))
+            s0 = first[0]["score"]
+            ranked.append((-_util_of(it["cells"], s0), str(it["key"]), it, s0))
+        ranked.sort()
+        for _, _, it, s0 in ranked:
+            order = [s0] + [c["score"] for c in it["cells"] if c["score"] != s0]
+            for s in order:
+                if used.get(s, 0) < cap:
+                    used[s] = used.get(s, 0) + 1
+                    out[it["key"]] = s
+                    break
+            else:
+                out[it["key"]] = s0
+                used[s0] = used.get(s0, 0) + 1
+    return out
+
+
+def _util_of(cells, score):
+    for c in cells:
+        if c.get("score") == score:
+            m = c.get("mkt")
+            return headline_util((c.get("prob") or 0) / 100.0, m) if m is not None else -1e18
+    return -1e18
+
+
 def headline_reorder(top, gap=5.0, dir_key=None):
-    """头条口径：联合众数退化为平局比分时，若它领先「本场倾向象限内的最高概率比分」不足 gap(pp)，顺延到后者。
+    """首选比分口径（唯一实现）。
 
-    众数口径下只要两队 λ 同落 [1,2)，首选就恒为 1:1（2478 场里占 56%），单日连片、区分度差。
-    2478 场 walk-forward 实测（象限 + gap=5.0）：
-      单点命中 15.58%（众数口径 15.13%；分半样本 14.29%/16.87%，两半均不劣于基线），
-      1:1 占比 56%→24%，且倾向=平局时保持 1:1、绝不与发布倾向矛盾。
-    gap=3 时为 15.33%，gap=7 起开始掉分（13.24%/15.17%）、gap=10 掉到 13.44% → 取 5。
-    dir_key: 'home'/'draw'/'away'（发布倾向）。给定时只在该象限内顺延；为 None 时退化为「顺延到最好的非平局比分」。
+    两条路径：
+    **新口径（默认，2026-09-22 起）** —— 元素带 `mkt`（该格比分盘去水概率，0~1 或 %）时启用：
+        首选 = argmax[ log p_比分盘 + head_model_log_w·log p_模型 ]。
+        不要求与发布倾向同象限：比分盘对「精确比分」的定价比 1X2 倾向更贴近联合分布，
+        强行同象限会丢分（见下）。
+    **旧口径（兜底）** —— 元素不带 `mkt` 时退回 09-19 的「众数为平局比分且领先倾向象限内
+        最高概率比分不足 gap(pp) 时顺延」规则，保证无比分盘数据的场次不退化。
 
-    参数 top 是**任意概率降序的比分列表**（引擎 B 的联合分布、或比分精选自建分布的同构列表），
-    返回同样降序的列表，只是把「够格的首选」提到第一位。
-    ⚠️ 头条口径的唯一实现就在这里，但**只用于取首位（首选）**：
-    - `selection_algo.headline_pick` / `hit_pick` / `pk_ref`：头条与命中判定
-    - `calc_engine` 快照的 `headline` 字段、`_gen_report` 的比分预测列
-    ❌ 不要用它去重排 `top_scores` 本身 —— 那样「可能比分1/2」「Top3 覆盖」「双档」这些
-       概率事实列就不再是降序（2026-09-19 曾因此出现「可能比分1 概率 < 可能比分2」的错位）。
+    为什么换（2026-09-22，用户要求「按赛果直接优化」）：
+      · 旧口径是在一份**不可复现的旧回测底座**上调出来的。旧底座与当前引擎 λ 中位偏差 0.56 球、
+        首选仅 53% 一致。用当前引擎忠实 walk-forward 重放 2478 场：旧口径单点 12.39%、
+        纯众数 13.88%；已发布 224 场真值同样 11.16% vs 12.50%（分歧的 33 场里 1:4）→ 旧口径净负。
+      · 新口径 2478 场：单点 13.64%、双档 34.50%；两套时点留出段（65/35、50/50）单点
+        13.93% / 13.92%，旧口径 12.81% / 12.73%。
+      · 一天内同一比分刷屏（用户 09-19 反馈「连续 12 场 1:1」）改由 `plan_headlines` 的
+        「同日同比分上限」解决 —— 全局惩罚平局会把命中率打回 11.6%（实测），同日去重不会。
+
+    ⚠️ 仍然只用于取**首位**：不要拿它重排 `top_scores` 本身（那会让「可能比分 1/2」不再降序）。
     """
     if not top or len(top) < 2:
         return top
+
+    # ---- 新口径：带比分盘信息 ----
+    if any(t.get("mkt") is not None for t in top):
+        def _mv(t):
+            m = t.get("mkt")
+            try:
+                m = float(m)
+            except (TypeError, ValueError):
+                return None
+            if m is None:
+                return None
+            return m if m <= 1.0 else m / 100.0
+
+        best = max(top, key=lambda t: (headline_util((t.get("prob") or 0) / 100.0, _mv(t)),
+                                       t.get("prob") or 0))
+        if best.get("mkt") is not None:
+            idx = top.index(best)
+            return [top[idx]] + top[:idx] + top[idx + 1:]
 
     def _quad(s):
         try:
