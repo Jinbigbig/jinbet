@@ -81,20 +81,52 @@ def load_score_market():
     return SCORE_MKT
 
 
-def _apply_headline_plan(out_matches, date=None):
+def _headline_cells(m, raw=None, eng=None):
+    """首选分配用的候选格 —— **引擎 B（独立比分引擎）口径**。
+
+    为什么必须以引擎 B 为准（2026-09-22）：
+      · 头条新规则（比分盘×模型联合打分）是在引擎 B 的联合分布上 walk-forward 验证的；
+      · 报告 4.2 / 逐场卡片显示的「模型给该比分 x%」也是引擎 B 的数。
+    此前这里直接用 `m["top_scores"]`（引擎 A 自己的比分矩阵，SCORE_ALIGN 对齐后）——
+    与本场实测：3 场里 1 场（周二004）两条路径给出不同首选（A→1:1、B→2:1），
+    即发布口径可能与「已验证口径 + 页面显示的数字」不一致。
+    引擎 B 不可用、或该场无输出时，回退该场 `top_scores`（引擎 A），保证不空转。
+    """
+    if eng is not None and raw:
+        r = raw.get(m.get("matchNumStr"))
+        if r:
+            try:
+                b = eng.predict(r)
+                ts = (b or {}).get("top_scores") or []
+                if ts:
+                    return [{"score": t.get("score"), "prob": t.get("prob")} for t in ts[:6]]
+            except Exception:
+                pass
+    return [{"score": t.get("score"), "prob": t.get("prob")}
+            for t in (m.get("top_scores") or [])[:6]]
+
+
+def _apply_headline_plan(out_matches, date=None, raw=None):
     """全天一次性分配首选比分（含「同日同一比分上限」），写回每场的 `headline`。
 
     这是首选口径的**唯一落地点**：报告 4.2「比分预测」、比分精选榜「命中比分」、
     命中判定都读快照的 `headline`，不各自现算，避免出现两个不同的分数。
+    `raw` = {matchNumStr: 当日原始场次字典}，用于把候选格换成引擎 B 口径（见 `_headline_cells`）。
     """
     if _SEB_HEAD is None or not out_matches:
         return
     if not SCORE_MKT:
         load_score_market()
     day = date or TODAY
+    eng = None
+    try:
+        eng = _SEB_HEAD.engine_asof(day)
+    except Exception:
+        eng = None
     items = []
+    cells_of = {}
     for m in out_matches:
-        ts = m.get("top_scores") or []
+        ts = _headline_cells(m, raw, eng)
         if not ts:
             continue
         pm = SCORE_MKT.get(m.get("matchNumStr")) or {}
@@ -112,6 +144,7 @@ def _apply_headline_plan(out_matches, date=None):
               else ("draw" if (pr.get("draw") or 0) >= (pr.get("away") or 0) else "away"))
         items.append({"key": m.get("matchNumStr"), "date": day,
                       "dir_key": dk, "cells": cells})
+        cells_of[m.get("matchNumStr")] = cells
     if not items:
         return
     plan = _SEB_HEAD.plan_headlines(items)
@@ -120,8 +153,11 @@ def _apply_headline_plan(out_matches, date=None):
         s = plan.get(m.get("matchNumStr"))
         if not s:
             continue
-        ts = m.get("top_scores") or []
-        p = next((t.get("prob") for t in ts if t.get("score") == s), None)
+        cells = cells_of.get(m.get("matchNumStr")) or []
+        p = next((t.get("prob") for t in cells if t.get("score") == s), None)
+        if p is None:
+            p = next((t.get("prob") for t in (m.get("top_scores") or [])
+                      if t.get("score") == s), None)
         old = (m.get("headline") or {}).get("score")
         if old and old != s:
             changed.append("%s %s vs %s → %s" % (m.get("matchNumStr"), m.get("home"),
@@ -134,7 +170,7 @@ def _apply_headline_plan(out_matches, date=None):
 
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-# 当日日期：默认取系统当天，可用命令行参数覆盖（python calc_engine.py 2026-09-07）
+# 当日日期：默认取系统当天，可用命令行参数覆盖（python _calc_engine.py 2026-09-07）
 TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else datetime.date.today().isoformat()
 # 【2026-09-08 回测调优】基础λ的历史窗口与衰减
 # 依据 window_sweep.py（2961 场 walk-forward，泊松对数似然）：
@@ -143,7 +179,7 @@ TODAY = __import__("sys").argv[1] if len(__import__("sys").argv) > 1 else dateti
 #   平台区 N=20~30 × DECAY=0.95~1.00（+0.024~0.029），取保守值 N=25/DECAY=0.96
 # 说明：长窗口降低估计噪声的收益 > 时效性的损失；DECAY=1.0 虽最优但完全丢弃近期
 #       变化（换帅/转会/伤停），故保留轻微衰减 0.96（有效样本约 25 场）。
-# 注意：RECENT_N 需与 build_today_extras.py 的 recent 切片长度保持一致。
+# 注意：RECENT_N 需与 _build_today_extras.py 的 recent 切片长度保持一致。
 RECENT_N = 25
 DECAY = 0.96
 HOME_BOOST = 1.00   # 【V3.4 废弃】全局主客场加成 = 1.15/0.90 → 1.00/1.00
@@ -3296,7 +3332,13 @@ def main():
 
     # 首选口径必须在落盘前算完：_calc_result.json 与 pred_snapshot.json 两份都要带同一份
     # headline（报告读前者、命中判定/回放读后者），否则同一场会出现两个首选比分。
-    _apply_headline_plan(out, TODAY)
+    # raw 传当日原始场次字典：候选格改用引擎 B 的联合分布（与验证口径、页面显示数字同源）。
+    _raw = {}
+    for _num in sorted(matches.keys()):
+        _mm = dict(matches[_num])
+        _mm.update({k: v for k, v in extra.get(_num, {}).items() if v is not None})
+        _raw[_num] = _mm
+    _apply_headline_plan(out, TODAY, _raw)
     # sort_keys：消除 dict 哈希序引起的「伪 diff」（每次运行键序都变，污染 git 历史）
     json.dump({"today": TODAY, "calibration": calib, "matches": out},
               open(os.path.join(BASE, "_calc_result.json"), "w", encoding="utf-8"),

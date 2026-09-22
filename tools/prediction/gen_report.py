@@ -930,7 +930,10 @@ def match_card(m):
     _hs_dir = ('home' if int(hscore.split(':')[0]) > int(hscore.split(':')[1])
                else ('draw' if int(hscore.split(':')[0]) == int(hscore.split(':')[1]) else 'away')
                ) if ':' in str(hscore) else okey
-    hm_mark = '' if _hs_dir == okey else '（该格不在倾向象限内——方向概率最高的象限 ≠ 单格概率最高的比分，双档已覆盖两者）'
+    hm_mark = ('' if _hs_dir == okey else
+               f'<br><span style="font-size:0.78rem;color:var(--muted);">'
+               f'注：该首选比分不在{olabel}象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，'
+               f'双档已一并覆盖两者。</span>')
     cred_tag, cred_cls = score_cred(m)
     # 注：不再展示「全局众数」（结构性退化为 1:1），改由 score_group / coverage 呈现
     hm = h2h_mean(m)
@@ -1004,7 +1007,7 @@ def match_card(m):
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">{dash(hscore)}</span>
-      <span class="pred-value">（{olabel}倾向｜<b>方向倾向内的首选比分</b>{hprob_str}）</span>
+      <span class="pred-value">（{olabel}倾向｜<b>首选比分</b>{hprob_str}）{hm_mark}</span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -1135,7 +1138,7 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
-<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 结合本场方向倾向的首选比分（小字为模型给该比分的概率，与逐场卡片一致）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率，两者可能不同象限）。
+<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 综合比分盘定价与模型分布选出的首选比分（小字为模型给该比分的概率，与逐场卡片一致；该比分与 4.1 的方向倾向可能不同象限，卡片会单独标注）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率，两者可能不同象限）。
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
 只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
 {_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>（小字为该价值方向、EV 与置信度）。',
