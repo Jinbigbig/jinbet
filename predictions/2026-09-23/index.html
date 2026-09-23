@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026-09-23 竞彩足球深度分析报告</title>
+<style>
+:root {
+  --bg: #f0f2f5; --bg2: #ffffff; --ink: #1a1a2e; --muted: #6c757d;
+  --rule: #dee2e6; --accent: #e63946; --accent2: #2a9d8f; --accent3: #f4a261;
+  --win: #2a9d8f; --draw: #f4a261; --loss: #e63946;
+  --home: #457b9d; --away: #e76f51; --text-muted: #6c757d;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.7; min-height: 100vh;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff; padding: 3rem 0 2.5rem; text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
+  background: radial-gradient(circle at 20% 50%, rgba(230,57,70,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(42,157,143,0.15) 0%, transparent 50%);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero h1 { font-weight: 700; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
+.hero .disclaimer { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block; }
+h2 { font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
+h3 { font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink); }
+h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem; }
+.rank-tag { font-size: 0.55em; color: var(--text-muted); vertical-align: sub; margin-left: 2px; opacity: 0.7; }
+.card { background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid var(--rule); }
+.card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
+.card-header .match-id { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.8rem; color: var(--muted); background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px; }
+.card-header .match-league { font-size: 0.8rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.card-header .match-time { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.85rem; color: var(--muted); }
+.match-teams { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 1rem 0; font-size: 1.4rem; font-weight: 700; }
+.match-teams .vs { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; }
+.match-teams .home { color: var(--home); }
+.match-teams .away { color: var(--away); }
+.odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
+.odds-item { text-align: center; padding: 0.75rem 0.5rem; background: var(--bg); border-radius: 8px; }
+.odds-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
+.odds-item .value { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.3rem; font-weight: 700; }
+.odds-item .value.win { color: var(--win); } .odds-item .value.draw { color: var(--draw); } .odds-item .value.loss { color: var(--loss); }
+.insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.insight-card { background: var(--bg); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--accent); }
+.insight-card .insight-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+.insight-card .insight-value { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+.prediction { background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02)); border: 1px solid rgba(42,157,143,0.2); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; }
+.prediction .pred-title { font-size: 0.8rem; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.prediction .pred-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 0.3rem 0; }
+.prediction .pred-label { font-size: 0.8rem; color: var(--muted); }
+.prediction .pred-value { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent2); }
+.prediction .pred-score { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); background: rgba(230,57,70,0.08); padding: 0.2rem 0.8rem; border-radius: 6px; border: 1px solid rgba(230,57,70,0.2); }
+.warning { background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: #d35400; }
+.warning strong { color: #e67e22; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--rule); }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead th { background: var(--bg); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 0.6rem 0.75rem; text-align: left; border-bottom: 2px solid var(--rule); position: sticky; top: 0; z-index: 1; }
+tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--rule); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(0,0,0,0.02); }
+td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-green { background: rgba(42,157,143,0.12); color: var(--win); }
+.tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
+.tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
+.tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+.history-table { font-size: 0.82rem; }
+.history-table td { padding: 0.4rem 0.6rem; }
+.form-row { display: flex; gap: 0.35rem; align-items: center; }
+.form-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; }
+.form-dot.w { background: var(--win); } .form-dot.d { background: var(--draw); } .form-dot.l { background: var(--loss); }
+.conf-bar { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+.bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent3)); border-radius: 4px; }
+.bar-label { font-size: 0.8rem; color: var(--muted); min-width: 60px; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.summary-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 10px; padding: 1.25rem; }
+.summary-card .s-match { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+.league-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.league-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; }
+.calibration-box { background: var(--bg2); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--rule); margin: 1rem 0; }
+.cal-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.85rem; }
+.cal-item:last-child { border-bottom: none; }
+.parlay-section { margin: 1rem 0; }
+.parlay-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.parlay-table th { background: var(--bg); padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; }
+.parlay-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
+.parlay-table tr.parlay-confident { background: rgba(46,204,113,0.1); }
+.parlay-table tr.parlay-upset { background: rgba(230,126,34,0.1); }
+.parlay-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.75rem; padding: 0.5rem; background: var(--bg); border-radius: 6px; }
+.footer { background: var(--bg2); border-top: 1px solid var(--rule); padding: 2rem 0; margin-top: 3rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+.chart-container { width: 100%; height: 400px; margin: 1rem 0; }
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.5rem; }
+  .match-teams { font-size: 1.1rem; gap: 0.75rem; }
+  .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .container { padding: 0 1rem; }
+}
+</style>
+<style>
+  .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
+    color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
+  .league-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:0.35rem; }
+  .league-tbl th, .league-tbl td { border-bottom:1px solid rgba(128,128,128,0.22); padding:0.3rem 0.45rem; text-align:left; white-space:nowrap; }
+  .league-tbl th { color:var(--muted,#7a8ba0); font-weight:600; font-size:0.72rem; }
+  .league-note { font-size:0.76rem; color:var(--muted,#7a8ba0); margin:0.45rem 0 0; line-height:1.55; }
+  .league-tbl.standings { display:block; overflow-x:auto; }
+  .league-tbl.standings td:nth-child(2) { white-space:nowrap; }
+  .league-tbl.standings tr.zone-eu td { background:rgba(46,160,67,0.13); }
+  .league-tbl.standings tr.zone-rel td { background:rgba(220,60,60,0.12); }
+  .league-tbl.standings td:nth-child(10) { font-weight:700; }
+  .league-impact { margin-top:0.6rem; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.5rem; }
+  .league-impact .impact-title { font-size:0.74rem; font-weight:700; color:var(--muted,#7a8ba0); margin-bottom:0.3rem; }
+  .league-impact .impact-row { font-size:0.78rem; line-height:1.7; }
+  .league-impact .impact-row b { color:var(--accent,#2f7de0); }
+  .league-src { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-bottom:0.4rem; }
+</style>
+</head>
+<body>
+
+<!-- Hero区域 -->
+<div class="hero">
+  <div class="container">
+    <h1>2026-09-23 竞彩足球深度分析报告</h1>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 3场比赛全面覆盖</div>
+    <div class="subtitle">数据更新时间: 2026-09-23 14:01 (北京时间)</div>
+    <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<h2>🎯 今日比分精选</h2>
+<div class="card">
+  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
+    下表按模型把握度从高到低列出今日最值得跟的比分。<b>第一档 6 场（准确率优先）</b>，
+    当日比赛越多则按倍数增档（今日 3 场 → 1 档、共 1 场）。
+    单比分全场次平均命中约 <b>15%</b>、双档约 <b>20%</b>、±1 球覆盖约 <b>67%</b>；
+    把握度高的场次命中率明显更高，因此跟单场比分只看这几场，其余场次请看方向与总进球倾向。
+    本榜与下方「🔥 大胆档」各自独立成榜、同一场次不会重复出现。
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
+      <th>±1球</th><th>模型概率</th><th>可信度</th></tr></thead>
+      <tbody><tr><td style="text-align:center;font-weight:700;color:var(--accent);">1</td><td><span class="tag tag-blue">周三003</span> 美职</td><td>西雅图 vs 盐湖城</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 1-0</td><td style="font-family:monospace;">64%</td><td style="font-family:monospace;">8.4%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.52</span></td><td><span class="tag tag-green">可用</span></td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
+    排序依据 = 模型给「命中比分」的概率（小字为该场总进球 λ）。
+    可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
+    注：周三002、周三001 缺少近期战绩，把握度与其他场次不可比，未纳入本榜。
+  </p>
+<p style="font-size:0.82rem;font-weight:700;margin:0.9rem 0 0.3rem;color:var(--accent);">📅 前日回顾（2026-09-22 比分精选落地）</p>
+<div class="table-wrap"><table>
+<thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th><th>实际</th><th>结果</th></tr></thead>
+<tbody><tr><td style="text-align:center;font-weight:700;color:var(--accent);">1</td><td><span class="tag tag-blue">周二004</span> 英锦标赛</td><td>维冈 vs 布莱克浦</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">0-0 + 0-1</td><td style="font-family:monospace;">3-2</td><td><span class="tag tag-red">❌ 未中</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-09-22）比分精选：已出 1 场 · 命中/双档 0 · 未中 1。命中 = 实际比分等于预测「命中比分」；双档命中也算命中。</p>
+</div>
+
+
+<h2>🔥 大胆档</h2>
+<div class="card">
+  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
+    头条比分是分布里的单个最高格，进球数必然偏小。下表是<b>独立于比分精选的另一块榜单</b>
+    （两榜不重复同一场比赛，已进入比分精选的场次不再出现在这里），
+    挑出模型给出<b>高置信进攻结果</b>的场次（<b>第一档 4 场</b>，
+    当日比赛越多则按倍数增档，今日 3 场 → 0 档、共 0 场），
+    另给两档进攻型参考：<b>量级档</b>（该场按进攻量级最可能的比分）、
+    <b>极限档</b>（同倾向下总进球再上一档）。这两档赔率明显更高、命中率低于头条——
+    想搏赔率看这里，跟单仍以稳档为准。
+  </p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>编号 · 联赛</th><th>对阵</th><th>稳档（头条）</th>
+      <th>量级档</th><th>极限档</th><th>λ总</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">📅 前日回顾：2026-09-22 无大胆档场次。</p>
+</div>
+
+
+<h2>一、比赛总览</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th><th>总进球倾向</th></tr></thead>
+      <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>亚运男足</td><td>中国亚</td><td style="text-align:center;color:var(--muted);">VS</td><td>阿联酋亚</td><td style="font-family:monospace;">1.95</td><td style="font-family:monospace;">2.9</td><td style="font-family:monospace;">3.68</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-green" title="λ总分2.35，≥3球42%">小球倾向 42%</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>亚运男足</td><td>日本亚</td><td style="text-align:center;color:var(--muted);">VS</td><td>泰国亚</td><td style="font-family:monospace;">1.1733</td><td style="font-family:monospace;">9.9774</td><td style="font-family:monospace;">21.0671</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.59，≥3球48%">均势总量 48%</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>美职</td><td>西雅图</td><td style="text-align:center;color:var(--muted);">VS</td><td>盐湖城</td><td style="font-family:monospace;">1.72</td><td style="font-family:monospace;">3.62</td><td style="font-family:monospace;">3.68</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.52，≥3球46%">均势总量 46%</span></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+
+<h2>二、市场信心指数对比</h2>
+<div class="card">
+  <div id="confidenceChart" class="chart-container"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+var chart = echarts.init(document.getElementById('confidenceChart'));
+var matchLabels = ["周三001", "周三002", "周三003"];
+var homeWinProbs = [48.5, 90.8, 42.5];
+var drawProbs = [33.2, 8.9, 33.4];
+var awayWinProbs = [18.3, 0.3, 24.2];
+chart.setOption({
+    title: { text: '模型V3.3胜平负概率分布', left: 'center', textStyle: { fontSize: 14 } },
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
+  grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
+  xAxis: { type: 'category', data: matchLabels, axisLabel: { rotate: 45, fontSize: 10 } },
+  yAxis: { type: 'value', name: '概率(%)', max: 80 },
+  series: [
+    { name: '主胜概率', type: 'bar', stack: 'total', data: homeWinProbs, itemStyle: { color: '#2a9d8f' } },
+    { name: '平局概率', type: 'bar', stack: 'total', data: drawProbs, itemStyle: { color: '#f4a261' } },
+    { name: '客胜概率', type: 'bar', stack: 'total', data: awayWinProbs, itemStyle: { color: '#e63946' } }
+  ]
+});
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+
+<h2>三、逐场深度分析</h2>
+
+<div class="card" id="match-周三001">
+  <div class="card-header">
+    <span class="match-id">周三001</span>
+    <span class="match-league">亚运男足</span>
+    <span class="match-time">2026-09-23</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">中国亚</span>
+    <span class="vs">VS</span>
+    <span class="away">阿联酋亚</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.95</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">2.9</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.68</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 亚运男足</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 亚运男足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">中国亚运男足以年初 U23 亚洲杯亚军班底为骨架，主教练安东尼奥用满 3 个超龄名额：张玉宁、吴曦、朱辰杰坐镇中轴线。首轮两球均由超龄双星互相助攻完成（吴曦助攻张玉宁、张玉宁摆渡吴曦），次轮朱辰杰领衔的防线零封伊朗。阿联酋阵中多达 6 名归化球员、11 人拥有成年国家队履历，队长边锋加萨尼已为国家队出场 41 次攻入 11 球，锋线恩迪亚耶、亨特具备单兵突破能力，但前两轮进攻效率偏低。双方均无重大伤停公开报道。</p>
+
+  
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 52.6%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 45.4%（历史同档翻车率均值 48.1%）；模型−市场分歧 +9.3pp、|让球|1、λ和 2.39、市场熵 1.063。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 9pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">4.35</td><td>20.4%</td><td>28.9%</td><td><strong>21.8%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.95</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.38</td><td>26.2%</td><td>25.8%</td><td><strong>25.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.87</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.66</td><td>53.4%</td><td>45.3%</td><td><strong>52.4%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.87</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球胜 @4.35</span>
+    EV <strong style="color:var(--muted);">0.95</strong>（校准概率 21.8%），
+    模型−市场分歧 +1.4pp。
+    <span style="color:var(--muted);">让球可信度分档：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>；本场 <span class="tag tag-red">别跟</span>。</span>
+  </p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测</div>
+    <div class="pred-row">
+      <span class="pred-label">比分预测:</span>
+      <span class="pred-score">1-1</span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 15.3%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在主胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分双档:</span>
+      <span class="pred-score">1-0 12.7% + 0-0 10.0%</span>
+      <span class="pred-value">（除首选外概率最高的两个比分，合计 <b>22.7%</b>
+        <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.49:1.15）—— <b>只看进球量级，不为押中</b></span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">±1球覆盖:</span>
+      <span class="pred-score">81.1%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">1-1 15.3% · 1-0 12.7% · 0-0 10.0% · 2-1 10.0% · 0-1 9.0% · 2-0 8.4%</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">覆盖汇总:</span>
+      <span class="pred-value">Top3 38.1% · 榜首 15.3%
+        <span style="color:var(--muted);">（长期命中：榜首约 15% · Top3 约 39% · ±1球 约 67%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">数据不足</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.35，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 53%（高）</span>
+      <span class="pred-value"><span style="color:var(--muted);">方向确定性 48.5%（★ 越多越确定）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-green" style="margin-right:0.5rem;">小球倾向</span>
+      <span class="pred-value">≥3球 42% · ≥4球 21% · 最可能2球 (λ总2.35)</span>
+    </div>
+    <h4 style="margin-top:0.9rem;">🧩 比分是怎么推出来的（因素链）</h4>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.2rem;">
+      比分不是「从分布里挑一格」，而是<b>因素先定 λ、λ 再定比分</b>；换个因素取值，λ 就换，比分跟着换。
+    </div>
+    <div class="table-wrap" style="margin-top:0.4rem;">
+<table class="history-table" style="font-size:0.8rem;">
+<thead><tr><th style="width:22%;">因素（推演顺序）</th><th style="width:8%;">λ主</th><th style="width:8%;">λ客</th><th>取值 / 说明</th></tr></thead><tbody>
+<tr><td style="font-weight:600;">① 近期战绩 EWMA</td><td style="font-family:monospace;">1.46</td><td style="font-family:monospace;">0.78</td><td style="color:var(--muted);font-size:0.76rem;">指数衰减0.96^i,无近期战绩，按亚运男足基线2.85赔率反推</td></tr>
+<tr><td style="font-weight:600;">② xG（本场无数据）</td><td style="font-family:monospace;">1.46</td><td style="font-family:monospace;">0.78</td><td style="color:var(--muted);font-size:0.76rem;">无xG数据，沿用进球λ</td></tr>
+<tr><td style="font-weight:600;">③ 联赛环境收缩</td><td style="font-family:monospace;">1.56</td><td style="font-family:monospace;">0.83</td><td style="color:var(--muted);font-size:0.76rem;">向亚运男足基线2.85收缩25% (总2.24→2.39)</td></tr>
+<tr><td style="font-weight:600;">④ H2H 总量+方向</td><td style="font-family:monospace;">1.56</td><td style="font-family:monospace;">0.83</td><td style="color:var(--muted);font-size:0.76rem;">H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整</td></tr>
+<tr><td style="font-weight:600;">⑤ 市场概率混合</td><td style="font-family:monospace;">1.44</td><td style="font-family:monospace;">0.95</td><td style="color:var(--muted);font-size:0.76rem;">80%概率混合(总量守恒),市场去水主45%/平31%/客24%</td></tr>
+<tr><td style="font-weight:600;">⑥ 动态校准</td><td style="font-family:monospace;">1.41</td><td style="font-family:monospace;">0.94</td><td style="color:var(--muted);font-size:0.76rem;">×0.98(亚运男足)</td></tr>
+<tr><td style="font-weight:600;">⑦ 零封修正</td><td style="font-family:monospace;">1.41</td><td style="font-family:monospace;">0.94</td><td style="color:var(--muted);font-size:0.76rem;">P0主×1.00(零封50%)/客×1.00(零封25%),sigmoid k=8.0</td></tr>
+<tr><td style="font-weight:600;">⑧ 比分形状混合（联赛经验频率）</td><td style="font-family:monospace;">1.41</td><td style="font-family:monospace;">0.94</td><td style="color:var(--muted);font-size:0.76rem;">与亚运男足经验比分频率混合, w=0.270=档案0.3×自适应衰减(λ比1.51,K=0.2,下限0.35)</td></tr>
+<tr><td style="font-weight:600;">⑨ Platt 校准（平局修正）</td><td style="font-family:monospace;">1.41</td><td style="font-family:monospace;">0.94</td><td style="color:var(--muted);font-size:0.76rem;">1X2: 平局27.1%→33.2%</td></tr>
+<tr><td style="font-weight:600;">⑩ 比分矩阵对齐发布三率</td><td style="font-family:monospace;">1.41</td><td style="font-family:monospace;">0.94</td><td style="color:var(--muted);font-size:0.76rem;">主×1.01/平×1.23/客×0.73</td></tr>
+<tr style="background:rgba(52,122,252,0.08);"><td style="font-weight:700;">＝ 发布 λ</td><td style="font-family:monospace;font-weight:700;">1.41</td><td style="font-family:monospace;font-weight:700;">0.94</td><td style="font-size:0.76rem;">两队期望进球 → 比分矩阵 → <b>比分预测 1-1</b></td></tr>
+</tbody></table></div>
+    
+    <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.41/客0.94（总2.35） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封50%→P(0)×1.0 | 客队近10场零封25%→P(0)×1.0
+    </div>
+  </div>
+</div>
+
+
+<div class="card" id="match-周三002">
+  <div class="card-header">
+    <span class="match-id">周三002</span>
+    <span class="match-league">亚运男足</span>
+    <span class="match-time">2026-09-23</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">日本亚</span>
+    <span class="vs">VS</span>
+    <span class="away">泰国亚</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.1733</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">9.9774</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">21.0671</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 亚运男足</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 亚运男足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">日本亚以 J 联赛主力 + 旅欧 U23 为班底（东道主身份，同样拥有 3 个超龄名额），两轮大轮换下仍保持零封，阵容厚度明显占优；泰国亚以东南亚 U23 快攻体系为主，两场进攻端表现活跃但防线承压能力有限。公开渠道暂无双方关键伤停信息；需注意日本已经出线，末轮存在轮换可能，这也是亚盘让球（-2）未能给到更深的原因。</p>
+
+  <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.06&gt;1.0(主胜有价值)</strong>；</div>
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 11.0%</b> <span class="tag tag-green">低风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 85.2%（历史同档翻车率均值 48.1%）；模型−市场分歧 +3.7pp、|让球|2、λ和 2.64、市场熵 0.511。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队让2 -2 · |让球|=2 · 最大分歧 8pp · 置信度中）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.76</td><td>50.3%</td><td>42.7%</td><td><strong>49.2%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.87</td></tr><tr><td>让球平</td><td style="font-family:monospace;">4.15</td><td>21.3%</td><td>25.0%</td><td><strong>21.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.90</td></tr><tr><td>让球负</td><td style="font-family:monospace;">3.12</td><td>28.4%</td><td>32.3%</td><td><strong>29.1%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.91</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-blue">让球负 @3.12</span>
+    EV <strong style="color:var(--muted);">0.91</strong>（校准概率 29.1%），
+    模型−市场分歧 +0.7pp。
+    <span style="color:var(--muted);">让球可信度分档：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>；本场 <span class="tag tag-red">别跟</span>。</span>
+  </p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测</div>
+    <div class="pred-row">
+      <span class="pred-label">比分预测:</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 16.4%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分双档:</span>
+      <span class="pred-score">3-0 15.4% + 1-0 11.0%</span>
+      <span class="pred-value">（除首选外概率最高的两个比分，合计 <b>26.4%</b>
+        <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">2-0</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.74:0.33）—— <b>只看进球量级，不为押中</b></span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">±1球覆盖:</span>
+      <span class="pred-score">62.1%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">2-0 16.4% · 3-0 15.4% · 1-0 11.0% · 4-0 10.6% · 2-1 7.9% · 3-1 7.1%</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">覆盖汇总:</span>
+      <span class="pred-value">Top3 42.8% · 榜首 16.4%
+        <span style="color:var(--muted);">（长期命中：榜首约 15% · Top3 约 39% · ±1球 约 67%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-red">数据不足</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.59，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span> <span class="tag tag-green" style="margin-left:0.6rem;">冷门风险 11%（低）</span>
+      <span class="pred-value"><span style="color:var(--muted);">方向确定性 90.8%（★ 越多越确定）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-yellow" style="margin-right:0.5rem;">均势总量</span>
+      <span class="pred-value">≥3球 48% · ≥4球 26% · 最可能2球 (λ总2.59)</span>
+    </div>
+    <h4 style="margin-top:0.9rem;">🧩 比分是怎么推出来的（因素链）</h4>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.2rem;">
+      比分不是「从分布里挑一格」，而是<b>因素先定 λ、λ 再定比分</b>；换个因素取值，λ 就换，比分跟着换。
+    </div>
+    <div class="table-wrap" style="margin-top:0.4rem;">
+<table class="history-table" style="font-size:0.8rem;">
+<thead><tr><th style="width:22%;">因素（推演顺序）</th><th style="width:8%;">λ主</th><th style="width:8%;">λ客</th><th>取值 / 说明</th></tr></thead><tbody>
+<tr><td style="font-weight:600;">① 近期战绩 EWMA</td><td style="font-family:monospace;">2.43</td><td style="font-family:monospace;">0.14</td><td style="color:var(--muted);font-size:0.76rem;">指数衰减0.96^i,无近期战绩，按亚运男足基线2.85赔率反推</td></tr>
+<tr><td style="font-weight:600;">② xG（本场无数据）</td><td style="font-family:monospace;">2.43</td><td style="font-family:monospace;">0.14</td><td style="color:var(--muted);font-size:0.76rem;">无xG数据，沿用进球λ</td></tr>
+<tr><td style="font-weight:600;">③ 联赛环境收缩</td><td style="font-family:monospace;">2.50</td><td style="font-family:monospace;">0.14</td><td style="color:var(--muted);font-size:0.76rem;">向亚运男足基线2.85收缩25% (总2.57→2.64)</td></tr>
+<tr><td style="font-weight:600;">④ H2H 总量+方向</td><td style="font-family:monospace;">2.50</td><td style="font-family:monospace;">0.14</td><td style="color:var(--muted);font-size:0.76rem;">H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整</td></tr>
+<tr><td style="font-weight:600;">⑤ 市场概率混合</td><td style="font-family:monospace;">2.42</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">80%概率混合(总量守恒),市场去水主85%/平10%/客5%</td></tr>
+<tr><td style="font-weight:600;">⑥ 动态校准</td><td style="font-family:monospace;">2.37</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">×0.98(亚运男足)</td></tr>
+<tr><td style="font-weight:600;">⑦ 零封修正</td><td style="font-family:monospace;">2.37</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">P0主×0.73(零封0%)/客×1.00(零封25%),sigmoid k=8.0</td></tr>
+<tr><td style="font-weight:600;">⑧ 比分形状混合（联赛经验频率）</td><td style="font-family:monospace;">2.37</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">与亚运男足经验比分频率混合, w=0.105=档案0.3×自适应衰减(λ比10.84,K=0.2,下限0.35)</td></tr>
+<tr><td style="font-weight:600;">⑨ Platt 校准（平局修正）</td><td style="font-family:monospace;">2.37</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">1X2: 平局10.3%→8.9%</td></tr>
+<tr><td style="font-weight:600;">⑩ 比分矩阵对齐发布三率</td><td style="font-family:monospace;">2.37</td><td style="font-family:monospace;">0.22</td><td style="color:var(--muted);font-size:0.76rem;">主×1.03/平×0.87/客×0.17</td></tr>
+<tr style="background:rgba(52,122,252,0.08);"><td style="font-weight:700;">＝ 发布 λ</td><td style="font-family:monospace;font-weight:700;">2.37</td><td style="font-family:monospace;font-weight:700;">0.22</td><td style="font-size:0.76rem;">两队期望进球 → 比分矩阵 → <b>比分预测 2-0</b></td></tr>
+</tbody></table></div>
+    <div style="margin-top:0.35rem;font-size:0.76rem;color:var(--accent3);">⚠️ 本场竞彩未开出胜平负，<b>1X2 由比分盘反推</b>（31 档比分赔率去水后按主/平/客聚合）。</div>
+    <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--muted);">
+      λ=主2.37/客0.22（总2.59） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封0%→P(0)×0.7 | 客队近10场零封25%→P(0)×1.0
+    </div>
+  </div>
+</div>
+
+
+<div class="card" id="match-周三003">
+  <div class="card-header">
+    <span class="match-id">周三003</span>
+    <span class="match-league">美职</span>
+    <span class="match-time">2026-09-23</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">西雅图</span>
+    <span class="vs">VS</span>
+    <span class="away">盐湖城</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.72</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.62</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.68</div></div>
+  </div>
+
+  <h4>积分排名与形势</h4>
+  <div class="insight-grid">
+    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 美职</div></div>
+    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 美职</div></div>
+    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
+    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
+  </div>
+
+  
+  <h4>历史交锋（近0场）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>比分</th><th>赛果</th></tr></thead>
+      <tbody><tr><td colspan="2">H2H数据不足</td></tr></tbody>
+    </table>
+  </div>
+
+  <h4>伤停与赛前分析</h4>
+  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">西雅图：锋线人荒——约韦利奇（近 4 场 3 球）被国家队征召离队，费雷拉、罗斯洛克（腿筋）伤停，德·拉·维加、彼得科维奇在伤名单，拉根、耶马尔继续养伤；莫里斯大伤后复出但状态存疑。上一轮的扳平球由中场克拉克远射打进，锋线终结能力堪忧。盐湖城：中场核心卢纳半月板撕裂赛季报销（球队进攻组织唯一枢纽），格拉德、阿里亚斯、恩吉尔、布斯、皮奥尔均在伤名单，中卫亨利、左后卫萨纳布里亚被国家队征召，青训边锋戈佐以 1500 万美元（队史纪录）转会水晶宫，进攻端仅剩索兰斯（新秀赛季 9 球）单点支撑。</p>
+
+  
+  <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 57.2%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 51.5%（历史同档翻车率均值 48.1%）；模型−市场分歧 -19.0pp、|让球|1、λ和 2.53、市场熵 1.029。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 20pp · 置信度中）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">3.2</td><td>27.7%</td><td>13.4%</td><td><strong>22.8%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.73</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.52</td><td>25.2%</td><td>19.1%</td><td><strong>23.1%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.81</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.88</td><td>47.1%</td><td>67.6%</td><td><strong>54.1%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">1.02</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>价值建议：</b><span class="tag tag-yellow">让球负 @1.88</span>
+    EV <strong style="color:var(--accent2);">1.02</strong>（校准概率 54.1%），
+    模型−市场分歧 +7.0pp。
+    <span style="color:var(--muted);">让球可信度分档：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>；本场 <span class="tag tag-yellow">慎用</span>。</span>
+  </p>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测</div>
+    <div class="pred-row">
+      <span class="pred-label">比分预测:</span>
+      <span class="pred-score">2-1</span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 11.9%）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分双档:</span>
+      <span class="pred-score">1-1 11.2% + 1-0 7.9%</span>
+      <span class="pred-value">（除首选外概率最高的两个比分，合计 <b>19.1%</b>
+        <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">量级参考:</span>
+      <span class="pred-score">1-0</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.02:1.42）—— <b>只看进球量级，不为押中</b></span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">±1球覆盖:</span>
+      <span class="pred-score">67.2%</span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">比分概率组:</span>
+      <span class="pred-value">2-1 11.9% · 1-1 11.2% · 1-0 7.9% · 2-0 7.2% · 1-2 7.1% · 3-1 6.8%</span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">覆盖汇总:</span>
+      <span class="pred-value">Top3 31.0% · 榜首 11.9%
+        <span style="color:var(--muted);">（长期命中：榜首约 15% · Top3 约 39% · ±1球 约 67%）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">可信度:</span>
+      <span class="tag tag-green">可用</span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.52，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">信心评级:</span>
+      <span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 57%（高）</span>
+      <span class="pred-value"><span style="color:var(--muted);">方向确定性 42.5%（★ 越多越确定）</span></span>
+    </div>
+    <div class="pred-row">
+      <span class="pred-label">总进球倾向:</span>
+      <span class="tag tag-yellow" style="margin-right:0.5rem;">均势总量</span>
+      <span class="pred-value">≥3球 46% · ≥4球 25% · 最可能2球 (λ总2.52)</span>
+    </div>
+    <h4 style="margin-top:0.9rem;">🧩 比分是怎么推出来的（因素链）</h4>
+    <div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.2rem;">
+      比分不是「从分布里挑一格」，而是<b>因素先定 λ、λ 再定比分</b>；换个因素取值，λ 就换，比分跟着换。
+    </div>
+    <div class="table-wrap" style="margin-top:0.4rem;">
+<table class="history-table" style="font-size:0.8rem;">
+<thead><tr><th style="width:22%;">因素（推演顺序）</th><th style="width:8%;">λ主</th><th style="width:8%;">λ客</th><th>取值 / 说明</th></tr></thead><tbody>
+<tr><td style="font-weight:600;">① 近期战绩 EWMA</td><td style="font-family:monospace;">1.14</td><td style="font-family:monospace;">1.10</td><td style="color:var(--muted);font-size:0.76rem;">指数衰减0.96^i,主1.23进/2.52失 客0.85进/1.65失 | 主客场分拆(主2场0.76/客2场0.76, n_eff=2.0, K=4)</td></tr>
+<tr><td style="font-weight:600;">② xG（本场无数据）</td><td style="font-family:monospace;">1.14</td><td style="font-family:monospace;">1.10</td><td style="color:var(--muted);font-size:0.76rem;">无xG数据，沿用进球λ</td></tr>
+<tr><td style="font-weight:600;">③ 联赛环境收缩</td><td style="font-family:monospace;">1.25</td><td style="font-family:monospace;">1.21</td><td style="color:var(--muted);font-size:0.76rem;">向美职基线3.12收缩25% (总2.24→2.46)</td></tr>
+<tr><td style="font-weight:600;">④ H2H 总量+方向</td><td style="font-family:monospace;">1.25</td><td style="font-family:monospace;">1.21</td><td style="color:var(--muted);font-size:0.76rem;">H2H数据不足3场(仅0场),跳过总量调整|H2H数据不足3场,跳过方向调整</td></tr>
+<tr><td style="font-weight:600;">⑤ 市场概率混合</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.06</td><td style="color:var(--muted);font-size:0.76rem;">78%概率混合(总量守恒),市场去水主51%/平24%/客24%,HEDGE动态</td></tr>
+<tr><td style="font-weight:600;">⑥ 动态校准</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.05</td><td style="color:var(--muted);font-size:0.76rem;">×1.00(美职)</td></tr>
+<tr><td style="font-weight:600;">⑦ 零封修正</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.05</td><td style="color:var(--muted);font-size:0.76rem;">P0主×1.00(零封25%)/客×0.91(零封17%),sigmoid k=8.0</td></tr>
+<tr><td style="font-weight:600;">⑧ 比分形状混合（联赛经验频率）</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.05</td><td style="color:var(--muted);font-size:0.76rem;">与美职经验比分频率混合, w=0.276=档案0.3×自适应衰减(λ比1.40,K=0.2,下限0.35)</td></tr>
+<tr><td style="font-weight:600;">⑨ Platt 校准（平局修正）</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.05</td><td style="color:var(--muted);font-size:0.76rem;">1X2: 平局26.7%→33.4%</td></tr>
+<tr><td style="font-weight:600;">⑩ 比分矩阵对齐发布三率</td><td style="font-family:monospace;">1.47</td><td style="font-family:monospace;">1.05</td><td style="color:var(--muted);font-size:0.76rem;">主×0.97/平×1.25/客×0.82</td></tr>
+<tr style="background:rgba(52,122,252,0.08);"><td style="font-weight:700;">＝ 发布 λ</td><td style="font-family:monospace;font-weight:700;">1.47</td><td style="font-family:monospace;font-weight:700;">1.05</td><td style="font-size:0.76rem;">两队期望进球 → 比分矩阵 → <b>比分预测 2-1</b></td></tr>
+</tbody></table></div>
+    
+    <div style="margin-top:0.4rem;font-size:0.78rem;color:var(--muted);">
+      λ=主1.47/客1.05（总2.52） → 校准后 λ×1.00
+    </div>
+    <div style="margin-top:0.5rem;font-size:0.78rem;color:var(--muted);">
+      📊 零封修正：主队近10场零封25%→P(0)×1.0 | 客队近10场零封17%→P(0)×0.9
+    </div>
+  </div>
+</div>
+
+
+<h2>四、预测汇总</h2>
+<p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
+<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 综合比分盘定价与模型分布选出的首选比分（小字为模型给该比分的概率，与逐场卡片一致；该比分与 4.1 的方向倾向可能不同象限，卡片会单独标注）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率，两者可能不同象限）。
+单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
+只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.1 胜负预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>EV≥1.10 且置信度≥中 可用</b>、<b>EV≥1.00 慎用</b>、<b>其余别跟</b>（小字为该价值方向、EV 与置信度）。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>让球盘</th><th>让球可信度</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td><span class="tag tag-green">主胜 48.5%</span></td><td><span class="tag tag-yellow">慎用</span></td><td style="text-align:center;white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-red">别跟</span> <span style="color:var(--muted);font-size:0.76rem;">让球胜 · EV 0.95 · 置信高</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">53%</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td><span class="tag tag-green">主胜 90.8%</span></td><td><span class="tag tag-green">可用</span></td><td style="text-align:center;white-space:nowrap;">让 2<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-2）</span></td><td style="white-space:nowrap;"><span class="tag tag-red">别跟</span> <span style="color:var(--muted);font-size:0.76rem;">让球负 · EV 0.91 · 置信中</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-green">11%</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td><span class="tag tag-green">主胜 42.5%</span></td><td><span class="tag tag-yellow">慎用</span></td><td style="text-align:center;white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-yellow">慎用</span> <span style="color:var(--muted);font-size:0.76rem;">让球负 · EV 1.02 · 置信中</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">57%</span></td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.2 比分预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td style="font-family:monospace;white-space:nowrap;">1.49 / 1.15</td><td style="text-align:center;white-space:nowrap;"><b>1</b> 球 <span style="color:var(--muted);font-size:0.76rem;">38%</span></td><td style="text-align:center;white-space:nowrap;"><b>1</b> 球 <span style="color:var(--muted);font-size:0.76rem;">39%</span></td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:1</b> <span style="color:var(--muted);font-size:0.76rem;">15.3%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span style="color:var(--muted);font-size:0.76rem;">12.7%</span> + 0:0 <span style="color:var(--muted);font-size:0.76rem;">10.0%</span></td><td>81%</td><td>38%</td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td style="font-family:monospace;white-space:nowrap;">2.74 / 0.33</td><td style="text-align:center;white-space:nowrap;"><b>2</b> 球 <span style="color:var(--muted);font-size:0.76rem;">26%</span></td><td style="text-align:center;white-space:nowrap;"><b>0</b> 球 <span style="color:var(--muted);font-size:0.76rem;">65%</span></td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span style="color:var(--muted);font-size:0.76rem;">16.4%</span></td><td style="font-family:monospace;white-space:nowrap;">3:0 <span style="color:var(--muted);font-size:0.76rem;">15.4%</span> + 1:0 <span style="color:var(--muted);font-size:0.76rem;">11.0%</span></td><td>62%</td><td>43%</td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td style="font-family:monospace;white-space:nowrap;">2.02 / 1.42</td><td style="text-align:center;white-space:nowrap;"><b>1</b> 球 <span style="color:var(--muted);font-size:0.76rem;">30%</span></td><td style="text-align:center;white-space:nowrap;"><b>1</b> 球 <span style="color:var(--muted);font-size:0.76rem;">39%</span></td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:1</b> <span style="color:var(--muted);font-size:0.76rem;">11.9%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span style="color:var(--muted);font-size:0.76rem;">11.2%</span> + 1:0 <span style="color:var(--muted);font-size:0.76rem;">7.9%</span></td><td>67%</td><td>31%</td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.3 进球数预测</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td><span class="tag tag-green" title="λ总分2.35">小球倾向</span></td><td>42%</td><td>21%</td><td>2 球</td><td style="font-family:monospace;">2.35</td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td><span class="tag tag-yellow" title="λ总分2.59">均势总量</span></td><td>48%</td><td>26%</td><td>2 球</td><td style="font-family:monospace;">2.59</td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td><span class="tag tag-yellow" title="λ总分2.52">均势总量</span></td><td>46%</td><td>25%</td><td>2 球</td><td style="font-family:monospace;">2.52</td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.4 让球盘市场偏差清单</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">模型在 <b>1X2 概率值</b>上没有优势（市场已充分定价，还要付抽水），但在 <b>让球盘「过滤」</b>上可以挑出价值：月度时间外「每场只买 EV 最高的一注」197 注 ROI <b>+16.86%</b>。⚠️ <b>EV≥1.10 且置信度≥中才算可用</b>（EV≥1.00 慎用，其余别跟）；|让球|=1 置信高、=2 中、≥3 低（样本不足，不建议跟）。该玩法月度 ROI 波动大（+81%/+53%/−27%/−14%），只用小注。<b>不要用它替换 1X2 判断</b>。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>价值方向</th><th>赔率</th><th>市场</th><th>纯模型</th><th>联合校准</th><th>EV</th><th>最大分歧</th><th>置信</th><th>冷门风险</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td>-1</td><td><span class="tag tag-yellow">让球负</span></td><td style="font-family:monospace;">1.88</td><td>47.1%</td><td>67.6%</td><td><strong>54.1%</strong></td><td style="font-family:monospace;font-weight:700;">1.02</td><td>20pp</td><td>中</td><td>57%</td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td>-1</td><td><span class="tag tag-blue">让球胜</span></td><td style="font-family:monospace;">4.35</td><td>20.4%</td><td>28.9%</td><td><strong>21.8%</strong></td><td style="font-family:monospace;font-weight:700;">0.95</td><td>9pp</td><td>高</td><td>53%</td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td>-2</td><td><span class="tag tag-blue">让球负</span></td><td style="font-family:monospace;">3.12</td><td>28.4%</td><td>32.3%</td><td><strong>29.1%</strong></td><td style="font-family:monospace;font-weight:700;">0.91</td><td>8pp</td><td>中</td><td>11%</td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.5 冷门风险明细</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">冷门定义 = <b>市场首选方向未命中</b>（含平局）。训练基础率 <b>48.1%</b>。影响因素 = 市场首选概率、模型−市场分歧、|让球|、λ和、市场熵；时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。<b>用法</b>：高风险场次不进信心串关（可小注博冷）；中风险场次少押单场方向。⚠️ 2026-09 样本较少，分层尚不显著，模型会随样本自动向基础率收缩。<br><b>信心评级</b>：星级 = <b>胜平负方向的确定性</b>（三率中最高者的概率），实测各档方向命中 <b>37.5% / 49.5% / 50.4% / 60.4% / 74.4%</b>（★ 越多越确定）。两者互补：上表<b>预测</b>风险，星级直接<b>读</b>方向确定性。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th><th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">57.2%</td><td>主胜 51.5%</td><td>-19.0pp</td><td>1</td><td>2.53</td><td>1.029</td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">52.6%</td><td>主胜 45.4%</td><td>+9.3pp</td><td>1</td><td>2.39</td><td>1.063</td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td><span class="tag tag-green">低</span></td><td style="font-family:monospace;font-weight:700;">11.0%</td><td>主胜 85.2%</td><td>+3.7pp</td><td>2</td><td>2.64</td><td>0.511</td></tr></tbody>
+</table></div></div>
+<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">4.6 大比分观察</h3>
+<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">口径：市场<b>总进球盘</b>去水后逐档校准（总进球盘的「6」与「7+」是两个独立档位，6+ = 两者之和）。今日最像的一场：<b>周三002 日本亚 vs 泰国亚</b>（市场隐含 17.5% → 校准 12.4%）；3 场里「至少一场 6+」≈<b>21%</b>，期望 0.22 场。<br>市场对高进球系统性定价偏高 —— 实测去水后 P(6+)、P(7+) 均值都明显高于实际，且概率越高偏离越大，故本表给出校准后的概率。<br><b>结论</b>：「最近天天有 6+」是<b>基础率 × 每天场次数</b>的必然，不是异象 —— 每天 15 场时「至少一场 6+」本来就有 <b>62%</b>、30 场时 <b>88%</b>。直接按赔率买「恰好 6 球」「7+ 球」长期均为亏损。<b>所以本表只用于「哪场最像」，不构成投注建议</b>；要参与请只当小注娱乐。</p>
+<div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>市场隐含P(6+)</th><th>校准P(6+)</th><th>校准P(7+)</th><th>其中正好6球</th><th>6档赔率</th><th>7+档赔率</th><th>校准EV(7+)</th><th>等级</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三002</span></td><td>日本亚</td><td>泰国亚</td><td>17.5%</td><td><strong>12.4%</strong></td><td>5.6%</td><td>6.8%</td><td style="font-family:monospace;">9</td><td style="font-family:monospace;">10</td><td style="font-family:monospace;">0.56</td><td><span class="tag tag-yellow">中</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>西雅图</td><td>盐湖城</td><td>9.9%</td><td><strong>6.9%</strong></td><td>2.6%</td><td>4.3%</td><td style="font-family:monospace;">14.5</td><td style="font-family:monospace;">20</td><td style="font-family:monospace;">0.52</td><td><span class="tag tag-blue">低</span></td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>中国亚</td><td>阿联酋亚</td><td>4.6%</td><td><strong>3.2%</strong></td><td>0.9%</td><td>2.2%</td><td style="font-family:monospace;">28</td><td style="font-family:monospace;">50</td><td style="font-family:monospace;">0.47</td><td><span class="tag tag-blue">低</span></td></tr></tbody>
+</table></div></div>
+
+
+<h2>五、核心策略与风险提示</h2>
+
+<div class="summary-grid">
+  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">4★</strong>（1场4★ / 1场2★ / 1场1★），共1场高信心场次，冷门信号普遍存在，串关按实际评级从严组串。</p></div>
+  <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">1</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
+  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>2.49</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>🎲 冷门风险分布</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">40.3%</strong>：低风险 <strong>1</strong> 场 · 中 <strong>0</strong> 场 · 高 <strong>2</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
+  <div class="summary-card"><h4>🎯 大比分（6+）观察</h4><p style="font-size:0.9rem;">今日最像出 6+ 的一场：<strong style="color:var(--accent2);">周三002 日本亚vs泰国亚</strong>（校准 P(6+)≈<strong>12.4%</strong>，市场隐含 17.5%）；3 场「至少一场 6+」≈ <strong>21%</strong>。<b>但别押大球</b>：市场对高进球系统性定价偏高，按赔率买「6 球」与「7+」长期均亏损。「最近天天有大球」是基础率 × 场次数的必然，不是可押的规律。</p></div>
+  <div class="summary-card"><h4>⚖️ 让球盘价值</h4><p style="font-size:0.9rem;">让球盘联合校准后 EV≥1.10 且置信度≥中 的场次 <strong style="color:var(--accent2);">0</strong> 场；另有 <strong>0</strong> 场 EV 达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。长期回测 ROI 为正 —— <b>价值在过滤不在加权</b>，仅小注。</p></div>
+  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">0</strong> 场应用了 H2H 方向性调整，胜负记录直接改变 λ 分配而非只调总进球。</p></div>
+  <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
+  <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
+</div>
+
+<div class="warning">
+  <strong>风险提示：</strong>足球比赛存在较大不确定性，伤病、红牌、点球、VAR等因素均可能影响比赛结果。本报告基于历史数据和AI模型分析，仅供参考，不构成投注建议。请理性购彩，量力而行。
+</div>
+
+<div class="parlay-section">
+  <h3>方向串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    
+  </table>
+  <div class="parlay-note">注：以「倾向」（胜/平/负）为串关腿，不押具体比分。长期回测单腿方向命中约 54%、3 腿全中约 25%，是唯一接近盈亏平衡的串关口径（比分串关全中率不到 1%，仅供博高赔）。</div>
+</div>
+
+<div class="parlay-section">
+  <h3>比分串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    
+  </table>
+  <div class="parlay-note">注：综合概率为各场比分腿概率连乘。<b>比分串关 3 腿全中率不到 1%</b>，组合概率常低至 0.1%~0.4%——请当买彩票而非投资建议，切勿重注。想提高命中率请看上表 <b>Top3 覆盖 / ±1球覆盖</b>，而非串关。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）；组数与腿数随当日场次数量调整。</div>
+</div>
+
+<div class="parlay-section">
+  <h3>📅 前日回顾</h3>
+  <div class="table-wrap"><table>
+<thead><tr><th>组别</th><th>逐腿核对（预测 · 结果）</th><th>整组</th></tr></thead>
+<tbody><tr><td><strong>方向串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">方向腿</span></td><td style="font-size:0.84rem;line-height:1.75;"><span class="tag tag-blue">周二001</span> 韩国亚 vs 沙特阿拉伯 <b style="font-family:monospace;">主胜</b> <span style="color:var(--accent2);font-weight:700;">✅</span> <span style="color:var(--muted);font-size:0.76rem;">实际 2:0</span><br><span class="tag tag-blue">周二002</span> 米尔顿 vs 克劳利 <b style="font-family:monospace;">主胜</b> <span style="color:var(--accent2);font-weight:700;">✅</span> <span style="color:var(--muted);font-size:0.76rem;">实际 4:1</span></td><td><span style="font-weight:700;color:var(--accent2);">✅ 全中</span></td></tr><tr><td><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">比分腿</span></td><td style="font-size:0.84rem;line-height:1.75;"><span class="tag tag-blue">周二001</span> 韩国亚 vs 沙特阿拉伯 <b style="font-family:monospace;">2:0</b> <span style="color:var(--accent2);font-weight:700;">✅</span> <span style="color:var(--muted);font-size:0.76rem;">实际 2:0</span><br><span class="tag tag-blue">周二002</span> 米尔顿 vs 克劳利 <b style="font-family:monospace;">2:1</b> <span style="color:var(--accent3);font-weight:700;">❌</span> <span style="color:var(--muted);font-size:0.76rem;">实际 4:1</span></td><td><span style="font-weight:700;color:var(--accent3);">❌ 挂 1 腿</span></td></tr><tr><td><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">比分腿</span></td><td style="font-size:0.84rem;line-height:1.75;"><span class="tag tag-blue">周二004</span> 维冈 vs 布莱克浦 <b style="font-family:monospace;">2:1</b> <span style="color:var(--accent3);font-weight:700;">❌</span> <span style="color:var(--muted);font-size:0.76rem;">实际 3:2</span><br><span class="tag tag-blue">周二001</span> 韩国亚 vs 沙特阿拉伯 <b style="font-family:monospace;">2:0</b> <span style="color:var(--accent2);font-weight:700;">✅</span> <span style="color:var(--muted);font-size:0.76rem;">实际 2:0</span></td><td><span style="font-weight:700;color:var(--accent3);">❌ 挂 1 腿</span></td></tr></tbody></table></div>
+  <div class="parlay-note">前日（2026-09-22）共 3 组串关：方向 1 组、比分 2 组，全部命中 1 组。 当日单场战绩：方向 <b>3/4</b>（75%）、比分单点 <b>1/4</b>、双档 <b>0/4</b>（0%）。 赛果取官方锚；方向腿错一场即整组挂，比分腿同理。</div>
+</div>
+
+
+<h2>六、当日赛事联赛与杯赛形势</h2>
+<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜数据来源 <b>7M 体育数据库</b>（截至各联赛最近更新）。当前数据源不含未来赛程，故本节日聚焦「当前排名 + 本日对阵对积分榜的影响」；美职联(MLS) 7M 未收录，暂以说明替代。</p>
+<div class="league-overview-grid">
+  <div class="league-card">
+    <h4>亚运男足</h4>
+    <p class="league-note">7M 数据库未收录亚运会男足积分榜。本节其余联赛展示真实积分榜。</p>
+  </div>
+  <div class="league-card">
+    <h4>美职</h4>
+    <p class="league-note">7M 数据库未收录美职联(MLS)积分榜。本节其余联赛展示真实积分榜。</p>
+  </div>
+</div>
+
+<h2>📊 动态校准与历史命中率</h2>
+<div class="calibration-box">
+  <div class="cal-item">
+    <span>近5期预测总进球均值</span>
+    <span><strong>2.85球</strong> | 实际均值: <strong>3.51球</strong></span>
+  </div>
+  <div class="cal-item">
+    <span>系统偏差比</span>
+    <span><strong style="color:var(--accent3);">1.01</strong> → 模型系统性低估 → λ×<strong>1.00</strong> 已应用</span>
+  </div>
+  <div class="cal-item">
+    <span>H2H 方向性再分配</span>
+    <span><strong style="color:var(--accent2);">0</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
+  </div>
+  <div class="cal-item">
+    <span>零封修正效果</span>
+    <span>零封频率≤15%→P(0)×0.6，16-25%→×0.8，26-40%→×1.0，&gt;40%→×1.2，逐场已应用</span>
+  </div>
+  <div class="cal-item"><span>2026-09-22（4场）</span><span>预测均值 <strong>2.41</strong> | 实际均值 <strong>3.75</strong> | 偏差比 <strong>1.56</strong></span></div><div class="cal-item"><span>2026-09-21（1场）</span><span>预测均值 <strong>2.75</strong> | 实际均值 <strong>6.00</strong> | 偏差比 <strong>2.18</strong></span></div><div class="cal-item"><span>2026-09-20（30场）</span><span>预测均值 <strong>2.92</strong> | 实际均值 <strong>2.83</strong> | 偏差比 <strong>0.97</strong></span></div><div class="cal-item"><span>2026-09-19（30场）</span><span>预测均值 <strong>3.23</strong> | 实际均值 <strong>2.90</strong> | 偏差比 <strong>0.90</strong></span></div><div class="cal-item"><span>2026-09-18（14场）</span><span>预测均值 <strong>3.05</strong> | 实际均值 <strong>3.14</strong> | 偏差比 <strong>1.03</strong></span></div><div class="cal-item"><span>2026-09-17（11场）</span><span>预测均值 <strong>2.79</strong> | 实际均值 <strong>3.09</strong> | 偏差比 <strong>1.11</strong></span></div><div class="cal-item"><span>2026-09-16（16场）</span><span>预测均值 <strong>2.81</strong> | 实际均值 <strong>2.88</strong> | 偏差比 <strong>1.02</strong></span></div>
+</div>
+
+
+</div>
+
+<div class="footer">
+  <div class="container">
+    <p><strong>数据来源：</strong>P0级（官方赔率数据）| P1级（联赛积分榜、H2H历史数据）| P2级（伤病新闻、预测分析）</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">报告生成时间: 2026-09-23 | 仅供数据分析参考，不构成投注建议</p>
+  </div>
+</div>
+
+<style>
+  h2, h3 { scroll-margin-top: 1.2rem; }
+  .toc-nav {
+    /* 容器 1080px 居中 ⇒ 内容右缘距视口右 = (100vw-1080)/2。
+       定位须满足 right + width ≤ 该间距 - 16px，否则会压住正文。 */
+    --toc-w: 140px;
+    position: fixed; top: 50%;
+    right: clamp(8px, calc((100vw - 1080px) / 2 - var(--toc-w) - 16px), 32px);
+    transform: translateY(-50%); width: var(--toc-w); max-height: 76vh; overflow-y: auto;
+    background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 10px; padding: 0.7rem 0.5rem; z-index: 60;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.09); font-size: 0.78rem;
+    scrollbar-width: thin;
+  }
+  @media (min-width: 1600px) { .toc-nav { --toc-w: 168px; font-size: 0.8rem; } }
+  .toc-nav::-webkit-scrollbar { width: 4px; }
+  .toc-nav::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.16); border-radius: 2px; }
+  .toc-head {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted, #6c757d);
+    padding: 0 0.55rem 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08); margin-bottom: 0.35rem;
+  }
+  .toc-list { list-style: none; margin: 0; padding: 0; }
+  .toc-nav a {
+    display: block; padding: 0.32rem 0.55rem; color: var(--muted, #6c757d); text-decoration: none;
+    border-left: 2px solid transparent; border-radius: 0 4px 4px 0; line-height: 1.42;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: none;
+  }
+  .toc-nav a:hover { color: var(--ink, #1a1a2e); background: rgba(0,0,0,0.045); }
+  .toc-nav a.lv3 { padding-left: 1.05rem; font-size: 0.72rem; opacity: 0.9; }
+  .toc-nav a.active {
+    color: var(--accent, #e63946); border-left-color: var(--accent, #e63946);
+    background: rgba(230,57,70,0.08); font-weight: 600;
+  }
+  .toc-toggle {
+    position: fixed; right: 14px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: none; background: var(--accent, #e63946); color: #fff; font-size: 1.15rem;
+    cursor: pointer; z-index: 61; box-shadow: 0 4px 14px rgba(230,57,70,0.36);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .toc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 59; }
+  @media (min-width: 1400px) { .toc-toggle { display: none; } }
+  @media (max-width: 1399px) {
+    .toc-nav {
+      --toc-w: 210px; right: 12px;
+      transform: translateY(-50%) translateX(calc(100% + 26px));
+      transition: transform 0.24s ease; max-height: 70vh; font-size: 0.82rem;
+    }
+    .toc-nav.open { transform: translateY(-50%) translateX(0); }
+  }
+</style>
+<nav id="tocNav" class="toc-nav" aria-label="章节导航">
+  <div class="toc-head">目录</div>
+  <ul class="toc-list" id="tocList"></ul>
+</nav>
+<button id="tocToggle" class="toc-toggle" type="button" aria-label="打开章节目录" aria-expanded="false">&#9776;</button>
+<script>
+(function () {
+  var nav = document.getElementById('tocNav');
+  var list = document.getElementById('tocList');
+  var btn = document.getElementById('tocToggle');
+  if (!nav || !list) return;
+  var scope = document.querySelector('body > .container') || document.body;
+  var heads = [].filter.call(scope.querySelectorAll('h2, h3'), function (h) {
+    return (h.textContent || '').trim().length > 0;
+  });
+  if (!heads.length) { nav.style.display = 'none'; if (btn) btn.style.display = 'none'; return; }
+
+  var seq = 0;
+  heads.forEach(function (h) {
+    var txt = (h.textContent || '').trim().replace(/\s+/g, ' ');
+    if (!h.id) h.id = 'sec-' + (++seq);
+    var a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = txt;
+    a.title = txt;
+    if (h.tagName.toLowerCase() === 'h3') a.className = 'lv3';
+    a.addEventListener('click', closeNav);
+    var li = document.createElement('li');
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  var links = [].slice.call(list.querySelectorAll('a'));
+  var mask = null;
+
+  function closeNav() {
+    nav.classList.remove('open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (mask) { mask.remove(); mask = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      mask = document.createElement('div');
+      mask.className = 'toc-mask';
+      mask.addEventListener('click', closeNav);
+      document.body.appendChild(mask);
+    } else if (mask) { mask.remove(); mask = null; }
+  });
+
+  var current = heads[0];
+  function spy() {
+    var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
+    var pick = heads[0];
+    if (atBottom) {
+      pick = heads[heads.length - 1];
+    } else {
+      for (var i = 0; i < heads.length; i++) {
+        if (heads[i].getBoundingClientRect().top <= 140) pick = heads[i];
+      }
+    }
+    if (pick === current) return;
+    current = pick;
+    var activeId = '#' + pick.id;
+    links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === activeId); });
+    var act = list.querySelector('a.active');
+    if (act && nav.classList.contains('open') === false) {
+      var nr = nav.getBoundingClientRect(), ar = act.getBoundingClientRect();
+      if (ar.top < nr.top + 30 || ar.bottom > nr.bottom - 8) {
+        nav.scrollTop += (ar.top - nr.top) - (nav.clientHeight / 2) + (ar.height / 2);
+      }
+    }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { spy(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', spy, { passive: true });
+  spy();
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,27 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-09-23（14:00 常规流水线）
+**结果**：全链跑通，3 场（赔率 3/3，无别名行）。gh-pages `5e27fdb → 待核验`；红线 grep 0。
+- ❗**本地已有并发作业（Trae Bot 12:46）的未推送提交 3fb1f01**（09-23 早版报告+odds），落在云端 HEAD 之上无分叉 → 处置=`git reset --soft 5e27fdb` 后重跑全链再单提交，避免两条同名 report 提交。推送仍须先 `ls-remote` 取真实 SHA。
+- 步骤0 `[DEDUP-ALIGN]` 生效（6 行）；无陈旧 batch。**注意**：`chain` 字段在 `_calc_result.json` 里并不存在（顶层只有 calibration/matches/today）→ 链路标记只在 `_calc_engine.py` 的 stdout 日志里核对（`grep '市场混合\|SCORE_ALIGN\|ON·生效' _s3.log`），**别去 HTML/snapshot 里找**（公开页按红线本就不该有方法论）。
+- 3 场：001/002 亚运男足（中国亚vs阿联酋亚、日本亚vs泰国亚）、003 美职（西雅图vs盐湖城）。步骤2.5 亚运男足无 7M 映射 → league_data 仅美职 1 联赛（正常）。
+- 头条口径 3/3 覆盖、2 场变更（001→1:1 15.3%、003→2:1 11.9%；002 保持 2:0）。快照/`_calc_result` 一致，`top_scores` 仍纯概率降序。**比分精选仅 1 场**（003，001/002 缺近期战绩未纳入）；**大胆档 0 场**；**串关 0 组**（3 场、高信心仅 1 场 + 高风险 2 场，从严后不成立）。
+- 复盘 09-22（4 场）：方向 3/4=75%、单点 1/4=25%、双档 0/4=0%、λ偏差 **-1.34**（n=4）。方向 <50% 连击已中断（09-21 100%/n=1、09-22 75%）；λ偏差连续两日偏低但样本极小（09-21 n=1 -3.25、09-22 n=4 -1.34），EWMA 比值 0.996 正常。
+- 4.6：**保持默认**（10 旋钮完全未变，仅 `_meta` 刷新 base 59.38→60.00 / tuned 60.62→61.25 / tuned_at；optimizer 仍打 adopt=True，勿误读）。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- 提交用 `git add -u` + 显式 add；根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；`predictions/index.html` 的 09-23 行（3 场 / 亚运男足 x2 + 美职 x1）由并发提交带入且核对无误。
+- 趋势：DRIFT_MONITOR 连续第 5 日 `league_baselines` 漂移（亚冠精英 51.97%/德乙 50.0%/英联赛杯 18.03%）→ 已在回复提示离线重拟合 market_calib/Platt。
+
+## 2026-09-22（14:00 常规流水线）
+**结果**：全链跑通，4 场（赔率 4/4，无别名行）。gh-pages `c02ad64 → 6ac6872`（ls-remote 核验），线上报告/复盘/索引/selection_tuning 全 200（首次 404 = Pages 部署延迟，**等 50 秒重试即 200**），红线 grep 计数 0。
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/247）；无陈旧 batch；复跑 results-only 落文件后 grep 才看到 DEDUP 行（tail 会截掉）。
+- 4 场：001 韩国亚vs沙特阿拉伯（亚运男足）、002/003/004 英锦标赛。步骤2.5 两联赛均无 7M 映射 → league_data 0 联赛（正常）。
+- 头条口径 4/4 覆盖、2 场变更（002/004→2:1）；快照 `headline` 与报告三处一致，`top_scores` 仍纯概率降序（属设计）。串关 2 组。
+- 复盘 09-21：仅 1 场（中国女 5:1 菲律宾女），方向 1/1=100%、单点/双档 0/1、λ偏差 -3.25（单场极端，n=1）。偏差符号 = 预测 − 实际。
+- 4.6：**保持默认**（10 旋钮未变，仅 `_meta` 刷新 tuned_at/ pk 指标；optimizer 仍打 adopt=True，勿误读为「采纳新参数」）；内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- **❗本次无 rebase**：本地 HEAD 已在云端之上（前一提交 8520597 = 昨晚生成的旧版 09-22 报告，3 场未推）→ 追加提交后直接快进推送。推送前 `ls-remote` 仍为 c02ad64 未变。
+- 提交 `git add -u`（252 文件）+ 本次提交已含 predictions/2026-09-22 三件套与 predictions/index.html（索引 09-22 行手工从 3 场改为 4 场 / 亚运男足 x1 + 英锦标赛 x3）；根 index.html 无 `data-page-node-id`（未 checkout）。
+- 趋势：方向命中率连续两日 <50%（09-19 43%、09-20 46%）；DRIFT 连续第 4 日 `league_baselines` 漂移 → 已在回复提示离线重拟合 market_calib/Platt。
+
 ## 2026-09-20（14:00 常规流水线）
 **结果**：全链跑通，30 场（赔率 30/30，无别名行/重复对）。gh-pages `e7d4e95 → 1fe3188`（ls-remote 核验），线上报告/复盘/selection_tuning 均 200，红线 grep 为空。
 - 步骤0 `[DEDUP-ALIGN]` 生效（235/245）；无陈旧 batch；复跑 results-only 落日志验证 DEDUP 行（tail 会截掉该行，**必须落文件再 grep**）。
