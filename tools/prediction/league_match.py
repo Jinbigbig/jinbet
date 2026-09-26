@@ -15,14 +15,13 @@ import os
 # 我的联赛名 -> 7M id（已逐一验证；美职(MLS) 在 7M 数据库未收录，剔除）
 LEAGUE_7M_ID = {
     '英超': 92, '西甲': 85, '德甲': 39, '意甲': 34, '法甲': 93, '荷甲': 99, '葡超': 88,
-    '瑞超': 103, '芬超': 105, '挪超': 104, '巴甲': 160, '日职': 102, '日乙': 347,
+    '瑞超': 103, '芬超': 105, '挪超': 104, '巴甲': 160, '日职': 102, '日乙': 347, '荷乙': 202,
     '法乙': 171, '意乙': 95, '西乙': 96, '德乙': 140,
 }
 # 无积分榜数据源标记（7M 未收录 / 杯赛无积分榜；报告侧显示说明替代，不编造名次）
 UNAVAILABLE = {
     '美职': '7M 数据库未收录美职联(MLS)积分榜',
     '亚冠精英': '7M 数据库未收录亚冠精英联赛积分榜',
-    '亚运男足': '7M 数据库未收录亚运会男足积分榜',
     '英冠': '7M 数据库未收录英格兰冠军联赛积分榜',
     '英联赛杯': '杯赛赛制无联赛积分榜',
     '解放者杯': '7M 数据库未收录解放者杯积分榜',
@@ -160,20 +159,50 @@ def _trad2simp_chars(s):
     return ''.join(out)
 
 
+# 补充别名：队名语序/前缀差异（如 横滨FC↔FC横滨、大宫松鼠↔RB大宮松鼠），
+# 逐字繁简转换无法覆盖，需显式声明。
+ALIAS.update({
+    '横滨FC': 'FC横滨',
+    '大宫松鼠': 'RB大宮松鼠',
+    '秋田闪电': '秋田藍閃電',
+    # 日乙（2026-09-26 补）
+    '新潟天鹅': '新潟天鵝',
+    '甲府风林': '甲府風林',
+    # 荷乙（2026-09-26 补）
+    '赫拉克勒': '荷华高斯',
+    '罗达JC': '洛达',
+    '瓦尔韦克': 'RKC华域克',
+})
+
 # ALIAS 反查表：7M 繁体名 -> 我的简体名（把 港译/异译 还原为报告统一用名）
 ALIAS_REV = {}
 for _k, _v in ALIAS.items():
     ALIAS_REV.setdefault(_v, _k)
 
 
+try:
+    from opencc import OpenCC as _OpenCC  # 可选依赖：装了则繁简转换覆盖更全
+    _CC = _OpenCC('t2s')
+except Exception:
+    _CC = None
+
+
 def to_simp(s):
     """7M 繁体名 -> 报告简体显示名。
     1) ALIAS_REV 精确命中（还原大陆译名，如 拿玻里→那不勒斯）；
-    2) 否则按繁简字表逐字转换（廣島三箭→广岛三箭）。"""
+    2) opencc t2s（若已安装，覆盖「鵝→鹅 / 風→风」等表外字）；
+    3) 否则按内置繁简字表逐字转换（廣島三箭→广岛三箭）。"""
     if not s:
         return s
     if s in ALIAS_REV:
         return ALIAS_REV[s]
+    if _CC is not None:
+        try:
+            r = _CC.convert(s)
+            if r:
+                return r
+        except Exception:
+            pass
     return _trad2simp_chars(s)
 
 
@@ -184,6 +213,9 @@ def build_index(league_data):
         m = {}
         for t in parsed.get('teams', []):
             m[t['name']] = t
+            _zh = t.get('name_zh')
+            if _zh and _zh not in m:
+                m[_zh] = t
         idx[lg] = m
     return idx
 
@@ -197,6 +229,12 @@ def match_team(my_name, lg, index):
     tn = _trad(my_name)
     if tn in rows:
         return rows[tn]
+    # 1b) 简体归一化精确（7M 部分队名以简体字形给出，繁简互转仍不相等）
+    ms = to_simp(my_name)
+    if ms:
+        for nm, row in rows.items():
+            if to_simp(nm) == ms:
+                return row
     # 2) 别名
     alias = ALIAS.get(my_name)
     if alias and alias in rows:
@@ -217,6 +255,11 @@ def match_team_strict(my_name, lg, index):
     tn = _trad(my_name)
     if tn in rows:
         return rows[tn]
+    ms = to_simp(my_name)
+    if ms:
+        for nm, row in rows.items():
+            if to_simp(nm) == ms:
+                return row
     alias = ALIAS.get(my_name)
     if alias and alias in rows:
         return rows[alias]
