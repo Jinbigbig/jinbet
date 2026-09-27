@@ -1,5 +1,31 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-09-27（14:00 常规流水线）
+**结果**：全链跑通，9 场（赔率 9/9，无别名行/无冷启动）。gh-pages `ee03b34 → 3f96885`（ls-remote 核验，快进）；master 未动（今日无脚本改动）。线上报告/复盘/索引/selection_tuning 全 200（新文件首次 404 属 Pages 部署延迟，等 60s 转 200）；红线 grep 0。
+- 并发作业处置：本地未推送 `dd58cc7`（09-27 早版报告，基于 f954215，**未跟踪 root `_` 脚本**——只跟踪 `_calc_result.json` 数据文件）与云端 ee03b34（3 个 09-26 数据提交）分叉 → `git tag -f backup_20260927_pre dd58cc7` + `reset --hard ee03b34` + 重跑全链单提交。reset 前可 `git ls-tree <db> --name-only | grep '^_'` 预判是否需事后恢复脚本。
+- ❗❗ **本次 reset 的真损失在记忆文件**：`.workbuddy/memory/` 被 gh-pages 跟踪，而 MEMORY.md 的 09-26 增补与 automation memory 的 09-26 条目都是「已跟踪未提交」的工作区改动 → `reset --hard` 直接回退。事后按会话初始读到的原文逐条恢复。**教训：记忆写完必须 `git add .workbuddy/memory` 并随当日或次日 chore 提交入库。**
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/252）；无陈旧 batch；ODDS 3136 / results_data 3241。
+- 9 场：韩职 x1 / 国际赛 x1 / 荷乙 x1 / 欧国联 x5 / 美职 x1。步骤2.5 取到 2 联赛（美职/荷乙）；排名注入 0/9（无 7M 队名映射）。
+- 头条口径覆盖 9/9：1:1 / 1:1 / 2:1 / 2:1 / 1:2 / 2:1 / 2:1 / 1:1 / 1:2（1:1 恰 3 场，未超 head_day_cap=4）。
+- 报告 9 场卡片 / 串关 4 组（方向 A/B + 信心 A/B，冷门 A/B 复用信心腿）。前日回顾读 09-26 已发布页：8 组串关全中 2 组（方向B/方向C 全中）。
+- 复盘 09-26（24 场）：方向 18/24=75%、单点 3/24=12%、双档 3/24=12%、至少一项 75%、λ偏差 **-0.39** 球/场（单日超阈但与前后几日符号不一致 → 不触发重拟合）。
+- 4.6：**保持默认**（10 旋钮完全未变，仅 `_meta` 刷新 days 18→19 / tuned_at / 指标；optimizer 打 adopt=True 勿误读）。内容变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 9 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 英联赛杯 18.03%）→ 已在回复提示离线重拟合 market_calib/Platt。
+- ⚠️ 步骤3 链路标记真实文案 = `MARKET_BLEND_PROB ON  市场概率混合已启用(V3.2)` + `SCORE_ALIGN ON  比分矩阵对齐发布的 1X2 已启用(V3.3)`，**旧串「市场混合(」「比分矩阵对齐发布1X2」已 grep 不到** → 按 `MARKET_BLEND_PROB|SCORE_ALIGN|ON·生效` 核。
+
+## 2026-09-26（14:00 常规流水线）
+**结果**：全链跑通，25 场（赔率 25/25，无别名行）。gh-pages `1588e1c → f954215`（ls-remote 核验，快进）；master `ee1a7a4 → ecdc6d2`。线上报告/复盘/索引/selection_tuning 全 200，红线 grep 0。
+- 并发作业处置：本地未推送 `05f3996`（09-26 早版报告，无快照/复盘，且**把 root `_` 脚本与 league_data.json 纳入跟踪**）→ `git tag -f backup_20260926_pre 05f3996` + `reset --hard 1588e1c`。
+- **❗新踩坑**：`reset --hard` 会把并发提交已跟踪的 `_gen_report.py / _fetch_league_data.py / _league_match.py / league_data.json` **从磁盘删除** → 必须 `git show backup_<tag>:<路径> > <路径>` 逐个恢复（本次 4 个）。以后先打 tag 再 reset。
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/251）；无陈旧 batch；ODDS 3131 / results_data 3217。
+- 25 场：亚运男足 x2、日乙 x5、欧国联 x7、荷乙 x2、国际赛 x2、美职 x7。步骤2.5 取到 3 联赛（日乙/美职/荷乙）；**美职 7M id 459 实为 USL，报告按 UNAVAILABLE 只出说明、不落表**（正常，勿当 bug）。
+- **新增 ALIAS（`_league_match.py`）**：新潟天鹅→新潟天鵝、甲府风林→甲府風林、赫拉克勒→荷华高斯、罗达JC→洛达、瓦尔韦克→RKC华域克 → 排名注入 3/25→7/25（14 队）；已同步 master `tools/prediction/league_match.py`（master 原副本缺 荷乙/ALIAS 补充）。
+- 引擎 25 场全算完；头条口径覆盖 25/25、变更 20 场；快照/报告首选比分逐场比对 **25/25 一致**。档数 2 档 → 比分精选 12 场（6+6）；串关 5 组。
+- 复盘 09-25（13 场）：方向 7/13=54%、单点 15%、双档 15%、λ偏差 +0.16 → 阈值内。
+- 4.6：**保持默认**（10 旋钮全未变，仅 `_meta` 刷新 days 17→18 / tuned_at；optimizer 打 adopt=True 勿误读）；内容变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 8 日 `league_baselines` 漂移 → 回复提示离线重拟合 market_calib/Platt。
+- 未同步 master 的其他脚本：`tools/prediction/gen_report.py` 已落后本地（无 CUP_EXTRA 杯赛卡）→ **勿用 master 副本覆盖本地 `_gen_report.py`**。
+
 ## 2026-09-24（14:00 常规流水线）
 **结果**：全链跑通，8 场（赔率 8/8，无别名行）。gh-pages `978d04a → a8bd000`（ls-remote 核验，无 rebase）；线上报告/复盘/索引均 200（**本次 Pages 延迟更久：连续 404 约 2 分钟才转 200**，勿因两次 404 就判失败，用 `git ls-tree` 先确认云端文件在）；红线 grep 0。无脚本改动 → 未同步 master。
 - ❗本地已有并发作业的未推送提交 `d75721a`（09-24 早版报告+odds，基于 635d074），与云端（978d04a = 3 个 09-23 数据提交）**分叉** → 处置 = `git tag backup_20260924_pre d75721a` 备份后 `git reset --hard 978d04a` + 重跑全链单提交，直接快进推送（比 09-19 的 `checkout -- .` 更省事，因当日数据全部要重算）。

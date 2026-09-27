@@ -3,7 +3,7 @@
 ## 流水线（顺序不可乱）
 0. `git show master:update_odds_net.py > update_odds_net.py` → `--no-push` 再 `--no-push --results-only`（顺序错→ODDS 单引号 JS）。判据 `[DEDUP-ALIGN]`；跑前清 `_data_batch*.json`。
 1. `mkdir -p predictions/<date>` → `_local_prepare.py`（0 场=无赛）。
-2. `_build_today_extras.py` → `_fetch_league_data.py` → `_calc_engine.py`（chain 判据「市场混合(」+「比分矩阵对齐发布1X2」）。
+2. `_build_today_extras.py` → `_fetch_league_data.py` → `_calc_engine.py`（链路标记只在 stdout：grep `MARKET_BLEND_PROB|SCORE_ALIGN|ON·生效|ON·观察`，实际文案是「市场概率混合已启用(V3.2)」「比分矩阵对齐发布的 1X2 已启用(V3.3)」，**旧的「市场混合(」串已不存在**）。
 4. `_gen_report.py` → `gen_review.py --date <昨日>` → `_optimize_selection.py`。
 5. 索引 → 根 index.html 有 `data-page-node-id` 才 checkout → 只推 gh-pages。**严禁 `git add -A`**。
 
@@ -11,9 +11,13 @@
 - origin=SSH；只信 `git ls-remote`（本地 `origin/*` 会滞后 → 取文件用 `git show $(git ls-remote origin <br>|cut -f1):路径`）；禁 force/GITHUB_TOKEN。
 - gh-pages `git rebase --no-fork-point <云端SHA>`（**不带第二参数**）；撞死→`reset --hard <云端SHA>`+`checkout <好提交> -- .`+单提交推；继续须 `GIT_EDITOR=true`。
 - 推 master 用 worktree：`git worktree add --detach "C:/Users/Jin/_wt_master" <SHA>`（**须 `C:/...`**，`/c/...` 会建成 `C:\c\...`）→覆盖→commit→`push origin HEAD:refs/heads/master`→`worktree remove --force`。
+- ⚠️ 若并发作业的提交**把 root `_` 脚本（_gen_report/_fetch_league_data/_league_match/league_data.json）纳入跟踪**，则 `reset --hard <云端SHA>` 会把它们**从磁盘删掉**。先 `git tag -f backup_<日期>_pre <本地提交>`，事后 `git show backup_<日期>_pre:<路径> > <路径>` 逐个恢复（09-26 踩过）。
+- ❗❗ **`reset --hard` 会抹掉 `.workbuddy/memory/` 下「已跟踪但未提交」的改动**（该目录被 gh-pages 跟踪）。09-26 的 MEMORY.md 增补与 09-27 初的 automation memory 条目都因此丢失过 → **记忆写完必须随当日提交一起 `git add` + commit（chore 前缀）**，否则次日 reset 即被回退。
 
 ## 云端正本布局
 - master `tools/prediction/`=脚本正本（去 `_` 前缀）+ 根 update_odds_net.py/platt_params.json/league_profile.json。这几支脚本实为 **LF**；`gen_report` 有 5 处去下划线须保留。
+- ⚠️ `tools/prediction/gen_report.py` 已**落后**（无 CUP_EXTRA 杯赛卡/第六节未改名）→ 本地 `_gen_report.py` 才是最新，**勿用 master 副本覆盖本地**。
+- `_league_match.py` 内容自洽（无自引用）→ 改 ALIAS 后直接 `cp` 到 master `tools/prediction/league_match.py`（09-26 已同步，master 原副本缺 荷乙/ALIAS 补充/亚运男足 等）。
 - gh-pages=数据运行态（predictions/、odds_data/results_data、results/odds_history/、scripts/、_calc_result.json、v34_state.json、strength_db.json、selection_tuning.json）+ **仅 root** 的 score_engine.py/selection_algo.py/score_pick_optimize.py。**root `_` 脚本在 gh-pages 未跟踪** → 只同步 master；新增脚本两处同步。
 
 ## 队名归一 / 别名行（最贵的坑）
