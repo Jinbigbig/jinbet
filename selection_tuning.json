@@ -12,31 +12,24 @@
     0.68
   ],
   "pk_degen_down": 1.0,
-  "bd_total_shift": 0,
-  "bd_min_total": 3,
+  "bd_total_shift": -1,
+  "bd_min_total": 2,
   "bd_gap": 1,
   "bd_exclusive": 1,
   "bd_lean_src": "engine",
   "_meta": {
-    "tuned_at": "2026-09-27",
-    "days_used": 19,
+    "tuned_at": "2026-09-28",
+    "days_used": 20,
     "note": "grid search on rolling history",
     "pk": {
-      "base_obj": 58.42,
-      "tuned_obj": 59.47,
+      "base_obj": 59.0,
+      "tuned_obj": 60.0,
       "adopted": true
     },
     "bd": {
-      "base_obj": 29.21,
-      "tuned_obj": 36.58,
+      "base_obj": 27.75,
       "holdout_base": 30.0,
-      "holdout_tuned": 39.17,
-      "params": {
-        "bd_total_shift": 0,
-        "bd_min_total": 3,
-        "bd_gap": 1
-      },
-      "adopted": true
+      "adopted": false
     }
   }
 }
