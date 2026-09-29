@@ -1,5 +1,16 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-09-29（14:00 常规流水线）
+**结果**：全链跑通，15 场（赔率 15/15，无冷启动/无别名行）。gh-pages `e94de92 → 449aa18`（ls-remote 核验，快进）；master 未动（今日无脚本改动）。线上报告/复盘/索引/selection_tuning 破缓存全 200；红线 grep 0（报告与复盘页均 0）。
+- 并发作业：本地 HEAD 为 12:49 的早版报告 `244dbfa`（父=云端 e94de92，只跟踪 `_calc_result.json`，**未跟踪 root `_` 脚本**）→ `tag backup_20260929_pre` + `reset --hard e94de92` + 重跑全链单提交。**本地 master 分支停在 897636a（behind 55）→ 取正本须用 `git ls-remote origin master` 的 SHA（本次 6a5d078），不可用本地 `master:` 引用。**
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/254，6 行）；无陈旧 batch；ODDS 3160 / results_data 3258；`dedup_results_history.py` 在根目录（tools/prediction/ 无）。
+- 15 场：周二001–015 亚运女足 x2 / 国际赛 x2 / 日联赛杯 x4 / 欧国联 x7。步骤2.5 四联赛全无 7M 映射 → league_data 0 联赛（正常）；排名注入 0/15，H2H≥3 场 0/15。
+- 头条口径 15/15、`top_scores` 纯降序 15/15；分布 2:0 x4 / 1:0 x3 / 0:2 x3 / 1:2 x3 / 1:1 x2 / 2:1 x1（1:1 未超 cap）。串关 4 组（方向 A/B + 信心 A/B，冷门 A/B 复用）。前日回顾读 09-28 页：3 组串关全中 1 组。
+- 复盘 09-28（8 场）：方向 3/8=38%、单点 0/8=0%、双档 2/8=25%、λ偏差 **-0.98**（n=8；符号 -0.39/+0.70/-0.98 不连续 → 不触发重拟合）。
+- 4.6 **采纳新参数**：`bd_total_shift -1→0`、`bd_min_total 2→3`（optimizer 报 bd base 26.43→36.43、**holdout 25.71→35.71 也改善** → 本次是真采纳，非回退默认）；pk 旋钮未变。内容变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 11 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 英联赛杯 18.03%）→ 已在回复提示离线重拟合 market_calib/Platt。
+- 记忆已随 chore 提交入库（防次日 reset 回退）。
+
 ## 2026-09-28（14:00 常规流水线）
 **结果**：全链跑通，8 场（赔率 8/8，无冷启动）。gh-pages `4e4993b → 待核验`；master 未动（今日无脚本改动）。红线 grep 0。
 - 并发作业：本地 HEAD 为今早早版报告 `c77c1bd`（父=云端 4e4993b，只跟踪 `_calc_result.json` 一个 `_` 文件，无 root 脚本风险）→ `tag backup_20260928_pre` + `reset --hard 4e4993b` + 重跑全链单提交。
