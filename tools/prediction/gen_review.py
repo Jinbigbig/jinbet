@@ -256,23 +256,33 @@ def main():
             lam_actual_sum += (sc[0] + sc[1])
             if not dh:
                 misses.append(f'{m.get("id")} {home}vs{away} 预测{pred_dir}实际{actual}')
+        if sc:
+            dir_cell = f'<span class="{"ok" if dh else "no"}">{"✔" if dh else "✘"}</span>'
+            sc_cell = f'<span class="{"ok" if sh else "no"}">{"✔" if sh else "✘"}</span>'
+        else:
+            dir_cell = sc_cell = '<span style="color:#999">⏳</span>'
         table.append(
             f'<tr><td class="b">{m.get("id")}</td><td>{lid}</td><td class="b">{home} vs {away}</td>'
             f'<td class="dir">{pred_dir}</td>'
             f'<td class="b">{exp_sc}</td><td>{"/".join(band_order)}</td><td>{stars}</td>'
             f'<td class="b">{actual_score}</td><td class="b">{actual}</td>'
-            f'<td><span class="{"ok" if dh else "no"}">{"✔" if dh else "✘"}</span></td>'
-            f'<td><span class="{"ok" if sh else "no"}">{"✔" if sh else "✘"}</span></td></tr>'
+            f'<td>{dir_cell}</td>'
+            f'<td>{sc_cell}</td></tr>'
         )
 
     nres = sum(1 for _, sc in rows if sc)
     lam_bias = (lam_model_sum - lam_actual_sum) / nres if nres else 0.0
-    concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
-             f'={ (dir_hit/nres*100) if nres else 0:.0f}%，命中比分单点 {exp_hit}/{nres}'
-             f'={ (exp_hit/nres*100) if nres else 0:.0f}%，比分双档命中 {score_hit}/{nres}'
-             f'={ (score_hit/nres*100) if nres else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
-             f'={ (any_hit/nres*100) if nres else 0:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
-    miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
+    if nres:
+        concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
+                 f'={dir_hit/nres*100:.0f}%，命中比分单点 {exp_hit}/{nres}'
+                 f'={exp_hit/nres*100:.0f}%，比分双档命中 {score_hit}/{nres}'
+                 f'={score_hit/nres*100:.0f}%，至少一项命中 {any_hit}/{nres}'
+                 f'={any_hit/nres*100:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
+        miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
+    else:
+        concl = (f'{ds} 共预测 {n} 场，赛果尚未归档（0 场可核算）；'
+                 f'官方结果更新后本页自动补算。')
+        miss_note = '赛果未到，暂无可核算场次。'
 
     _days, _tot = cumulative_kpi(ds)
     cum_html = ''
