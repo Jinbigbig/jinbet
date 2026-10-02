@@ -1,5 +1,15 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-02（14:00 常规流水线）— 当日无在售赛事
+**结果**：今日 **0 场**（`_local_prepare.py` 对 2026-10-02 从 SCHEDULE 提取 0 场；Trae Work 并行页面标题「2026年10月2日 足球新闻汇总报告（当日无竞彩在售场次）」双证）→ 按规程终止预测报告链（步骤 2/2.5/3/4 均未执行），未生成 `predictions/2026-10-02/index.html` → **无报告链接、无串关、无档位**。master `ce309b9 → f9fb275`（gen_review 修复，ls-remote 核验）；gh-pages 单提交见下。
+- 并发作业：本地 HEAD `4d62aac`（今日早版报告，父=云端 `1739e04`，仅跟踪 index.html/odds_data/predictions，**未跟踪 root `_` 脚本**）→ `tag backup_20261002_pre` + `reset --hard 1739e04` + 重跑。**该早版本身就是「当日无竞彩在售场次」空页 → 0 场是真无赛事，不是提取失败。**
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/257，写盘 257，备份 `_hist_backup_2026-10-02`）；无陈旧 batch；ODDS 3161 / results_data 3275（回填更新 3101 条、新增 0）。`dedup_results_history.py` 在根目录。
+- 步骤4.5 复盘 10-01：预测 1 场（周四001 美职 纽约红牛 vs 圣路易城），**赛果到 0 场** —— `results_data.json` 最新日期仅到 `2026-09-30`，该场官方结果尚未归档 → 复盘三指标 **0/0**（无核算基数）、λ偏差 +0.00。页面仍输出累计基准（23 比赛日 / 311 场：方向 58.8%、单点 12.2%、双档 18.6%）。**赛果缺档 ≠ 引擎失手，勿据此判定方向连击。**
+- 步骤4.6 **保持默认**（10 旋钮全未变；仅 `_meta.tuned_at` 10-01→10-02，`days_used` 仍 22 —— 因 10-01 无赛果，可核算天数未增长）。optimizer 仍打 adopt=True 勿误读。
+- **修复 gen_review.py 两处 0 赛果边界 bug（新增，已同步 master）**：① `misses` 为空即断言「方向全部命中」→ 0 赛果日误报，改为 `nres==0` 时输出「赛果尚未归档（0 场可核算）；官方结果更新后本页自动补算。」；② 逐场行对无赛果场次渲染 ✘（误示失手）→ 改为灰色 ⏳。落盘 master `tools/prediction/gen_review.py`（该文件 master 为 **LF**、工作盘为 CRLF → 须先做 CRLF→LF 行尾归一，否则整文件行尾 churn）。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；复盘页红线 grep 命中 0。
+- 记忆随本次 chore 提交入库（防次日 reset 回退）。
+
 ## 2026-10-01（14:00 常规流水线）
 **结果**：全链跑通，**1 场**（赔率 1/1，无冷启动/无别名行）。gh-pages `9eda23a → 待核验`；master 未动（今日无脚本改动，`4b887f9`）。红线 grep 报告与复盘页均 0；根 index.html 无 `data-page-node-id`（未 checkout）。
 - 并发作业：本地 HEAD `2611c77`（今日早版报告，父=云端 9eda23a，**未跟踪 root `_` 脚本**，只改 index.html/数据/predictions）→ `tag backup_20261001_pre` + `reset --hard 9eda23a` + 重跑全链单提交。注意该早版把 root index.html 删了 9.6 万行（`-96928`），reset 回云端后由步骤0 重建，正常。
