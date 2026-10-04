@@ -1,5 +1,14 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-04（14:00 常规流水线）— 当日无在售赛事
+**结果**：今日 **0 场** → 步骤1 后按规程终止（2/2.5/3/4 未执行），**无报告链接、无串关、无档位**。gh-pages 单提交（见下，ls-remote 核验）。master 未动。
+- ❗**0 场已三源互证，勿再当提取故障排查**：① `_local_prepare.py` 从 SCHEDULE 提取 0 场（SCHEDULE 最新日期止于 2026-10-01）；② 体彩竞彩计算器 API 返回 `vtoolsConfig.offLineStopMessage = 抱歉，本彩种已停止销售`、matchInfoList 空；③ 500.com `trade.500.com/jczq/?date=2026-10-04` 显示「暂无赛事信息」。另：体彩赛果 API 在 09-29~10-05 区间仅返回 23 场（全 ≤09-30），10-01 起全 0；**网易竞彩 API 对近期所有日期返回空 → 网易主源已失效**。
+- 步骤0：正本取 `git ls-remote origin master` = `f9fb275`（本地 master 引用不可信）；本轮**未见 `[DEDUP-ALIGN]` 行**（脚本已换成 f9fb275 版，行为正常，勿误判为缺文件）；无陈旧 batch；ODDS 3161 条、归档 87 日期。
+- 步骤4.5 复盘 10-03：`predictions/2026-10-03/pred_snapshot.json` 缺失 → 打印「无快照…（该日可能未生成报告）」跳过；**无复盘三指标可报**。
+- 步骤4.6 **保持默认**（10 旋钮全未变；仅 `_meta.tuned_at` 10-02→10-04，`days_used` 仍 22 —— 10-01~10-03 无新赛果可核算）。optimizer 仍打 adopt=True 勿误读。内容有变化 → 随本次 chore 提交 selection_tuning.json。
+- ❗传 4 状态（**与 10-02 不同，本次不丢弃**）：本地 gh-pages 有两个**非 JinBet 流水线**的未推送提交 —— `21a7771`「report: 2026-10-03」实为 **北单 27 场深度分析报告**（标题含「北单」，非竞彩）；`9de6547`「report: 2026-10-04」实为「AI 足球预测报告 · 2026-10-04」16 场、**无串关推荐/比分精选/大胆档小节** → 非 JinBet 渲染器。处置 = `git tag backup_20261004_pre 9de6547` + `git reset --soft 21a7771`（保留两页与索引行，避免毁掉并行作业成果）→ 与数据刷新合为一条 chore 提交推 gh-pages。两页红线 grep 均 0。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；记忆随本次 chore 提交入库（防次日 reset 回退）。
+
 ## 2026-10-02（14:00 常规流水线）— 当日无在售赛事
 **结果**：今日 **0 场**（`_local_prepare.py` 对 2026-10-02 从 SCHEDULE 提取 0 场；Trae Work 并行页面标题「2026年10月2日 足球新闻汇总报告（当日无竞彩在售场次）」双证）→ 按规程终止预测报告链（步骤 2/2.5/3/4 均未执行），未生成 `predictions/2026-10-02/index.html` → **无报告链接、无串关、无档位**。master `ce309b9 → f9fb275`（gen_review 修复，ls-remote 核验）；gh-pages 单提交见下。
 - 并发作业：本地 HEAD `4d62aac`（今日早版报告，父=云端 `1739e04`，仅跟踪 index.html/odds_data/predictions，**未跟踪 root `_` 脚本**）→ `tag backup_20261002_pre` + `reset --hard 1739e04` + 重跑。**该早版本身就是「当日无竞彩在售场次」空页 → 0 场是真无赛事，不是提取失败。**
