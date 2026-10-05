@@ -1,5 +1,16 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-05（14:00 常规流水线）— 全链跑通，7 场
+**结果**：全链跑通，**7 场**（周一001–007 全部欧国联；赔率 7/7，无冷启动/无别名行）。档数 **1 档** → 比分精选 6 场 / 大胆档 1 场（003 罗马尼亚vs瑞典）；串关 4 组。gh-pages 单提交（ls-remote 核验）。master 未动（`f9fb275`，今日无脚本改动）。
+- **无并发分叉**：本地 HEAD == 云端 `cc500f2`（0/0）→ 直接追加单提交，无需 tag/reset。
+- 步骤0：`[DEDUP-ALIGN]` 生效（235/260，写盘 260，备份 `_hist_backup_2026-10-05`）；无陈旧 batch；ODDS 3168 / results_data 3275（更新 3101、新增 0）。
+- 步骤2：H2H 0/7、近期 7/7、主客场 6/7、排名 0/7；步骤2.5 欧国联无 7M 映射 → league_data 0 联赛（正常）。链路标记齐全，Platt n=2223。
+- 步骤4.5 **无复盘**：`predictions/2026-10-04/pred_snapshot.json` 不存在 → 打印「无快照」跳过（10-02 起连续第 4 日无 JinBet 报告 → 无复盘三指标）。
+- 步骤4.6 **保持默认**（10 旋钮全未变；仅 `_meta.tuned_at` 10-04→10-05，`days_used` 仍 22）。optimizer 仍打 adopt=True 勿误读。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0。记忆随本次 chore 提交入库。
+- DRIFT_MONITOR 连续第 **14** 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 英联赛杯 18.03%）→ 已在回复提示离线重拟合 market_calib/Platt。
+- predictions/index.html 的 commited 版本本就含 IDE 注入的 `data-page-node-id`（10 处）——与根 index.html 不同，**该文件历史上已被注入且已入库，正常**，只需插入当日行。
+
 ## 2026-10-04（14:00 常规流水线）— 当日无在售赛事
 **结果**：今日 **0 场** → 步骤1 后按规程终止（2/2.5/3/4 未执行），**无报告链接、无串关、无档位**。gh-pages 单提交（见下，ls-remote 核验）。master 未动。
 - ❗**0 场已三源互证，勿再当提取故障排查**：① `_local_prepare.py` 从 SCHEDULE 提取 0 场（SCHEDULE 最新日期止于 2026-10-01）；② 体彩竞彩计算器 API 返回 `vtoolsConfig.offLineStopMessage = 抱歉，本彩种已停止销售`、matchInfoList 空；③ 500.com `trade.500.com/jczq/?date=2026-10-04` 显示「暂无赛事信息」。另：体彩赛果 API 在 09-29~10-05 区间仅返回 23 场（全 ≤09-30），10-01 起全 0；**网易竞彩 API 对近期所有日期返回空 → 网易主源已失效**。
