@@ -1,5 +1,17 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-08（14:00 常规流水线）— 全链跑通，6 场
+**结果**：全链跑通，**6 场**（周四001-002 芬超 / 003-006 巴甲；赔率 6/6；无冷启动、无别名行）→ 非冷启动 6 场 → **1 档**：比分精选 6 场（002/004/006/003/005/001）、**大胆档 0 场**（两榜互斥 + 6 场已被精选占满，同 10-07）；串关 6 组（方向 A/B + 信心 A/B + 冷门 A/B）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动）。
+- **并发提交处置**：本地 `8563011`「report: 2026-10-08 足球预测报告」= 并行作业渲染器（title「竞彩足球深度分析报告」，无 JinBet 标记），日期=今日 → 不保留。`git tag -f backup_20261008_pre 8563011` + `reset --hard 9c442d4`（云端含 3 个 10-07 数据提交）。该提交只跟踪 `_calc_result.json` → 无 root `_` 脚本丢失。
+- ❗**master 正本取法再踩坑**：本地 `master` ref = `897636a`，落后云端 `5e8ce50` 达 11 行（缺 RESULT_TEAM_NAME_MAP 5 条归一映射）→ 必须 `git fetch origin master` 后取 `FETCH_HEAD`。**`git show master:file` 默认不可信，先 fetch 再取。**
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/262，写盘 262，备份 `_hist_backup_2026-10-08`）；无陈旧 batch；ODDS 3193 / results_data 3300（回填更新 3126、新增 0）。
+- 步骤2：H2H≥3 0/6、近期 6/6、主客场 5/6、排名 6/6（7M 12 队）；步骤2.5 取到 2 联赛（巴甲 160 / 芬超 105）。新闻 0/6。
+- 步骤3 链路标记齐全：Platt n=**2231**、MARKET_BLEND_PROB ON、SCORE_ALIGN ON、BRIER_OPT/KALMAN/CLV/DRIFT ON·生效、HEDGE ON·观察。6 场全算完，快照落盘。
+- 步骤4.5 复盘 **10-07（6 场）**：方向 **2/6=33%**、单点 1/6=17%、双档 2/6=33%、至少一项 4/6=67%、λ偏差 **-0.34**（单日超阈；与 10-06 的 -0.14 同号但非连续 >0.2 → 暂不触发重拟合）。
+- 步骤4.6 **保持默认**：10 旋钮与上一版**完全一致**（bd_total_shift=0 / bd_min_total=2 / pk_degen_down=0.9 / caps[2.6,3.0,3.0]）；仅 `_meta` 刷新（days 24→25、tuned_at 10-08、pk 60.00→60.40、bd 27.20→33.40、holdout 22.50→29.38）。optimizer 打 adopt=True 勿误读。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **17** 日 `league_baselines` 漂移 → 已在回复提示离线重拟合 market_calib/Platt。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0、复盘页红线 grep 0。predictions/index.html 插入 10-08 行（6 场 / 芬超 x2 + 巴甲 x4）。
+
 ## 2026-10-07（14:00 常规流水线）— 全链跑通，6 场
 **结果**：全链跑通，**6 场**（周三001 芬超 / 002–006 巴甲 x5；赔率 6/6；无冷启动、无别名行）→ 非冷启动 6 场 → **1 档**：比分精选 6 场（002/003/006/005/004/001）、**大胆档 0 场**（两榜互斥 + 6 场已被精选占满）→ **串关 0 组**。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动）。
 - **无分叉**：本地 `bafcf39` 落后云端 3 个「data: 自动更新赔率+赛果」提交（10-06 10:17/11:54/18:20）→ `git merge --ff-only 5a5945a` 快进即可。**新踩坑**：合并被 10 个未跟踪历史文件（odds_history/results_history 09-24~09-29）阻塞 → 先 `cp` 到 `_backup_20261007/pre_merge/` 再 `rm` 后合并（这些文件被入站提交新增，合并即恢复）。
