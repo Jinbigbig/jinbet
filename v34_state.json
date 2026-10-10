@@ -54,7 +54,7 @@
  "kalman": {
   "n_teams": 647,
   "applied": true,
-  "mods_non_neutral": 11
+  "mods_non_neutral": 27
  },
  "clv": null,
  "drift": {
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-10-09",
+ "date": "2026-10-10",
  "history": [
   {
    "date": "2026-09-14",
@@ -323,6 +323,16 @@
   },
   {
    "date": "2026-10-09",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-10-10",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
