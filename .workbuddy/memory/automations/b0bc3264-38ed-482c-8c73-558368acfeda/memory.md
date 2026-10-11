@@ -1,5 +1,15 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-11（14:00 常规流水线）— 全链跑通，28 场
+**结果**：全链跑通，**28 场**（周日001–028：韩职 x1 / 日乙 x1 / 日职 x1 / 荷甲 x2 / 意甲 x5 / 英冠 x1 / 西甲 x4 / 芬超 x1 / 挪超 x2 / 英超 x3 / 法甲 x2 / 德甲 x2 / 葡超 x1 / 巴甲 x1 / 美职 x1；赔率 28/28；无冷启动、无别名行）→ 非冷启动 28 场 → **3 档**：比分精选 18 场（6×3）、大胆档 12 场（4×3）→ 串关主表 8 条（方向 A/B/C、信心 A/B/C、冷门 A/B）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `b25301c`）。
+- **并发作业处置**：本地 HEAD `7aeed5f`「report: 2026-10-11 足球预测报告」= 并行作业渲染器（title「2026年10月11日 竞彩足球28场比赛深度分析报告」，无串关/比分精选/大胆档标记），父=`59ca2b3`，**未跟踪 root `_` 脚本** → `git tag -f backup_20261011_pre 7aeed5f` + `git reset --hard 0667534`（云端含 3 个 10-10 数据提交：fdce1fc/4d98945/0667534）。
+- 步骤0 `[DEDUP-ALIGN]` 生效（6 行，仅在 `--results-only` 那轮打印）；无陈旧 batch；ODDS 3273 / results_data 3347（回填更新 3173、新增 0）。
+- 步骤2：H2H≥3 0/28、近期 28/28、主客场 26/28、排名 16/28（7M 36 队）、新闻 0/28；步骤2.5 取到 **13 联赛**；步骤3 链路标记齐全：Platt n=2231、MARKET_BLEND_PROB ON、SCORE_ALIGN ON、BRIER_OPT/KALMAN/CLV/DRIFT ON·生效、HEDGE ON·观察。28 场全算完；头条口径覆盖 28/28、变更 15 场；快照/`_calc_result` 首选比分逐场 **28/28 一致**（快照 `matches` 是 list，非 dict）。
+- 步骤4.5 复盘 **10-10（30 场，赛果 29）**：方向 **19/29=66%**、单点 2/29=7%、双档 10/29=34%、至少一项 22/29=76%、λ偏差 **+0.06**（10-09 为 +0.71 → 反号且回阈值内 → 不触发重拟合）。
+- 步骤4.6 **保持默认**：10 旋钮与上一版**完全一致**（pk_lambda_caps[2.6,3.0,3.2] / pk_degen_down=0.85 / bd_total_shift=0 / bd_min_total=2 / bd_gap=1 / bd_exclusive=1）；仅 `_meta` 刷新（days 27→28、tuned_at 10-11、pk base 58.93→tuned 59.29、bd base 25.71→tuned 33.75、holdout 26.11→32.22）。optimizer 打 adopt=True 勿误读。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **20** 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 日联赛杯 50.0%）→ 已在回复提示离线重拟合 market_calib/Platt。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0、复盘页红线 grep 0。predictions/index.html 插入 10-11 行（28 场 / 15 联赛）。
+
 ## 2026-10-10（14:00 常规流水线）— 全链跑通，30 场
 **结果**：全链跑通，**30 场**（周六001–030：日职 x2 / 韩职 x2 / 英超 x5 / 西甲 x4 / 意甲 x3 / 德甲 x6 / 法甲 x2 / 瑞超 x1 / 荷甲 x2 / 葡超 x1 / 沙职 x1 / 巴甲 x1；赔率 30/30；**无冷启动**、无别名行）→ 非冷启动 30 场 → **3 档**：比分精选 18 场（6×3）、大胆档 12 场（4×3）→ 串关 方向 A/B/C + 信心 A/B/C + 冷门 A/B/C（HTML 主表 9 条；生成器 `len(parlays)=6` 口径 = 方向+信心，冷门另渲）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `0871290`）。
 - **无分叉，纯快进**：本地 HEAD `1fa38f9`（昨日报告）是云端 `5076fd3` 的祖先（云端仅 3 个 10-09「data: 自动更新赔率+赛果」提交）→ `git merge --ff-only 5076fd3` 即可。**唯一阻塞**：未跟踪 `odds_history/2026-10-01.json` 会被入站提交覆盖 → `cp` 到 `_backup_20261010/pre_merge/odds_history/` 后 `rm` 再合并（合并即由云端恢复）。
