@@ -1,49 +1,49 @@
 {
  "brier_opt": {
-  "date": "2026-10-05",
+  "date": "2026-10-12",
   "param": "MARKET_W",
   "old": 0.8,
   "best": 0.85,
-  "best_brier": 0.19726,
-  "default_brier": 0.19726,
+  "best_brier": 0.19673,
+  "default_brier": 0.19674,
   "improvement_pct": 0.0,
   "scores": [
    [
     0.85,
-    0.19726
+    0.19673
    ],
    [
     0.8,
-    0.19726
+    0.19674
    ],
    [
     0.9,
-    0.19727
+    0.19674
    ],
    [
     0.7,
-    0.19735
+    0.19683
    ],
    [
     0.6,
-    0.19754
+    0.19702
    ],
    [
     0.5,
-    0.19782
+    0.1973
    ]
   ],
   "applied": false
  },
  "hedge": {
   "weights": {
-   "model": 0.3114,
-   "market": 0.6886
+   "model": 0.3104,
+   "market": 0.6896
   },
   "losses": {
-   "model": 1.06664,
-   "market": 0.93437,
-   "blend": 0.94583,
+   "model": 1.06654,
+   "market": 0.93351,
+   "blend": 0.94504,
    "n": 500
   },
   "w": 0.7,
@@ -52,14 +52,14 @@
   "fixed_w": 0.8
  },
  "kalman": {
-  "n_teams": 647,
+  "n_teams": 648,
   "applied": true,
-  "mods_non_neutral": 23
+  "mods_non_neutral": 6
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3372,
+  "n_samples": 3379,
   "drift_detected": true,
   "flags": [
    "league_baselines"
@@ -67,13 +67,13 @@
   "detail": {
    "global_goals": {
     "psi": 0.0004,
-    "ks": 0.0072,
+    "ks": 0.0071,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0334,
-    "ks": 0.0766,
+    "psi": 0.034,
+    "ks": 0.0769,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-10-11",
+ "date": "2026-10-12",
  "history": [
   {
    "date": "2026-09-14",
@@ -343,6 +343,16 @@
   },
   {
    "date": "2026-10-11",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-10-12",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
