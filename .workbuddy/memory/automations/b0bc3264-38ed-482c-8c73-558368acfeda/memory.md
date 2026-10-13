@@ -1,5 +1,16 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-13（14:00 常规流水线）— 全链跑通，12 场
+**结果**：全链跑通，**12 场**（周二001–003 亚冠精英 x3 / 004–011 欧冠 x8 / 012 英冠 x1；赔率 12/12；**无冷启动、无别名行**）→ 非冷启动 12 场 → **1 档**：比分精选 6 场、大胆档 4 场；串关主表 4 条（方向 A/B + 信心 A/B，冷门 A/B 复用）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `ee9e45f`）。
+- **纯快进，两处阻塞**：本地 HEAD `6b0cee5`（昨日报告）是云端 `96177f1` 的祖先（云端仅 3 个 10-12「data: 自动更新赔率+赛果」提交 10:49/12:57/21:15）→ `git merge --ff-only 96177f1`。阻塞①未跟踪 `results_history/2026-10-05.json` 被入站提交新增 → 备份 `_backup_20261013/pre_merge/` 后 `rm`；阻塞②`odds_data.json` 有本地改动 → `git checkout --` 丢弃（步骤0 会重建）后合并成功。
+- 步骤0 `[DEDUP-ALIGN]` 生效（5 条明细 + 汇总，235/264 写盘，备份 `_hist_backup_2026-10-13`，仅在 `--results-only` 那轮打印）；无陈旧 batch；ODDS 3296 / results_data 3385（回填更新 3211、新增 0）。
+- 步骤2：H2H≥3 0/12、近期 12/12、主客场 10/12、排名 0/12、新闻 0/12；步骤2.5 三联赛（亚冠精英/欧冠/英冠）**均无 7M 映射** → league_data 0 联赛（正常，第七节 UNAVAILABLE）。
+- 步骤3 链路标记齐全：Platt n=**2242**、MARKET_BLEND_PROB ON、SCORE_ALIGN ON、BRIER_OPT/KALMAN/CLV/DRIFT ON·生效、HEDGE ON·观察。12 场全算完；快照/`_calc_result` 首选比分逐场 **12/12 一致**。
+- 步骤4.5 复盘 **10-12（10 场，赛果 10）**：方向 **4/10=40%**、单点 1/10=10%、双档 1/10=10%、至少一项 5/10=50%、λ偏差 **-1.11**（10-11 为 -0.26 → **连续两日同号且 |·|>0.2 → 已在回复提示触发离线重拟合 market_calib/Platt**）。
+- 步骤4.6 **保持默认**：9 个旋钮与上一版**完全一致**（bd_min_total=2 / bd_gap=1 / bd_exclusive=1 / bd_total_shift=0 / bd_lean_src='engine' / pk_degen_down=0.85 / pk_lambda_caps=[2.6,3.0,3.2] / pk_lambda_w=[1.0,0.9,0.78,0.68] / pk_align_1x2=1）；仅 `_meta` 刷新（days 29→30、tuned_at 10-13、pk base 58.67→tuned 59.00、bd base 26.83→tuned 33.83、bd holdout 26.5→36.0）。optimizer 打 adopt=True 勿误读。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **22** 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 日联赛杯 50.0%；均值变化率 5.69%）；global_goals PSI 0.0004 / home_away_ratio PSI 0.0335 均稳定 → 已在回复提示离线重拟合。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0、复盘页红线 grep 0。predictions/index.html 插入 10-13 行（12 场 / 3 联赛）。
+
 ## 2026-10-12（14:00 常规流水线）— 全链跑通，10 场
 **结果**：全链跑通，**10 场**（周一001 亚冠精英 x1 / 002+005 意甲 x2 / 003 瑞超 / 004 挪超 / 006 法乙 / 007 英超 / 008 西甲 / 009 巴甲 / 010 葡超；赔率 10/10；**冷启动 1 场 001**；无别名行）→ 非冷启动 9 场 → **1 档**：比分精选 6 场、大胆档 4 场；主表串关 3 行（方向串关 A / 信心串关 A / 冷门串关 A，生成器 len(parlays)=2）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `315e53e`）。
 - **无分叉纯快进**：本地 HEAD `e160e7c`（昨日报告）是云端 `9322899` 的祖先（云端仅 3 个 10-11「data: 自动更新赔率+赛果」提交 10:00/11:20/17:41）→ `git merge --ff-only 9322899` 一次通过，无需 tag/reset，未被未跟踪文件阻塞。
