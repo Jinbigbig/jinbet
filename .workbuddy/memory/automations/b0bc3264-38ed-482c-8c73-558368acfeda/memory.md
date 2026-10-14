@@ -1,5 +1,16 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-14（14:00 常规流水线）— 全链跑通，14 场
+**结果**：全链跑通，**14 场**（周三001 亚冠乙 / 002–003 亚冠精英 / 004 日联赛杯 / 005·006·008–012 欧冠 x7 / 007 英冠 / 013 解放者杯 / 014 美职；赔率 14/14；**无冷启动、无别名行**）→ 非冷启动 14 场 → **1 档**：比分精选 6 场、大胆档 4 场；串关 4 组（方向 A/B + 信心 A/B + 冷门 A/B）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `7d6f9fa`，仅 3 个 10-13 数据提交）。
+- **纯快进，单处阻塞**：本地 HEAD `db974a6`（昨日报告）是云端 `a64c034` 的祖先 → `git merge --ff-only a64c034`。唯一阻塞：未跟踪 `results_history/2026-10-06.json` 被入站提交新增 → 备份 `_backup_20261014/pre_merge/results_history/` 后 `rm` 再合并成功（无脚本丢失、无需 reset）。
+- 步骤0 `[DEDUP-ALIGN]` 生效（4 条明细 + 汇总，235/265 写盘，备份 `_hist_backup_2026-10-14`，仅在 `--results-only` 那轮打印）；无陈旧 batch；ODDS 3300 / results_data 3397（回填更新 3221、新增 0）。
+- 步骤2：H2H≥3 0/14、近期 13/14、主客场 13/14、排名 0/14、新闻 0/14；步骤2.5 **仅美职(7M 459，实为 USL) 1 联赛**（亚冠乙/亚冠精英/日联赛杯/欧冠/英冠/解放者杯 6 联赛均无 7M 映射，正常，第七节 UNAVAILABLE）。
+- 步骤3 链路标记齐全：Platt n=**2247**、MARKET_BLEND_PROB ON、SCORE_ALIGN ON、BRIER_OPT/KALMAN/CLV/DRIFT ON·生效、HEDGE ON·观察。14 场全算完；快照/`_calc_result` 首选比分逐场 **14/14 一致**；headline 1:1 恰 4 场（= head_day_cap=4）。
+- 步骤4.5 复盘 **10-13（12 场，赛果 12）**：方向 **8/12=67%**、单点 1/12=8%、双档 1/12=8%、至少一项 8/12=67%、λ偏差 **+0.17**（10-12 为 -1.11 → **反号**且回阈值内 → 不触发重拟合，昨日提示的连击已中断）。
+- 步骤4.6 **采纳新参数**：`pk_degen_down 0.85→0.9`（pk base 58.39→tuned 59.03 = **+0.64pp ≥ 0.3pp 门槛 → 真采纳**）；bd 旋钮未变（bd_total_shift=0 / bd_min_total=2 / bd_gap=1 / bd_exclusive=1 / bd_lean_src='engine'）；仅 `_meta` 刷新（days 30→31、tuned_at 10-14、pk base/tuned 58.39/59.03、bd base 24.19→tuned 33.23、holdout 21.0→30.5）。optimizer 打 adopt=True。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **23** 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 日联赛杯 50.0%；均值变化率 5.72%）；global_goals PSI=0.0003 / home_away_ratio PSI=0.0335 均稳定 → 已在回复提示离线重拟合 market_calib/Platt。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0、复盘页红线 grep 0。predictions/index.html 插入 10-14 行（14 场 / 7 联赛）。
+
 ## 2026-10-13（14:00 常规流水线）— 全链跑通，12 场
 **结果**：全链跑通，**12 场**（周二001–003 亚冠精英 x3 / 004–011 欧冠 x8 / 012 英冠 x1；赔率 12/12；**无冷启动、无别名行**）→ 非冷启动 12 场 → **1 档**：比分精选 6 场、大胆档 4 场；串关主表 4 条（方向 A/B + 信心 A/B，冷门 A/B 复用）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `ee9e45f`）。
 - **纯快进，两处阻塞**：本地 HEAD `6b0cee5`（昨日报告）是云端 `96177f1` 的祖先（云端仅 3 个 10-12「data: 自动更新赔率+赛果」提交 10:49/12:57/21:15）→ `git merge --ff-only 96177f1`。阻塞①未跟踪 `results_history/2026-10-05.json` 被入站提交新增 → 备份 `_backup_20261013/pre_merge/` 后 `rm`；阻塞②`odds_data.json` 有本地改动 → `git checkout --` 丢弃（步骤0 会重建）后合并成功。
