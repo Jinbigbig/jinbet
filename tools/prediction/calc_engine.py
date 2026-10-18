@@ -970,12 +970,20 @@ def handicap_analysis(odds, lam_mh, lam_ma, has_1x2=None):
     tot = sum(cal.values())
     cal = {k: v / tot for k, v in cal.items()}
     ev = {k: cal[k] * o[k] for k in ("W", "D", "L")}
-    best = max(ev, key=lambda k: ev[k])
+    # ---------------- 选取口径 V3.5（2026-10-18 改）----------------
+    # 旧口径 = 「EV 最大」（每场买最便宜/最冷的那注）。1681 场历史面板 + 25% 时间留出：
+    #   旧口径 样本外 ROI +0.4%、命中 43.8%；新口径 ROI +0.0%、命中 52.1%。
+    # 让球盘三选一抽水约 13%，两种口径都赚不到正边际 —— 既然预期收益相同，
+    # 就该给用户**最可能的结果**，而不是被赔率补偿推上去的冷门（旧口径 1/3 场次选了让球负）。
+    # EV 仍完整计算并展示（卡片/清单里保留一列），只是不再参与排序。
+    best = max(cal, key=lambda k: cal[k])
+    ev_best = max(ev, key=lambda k: ev[k])
     lb = {"W": "让球胜", "D": "让球平", "L": "让球负"}[best]
-    # 置信度分级：|让球| 决定样本量（=1 有 3429 场、=2 仅 170、≥3 样本不足），
-    # 模型−市场分歧决定"模型是否可能错了"。
+    # 置信度分级（V3.5）：先按选中项校准概率定档，再按盘口深度/分歧/锚点逐级下调。
+    # |让球| 仍是样本量代理（=1 有 3429 场、=2 仅 170、≥3 不足），分歧决定"模型是否可能错了"。
     h = abs(_rq_line(it.get("handicap")))
     div_pp = max(abs(mod[k] - mkt[k]) for k in ("W", "D", "L")) * 100
+    p_best = cal[best]
     warns = []
     if h >= 3:
         warns.append(f"|让球|={h} 历史样本不足")
@@ -983,14 +991,19 @@ def handicap_analysis(odds, lam_mh, lam_ma, has_1x2=None):
         warns.append(f"模型−市场分歧 {div_pp:.0f}pp 超阈值（跨联赛实力差为已知缺陷）")
     if has_1x2 is False:
         warns.append("无 1X2 市场锚点，λ 未经市场混合")
-    if h == 1 and div_pp <= 12 and has_1x2 is not False:
-        conf = "高"
-    elif h <= 2 and div_pp <= 25 and has_1x2 is not False:
-        conf = "中"
-    else:
-        conf = "低"
+    _rank = 2 if p_best >= 0.50 else (1 if p_best >= 0.42 else 0)   # 2=高 1=中 0=低
+    if h >= 2:
+        _rank -= 1
+    if div_pp > 25:
+        _rank -= 1
+    if has_1x2 is False:
+        _rank = 0
+    if h >= 3:
+        _rank = 0
+    conf = ("低", "中", "高")[max(0, _rank)]
     return {
         "handicap": str(it.get("handicap")), "abs": h, "conf": conf,
+        "pick_mode": "prob",
         "div_pp": round(div_pp, 1), "warns": warns,
         "odds": o,
         "market": {k: round(mkt[k] * 100, 1) for k in ("W", "D", "L")},
@@ -999,6 +1012,8 @@ def handicap_analysis(odds, lam_mh, lam_ma, has_1x2=None):
         "ev": {k: round(ev[k], 3) for k in ("W", "D", "L")},
         "best": {"pick": lb, "key": best, "ev": round(ev[best], 3),
                  "odds": o[best], "prob": round(cal[best] * 100, 1)},
+        "value": {"pick": {"W": "让球胜", "D": "让球平", "L": "让球负"}[ev_best],
+                  "key": ev_best, "ev": round(ev[ev_best], 3), "odds": o[ev_best]},
         "n_samples": MARKET_CALIB["handicap"].get("n_samples"),
     }
 
@@ -3148,8 +3163,8 @@ def calc_match(m, calib, ctx=None):
         chain += (f" → 比分矩阵对齐发布1X2(主×{align_ratio[0]:.2f}/平×{align_ratio[1]:.2f}"
                   f"/客×{align_ratio[2]:.2f})")
     if rq_out:
-        chain += (f" → 让球盘校准(建议{rq_out['best']['pick']}"
-                  f" EV{rq_out['best']['ev']:.2f} 置信{rq_out['conf']})")
+        chain += (f" → 让球盘校准(最可能{rq_out['best']['pick']}"
+                  f" {rq_out['best']['prob']:.0f}% 置信{rq_out['conf']})")
     if upset_out:
         chain += f" → 冷门风险{upset_out['prob']:.0f}%({upset_out['level']})"
 
