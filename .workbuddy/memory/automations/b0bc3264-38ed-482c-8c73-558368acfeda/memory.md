@@ -1,5 +1,16 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-18（09:09 常规流水线）— 全链跑通，25 场
+**结果**：全链跑通，**25 场**（周日001–025：日职1 / 韩职2 / 荷甲2 / 意甲4 / 西甲4 / 瑞超1 / 芬超1 / 挪超1 / 英超3 / 法甲3 / 德甲2 / 巴甲1；赔率 25/25，含 1 场比分盘反推 1X2；**无冷启动、无别名行**）→ 非冷启动 25 场 → **2 档**：比分精选 12 场（6×2）、大胆档 8 场（4×2）；串关 5 组（方向 A/B/C + 信心 A/B）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `39071d1`）。
+- **纯快进**：本地 HEAD `6d7c14f`（10-15 报告）落后云端 `b19918b` 9 个数据提交 → `git merge --ff-only`。唯一阻塞：未跟踪 `odds_history/2026-10-07.json`、`results_history/2026-10-08.json` 被入站提交新增 → 备份 `_backup_20261018/pre_merge/` 后 `rm` 再合并成功。
+- 步骤0 `[DEDUP-ALIGN]` 生效（6 行明细 + 汇总，235/269 写盘，备份 `_hist_backup_2026-10-18`，仅在 `--results-only` 那轮打印）；无陈旧 batch；ODDS 3386 / results_data 3464（回填更新 3284、新增 0）。
+- 步骤2：H2H≥3 0/25、近期 25/25、主客场 25/25、排名 0/25、新闻 0/25；步骤2.5 取到 **11 联赛**（仅韩职无 7M 映射）。
+- 步骤3 链路标记齐全：Platt n=**2318**、MARKET_BLEND_PROB ON、SCORE_ALIGN ON、BRIER_OPT/KALMAN/CLV/DRIFT ON·生效、HEDGE ON·观察。25 场全算完（无冷启动）；快照/`_calc_result` 首选比分逐场 **25/25 一致**。
+- 步骤4.5 **无复盘**：`predictions/2026-10-17/pred_snapshot.json` 缺失（10-16、10-17 两日均未生成报告）→ 打印「无快照」跳过，本次无复盘三指标可报。
+- 步骤4.6 **保持默认**：10 个旋钮与上一版**完全一致**（pk_lambda_caps[2.6,3.0,3.0] / pk_degen_down=0.9 / bd_min_total=2 / bd_gap=1 / bd_exclusive=1 / bd_total_shift=0 / bd_lean_src='engine'）；仅 `_meta` 刷新（days 32→33、tuned_at 10-18、pk base 58.18→tuned 59.09、bd base 23.94→tuned 33.33、holdout 15.0→29.09）。optimizer 打 adopt=True 勿误读。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **27** 日 `league_baselines` 漂移（亚冠精英 51.97% / 德乙 50.0% / 日联赛杯 50.0%）；global_goals PSI=0.0005 / home_away_ratio PSI=0.0352 均稳定 → 已在回复提示离线重拟合 market_calib/Platt。
+- 根 index.html 无 `data-page-node-id`（grep=0，未 checkout）；报告红线 grep 0。predictions/index.html 插入 10-18 行（25 场 / 12 联赛）。
+
 ## 2026-10-15（14:00 常规流水线）— 全链跑通，14 场
 **结果**：全链跑通，**14 场**（周四001–014：欧罗巴 x10 / 欧协联 x2 / 沙职 x1 / 解放者杯 x1；赔率 13/14，**007 沙职缺赔率但非冷启动**；**无冷启动**、无别名行）→ 非冷启动 14 场 → **1 档**：比分精选 6 场（014/011/002/006/010/008）、大胆档 4 场（005/009/012/007）；串关 4 组（方向 A/B + 信心 A/B + 冷门 A/B）。gh-pages 单提交（ls-remote 核验）。master 未动（今日无脚本改动，云端 `661a79e`）。
 - **纯快进，单处阻塞**：本地 HEAD `0a8b25a`（昨日报告）是云端 `00671be` 的祖先 → `git merge --ff-only 00671be`。唯一阻塞：未跟踪 `odds_history/2026-10-06.json` 与 `results_history/2026-10-07.json` 被入站提交新增 → 备份 `_backup_20261015/pre_merge/` 后 `rm` 再合并成功（无脚本丢失、无需 reset）。
