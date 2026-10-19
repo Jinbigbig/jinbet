@@ -1,49 +1,49 @@
 {
  "brier_opt": {
-  "date": "2026-10-12",
+  "date": "2026-10-19",
   "param": "MARKET_W",
   "old": 0.8,
   "best": 0.85,
-  "best_brier": 0.19673,
-  "default_brier": 0.19674,
+  "best_brier": 0.19693,
+  "default_brier": 0.19693,
   "improvement_pct": 0.0,
   "scores": [
    [
     0.85,
-    0.19673
+    0.19693
    ],
    [
     0.8,
-    0.19674
+    0.19693
    ],
    [
     0.9,
-    0.19674
+    0.19695
    ],
    [
     0.7,
-    0.19683
+    0.19701
    ],
    [
     0.6,
-    0.19702
+    0.19719
    ],
    [
     0.5,
-    0.1973
+    0.19746
    ]
   ],
   "applied": false
  },
  "hedge": {
   "weights": {
-   "model": 0.3239,
-   "market": 0.6761
+   "model": 0.3289,
+   "market": 0.6711
   },
   "losses": {
-   "model": 1.0683,
-   "market": 0.94566,
-   "blend": 0.9556,
+   "model": 1.06987,
+   "market": 0.95101,
+   "blend": 0.96014,
    "n": 500
   },
   "w": 0.7,
@@ -54,12 +54,12 @@
  "kalman": {
   "n_teams": 649,
   "applied": true,
-  "mods_non_neutral": 25
+  "mods_non_neutral": 7
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3472,
+  "n_samples": 3482,
   "drift_detected": true,
   "flags": [
    "league_baselines"
@@ -67,23 +67,23 @@
   "detail": {
    "global_goals": {
     "psi": 0.0005,
-    "ks": 0.0068,
+    "ks": 0.0076,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0352,
-    "ks": 0.0795,
+    "psi": 0.036,
+    "ks": 0.0803,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 5.69,
-    "std_delta_pct": 11.3,
+    "mean_delta_pct": 5.84,
+    "std_delta_pct": 11.67,
     "top3_changed": [
      [
       "亚冠精英",
-      51.97
+      57.6
      ],
      [
       "德国乙级联赛",
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-10-18",
+ "date": "2026-10-19",
  "history": [
   {
    "date": "2026-09-14",
@@ -393,6 +393,16 @@
   },
   {
    "date": "2026-10-18",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-10-19",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
