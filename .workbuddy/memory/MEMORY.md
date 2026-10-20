@@ -14,6 +14,8 @@
 - ⚠️ 若并发作业的提交**把 root `_` 脚本（_gen_report/_fetch_league_data/_league_match/league_data.json）纳入跟踪**，则 `reset --hard <云端SHA>` 会把它们**从磁盘删掉**。先 `git tag -f backup_<日期>_pre <本地提交>`，事后 `git show backup_<日期>_pre:<路径> > <路径>` 逐个恢复（09-26 踩过）。
 - ❗❗ **`reset --hard` 会抹掉 `.workbuddy/memory/` 下「已跟踪但未提交」的改动**（该目录被 gh-pages 跟踪）。09-26 的 MEMORY.md 增补与 09-27 初的 automation memory 条目都因此丢失过 → **记忆写完必须随当日提交一起 `git add` + commit（chore 前缀）**，否则次日 reset 即被回退。
 
+- ⚠️ `git show <ref>:路径 > 文件` 若该 ref 未 fetch，报 fatal 但**已把目标截成 0 字节** → 先 `git fetch origin master`，再 `git show origin/master:路径`（10-20 踩过）。
+
 ## 云端正本布局
 - master `tools/prediction/`=脚本正本（去 `_` 前缀）+ 根 update_odds_net.py/platt_params.json/league_profile.json。这几支脚本实为 **LF**；`gen_report` 有 5 处去下划线须保留。
 - ⚠️ `tools/prediction/gen_report.py` 已**落后**（无 CUP_EXTRA 杯赛卡/第六节未改名）→ 本地 `_gen_report.py` 才是最新，**勿用 master 副本覆盖本地**。

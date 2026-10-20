@@ -1,5 +1,18 @@
 # 自动化 b0bc3264 执行记忆（JinBet 每日流水线）
 
+## 2026-10-20（14:00 常规流水线）— 全链跑通，10 场
+**结果**：全链跑通，**10 场**（周二001–010：欧冠 x9 / 英冠 x1；赔率 10/10；无冷启动、无别名行）→ **1 档**：比分精选 6 场、大胆档 4 场；串关 4 组（方向 A/B、信心 A/B、冷门 A/B）。gh-pages 单提交 `8f82b76 → 70013b1`（ls-remote 核验）。master 未动（`0e0f64a`，无脚本改动）。
+- **纯快进**：本地 HEAD `d955d38` 是云端 `8f82b76` 的祖先（云端 3 个 10-19 数据提交）→ `git merge --ff-only`。阻塞：未跟踪 `odds_history/2026-10-11.json`、`results_history/2026-10-12.json` 被入站提交新增 → 备份 `_backup_20261020/pre_merge/` 后 `rm` 再合并。
+- ❗**新踩坑**：`git show master:update_odds_net.py > update_odds_net.py` 在本地 master 对象未 fetch 时报 fatal，但**重定向已把目标截成 0 字节**。正解：先 `git fetch origin master`，再 `git show origin/master:路径`；恢复后与 master 逐字节一致。
+- 步骤0 `[DEDUP-ALIGN]` 生效（235/271 写盘，备份 `_hist_backup_2026-10-20`）；无陈旧 batch；ODDS 3409（更新 3317、新增 0）/ results_data 3498。
+- 步骤2：H2H≥3 0/10、近期 10/10、主客场 10/10、排名 0/10、新闻 0/10；步骤2.5 **欧冠/英冠均无 7M 映射** → league_data 0 联赛（正常，第七节 UNAVAILABLE）。
+- 步骤3 Platt n=**2336**；链路标记齐全（MARKET_BLEND_PROB / SCORE_ALIGN / BRIER_OPT / KALMAN / CLV / DRIFT ON·生效，HEDGE ON·观察）；10 场全算完；首选落位 10/10、快照 vs `_calc_result` 逐场 10/10 一致（003 头条 1:0 与 top_scores[0] 1:1 跨象限属设计）。
+- 步骤4.5 复盘 **10-19（8 场，赛果 8）**：方向 **6/8=75%**、单点 1/8=12%、双档 2/8=25%、至少一项 7/8=88%、λ偏差 **-0.38**。近 10 日累计 λ 偏差 **-0.21**（超 0.2 阈，连续两日同号 -0.43/-0.38）→ **已在回复提示离线重拟合 market_calib/Platt**；方向 10 日 97/157=61.8% 正常。
+- 步骤4.6 **保持默认**：10 旋钮与上一版逐字一致（caps[2.6,3.0,3.0] / degen 0.9 / bd_mt 2 / bd_gap 1 / bd_excl 1 / shift 0 / lean engine）；仅 `_meta` 刷新（days 34→35、tuned_at 10-20、pk 58.57→59.43、bd 24.57→35.43、holdout 16.36→36.82）。内容有变化 → 重跑报告 + 提交 selection_tuning.json。
+- DRIFT_MONITOR 连续第 **29** 日 `league_baselines` 漂移。
+- 根 index.html 无 `data-page-node-id`（未 checkout）；报告与复盘页红线 grep 均 0；索引页插入 10-20 行（10 场 / 欧冠 x9 + 英冠 x1）。
+- 线上核验：报告/复盘/索引/selection_tuning 破缓存全 200。
+
 ## 2026-10-19（14:00 常规流水线）— 全链跑通，8 场
 **结果**：全链跑通，**8 场**（周一001–008：意甲2 / 瑞超1 / 法乙1 / 英超1 / 西甲1 / 葡超1 / 巴甲1；赔率 8/8；无冷启动、无别名行）→ **1 档**：比分精选 6 场、大胆档 2 场（两榜互斥，8−6=2）；串关 3 组（方向 A / 信心 A / 冷门 A·B）。gh-pages 单提交（ls-remote 核验）。master 未动（无脚本改动，云端 `3900af3`）。
 - **纯快进**：本地 HEAD `53a88b4`（「让球盘选取改为概率优先(V3.5)」，已入库）是云端 `a5e125d` 的祖先 → `git merge --ff-only`，无阻塞文件。
