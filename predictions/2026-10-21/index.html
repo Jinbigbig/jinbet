@@ -132,6 +132,21 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .pct-hi  { background:rgba(42,157,143,0.14); color:var(--win,#2a9d8f); }
   .pct-mid { background:rgba(244,162,97,0.16); color:var(--draw,#e76f51); }
   .pct-lo  { background:rgba(128,128,128,0.10); color:var(--muted,#7a8ba0); }
+  /* 今日两榜：列宽按内容分配，与「前日回顾」表的疏密保持一致（编号列不吞富余宽度）；
+     窄屏交回自动布局，避免百分比列把文字压成竖排 */
+  @media (min-width: 760px) {
+    .pick-tbl th:nth-child(1) { width:16%; }
+    .pick-tbl th:nth-child(2) { width:22%; }
+    .pick-tbl th:nth-child(3) { width:10%; }
+    .pick-tbl th:nth-child(4) { width:20%; }
+    .pick-tbl th:nth-child(5) { width:10%; }
+    .pick-tbl th:nth-child(6) { width:12%; }
+    .pick-tbl th:nth-child(7) { width:10%; }
+    .pick-tbl.bold-tbl th:nth-child(3) { width:18%; }
+    .pick-tbl.bold-tbl th:nth-child(4) { width:19%; }
+    .pick-tbl.bold-tbl th:nth-child(5) { width:19%; }
+    .pick-tbl.bold-tbl th:nth-child(6) { width:8%; }
+  }
 </style>
 </head>
 <body>
@@ -141,7 +156,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-10-21 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 13场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-10-21 14:31 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-10-21 14:42 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -159,10 +174,10 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
     本榜与下方「🔥 大胆档」各自独立成榜、同一场次不会重复出现。
   </p>
   <div class="table-wrap">
-    <table>
+    <table class="pick-tbl">
       <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
       <th>±1球</th><th>模型概率</th><th>可信度</th></tr></thead>
-      <tbody><tr><td><span class="tag tag-blue">周三002</span> 日职</td><td>川崎前锋 vs 神户胜利</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">2-2 + 2-1</td><td style="font-family:monospace;">64%</td><td style="font-family:monospace;">14.7%<br><span style="color:var(--muted);font-size:0.7rem;">λ总3.05</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三003</span> 日乙</td><td>大宫松鼠 vs 富山胜利</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">2-2 + 2-1</td><td style="font-family:monospace;">42%</td><td style="font-family:monospace;">8.7%<br><span style="color:var(--muted);font-size:0.7rem;">λ总4.20</span></td><td><span class="tag tag-red">别跟</span></td></tr><tr><td><span class="tag tag-blue">周三005</span> 欧冠</td><td>里尔 vs 加拉塔萨</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 1-0</td><td style="font-family:monospace;">64%</td><td style="font-family:monospace;">10.7%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.85</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三006</span> 西甲</td><td>莱万特 vs 毕尔巴鄂</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-2 + 2-2</td><td style="font-family:monospace;">63%</td><td style="font-family:monospace;">13.2%<br><span style="color:var(--muted);font-size:0.7rem;">λ总3.08</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三009</span> 欧冠</td><td>贝蒂斯 vs 费耶诺德</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">3-1 + 2-0</td><td style="font-family:monospace;">52%</td><td style="font-family:monospace;">10.2%<br><span style="color:var(--muted);font-size:0.7rem;">λ总4.20</span></td><td><span class="tag tag-red">别跟</span></td></tr><tr><td><span class="tag tag-blue">周三013</span> 解放者杯</td><td>帕梅拉斯 vs 弗鲁米嫩</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 2-1</td><td style="font-family:monospace;">51%</td><td style="font-family:monospace;">10.6%<br><span style="color:var(--muted);font-size:0.7rem;">λ总2.87</span></td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
+      <tbody><tr><td><span class="tag tag-blue">周三002</span> 日职</td><td>川崎前锋 vs 神户胜利</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">2-2 + 2-1</td><td style="font-family:monospace;">64%</td><td style="font-family:monospace;">14.7% <span style="color:var(--muted);font-size:0.7rem;">λ总3.05</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三003</span> 日乙</td><td>大宫松鼠 vs 富山胜利</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">2-2 + 2-1</td><td style="font-family:monospace;">42%</td><td style="font-family:monospace;">8.7% <span style="color:var(--muted);font-size:0.7rem;">λ总4.20</span></td><td><span class="tag tag-red">别跟</span></td></tr><tr><td><span class="tag tag-blue">周三005</span> 欧冠</td><td>里尔 vs 加拉塔萨</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 1-0</td><td style="font-family:monospace;">64%</td><td style="font-family:monospace;">10.7% <span style="color:var(--muted);font-size:0.7rem;">λ总2.85</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三006</span> 西甲</td><td>莱万特 vs 毕尔巴鄂</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-2 + 2-2</td><td style="font-family:monospace;">63%</td><td style="font-family:monospace;">13.2% <span style="color:var(--muted);font-size:0.7rem;">λ总3.08</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三009</span> 欧冠</td><td>贝蒂斯 vs 费耶诺德</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">3-1 + 2-0</td><td style="font-family:monospace;">52%</td><td style="font-family:monospace;">10.2% <span style="color:var(--muted);font-size:0.7rem;">λ总4.20</span></td><td><span class="tag tag-red">别跟</span></td></tr><tr><td><span class="tag tag-blue">周三013</span> 解放者杯</td><td>帕梅拉斯 vs 弗鲁米嫩</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-0</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 2-1</td><td style="font-family:monospace;">51%</td><td style="font-family:monospace;">10.6% <span style="color:var(--muted);font-size:0.7rem;">λ总2.87</span></td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
     </table>
   </div>
   <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
@@ -190,7 +205,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
     想搏赔率看这里，跟单仍以稳档为准。档内按比赛编号排列。
   </p>
   <div class="table-wrap">
-    <table>
+    <table class="pick-tbl bold-tbl">
       <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>稳档（头条）</th>
       <th>量级档</th><th>极限档</th><th>λ总</th></tr></thead>
       <tbody><tr><td><span class="tag tag-blue">周三007</span> 欧冠</td><td>皇马 vs 莱红牛</td><td style="font-family:monospace;color:var(--muted);">3-1</td><td style="font-family:monospace;font-weight:700;color:var(--accent3);">3-1 <span class="pct pct-lo">8.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">4-1 <span class="pct pct-lo">6.2%</span></td><td style="font-family:monospace;">3.95</td></tr><tr><td><span class="tag tag-blue">周三008</span> 欧冠</td><td>维拉 vs 维京</td><td style="font-family:monospace;color:var(--muted);">2-0</td><td style="font-family:monospace;font-weight:700;color:var(--accent3);">3-1 <span class="pct pct-lo">8.0%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">4-1 <span class="pct pct-lo">5.8%</span></td><td style="font-family:monospace;">3.67</td></tr><tr><td><span class="tag tag-blue">周三011</span> 欧冠</td><td>里斯本 vs LASK林茨</td><td style="font-family:monospace;color:var(--muted);">2-0</td><td style="font-family:monospace;font-weight:700;color:var(--accent3);">3-1 <span class="pct pct-lo">8.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">4-1 <span class="pct pct-lo">6.5%</span></td><td style="font-family:monospace;">4.13</td></tr><tr><td><span class="tag tag-blue">周三012</span> 欧冠</td><td>布鲁日 vs 朗斯</td><td style="font-family:monospace;color:var(--muted);">2-1</td><td style="font-family:monospace;font-weight:700;color:var(--accent3);">3-1 <span class="pct pct-lo">6.2%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">3-2 <span class="pct pct-lo">5.6%</span></td><td style="font-family:monospace;">4.20</td></tr></tbody>
