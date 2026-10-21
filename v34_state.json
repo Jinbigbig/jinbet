@@ -37,13 +37,13 @@
  },
  "hedge": {
   "weights": {
-   "model": 0.3264,
-   "market": 0.6736
+   "model": 0.3238,
+   "market": 0.6762
   },
   "losses": {
-   "model": 1.07058,
-   "market": 0.94979,
-   "blend": 0.95907,
+   "model": 1.06886,
+   "market": 0.94614,
+   "blend": 0.95582,
    "n": 500
   },
   "w": 0.7,
@@ -54,36 +54,36 @@
  "kalman": {
   "n_teams": 649,
   "applied": true,
-  "mods_non_neutral": 8
+  "mods_non_neutral": 10
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3494,
+  "n_samples": 3508,
   "drift_detected": true,
   "flags": [
    "league_baselines"
   ],
   "detail": {
    "global_goals": {
-    "psi": 0.0006,
-    "ks": 0.0082,
+    "psi": 0.0008,
+    "ks": 0.0089,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
     "psi": 0.0355,
-    "ks": 0.0795,
+    "ks": 0.079,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 5.88,
-    "std_delta_pct": 11.84,
+    "mean_delta_pct": 6.11,
+    "std_delta_pct": 12.55,
     "top3_changed": [
      [
       "亚冠精英",
-      59.83
+      68.91
      ],
      [
       "德国乙级联赛",
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-10-20",
+ "date": "2026-10-21",
  "history": [
   {
    "date": "2026-09-14",
@@ -413,6 +413,16 @@
   },
   {
    "date": "2026-10-20",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-10-21",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
