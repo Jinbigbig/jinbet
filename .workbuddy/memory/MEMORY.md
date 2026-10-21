@@ -46,7 +46,7 @@
 
 ## 三引擎（互不影响）
 - A=_calc_engine（4.1 胜负/4.4 让球/4.5 冷门）；B=score_engine（4.2 比分，prob_temp=1.20、market_mix=0.70 勿降）；C=selection_algo（4.x 两档）；另 4.3 进球/4.6 大比分。
-- 可信度词表统一 **可用/慎用/别跟**；让球分级唯一实现 `rq_grade(ev,conf)`。
+- 可信度词表统一 **可用/慎用/别跟**；让球分级唯一实现 `rq_grade(prob,conf)`（≥50% 且置信非低 可用 / ≥42% 慎用 / 其余别跟；旧 EV 口径已废）。回顾表用 `_rq_grade/_rq_tag/_rq_cell`，阈值必须与之逐条一致；快照无 rq 置信度字段 → `_rq_conf_of(hc)` 按 |让球| 还原（1 高 / 2 中 / ≥3 低）。
 - **概率数字唯一渲染器 = `_conf_tag(p, nd=1)` → `<span class="pct pct-hi|pct-mid|pct-lo">`**（≥60 绿 / 45~60 橙 / <45 灰，同一字形字号内边距）。`_gen_report.py` 里**禁止**再手写裸百分比 span（`style="font-family:monospace;color:var(--muted);">…%`）——2026-10-21 前同一列出现「有框 tag / 裸灰字」混排（006 的 40.5% vs 069 的 66.9%），已在回顾区、4.1/4.2/4.3 表、当天双榜全部统一。`_conf_tag`/`_conf_bucket`/`_conf_split`/`_star_txt` 必须定义在 `build_league_sec` **之前**（模块级调用点在 1900 行附近，定义晚了会 NameError）。
 - 红线：公开页 grep「用户|你说|定调|目标函数|口径一致性|偏差归因|probe|χ²|Brier|argmax|McNemar」须空。
 
