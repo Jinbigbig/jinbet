@@ -493,3 +493,7 @@
 - 交付：uefa_standings.json + _fetch_uefa_standings.py（失败保留原文件；master 正本 fetch_uefa_standings.py）+ _gen_report.py 四级榜源链（7M→腾讯→Fox→UEFA）+ 欧协联分区配色/图例/关键线/赛制 note。逐场榜位验证：阿贾克斯25/亚特兰大4/摩纳哥9/弗赖堡7。
 - 顺带修：腾讯法甲 ID 18→24（全扫描实证）。gh-pages d8f736a、master fbcdd6f 均核验。
 - **后续运维**：uefa.com 直连大概率持续超时 → 欧协联有比赛的当日，用 WebFetch 抓官方页核对/更新 uefa_standings.json（脚本失败时文件不动，数据可能滞后一轮）。
+
+## 2026-10-22（15:25 追加任务）— 半全场预测常态化
+- 用户要求「进球数下方加半全场，模式与其他预测一致，后续都进行」。已固化：引擎 `htft_analysis`（半场λ=全场×0.45，独立泊松 9 格，纯模型），每场 `htft` 字段+快照追踪；报告卡片「半全场」行（top3+半场倾向）+ 4.3 表末列。
+- 提交：gh-pages 73eb879、master b06d8e0（calc_engine.py 正本）。后续每日流水线自动包含，无需额外步骤。
