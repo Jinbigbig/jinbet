@@ -171,7 +171,12 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .form-tbl { width:100%; font-size:0.78rem; }
   .form-tbl td, .form-tbl th { padding:0.26rem 0.3rem; }
   .form-empty { font-size:0.78rem; color:var(--muted,#7a8ba0); margin:0.2rem 0 0; }
-  @media (max-width: 640px) { .form-grid { grid-template-columns:1fr; } }
+  @media (max-width: 640px) {
+    /* 1fr 的 min-content 下限会让 4 列战绩表把卡片撑破 */
+    .form-grid { grid-template-columns: minmax(0, 1fr); }
+    .form-block { overflow-x: auto; }
+    .form-tbl th, .form-tbl td { padding: 0.2rem 0.2rem; font-size: 0.72rem; }
+  }
   /* 形势分析：本场三种结果对积分榜的影响 */
   .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
     border-left:2px solid rgba(52,122,252,0.35); }
@@ -263,7 +268,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-10-21 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 13场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-10-22 10:58 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-10-22 11:07 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -374,7 +379,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">东京FC</span>
+    <span class="home">东京FC<sub class="team-rank">联赛第3</sub></span>
     <span class="vs">VS</span>
     <span class="away">柏太阳神<sub class="team-rank">联赛第5</sub></span>
   </div>
@@ -385,16 +390,16 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.22</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 日职</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>东京FC</th><th>柏太阳神</th></tr></thead><tbody><tr><td>名次</td><td><b>第 3</b></td><td><b>第 5</b></td></tr><tr><td>积分</td><td>23 分</td><td>21 分</td></tr><tr><td>场次</td><td>10</td><td>10</td></tr><tr><td>战绩</td><td>7胜2平1负</td><td>7胜0平3负</td></tr><tr><td>进/失</td><td>21/8（净 +13）</td><td>22/17（净 +5）</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 日职</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">第5 / 日职</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">4.00 球</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">3-1</td><td>主胜</td></tr></tbody></table></div>
+  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">3-1</td><td>主胜</td></tr></tbody></table></div><h4>近期战绩 · 日职</h4><div class="form-grid"><div class="form-block"><div class="form-title">东京FC</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>东京FC</b> vs 柏太阳神</td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-12</td><td class="cell-left">大阪钢巴 vs <b>东京FC</b></td><td style="font-family:monospace;">0-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-06</td><td class="cell-left"><b>东京FC</b> vs 京都</td><td style="font-family:monospace;">2-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-21</td><td class="cell-left">千叶市原 vs <b>东京FC</b></td><td style="font-family:monospace;">0-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left"><b>东京FC</b> vs 神户胜利</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div><div class="form-block"><div class="form-title">柏太阳神</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">东京FC vs <b>柏太阳神</b></td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-17</td><td class="cell-left"><b>柏太阳神</b> vs 名古屋鲸</td><td style="font-family:monospace;">1-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-09</td><td class="cell-left"><b>柏太阳神</b> vs 神户胜利</td><td style="font-family:monospace;">4-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-20</td><td class="cell-left">町田泽维 vs <b>柏太阳神</b></td><td style="font-family:monospace;">2-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-11</td><td class="cell-left">京都 vs <b>柏太阳神</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   
@@ -433,12 +438,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.83:1.42）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.83:1.42）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">67.6%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -452,7 +457,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.81，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.81，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -488,16 +493,16 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.45</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 日职</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>川崎前锋</th><th>神户胜利</th></tr></thead><tbody><tr><td>名次</td><td><b>第 7</b></td><td><b>第 4</b></td></tr><tr><td>积分</td><td>16 分</td><td>22 分</td></tr><tr><td>场次</td><td>10</td><td>10</td></tr><tr><td>战绩</td><td>4胜4平2负</td><td>7胜1平2负</td></tr><tr><td>进/失</td><td>21/16（净 +5）</td><td>17/9（净 +8）</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">第7 / 日职</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">第4 / 日职</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>日职</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">川崎前锋 · 日职近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>川崎前锋</b> vs 神户胜利</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-11</td><td class="cell-left"><b>川崎前锋</b> vs 名古屋鲸</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-02</td><td class="cell-left"><b>川崎前锋</b> vs 町田泽维</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-09</td><td class="cell-left"><b>川崎前锋</b> vs 东京绿茵</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left">广岛三箭 vs <b>川崎前锋</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">神户胜利 · 日职近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">川崎前锋 vs <b>神户胜利</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-09</td><td class="cell-left">柏太阳神 vs <b>神户胜利</b></td><td style="font-family:monospace;">4-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-20</td><td class="cell-left">大阪钢巴 vs <b>神户胜利</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left">东京FC vs <b>神户胜利</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left"><b>神户胜利</b> vs 鹿岛鹿角</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 日职</h4><div class="form-grid"><div class="form-block"><div class="form-title">川崎前锋</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>川崎前锋</b> vs 神户胜利</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-11</td><td class="cell-left"><b>川崎前锋</b> vs 名古屋鲸</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-02</td><td class="cell-left"><b>川崎前锋</b> vs 町田泽维</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-09</td><td class="cell-left"><b>川崎前锋</b> vs 东京绿茵</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left">广岛三箭 vs <b>川崎前锋</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">神户胜利</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">川崎前锋 vs <b>神户胜利</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-09</td><td class="cell-left">柏太阳神 vs <b>神户胜利</b></td><td style="font-family:monospace;">4-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-20</td><td class="cell-left">大阪钢巴 vs <b>神户胜利</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left">东京FC vs <b>神户胜利</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left"><b>神户胜利</b> vs 鹿岛鹿角</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   
@@ -525,7 +530,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">1-1</span>
-      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 12.6%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在主胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 12.6%）<br><span style="font-size:0.78rem;color:var(--muted);">注：首选比分不在主胜方向内，双档已覆盖两者。</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -536,12 +541,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.49:1.48）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.49:1.48）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">71.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -555,7 +560,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-yellow">慎用</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.05，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.05，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -591,16 +596,16 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.99</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 日乙</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>大宫松鼠</th><th>富山胜利</th></tr></thead><tbody><tr><td>名次</td><td><b>第 2</b></td><td><b>第 4</b></td></tr><tr><td>积分</td><td>20 分</td><td>19 分</td></tr><tr><td>场次</td><td>11</td><td>11</td></tr><tr><td>战绩</td><td>5胜5平1负</td><td>5胜4平2负</td></tr><tr><td>进/失</td><td>21/11（净 +10）</td><td>20/11（净 +9）</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">第2 / 日乙</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">第4 / 日乙</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>日乙</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">大宫松鼠 · 日乙近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>大宫松鼠</b> vs 富山胜利</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>大宫松鼠</b> vs 甲府风林</td><td style="font-family:monospace;">5-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-19</td><td class="cell-left">藤枝MYFC vs <b>大宫松鼠</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-29</td><td class="cell-left">湘南海洋 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-08</td><td class="cell-left">新潟天鹅 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">富山胜利 · 日乙近 3 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">大宫松鼠 vs <b>富山胜利</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>富山胜利</b> vs 横滨FC</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left"><b>富山胜利</b> vs 秋田闪电</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 日乙</h4><div class="form-grid"><div class="form-block"><div class="form-title">大宫松鼠</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>大宫松鼠</b> vs 富山胜利</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>大宫松鼠</b> vs 甲府风林</td><td style="font-family:monospace;">5-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-19</td><td class="cell-left">藤枝MYFC vs <b>大宫松鼠</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-29</td><td class="cell-left">湘南海洋 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-08</td><td class="cell-left">新潟天鹅 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">富山胜利</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">大宫松鼠 vs <b>富山胜利</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>富山胜利</b> vs 横滨FC</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left"><b>富山胜利</b> vs 秋田闪电</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   
@@ -628,7 +633,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">1-1</span>
-      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 12.2%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在主胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 12.2%）<br><span style="font-size:0.78rem;color:var(--muted);">注：首选比分不在主胜方向内，双档已覆盖两者。</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -639,12 +644,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.84:1.48）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.84:1.48）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">64.4%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -658,7 +663,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -683,9 +688,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">科莫</span>
+    <span class="home">科莫<sub class="team-rank">第9</sub></span>
     <span class="vs">VS</span>
-    <span class="away">曼联</span>
+    <span class="away">曼联<sub class="team-rank">第21</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -694,16 +699,16 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.7</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>科莫</th><th>曼联</th></tr></thead><tbody><tr><td>名次</td><td><b>第 9</b></td><td><b>第 21</b></td></tr><tr><td>积分</td><td>6 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>2胜0平1负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">科莫 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">费耶诺德 vs <b>科莫</b></td><td style="font-family:monospace;">3-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>科莫</b> vs 莱红牛</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">曼联 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">马竞 vs <b>曼联</b></td><td style="font-family:monospace;">2-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>曼联</b> vs 萨巴赫</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">科莫</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">费耶诺德 vs <b>科莫</b></td><td style="font-family:monospace;">3-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>科莫</b> vs 莱红牛</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">曼联</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">马竞 vs <b>曼联</b></td><td style="font-family:monospace;">2-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>曼联</b> vs 萨巴赫</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>科莫 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Butez、3 Valle、4 Ramón、2 Kempf、27 Couto、6 Milla、5 Perrone、20 Baturina、10 Paz、7 da Cunha、9 Douvikas</div></details><details class="inj-xi"><summary>曼联 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Lammens、3 Mazraoui、4 de Ligt、5 Maguire、2 Dalot、18 Tielemans、17 Santos、7 Mount、8 Fernandes、10 Cunha、19 Mbeumo</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -731,7 +736,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">1-1</span>
-      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 11.7%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在主胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 11.7%）<br><span style="font-size:0.78rem;color:var(--muted);">注：首选比分不在主胜方向内，双档已覆盖两者。</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -742,12 +747,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.77:1.56）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.77:1.56）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">65.4%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -761,7 +766,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.83，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.83，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -786,9 +791,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">里尔</span>
+    <span class="home">里尔<sub class="team-rank">第35</sub></span>
     <span class="vs">VS</span>
-    <span class="away">加拉塔萨</span>
+    <span class="away">加拉塔萨<sub class="team-rank">第23</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -797,26 +802,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.25</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>里尔</th><th>加拉塔萨</th></tr></thead><tbody><tr><td>名次</td><td><b>第 35</b></td><td><b>第 23</b></td></tr><tr><td>积分</td><td>0 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>0胜0平3负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>里尔</th><th>加拉塔萨</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>里尔（法国）</th>
+      <th>加拉塔萨（土耳其）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>近10季欧冠正赛</td><td>3</td><td style="color:var(--muted);">-</td></tr><tr><td>洲际冠军合计</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>本国联赛冠军</td><td>4</td><td style="color:var(--muted);">-</td></tr><tr><td>底蕴定位</td><td>中坚力量</td><td>-</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">里尔：法甲4冠，近年偶入欧冠
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">里尔：法甲4冠，近年偶入欧冠</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">里尔 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">阿森纳 vs <b>里尔</b></td><td style="font-family:monospace;">3-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>里尔</b> vs 贝蒂斯</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">加拉塔萨 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>加拉塔萨</b> vs 巴萨</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">里斯本 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-18</td><td class="cell-left"><b>加拉塔萨</b> vs 利物浦</td><td style="font-family:monospace;">0-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-10</td><td class="cell-left">利物浦 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-25</td><td class="cell-left"><b>加拉塔萨</b> vs 尤文图斯</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">里尔</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">阿森纳 vs <b>里尔</b></td><td style="font-family:monospace;">3-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>里尔</b> vs 贝蒂斯</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">加拉塔萨</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>加拉塔萨</b> vs 巴萨</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">里斯本 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-18</td><td class="cell-left"><b>加拉塔萨</b> vs 利物浦</td><td style="font-family:monospace;">0-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-10</td><td class="cell-left">利物浦 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-25</td><td class="cell-left"><b>加拉塔萨</b> vs 尤文图斯</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>里尔 首发（4-3-3）</summary><div class="inj-xi-in">1 Özer、24 Verdonk、4 Alexsandro、3 Ngoy、38 Goffi、21 André、6 Bentaleb、17 Mukau、35 Diaoune、10 Haraldsson、7 Bakwa</div></details><details class="inj-xi"><summary>加拉塔萨 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Çakır、4 Jakobs、42 Bardakcı、6 Sánchez、7 Sallai、8 Sara、34 Torreira、53 Yılmaz、83 Batrakov、11 Akgün、45 Osimhen</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -855,12 +860,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.69:1.22｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.69:1.22｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">69.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -874,7 +879,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-yellow">慎用</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.85，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -910,16 +915,16 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">1.86</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 西甲</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>莱万特</th><th>毕尔巴鄂</th></tr></thead><tbody><tr><td>名次</td><td><b>第 17</b></td><td><b>第 11</b></td></tr><tr><td>积分</td><td>7 分</td><td>9 分</td></tr><tr><td>场次</td><td>8</td><td>7</td></tr><tr><td>战绩</td><td>1胜4平3负</td><td>2胜3平2负</td></tr><tr><td>进/失</td><td>12/16（净 -4）</td><td>7/6（净 +1）</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">第17 / 西甲</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">第11 / 西甲</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">6.00 球</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--loss);">2-4</td><td>客胜</td></tr></tbody></table></div>
+  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--loss);">2-4</td><td>客胜</td></tr></tbody></table></div><h4>近期战绩 · 西甲</h4><div class="form-grid"><div class="form-block"><div class="form-title">莱万特</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-16</td><td class="cell-left">拉科 vs <b>莱万特</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-12</td><td class="cell-left"><b>莱万特</b> vs 塞维利亚</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-20</td><td class="cell-left">比利亚雷 vs <b>莱万特</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-13</td><td class="cell-left"><b>莱万特</b> vs 巴萨</td><td style="font-family:monospace;">2-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-06</td><td class="cell-left">马拉加 vs <b>莱万特</b></td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div><div class="form-block"><div class="form-title">毕尔巴鄂</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-17</td><td class="cell-left">巴伦西亚 vs <b>毕尔巴鄂</b></td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-19</td><td class="cell-left"><b>毕尔巴鄂</b> vs 阿拉维斯</td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-12</td><td class="cell-left"><b>毕尔巴鄂</b> vs 埃尔切</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-05</td><td class="cell-left"><b>毕尔巴鄂</b> vs 马竞</td><td style="font-family:monospace;">3-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-30</td><td class="cell-left"><b>毕尔巴鄂</b> vs 塞尔塔</td><td style="font-family:monospace;">2-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>莱万特 预计首发（4-3-3）</summary><div class="inj-xi-in">13 Ryan、23 Sánchez、3 Ndukwe、4 Dela、29 Pérez、18 Bardeli、20 Rey、8 Olasagasti、24 Fernández、9 Romero、27 Cortés</div></details><details class="inj-xi"><summary>毕尔巴鄂 预计首发（4-2-3-1）</summary><div class="inj-xi-in">1 Simón、17 Yuri、14 Laporte、4 Paredes、31 Louis-Jean、18 Jauregizar、16 de Galarreta、7 Berenguer、8 Sancet、23 Navarro、21 Sannadi</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -947,7 +952,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">1-1</span>
-      <span class="pred-value">（客胜倾向｜<b>首选比分</b>｜模型给该比分 14.1%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在客胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+      <span class="pred-value">（客胜倾向｜<b>首选比分</b>｜模型给该比分 14.1%）<br><span style="font-size:0.78rem;color:var(--muted);">注：首选比分不在客胜方向内，双档已覆盖两者。</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -958,12 +963,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">1-2</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.22:1.81）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.22:1.81）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">75.3%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -977,7 +982,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-yellow">慎用</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.08，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.08，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1002,9 +1007,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">皇马</span>
+    <span class="home">皇马<sub class="team-rank">第4</sub></span>
     <span class="vs">VS</span>
-    <span class="away">莱红牛</span>
+    <span class="away">莱红牛<sub class="team-rank">第30</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1013,26 +1018,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">9.8</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>皇马</th><th>莱红牛</th></tr></thead><tbody><tr><td>名次</td><td><b>第 4</b></td><td><b>第 30</b></td></tr><tr><td>积分</td><td>9 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>3胜0平0负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>皇马</th><th>莱红牛</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>皇马（西班牙）</th>
+      <th>莱红牛（德国）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td>15</td><td style="color:var(--muted);">-</td></tr><tr><td>近10季欧冠正赛</td><td>10</td><td style="color:var(--muted);">-</td></tr><tr><td>洲际冠军合计</td><td>15</td><td style="color:var(--muted);">-</td></tr><tr><td>本国联赛冠军</td><td>36</td><td style="color:var(--muted);">-</td></tr><tr><td>底蕴定位</td><td>顶级豪门</td><td>-</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">皇马：欧冠15冠历史第一，近10季全勤
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">皇马：欧冠15冠历史第一，近10季全勤</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">皇马 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">罗马 vs <b>皇马</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>皇马</b> vs 国际米兰</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>皇马</b> vs 拜仁</td><td style="font-family:monospace;">3-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">拜仁 vs <b>皇马</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left"><b>皇马</b> vs 曼城</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">莱红牛 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>莱红牛</b> vs 埃因霍温</td><td style="font-family:monospace;">1-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">科莫 vs <b>莱红牛</b></td><td style="font-family:monospace;">4-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">皇马</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">罗马 vs <b>皇马</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>皇马</b> vs 国际米兰</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>皇马</b> vs 拜仁</td><td style="font-family:monospace;">3-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">拜仁 vs <b>皇马</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left"><b>皇马</b> vs 曼城</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">莱红牛</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>莱红牛</b> vs 埃因霍温</td><td style="font-family:monospace;">1-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">科莫 vs <b>莱红牛</b></td><td style="font-family:monospace;">4-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>皇马 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Courtois、18 Carreras、22 Rüdiger、4 Huijsen、8 Valverde、20 Silva、6 Camavinga、7 Vinicius、5 Bellingham、15 Güler、10 Mbappé</div></details><details class="inj-xi"><summary>莱红牛 首发（4-2-3-1）</summary><div class="inj-xi-in">26 Vandevoordt、22 Raum、23 Lukeba、4 Orban、17 Baku、13 Seiwald、21 El Aynaoui、7 Nusa、28 Nkunku、10 Gruda、40 Rômulo</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1071,12 +1076,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">3-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（3.04:0.82｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（3.04:0.82｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">63.4%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1090,7 +1095,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.95，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.95，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1115,9 +1120,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">维拉</span>
+    <span class="home">维拉<sub class="team-rank">第2</sub></span>
     <span class="vs">VS</span>
-    <span class="away">维京</span>
+    <span class="away">维京<sub class="team-rank">第33</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1126,26 +1131,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">11</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>维拉</th><th>维京</th></tr></thead><tbody><tr><td>名次</td><td><b>第 2</b></td><td><b>第 33</b></td></tr><tr><td>积分</td><td>9 分</td><td>1 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>3胜0平0负</td><td>0胜1平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>维拉</th><th>维京</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>维拉（英格兰）</th>
+      <th>维京（挪威）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td>1</td><td style="color:var(--muted);">-</td></tr><tr><td>近10季欧冠正赛</td><td>1</td><td style="color:var(--muted);">-</td></tr><tr><td>洲际冠军合计</td><td>1</td><td style="color:var(--muted);">-</td></tr><tr><td>本国联赛冠军</td><td>7</td><td style="color:var(--muted);">-</td></tr><tr><td>底蕴定位</td><td>中坚力量</td><td>-</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">维拉：1982欧冠冠军，重返欧冠
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">维拉：1982欧冠冠军，重返欧冠</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">维拉 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>维拉</b> vs 费内巴切</td><td style="font-family:monospace;">6-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">布鲁日 vs <b>维拉</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">维京 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>维京</b> vs 拜仁</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">斯图加特 vs <b>维京</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-26</td><td class="cell-left">萨迪纳摩 vs <b>维京</b></td><td style="font-family:monospace;">1-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-18</td><td class="cell-left"><b>维京</b> vs 萨迪纳摩</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">07-14</td><td class="cell-left"><b>维京</b> vs 杰尔</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">维拉</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>维拉</b> vs 费内巴切</td><td style="font-family:monospace;">6-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">布鲁日 vs <b>维拉</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">维京</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>维京</b> vs 拜仁</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">斯图加特 vs <b>维京</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-26</td><td class="cell-left">萨迪纳摩 vs <b>维京</b></td><td style="font-family:monospace;">1-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-18</td><td class="cell-left"><b>维京</b> vs 萨迪纳摩</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">07-14</td><td class="cell-left"><b>维京</b> vs 杰尔</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>维拉 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Suzuki、5 Mings、14 Torres、3 Lindelöf、35 Gomes、6 Barkley、7 McGinn、19 Mbaye、10 Buendía、47 Edward、11 Jackson</div></details><details class="inj-xi"><summary>维京 首发（4-3-3）</summary><div class="inj-xi-in">1 Østbø、5 Heggheim、6 Stensness、27 Daland、2 Haugen、29 Moi、8 Bell、7 Askildsen、10 Tripić、22 Botheim、20 Christiansen</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1184,12 +1189,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">3-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.83:0.69｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.83:0.69｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">54.0%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1203,7 +1208,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.67，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 3.67，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1228,9 +1233,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">贝蒂斯</span>
+    <span class="home">贝蒂斯<sub class="team-rank">第5</sub></span>
     <span class="vs">VS</span>
-    <span class="away">费耶诺德</span>
+    <span class="away">费耶诺德<sub class="team-rank">第26</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1239,26 +1244,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">5.17</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>贝蒂斯</th><th>费耶诺德</th></tr></thead><tbody><tr><td>名次</td><td><b>第 5</b></td><td><b>第 26</b></td></tr><tr><td>积分</td><td>9 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>3胜0平0负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">3.00 球</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>贝蒂斯</th><th>费耶诺德</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>贝蒂斯（西班牙）</th>
+      <th>费耶诺德（荷兰）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>近10季欧冠正赛</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>洲际冠军合计</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>本国联赛冠军</td><td>1</td><td style="color:var(--muted);">-</td></tr><tr><td>底蕴定位</td><td>中坚力量</td><td>-</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">贝蒂斯：西甲1冠，欧冠正赛新军
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">贝蒂斯：西甲1冠，欧冠正赛新军</p>
 
-  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr></tbody></table></div>
+  <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr></tbody></table></div><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">贝蒂斯</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>贝蒂斯</b> vs 波尔图</td><td style="font-family:monospace;">3-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">里尔 vs <b>贝蒂斯</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">费耶诺德</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>费耶诺德</b> vs 科莫</td><td style="font-family:monospace;">3-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">巴萨 vs <b>费耶诺德</b></td><td style="font-family:monospace;">5-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>贝蒂斯 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Vallés、11 García、4 Natan、5 Bartra、2 Bellerín、21 Roca、8 Fornals、10 Ezzalzouli、22 Isco、7 Antony、19 Parrott</div></details><details class="inj-xi"><summary>费耶诺德 首发（4-3-3）</summary><div class="inj-xi-in">1 Ernst、16 López、35 Mármol、6 St. Juste、26 Read、28 Targhalline、34 Vanhoutte、8 Zechiël、10 Valente、19 Ferri、23 Hadj Moussa</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1297,12 +1302,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">3-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.66:1.34｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.66:1.34｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">63.7%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1316,7 +1321,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1341,9 +1346,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">拜仁</span>
+    <span class="home">拜仁<sub class="team-rank">第14</sub></span>
     <span class="vs">VS</span>
-    <span class="away">阿森纳</span>
+    <span class="away">阿森纳<sub class="team-rank">第7</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1352,26 +1357,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.28</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>拜仁</th><th>阿森纳</th></tr></thead><tbody><tr><td>名次</td><td><b>第 14</b></td><td><b>第 7</b></td></tr><tr><td>积分</td><td>5 分</td><td>7 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>1胜2平0负</td><td>2胜1平0负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>拜仁</th><th>阿森纳</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>拜仁（德国）</th>
+      <th>阿森纳（英格兰）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td style="color:var(--muted);">-</td><td>0</td></tr><tr><td>近10季欧冠正赛</td><td style="color:var(--muted);">-</td><td>4</td></tr><tr><td>洲际冠军合计</td><td style="color:var(--muted);">-</td><td>1</td></tr><tr><td>本国联赛冠军</td><td style="color:var(--muted);">-</td><td>14</td></tr><tr><td>底蕴定位</td><td>-</td><td>顶级豪门</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">阿森纳：14次英格兰顶级联赛冠军
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">阿森纳：14次英格兰顶级联赛冠军</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">拜仁 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">维京 vs <b>拜仁</b></td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>拜仁</b> vs 博德闪耀</td><td style="font-family:monospace;">5-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-06</td><td class="cell-left">巴黎圣曼 vs <b>拜仁</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-28</td><td class="cell-left"><b>拜仁</b> vs 巴黎圣曼</td><td style="font-family:monospace;">4-5</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left">皇马 vs <b>拜仁</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">阿森纳 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>阿森纳</b> vs 里尔</td><td style="font-family:monospace;">3-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">那不勒斯 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-30</td><td class="cell-left"><b>阿森纳</b> vs 巴黎圣曼</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-05</td><td class="cell-left">马竞 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-29</td><td class="cell-left"><b>阿森纳</b> vs 马竞</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">拜仁</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">维京 vs <b>拜仁</b></td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>拜仁</b> vs 博德闪耀</td><td style="font-family:monospace;">5-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-06</td><td class="cell-left">巴黎圣曼 vs <b>拜仁</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-28</td><td class="cell-left"><b>拜仁</b> vs 巴黎圣曼</td><td style="font-family:monospace;">4-5</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left">皇马 vs <b>拜仁</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">阿森纳</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>阿森纳</b> vs 里尔</td><td style="font-family:monospace;">3-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">那不勒斯 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-30</td><td class="cell-left"><b>阿森纳</b> vs 巴黎圣曼</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-05</td><td class="cell-left">马竞 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-29</td><td class="cell-left"><b>阿森纳</b> vs 马竞</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>拜仁 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Neuer、44 Stanisic、3 Kim、2 Upamecano、27 Laimer、8 Bischof、45 Pavlović、19 Davies、34 Saibari、7 Gnabry、9 Kane</div></details><details class="inj-xi"><summary>阿森纳 首发（4-3-3）</summary><div class="inj-xi-in">1 Raya、33 Calafiori、6 Gabriel、15 Konsa、12 Timber、39 Guimarães、41 Rice、8 Ødegaard、20 Madueke、29 Havertz、7 Saka</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1399,7 +1404,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">比分预测:</span>
       <span class="pred-score">1-2</span>
-      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 8.4%）<br><span style="font-size:0.78rem;color:var(--muted);">注：该首选比分不在主胜象限内 —— 方向概率最高的象限与单格概率最高的比分未必一致，双档已一并覆盖两者。</span></span>
+      <span class="pred-value">（主胜倾向｜<b>首选比分</b>｜模型给该比分 8.4%）<br><span style="font-size:0.78rem;color:var(--muted);">注：首选比分不在主胜方向内，双档已覆盖两者。</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分双档:</span>
@@ -1410,12 +1415,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.85:1.49）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.85:1.49）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">66.0%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1429,7 +1434,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1454,9 +1459,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">里斯本</span>
+    <span class="home">里斯本<sub class="team-rank">第12</sub></span>
     <span class="vs">VS</span>
-    <span class="away">LASK林茨</span>
+    <span class="away">LASK林茨<sub class="team-rank">第24</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1465,26 +1470,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">11.4674</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>里斯本</th><th>LASK林茨</th></tr></thead><tbody><tr><td>名次</td><td><b>第 12</b></td><td><b>第 24</b></td></tr><tr><td>积分</td><td>6 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>2胜0平1负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>里斯本</th><th>LASK林茨</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>里斯本（葡萄牙）</th>
+      <th>LASK林茨（奥地利）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td style="color:var(--muted);">-</td><td>0</td></tr><tr><td>近10季欧冠正赛</td><td style="color:var(--muted);">-</td><td>0</td></tr><tr><td>洲际冠军合计</td><td style="color:var(--muted);">-</td><td>0</td></tr><tr><td>本国联赛冠军</td><td style="color:var(--muted);">-</td><td>2</td></tr><tr><td>底蕴定位</td><td>-</td><td>底蕴薄弱</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">LASK林茨：奥甲2冠，欧战新面孔
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">LASK林茨：奥甲2冠，欧战新面孔</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">里斯本 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">朗斯 vs <b>里斯本</b></td><td style="font-family:monospace;">0-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left"><b>里斯本</b> vs 加拉塔萨</td><td style="font-family:monospace;">3-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>里斯本</b> vs 阿森纳</td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">阿森纳 vs <b>里斯本</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left">博德闪耀 vs <b>里斯本</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">LASK林茨 · 欧冠近 4 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>LASK林茨</b> vs 利物浦</td><td style="font-family:monospace;">3-6</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">雅典AEK vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-25</td><td class="cell-left">凯尔特人 vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-19</td><td class="cell-left"><b>LASK林茨</b> vs 凯尔特人</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">里斯本</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">朗斯 vs <b>里斯本</b></td><td style="font-family:monospace;">0-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left"><b>里斯本</b> vs 加拉塔萨</td><td style="font-family:monospace;">3-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>里斯本</b> vs 阿森纳</td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">阿森纳 vs <b>里斯本</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left">博德闪耀 vs <b>里斯本</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">LASK林茨</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>LASK林茨</b> vs 利物浦</td><td style="font-family:monospace;">3-6</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">雅典AEK vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-25</td><td class="cell-left">凯尔特人 vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-19</td><td class="cell-left"><b>LASK林茨</b> vs 凯尔特人</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>里斯本 首发（4-3-3）</summary><div class="inj-xi-in">30 Kaique、20 Araújo、25 Inácio、72 Quaresma、22 Fresneda、8 Simões、5 Altimira、77 Doumbia、19 Irankunda、97 Suárez、10 Catamo</div></details><details class="inj-xi"><summary>LASK林茨 首发（5-4-1）</summary><div class="inj-xi-in">1 Jungwirth、25 Dibango、16 Andrade、43 Alemão、4 Mbuyamba、20 Jørgensen、27 Lang、30 Horvath、10 Ljubičić、9 Daněk、11 Kalajdzic</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1523,12 +1528,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">3-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.90:0.72｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.90:0.72｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">53.8%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1542,7 +1547,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.13，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.13，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1567,9 +1572,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">布鲁日</span>
+    <span class="home">布鲁日<sub class="team-rank">第11</sub></span>
     <span class="vs">VS</span>
-    <span class="away">朗斯</span>
+    <span class="away">朗斯<sub class="team-rank">第27</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1578,26 +1583,26 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.32</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 欧冠</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>布鲁日</th><th>朗斯</th></tr></thead><tbody><tr><td>名次</td><td><b>第 11</b></td><td><b>第 27</b></td></tr><tr><td>积分</td><td>6 分</td><td>3 分</td></tr><tr><td>场次</td><td>3</td><td>3</td></tr><tr><td>战绩</td><td>2胜0平1负</td><td>1胜0平2负</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 欧冠</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 欧冠</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
 
   
-  <h4>历史底蕴对比（欧冠/欧战场次，突出欧战荣誉）</h4>
+  <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>布鲁日</th><th>朗斯</th></tr></thead>
+      <thead><tr><th>荣誉维度</th><th>布鲁日（比利时）</th>
+      <th>朗斯（法国）</th></tr></thead>
       <tbody><tr><td>欧冠冠军</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>近10季欧冠正赛</td><td>10</td><td style="color:var(--muted);">-</td></tr><tr><td>洲际冠军合计</td><td>0</td><td style="color:var(--muted);">-</td></tr><tr><td>本国联赛冠军</td><td>20</td><td style="color:var(--muted);">-</td></tr><tr><td>底蕴定位</td><td>中坚力量</td><td>-</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">布鲁日：比甲豪门，欧冠正赛常客
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">布鲁日：比甲豪门，欧冠正赛常客</p>
 
-  <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">布鲁日 · 欧冠近 4 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">国际米兰 vs <b>布鲁日</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>布鲁日</b> vs 维拉</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-24</td><td class="cell-left"><b>布鲁日</b> vs 马竞</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">01-20</td><td class="cell-left"><b>布鲁日</b> vs 阿拉木图</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">朗斯 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>朗斯</b> vs 里斯本</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">斯拉维亚 vs <b>朗斯</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
+  <h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p><h4>近期战绩 · 欧冠</h4><div class="form-grid"><div class="form-block"><div class="form-title">布鲁日</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">国际米兰 vs <b>布鲁日</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>布鲁日</b> vs 维拉</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-24</td><td class="cell-left"><b>布鲁日</b> vs 马竞</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">01-20</td><td class="cell-left"><b>布鲁日</b> vs 阿拉木图</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">朗斯</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>朗斯</b> vs 里斯本</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">斯拉维亚 vs <b>朗斯</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   <div class="inj-block"><details class="inj-xi"><summary>布鲁日 首发（4-2-3-1）</summary><div class="inj-xi-in">1 Sommer、65 Seys、44 Mechele、58 Spileers、64 Sabbe、20 Vanaken、8 Potts、11 Virgili、80 Lemaréchal、9 Forbs、7 Tresoldi</div></details><details class="inj-xi"><summary>朗斯 首发（3-4-2-1）</summary><div class="inj-xi-in">40 Risser、14 Udol、6 Baidoo、2 Aguilar、22 Skóraś、21 Haidara、27 Cuisance、23 Abdulhamid、28 Kadile、9 Hazard、29 Ivanović</div></details><div class="inj-src">伤停与阵容：Lineups Today 赛前名单 ｜ 更新 2026-10-22 10:58</div></div>
@@ -1636,12 +1641,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.46:1.83）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（2.46:1.83）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">59.1%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1655,7 +1660,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-red">别跟</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 4.20，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1680,9 +1685,9 @@ window.addEventListener('resize', function() { chart.resize(); });
   </div>
 
   <div class="match-teams">
-    <span class="home">帕梅拉斯</span>
+    <span class="home">帕梅拉斯<sub class="team-rank">第2</sub></span>
     <span class="vs">VS</span>
-    <span class="away">弗鲁米嫩</span>
+    <span class="away">弗鲁米嫩<sub class="team-rank">第2</sub></span>
   </div>
 
   <div class="odds-grid">
@@ -1691,10 +1696,10 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">4.15</div></div>
   </div>
 
-  <h4>积分排名与形势</h4>
+  <h4>积分排名 · 解放者杯</h4>
+  <div class="table-wrap"><table class="history-table rank-tbl"><thead><tr><th>项目</th><th>帕梅拉斯</th><th>弗鲁米嫩</th></tr></thead><tbody><tr><td>名次</td><td><b>第 2</b>（F 组）</td><td><b>第 2</b>（C 组）</td></tr><tr><td>积分</td><td>11 分</td><td>8 分</td></tr><tr><td>场次</td><td>6</td><td>6</td></tr><tr><td>战绩</td><td>3胜2平1负</td><td>2胜2平2负</td></tr><tr><td>进/失</td><td>10/5（净 +5）</td><td>7/7（净 +0）</td></tr></tbody></table></div>
+
   <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">主队排名</div><div class="insight-value">- / 解放者杯</div></div>
-    <div class="insight-card"><div class="insight-label">客队排名</div><div class="insight-value">- / 解放者杯</div></div>
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">4.00 球</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div>
   </div>
@@ -1703,14 +1708,14 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史底蕴对比</h4>
   <div class="table-wrap">
     <table class="history-table">
-      <thead><tr><th>荣誉维度</th><th>帕梅拉斯</th><th>弗鲁米嫩</th></tr></thead>
-      <tbody><tr><td>洲际冠军</td><td style="color:var(--muted);">-</td><td>2</td></tr><tr><td>本国联赛冠军</td><td style="color:var(--muted);">-</td><td>4</td></tr><tr><td>本国杯赛冠军</td><td style="color:var(--muted);">-</td><td>-</td></tr><tr><td>底蕴定位</td><td>-</td><td>顶级豪门</td></tr></tbody>
+      <thead><tr><th>荣誉维度</th><th>帕梅拉斯（巴西）</th>
+      <th>弗鲁米嫩（巴西）</th></tr></thead>
+      <tbody><tr><td>洲际冠军</td><td style="color:var(--muted);">-</td><td>2</td></tr><tr><td>本国联赛冠军（巴西）</td><td style="color:var(--muted);">-</td><td>4</td></tr><tr><td>本国杯赛冠军（巴西）</td><td style="color:var(--muted);">-</td><td>-</td></tr><tr><td>底蕴定位</td><td>-</td><td>顶级豪门</td></tr></tbody>
     </table>
   </div>
-  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">弗鲁米嫩：巴甲四冠，2023解放者杯冠军
-  <br>注：荣誉是公开慢变量，已隐含在市场赔率与模型长期战绩中；本表为<b>定性背景</b>，不计入概率。</p>
+  <p style="font-size:0.78rem;color:var(--muted);margin:0.3rem 0 0.7rem;">弗鲁米嫩：巴甲四冠，2023解放者杯冠军</p>
 
-  <h4>历史交锋（近2场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr><tr><td style="color:var(--loss);">2-3</td><td>客胜</td></tr></tbody></table></div>
+  <h4>历史交锋（近2场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr><tr><td style="color:var(--loss);">2-3</td><td>客胜</td></tr></tbody></table></div><h4>近期战绩 · 解放者杯</h4><div class="form-grid"><div class="form-block"><div class="form-title">帕梅拉斯</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">弗鲁米嫩 vs <b>帕梅拉斯</b></td><td style="font-family:monospace;">1-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-16</td><td class="cell-left">基多体大 vs <b>帕梅拉斯</b></td><td style="font-family:monospace;">3-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left"><b>帕梅拉斯</b> vs 基多体大</td><td style="font-family:monospace;">1-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-19</td><td class="cell-left"><b>帕梅拉斯</b> vs 波特诺</td><td style="font-family:monospace;">1-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-12</td><td class="cell-left">波特诺 vs <b>帕梅拉斯</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div><div class="form-block"><div class="form-title">弗鲁米嫩</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>弗鲁米嫩</b> vs 帕梅拉斯</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-15</td><td class="cell-left">普拉滕斯 vs <b>弗鲁米嫩</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>弗鲁米嫩</b> vs 普拉滕斯</td><td style="font-family:monospace;">2-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-18</td><td class="cell-left"><b>弗鲁米嫩</b> vs 里独立</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-11</td><td class="cell-left">里独立 vs <b>弗鲁米嫩</b></td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
   
@@ -1749,12 +1754,12 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">量级参考:</span>
       <span class="pred-score">2-1</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.41:0.82｜象限内已修正）—— <b>只看进球量级，不为押中</b></span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（1.41:0.82｜象限内已修正）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">±1球覆盖:</span>
       <span class="pred-score">67.0%</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内的概率（约 <b>67%</b>）—— 跟单场比分最该看的容错数字</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">比分概率组:</span>
@@ -1768,7 +1773,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     <div class="pred-row">
       <span class="pred-label">可信度:</span>
       <span class="tag tag-yellow">慎用</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.87，按历史同档实测。总进球越低比分越值得看；高总进球场次请以方向与总量为主</span></span>
+      <span class="pred-value"><span style="color:var(--muted);">λ总量 2.87，按历史同档实测</span></span>
     </div>
     <div class="pred-row">
       <span class="pred-label">信心评级:</span>
@@ -1858,7 +1863,7 @@ window.addEventListener('resize', function() { chart.resize(); });
 <p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-10-20）大比分：已出 10 场 · 实际 6+ 4 场 · 模型期望 1.74 场 · P(6+) 均值 17.4%。P(6+) 与 λ 总分均为上次预测值，由该场 λ 总分按泊松累加得到，供对照实际是否出现 6 球以上。</p>
 
 <h2>五、当日赛事联赛与杯赛形势</h2>
-<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜数据来源 <b>7M 体育数据库</b>（各国联赛）、<b>腾讯体育</b>（欧冠等）与 <b>Fox Sports</b>（解放者杯、欧罗巴等杯赛）。每个赛事一个板块：<b>左侧完整积分榜</b>（名次/场次/胜平负/进失球/积分全在表内），<b>右侧形势分析</b>（本场三种结果对应的积分与被改写的名次）。榜单按分区着色、本日参赛队整行高亮。各来源均不含未来赛程，故本节只分析「当前排名 + 本日对阵对积分榜的直接冲击」。</p>
+<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜来源：<b>7M 体育数据库</b>（各国联赛）、<b>腾讯体育</b>（欧冠）、<b>Fox Sports</b>（解放者杯、欧罗巴）。</p>
 <div class="league-overview-grid">
   <div class="league-card">
     <h4>日职 <span class="h4-sub">· 2026-2027 日本职业联赛</span></h4>
@@ -1895,7 +1900,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       </div>
       <div class="lg-col">
         <div class="col-h">形势分析</div>
-        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="sit-note">历史日期补跑，榜单为赛后状态，只列榜位与相邻对手。</div>
         <div class="league-impact">
           <div class="impact-row"><span class="tag tag-blue">周三001</span> 东京FC vs 柏太阳神</div>
 <div class="sit-block"><div class="sit-row"><span class="sit-team">东京FC #3</span><span class="sit-now">23 分（10 场）</span><span class="sit-team">柏太阳神 #5</span><span class="sit-now">21 分（10 场）</span><span class="sit-now">本场已结束（0-0），上列为赛后实际名次。</span></div><div class="sit-near">名次相邻：广岛三箭 #1 23分、町田泽维 #2 23分、神户胜利 #4 22分</div></div>
@@ -1941,7 +1946,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       </div>
       <div class="lg-col">
         <div class="col-h">形势分析</div>
-        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="sit-note">历史日期补跑，榜单为赛后状态，只列榜位与相邻对手。</div>
         <div class="league-impact">
           <div class="impact-row"><span class="tag tag-blue">周三003</span> 大宫松鼠 vs 富山胜利（分差 +1 · 卡位对话）</div>
 <div class="sit-block"><div class="sit-row"><span class="sit-team">大宫松鼠 #2</span><span class="sit-now">20 分（11 场）</span><span class="sit-team">富山胜利 #4</span><span class="sit-now">19 分（11 场）</span><span class="sit-now">本场已结束（0-3），上列为赛后实际名次。</span></div><div class="sit-near">名次相邻：仙台七夕 #1 24分、新潟天鹅 #3 20分、FC横滨 #5 18分</div></div>
@@ -2001,7 +2006,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       </div>
       <div class="lg-col">
         <div class="col-h">形势分析</div>
-        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="sit-note">历史日期补跑，榜单为赛后状态，只列榜位与相邻对手。</div>
         <div class="sit-zone">关键线：第 8 名 <b>6</b> 分 · 巴塞罗那（前 8 直接进 16 强） ｜ 第 24 名 <b>3</b> 分 · 林茨（附加赛末位）</div>
         <div class="league-impact">
           <div class="impact-row"><span class="tag tag-blue">周三004</span> 科莫 vs 曼联</div>
@@ -2021,7 +2026,7 @@ window.addEventListener('resize', function() { chart.resize(); });
           <div class="impact-row"><span class="tag tag-blue">周三012</span> 布鲁日 vs 朗斯</div>
 <div class="sit-block"><div class="sit-row"><span class="sit-team">布鲁日 #11</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">朗斯 #27</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：巴塞罗那 #8 6分、科莫 #9 6分、曼城 #10 6分</div></div>
         </div>
-        <p class="league-note">欧冠联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。名次区间为本场结果落地后的可能范围，「最好」按其余球队本轮不再得分估算，「最差」按落后 3 分以内的球队本轮全赢估算。后续轮次的对手与赛程以官方公布为准，本节只分析积分榜层面的直接影响。</p>
+        <p class="league-note">欧冠联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。</p>
       </div>
     </div>
   </div>
@@ -2060,7 +2065,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       </div>
       <div class="lg-col">
         <div class="col-h">形势分析</div>
-        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="sit-note">历史日期补跑，榜单为赛后状态，只列榜位与相邻对手。</div>
         <div class="league-impact">
           <div class="impact-row"><span class="tag tag-blue">周三006</span> 莱万特 vs 毕尔巴鄂（分差 -2 · 卡位对话）</div>
 <div class="sit-block"><div class="sit-row"><span class="sit-team">莱万特 #17</span><span class="sit-now">7 分（8 场）</span><span class="sit-team">毕尔巴鄂 #11</span><span class="sit-now">9 分（7 场）</span></div><div class="sit-near">名次相邻：赫塔费 #14 9分、西班牙人 #15 8分、桑坦德 #16 8分</div></div>
@@ -2171,7 +2176,7 @@ window.addEventListener('resize', function() { chart.resize(); });
 <div class="sit-line">小组赛已收官（各组均踢满 6 轮），榜单为最终成绩，本场淘汰赛不再产生小组积分变动；淘汰赛阶段无积分榜，晋级只看两回合比分。</div>
 </div>
         </div>
-        <p class="league-note">解放者杯赛制：32 队分 8 组、每组单循环 6 轮，组内前 2 名晋级 16 强，第 3 名转南美杯，第 4 名出局。小组赛结束后进入两回合淘汰赛，淘汰赛不再产生积分榜。「组内处境」只讲积分与名次，不涉及两回合的客场进球等细则。</p>
+        <p class="league-note">解放者杯赛制：32 队分 8 组、每组单循环 6 轮，组内前 2 名晋级 16 强，第 3 名转南美杯，第 4 名出局。</p>
       </div>
     </div>
   </div>
@@ -2182,11 +2187,11 @@ window.addEventListener('resize', function() { chart.resize(); });
 <div class="summary-grid">
   <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">5★</strong>（3场5★ / 1场4★ / 4场3★ / 3场2★ / 2场1★），共4场高信心场次，冷门信号普遍存在，串关按实际评级从严组串。</p></div>
   <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">3</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
-  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>3.70</strong>；H2H大球因子≥1.3x的场次建议关注大球方向，H2H偏低的场次谨防闷平。</p></div>
+  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>3.70</strong>；H2H大球因子≥1.3x的场次偏大球，H2H偏低的场次偏闷平。</p></div>
   <div class="summary-card"><h4>🎲 冷门风险分布</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">45.0%</strong>：低风险 <strong>3</strong> 场 · 中 <strong>5</strong> 场 · 高 <strong>5</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
   <div class="summary-card"><h4>🎯 大比分（6+）观察</h4><p style="font-size:0.9rem;">今日最像出 6+ 的一场：<strong style="color:var(--accent2);">周三007 皇马vs莱红牛</strong>（校准 P(6+)≈<strong>22.6%</strong>，市场隐含 28.1%）；13 场「至少一场 6+」≈ <strong>78%</strong>。<b>但别押大球</b>：市场对高进球系统性定价偏高，按赔率买「6 球」与「7+」长期均亏损。「最近天天有大球」是基础率 × 场次数的必然，不是可押的规律。</p></div>
   <div class="summary-card"><h4>⚖️ 让球盘方向</h4><p style="font-size:0.9rem;">让球盘联合校准后<b>最可能结果概率≥50%</b> 且置信度≥中 的场次 <strong style="color:var(--accent2);">6</strong> 场：周三002 让球负(70%)、周三003 让球负(58%)、周三006 让球胜(57%)、周三004 让球负(55%)；另有 <strong>3</strong> 场概率达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。让球盘抽水约 13%，<b>按概率给方向、不按赔率追价值</b>，只作参考。</p></div>
-  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">0</strong> 场应用了 H2H 方向性调整，胜负记录直接改变 λ 分配而非只调总进球。</p></div>
+  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">0</strong> 场应用了 H2H 方向性调整。</p></div>
   <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
   <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
 </div>
