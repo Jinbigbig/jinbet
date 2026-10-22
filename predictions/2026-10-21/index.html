@@ -119,12 +119,13 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .league-tbl.standings td:nth-child(2) { white-space:nowrap; }
   .league-tbl.standings tr.zone-eu td { background:rgba(46,160,67,0.13); }
   .league-tbl.standings tr.zone-rel td { background:rgba(220,60,60,0.12); }
-  .league-tbl.standings td:nth-child(10) { font-weight:700; }
-  .league-impact { margin-top:0.6rem; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.5rem; }
+  .league-tbl.standings td.pts { font-weight:700; }
+  .league-impact { margin-top:0; }
   .league-impact .impact-title { font-size:0.74rem; font-weight:700; color:var(--muted,#7a8ba0); margin-bottom:0.3rem; }
-  .league-impact .impact-row { font-size:0.78rem; line-height:1.7; }
+  .league-impact .impact-row { font-size:0.8rem; line-height:1.75; }
   .league-impact .impact-row b { color:var(--accent,#2f7de0); }
   .league-src { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-bottom:0.4rem; }
+  .h4-sub { font-weight:400; font-size:0.78rem; color:var(--muted,#7a8ba0); }
   /* ---------- 表格对齐统一：列名与数据一律水平居中 ----------
      基线 CSS 里 thead th 是 text-align:left，数字列只有零星 inline 居中，
      左对齐会在窄列右侧留下大块空白、各表观感不一致。
@@ -172,44 +173,54 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .form-empty { font-size:0.78rem; color:var(--muted,#7a8ba0); margin:0.2rem 0 0; }
   @media (max-width: 640px) { .form-grid { grid-template-columns:1fr; } }
   /* 形势分析：本场三种结果对积分榜的影响 */
-  .sit-block { margin:0.3rem 0 0.15rem; padding:0.1rem 0 0.1rem 0.55rem;
+  .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
     border-left:2px solid rgba(52,122,252,0.35); }
-  .sit-row { font-size:0.78rem; line-height:1.8; }
-  .sit-team { font-weight:700; color:var(--accent,#2f7de0); margin-right:0.35rem; }
-  .sit-now { color:var(--muted,#7a8ba0); margin-right:0.45rem; }
-  .sit-item { display:inline-block; margin-right:0.75rem; }
+  .sit-row { font-size:0.76rem; line-height:1.65; }
+  .sit-team { font-weight:700; color:var(--accent,#2f7de0); margin-right:0.3rem; }
+  .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
+  .sit-item { display:inline-block; margin-right:0.6rem; }
   .sit-item b { color:var(--accent3,#e07a2f); }
-  .sit-line, .sit-near { font-size:0.76rem; color:var(--muted,#7a8ba0);
-    line-height:1.7; margin-top:0.1rem; }
-  /* 积分榜压缩展示：一队一枚色块，代替整张长表（36 队 → 3~4 行） */
-  .std-chips { display:flex; flex-wrap:wrap; gap:0.28rem; margin-top:0.4rem; }
-  .std-chip { display:inline-flex; align-items:baseline; gap:0.26rem; padding:0.12rem 0.38rem;
-    border-radius:5px; font-size:0.74rem; line-height:1.5; white-space:nowrap;
-    border:1px solid rgba(128,128,128,0.25); background:rgba(128,128,128,0.06); }
-  .std-chip .r { font-family:monospace; font-size:0.68rem; color:var(--muted,#7a8ba0); }
-  .std-chip .n { font-weight:600; }
-  .std-chip .s { font-family:monospace; font-weight:700; }
-  .std-chip.z1 { background:rgba(46,160,67,0.14); border-color:rgba(46,160,67,0.38); }
-  .std-chip.z2 { background:rgba(224,122,47,0.14); border-color:rgba(224,122,47,0.38); }
-  .std-chip.z3 { opacity:0.62; }
-  .std-chip.hi { opacity:1; border-color:rgba(52,122,252,0.85);
-    background:rgba(52,122,252,0.16); box-shadow:0 0 0 1px rgba(52,122,252,0.35); }
-  .std-chip.hi .n { color:var(--accent,#2f7de0); }
+  .sit-line, .sit-near { font-size:0.74rem; color:var(--muted,#7a8ba0);
+    line-height:1.6; margin-top:0.05rem; }
+  .sit-zone { font-size:0.74rem; color:var(--muted,#7a8ba0); line-height:1.6;
+    margin-bottom:0.35rem; padding-bottom:0.25rem;
+    border-bottom:1px dashed rgba(128,128,128,0.3); }
+  .sit-zone b { color:var(--accent3,#e07a2f); }
+  .sit-note { font-size:0.74rem; color:var(--muted,#7a8ba0); line-height:1.6;
+    margin-bottom:0.35rem; }
+  /* 积分榜板块：卡片占满宽度，内部左右分栏（左=完整积分榜表格，右=形势分析）。
+     榜单仍是完整表格（名次/队名/赛/胜平负/进失/积分全部直读），
+     页面高度靠「并排」而不是「折叠/压缩」来控制。 */
+  .league-overview-grid { grid-template-columns: 1fr; }
+  .lg-split { display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap:0.5rem 1.2rem; align-items:start; margin-top:0.5rem; }
+  .lg-col { min-width:0; }
+  .col-h { font-size:0.72rem; font-weight:700; letter-spacing:0.05em;
+    color:var(--accent,#2f7de0); padding-bottom:0.2rem; margin-bottom:0.3rem;
+    border-bottom:1px solid rgba(52,122,252,0.3); }
+  .std-scroll { overflow-x:auto; }
+  table.std-main { display:table !important; width:100%; margin-top:0; font-size:0.73rem;
+    white-space:nowrap; line-height:1.25; }
+  table.std-main th, table.std-main td { padding:0.11rem 0.3rem; }
+  table.std-main th { font-size:0.68rem; }
+  table.std-main tr.z1 td { background:rgba(46,160,67,0.13); }
+  table.std-main tr.z2 td { background:rgba(224,122,47,0.13); }
+  table.std-main tr.z3 td { opacity:0.62; }
+  table.std-main tr.hi td { background:rgba(52,122,252,0.15); color:var(--accent,#2f7de0);
+    font-weight:700; opacity:1; }
+  table.std-main td.pts { font-weight:700; }
   .std-legend { font-size:0.7rem; color:var(--muted,#7a8ba0); margin-top:0.3rem; line-height:1.6; }
-  .std-grp { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-    gap:0.4rem 0.7rem; margin-top:0.4rem; }
+  .std-grp { display:grid; grid-template-columns:1fr; gap:0.5rem; }
   .std-grp-block { min-width:0; }
   .std-grp-block .gname { font-size:0.7rem; font-weight:700; color:var(--muted,#7a8ba0);
-    letter-spacing:0.04em; margin-bottom:0.12rem; }
-  .std-grp-block .std-chips { margin-top:0; }
-  details.std-full { margin-top:0.4rem; }
+    letter-spacing:0.04em; margin:0.1rem 0 0.05rem; }
+  details.std-full { margin-top:0.45rem; }
   details.std-full > summary { cursor:pointer; font-size:0.74rem; color:var(--accent,#2f7de0); }
   details.std-full[open] > summary { margin-bottom:0.3rem; }
-  /* 赛事卡片改双列：原先 auto-fit 在 1160px 下切 4 列，卡片只有 ~280px 宽，
-     色块被挤成竖排、形势文字频繁折行，既难看又更长。双列后卡片 ~560px，
-     同一批内容反而矮约 300px。 */
-  @media (min-width: 980px) {
-    .league-overview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .lg-split { grid-template-columns:1fr; } }
+  @media (max-width: 560px) {
+    table.std-main { font-size:0.66rem; }
+    table.std-main th, table.std-main td { padding:0.08rem 0.12rem; }
   }
 </style>
 </head>
@@ -220,7 +231,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-10-21 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 13场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-10-22 09:51 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-10-22 10:04 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -1848,396 +1859,322 @@ window.addEventListener('resize', function() { chart.resize(); });
 
 
 <h2>六、当日赛事联赛与杯赛形势</h2>
-<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜数据来源 <b>7M 体育数据库</b>（各国联赛）、<b>腾讯体育</b>（欧冠等）与 <b>Fox Sports</b>（解放者杯、欧罗巴等杯赛）。为避免页面被长表拉长，积分榜以<b>色块网格</b>呈现：队名＋名次＋积分，按分区着色、本日参赛队高亮，完整表（场次/胜平负/进失球）点开可看。各来源均不含未来赛程，故本节只分析「当前排名 + 本日对阵对积分榜的直接冲击」。</p>
+<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">积分榜数据来源 <b>7M 体育数据库</b>（各国联赛）、<b>腾讯体育</b>（欧冠等）与 <b>Fox Sports</b>（解放者杯、欧罗巴等杯赛）。每个赛事一个板块：<b>左侧完整积分榜</b>（名次/场次/胜平负/进失球/积分全在表内），<b>右侧形势分析</b>（本场三种结果对应的积分与被改写的名次）。榜单按分区着色、本日参赛队整行高亮。各来源均不含未来赛程，故本节只分析「当前排名 + 本日对阵对积分榜的直接冲击」。</p>
 <div class="league-overview-grid">
   <div class="league-card">
-    <h4>日职 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 日本职业联赛</span></h4>
+    <h4>日职 <span class="h4-sub">· 2026-2027 日本职业联赛</span></h4>
     <div class="league-src">数据更新：2026/10/19 6:26:59 ｜ 来源 7M 体育数据库</div>
-    <div class="std-chips">
-      <span class="std-chip " title="10 场 7胜2平1负 · 积分 23 · 25:6（净 +19）"><span class="r">1</span><span class="n">广岛三箭</span><span class="s">23</span></span>
-      <span class="std-chip " title="10 场 7胜2平1负 · 积分 23 · 25:10（净 +15）"><span class="r">2</span><span class="n">町田泽维</span><span class="s">23</span></span>
-      <span class="std-chip hi" title="10 场 7胜2平1负 · 积分 23 · 21:8（净 +13） · 本日参赛"><span class="r">3</span><span class="n">FC东京</span><span class="s">23</span></span>
-      <span class="std-chip hi" title="10 场 7胜1平2负 · 积分 22 · 17:9（净 +8） · 本日参赛"><span class="r">4</span><span class="n">神户胜利</span><span class="s">22</span></span>
-      <span class="std-chip hi" title="10 场 7胜0平3负 · 积分 21 · 22:17（净 +5） · 本日参赛"><span class="r">5</span><span class="n">柏太阳神</span><span class="s">21</span></span>
-      <span class="std-chip " title="10 场 6胜1平3负 · 积分 19 · 21:16（净 +5）"><span class="r">6</span><span class="n">鹿岛鹿角</span><span class="s">19</span></span>
-      <span class="std-chip hi" title="10 场 4胜4平2负 · 积分 16 · 21:16（净 +5） · 本日参赛"><span class="r">7</span><span class="n">川崎前锋</span><span class="s">16</span></span>
-      <span class="std-chip " title="10 场 4胜4平2负 · 积分 16 · 13:9（净 +4）"><span class="r">8</span><span class="n">横滨水手</span><span class="s">16</span></span>
-      <span class="std-chip " title="10 场 5胜0平5负 · 积分 15 · 17:21（净 -4）"><span class="r">9</span><span class="n">浦和红钻</span><span class="s">15</span></span>
-      <span class="std-chip " title="10 场 4胜2平4负 · 积分 14 · 10:11（净 -1）"><span class="r">10</span><span class="n">清水心跳</span><span class="s">14</span></span>
-      <span class="std-chip " title="10 场 4胜1平5负 · 积分 13 · 12:15（净 -3）"><span class="r">11</span><span class="n">冈山绿雉</span><span class="s">13</span></span>
-      <span class="std-chip " title="10 场 4胜0平6负 · 积分 12 · 12:16（净 -4）"><span class="r">12</span><span class="n">名古屋八鲸</span><span class="s">12</span></span>
-      <span class="std-chip " title="10 场 3胜3平4负 · 积分 12 · 9:16（净 -7）"><span class="r">13</span><span class="n">大阪樱花</span><span class="s">12</span></span>
-      <span class="std-chip " title="10 场 2胜3平5负 · 积分 9 · 12:14（净 -2）"><span class="r">14</span><span class="n">水户蜀葵</span><span class="s">9</span></span>
-      <span class="std-chip " title="10 场 2胜3平5负 · 积分 9 · 11:18（净 -7）"><span class="r">15</span><span class="n">长崎成功丸</span><span class="s">9</span></span>
-      <span class="std-chip " title="10 场 2胜2平6负 · 积分 8 · 11:19（净 -8）"><span class="r">16</span><span class="n">京都不死鸟</span><span class="s">8</span></span>
-      <span class="std-chip " title="10 场 2胜1平7负 · 积分 7 · 11:16（净 -5）"><span class="r">17</span><span class="n">福冈黄蜂</span><span class="s">7</span></span>
-      <span class="std-chip " title="10 场 1胜4平5负 · 积分 7 · 10:18（净 -8）"><span class="r">18</span><span class="n">大阪钢巴</span><span class="s">7</span></span>
-      <span class="std-chip " title="10 场 1胜3平6负 · 积分 6 · 8:19（净 -11）"><span class="r">19</span><span class="n">千叶市原</span><span class="s">6</span></span>
-      <span class="std-chip " title="10 场 0胜4平6负 · 积分 4 · 4:18（净 -14）"><span class="r">20</span><span class="n">东京绿茵</span><span class="s">4</span></span>
+    <div class="lg-split">
+      <div class="lg-col">
+        <div class="col-h">积分榜</div>
+        <div class="std-scroll">
+          <table class="league-tbl standings std-main">
+            <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+            <tr class=""><td>1</td><td class="cell-left">广岛三箭</td><td>10</td><td>7</td><td>2</td><td>1</td><td>25</td><td>6</td><td>+19</td><td class="pts">23</td></tr>
+            <tr class=""><td>2</td><td class="cell-left">町田泽维</td><td>10</td><td>7</td><td>2</td><td>1</td><td>25</td><td>10</td><td>+15</td><td class="pts">23</td></tr>
+            <tr class="hi"><td>3</td><td class="cell-left">FC东京</td><td>10</td><td>7</td><td>2</td><td>1</td><td>21</td><td>8</td><td>+13</td><td class="pts">23</td></tr>
+            <tr class="hi"><td>4</td><td class="cell-left">神户胜利</td><td>10</td><td>7</td><td>1</td><td>2</td><td>17</td><td>9</td><td>+8</td><td class="pts">22</td></tr>
+            <tr class="hi"><td>5</td><td class="cell-left">柏太阳神</td><td>10</td><td>7</td><td>0</td><td>3</td><td>22</td><td>17</td><td>+5</td><td class="pts">21</td></tr>
+            <tr class=""><td>6</td><td class="cell-left">鹿岛鹿角</td><td>10</td><td>6</td><td>1</td><td>3</td><td>21</td><td>16</td><td>+5</td><td class="pts">19</td></tr>
+            <tr class="hi"><td>7</td><td class="cell-left">川崎前锋</td><td>10</td><td>4</td><td>4</td><td>2</td><td>21</td><td>16</td><td>+5</td><td class="pts">16</td></tr>
+            <tr class=""><td>8</td><td class="cell-left">横滨水手</td><td>10</td><td>4</td><td>4</td><td>2</td><td>13</td><td>9</td><td>+4</td><td class="pts">16</td></tr>
+            <tr class=""><td>9</td><td class="cell-left">浦和红钻</td><td>10</td><td>5</td><td>0</td><td>5</td><td>17</td><td>21</td><td>-4</td><td class="pts">15</td></tr>
+            <tr class=""><td>10</td><td class="cell-left">清水心跳</td><td>10</td><td>4</td><td>2</td><td>4</td><td>10</td><td>11</td><td>-1</td><td class="pts">14</td></tr>
+            <tr class=""><td>11</td><td class="cell-left">冈山绿雉</td><td>10</td><td>4</td><td>1</td><td>5</td><td>12</td><td>15</td><td>-3</td><td class="pts">13</td></tr>
+            <tr class=""><td>12</td><td class="cell-left">名古屋八鲸</td><td>10</td><td>4</td><td>0</td><td>6</td><td>12</td><td>16</td><td>-4</td><td class="pts">12</td></tr>
+            <tr class=""><td>13</td><td class="cell-left">大阪樱花</td><td>10</td><td>3</td><td>3</td><td>4</td><td>9</td><td>16</td><td>-7</td><td class="pts">12</td></tr>
+            <tr class=""><td>14</td><td class="cell-left">水户蜀葵</td><td>10</td><td>2</td><td>3</td><td>5</td><td>12</td><td>14</td><td>-2</td><td class="pts">9</td></tr>
+            <tr class=""><td>15</td><td class="cell-left">长崎成功丸</td><td>10</td><td>2</td><td>3</td><td>5</td><td>11</td><td>18</td><td>-7</td><td class="pts">9</td></tr>
+            <tr class=""><td>16</td><td class="cell-left">京都不死鸟</td><td>10</td><td>2</td><td>2</td><td>6</td><td>11</td><td>19</td><td>-8</td><td class="pts">8</td></tr>
+            <tr class=""><td>17</td><td class="cell-left">福冈黄蜂</td><td>10</td><td>2</td><td>1</td><td>7</td><td>11</td><td>16</td><td>-5</td><td class="pts">7</td></tr>
+            <tr class=""><td>18</td><td class="cell-left">大阪钢巴</td><td>10</td><td>1</td><td>4</td><td>5</td><td>10</td><td>18</td><td>-8</td><td class="pts">7</td></tr>
+            <tr class=""><td>19</td><td class="cell-left">千叶市原</td><td>10</td><td>1</td><td>3</td><td>6</td><td>8</td><td>19</td><td>-11</td><td class="pts">6</td></tr>
+            <tr class=""><td>20</td><td class="cell-left">东京绿茵</td><td>10</td><td>0</td><td>4</td><td>6</td><td>4</td><td>18</td><td>-14</td><td class="pts">4</td></tr>
+          </table>
+        </div>
+        <div class="std-legend">高亮＝本日参赛队</div>
+      </div>
+      <div class="lg-col">
+        <div class="col-h">形势分析</div>
+        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="league-impact">
+          <div class="impact-row"><span class="tag tag-blue">周三001</span> 东京FC vs 柏太阳神</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">东京FC #3</span><span class="sit-now">23 分（10 场）</span><span class="sit-team">柏太阳神 #5</span><span class="sit-now">21 分（10 场）</span><span class="sit-now">本场已结束（0-0），上列为赛后实际名次。</span></div><div class="sit-near">名次相邻：广岛三箭 #1 23分、町田泽维 #2 23分、神户胜利 #4 22分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三002</span> 川崎前锋 vs 神户胜利（分差 -6）</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">川崎前锋 #7</span><span class="sit-now">16 分（10 场）</span><span class="sit-team">神户胜利 #4</span><span class="sit-now">22 分（10 场）</span><span class="sit-now">本场已结束（2-1），上列为赛后实际名次。</span></div><div class="sit-near">名次相邻：柏太阳神 #5 21分、鹿岛鹿角 #6 19分、横滨水手 #8 16分</div></div>
+        </div>
+        <p class="league-note">进球预期最高：周三001 东京FCvs柏太阳神（λ3.81） · 冷门风险最高：周三002 川崎前锋vs神户胜利（67%） · 最胶着：周三002 川崎前锋vs神户胜利（主36% / 客33%）</p>
+      </div>
     </div>
-    <div class="std-legend">高亮＝本日参赛队</div>
-    <details class="std-full"><summary>查看完整积分榜（20 队 · 场次 / 胜平负 / 进失球）</summary>
-    <table class="league-tbl standings">
-      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
-      <tr><td>1</td><td class="cell-left">广岛三箭</td><td>10</td><td>7</td><td>2</td><td>1</td><td>25</td><td>6</td><td>+19</td><td>23</td></tr>
-      <tr><td>2</td><td class="cell-left">町田泽维</td><td>10</td><td>7</td><td>2</td><td>1</td><td>25</td><td>10</td><td>+15</td><td>23</td></tr>
-      <tr><td>3</td><td class="cell-left">FC东京</td><td>10</td><td>7</td><td>2</td><td>1</td><td>21</td><td>8</td><td>+13</td><td>23</td></tr>
-      <tr><td>4</td><td class="cell-left">神户胜利</td><td>10</td><td>7</td><td>1</td><td>2</td><td>17</td><td>9</td><td>+8</td><td>22</td></tr>
-      <tr><td>5</td><td class="cell-left">柏太阳神</td><td>10</td><td>7</td><td>0</td><td>3</td><td>22</td><td>17</td><td>+5</td><td>21</td></tr>
-      <tr><td>6</td><td class="cell-left">鹿岛鹿角</td><td>10</td><td>6</td><td>1</td><td>3</td><td>21</td><td>16</td><td>+5</td><td>19</td></tr>
-      <tr><td>7</td><td class="cell-left">川崎前锋</td><td>10</td><td>4</td><td>4</td><td>2</td><td>21</td><td>16</td><td>+5</td><td>16</td></tr>
-      <tr><td>8</td><td class="cell-left">横滨水手</td><td>10</td><td>4</td><td>4</td><td>2</td><td>13</td><td>9</td><td>+4</td><td>16</td></tr>
-      <tr><td>9</td><td class="cell-left">浦和红钻</td><td>10</td><td>5</td><td>0</td><td>5</td><td>17</td><td>21</td><td>-4</td><td>15</td></tr>
-      <tr><td>10</td><td class="cell-left">清水心跳</td><td>10</td><td>4</td><td>2</td><td>4</td><td>10</td><td>11</td><td>-1</td><td>14</td></tr>
-      <tr><td>11</td><td class="cell-left">冈山绿雉</td><td>10</td><td>4</td><td>1</td><td>5</td><td>12</td><td>15</td><td>-3</td><td>13</td></tr>
-      <tr><td>12</td><td class="cell-left">名古屋八鲸</td><td>10</td><td>4</td><td>0</td><td>6</td><td>12</td><td>16</td><td>-4</td><td>12</td></tr>
-      <tr><td>13</td><td class="cell-left">大阪樱花</td><td>10</td><td>3</td><td>3</td><td>4</td><td>9</td><td>16</td><td>-7</td><td>12</td></tr>
-      <tr><td>14</td><td class="cell-left">水户蜀葵</td><td>10</td><td>2</td><td>3</td><td>5</td><td>12</td><td>14</td><td>-2</td><td>9</td></tr>
-      <tr><td>15</td><td class="cell-left">长崎成功丸</td><td>10</td><td>2</td><td>3</td><td>5</td><td>11</td><td>18</td><td>-7</td><td>9</td></tr>
-      <tr><td>16</td><td class="cell-left">京都不死鸟</td><td>10</td><td>2</td><td>2</td><td>6</td><td>11</td><td>19</td><td>-8</td><td>8</td></tr>
-      <tr><td>17</td><td class="cell-left">福冈黄蜂</td><td>10</td><td>2</td><td>1</td><td>7</td><td>11</td><td>16</td><td>-5</td><td>7</td></tr>
-      <tr><td>18</td><td class="cell-left">大阪钢巴</td><td>10</td><td>1</td><td>4</td><td>5</td><td>10</td><td>18</td><td>-8</td><td>7</td></tr>
-      <tr><td>19</td><td class="cell-left">千叶市原</td><td>10</td><td>1</td><td>3</td><td>6</td><td>8</td><td>19</td><td>-11</td><td>6</td></tr>
-      <tr><td>20</td><td class="cell-left">东京绿茵</td><td>10</td><td>0</td><td>4</td><td>6</td><td>4</td><td>18</td><td>-14</td><td>4</td></tr>
-    </table>
-    </details>
-    <div class="league-impact">
-      <div class="impact-title">本日对阵 · 积分影响</div>
-      <div class="impact-row"><span class="tag tag-blue">周三001</span> 东京FC <b>排名—</b> vs 柏太阳神 <b>#5 21分</b></div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">东京FC #3</span><span class="sit-now">23 分（10 场）</span><span class="sit-team">柏太阳神 #5</span><span class="sit-now">21 分（10 场）</span><span class="sit-now">本场已结束（0-0），上列为结果落地后的实际名次。</span></div><div class="sit-near">名次相邻：广岛三箭（#1 23 分）、町田泽维（#2 23 分）、神户胜利（#4 22 分）、鹿岛鹿角（#6 19 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三002</span> 川崎前锋 <b>#7 16分</b> vs 神户胜利 <b>#4 22分</b>（分差 -6）</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">川崎前锋 #7</span><span class="sit-now">16 分（10 场）</span><span class="sit-team">神户胜利 #4</span><span class="sit-now">22 分（10 场）</span><span class="sit-now">本场已结束（2-1），上列为结果落地后的实际名次。</span></div><div class="sit-near">名次相邻：柏太阳神（#5 21 分）、鹿岛鹿角（#6 19 分）、横滨水手（#8 16 分）、浦和红钻（#9 15 分） —— 本场结果会直接改写这些队的位置。</div></div>
-    </div>
-    <p class="league-note">进球预期最高：周三001 东京FCvs柏太阳神（λ3.81） · 冷门风险最高：周三002 川崎前锋vs神户胜利（67%） · 最胶着：周三002 川崎前锋vs神户胜利（主36% / 客33%）</p>
   </div>
   <div class="league-card">
-    <h4>日乙 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 日本乙级联赛</span></h4>
+    <h4>日乙 <span class="h4-sub">· 2026-2027 日本乙级联赛</span></h4>
     <div class="league-src">数据更新：2026/10/19 6:51:17 ｜ 来源 7M 体育数据库</div>
-    <div class="std-chips">
-      <span class="std-chip " title="11 场 7胜3平1负 · 积分 24 · 18:8（净 +10）"><span class="r">1</span><span class="n">仙台七夕</span><span class="s">24</span></span>
-      <span class="std-chip hi" title="11 场 5胜5平1负 · 积分 20 · 21:11（净 +10） · 本日参赛"><span class="r">2</span><span class="n">大宫松鼠</span><span class="s">20</span></span>
-      <span class="std-chip " title="11 场 6胜2平3负 · 积分 20 · 15:19（净 -4）"><span class="r">3</span><span class="n">新潟天鹅</span><span class="s">20</span></span>
-      <span class="std-chip hi" title="11 场 5胜4平2负 · 积分 19 · 20:11（净 +9） · 本日参赛"><span class="r">4</span><span class="n">富山胜利</span><span class="s">19</span></span>
-      <span class="std-chip " title="11 场 5胜3平3负 · 积分 18 · 20:14（净 +6）"><span class="r">5</span><span class="n">FC横滨</span><span class="s">18</span></span>
-      <span class="std-chip " title="11 场 4胜6平1负 · 积分 18 · 12:10（净 +2）"><span class="r">6</span><span class="n">湘南比马</span><span class="s">18</span></span>
-      <span class="std-chip " title="11 场 4胜5平2负 · 积分 17 · 16:9（净 +7）"><span class="r">7</span><span class="n">大分三神</span><span class="s">17</span></span>
-      <span class="std-chip " title="11 场 5胜0平6负 · 积分 15 · 18:17（净 +1）"><span class="r">8</span><span class="n">磐城FC</span><span class="s">15</span></span>
-      <span class="std-chip " title="11 场 3胜5平3负 · 积分 14 · 13:11（净 +2）"><span class="r">9</span><span class="n">藤枝MYFC</span><span class="s">14</span></span>
-      <span class="std-chip " title="11 场 3胜5平3负 · 积分 14 · 15:15（净 +0）"><span class="r">10</span><span class="n">宮崎特格瓦雅罗</span><span class="s">14</span></span>
-      <span class="std-chip " title="11 场 4胜2平5负 · 积分 14 · 13:14（净 -1）"><span class="r">11</span><span class="n">磐田山叶</span><span class="s">14</span></span>
-      <span class="std-chip " title="11 场 4胜2平5负 · 积分 14 · 11:13（净 -2）"><span class="r">12</span><span class="n">鸟棲砂岩</span><span class="s">14</span></span>
-      <span class="std-chip " title="11 场 4胜2平5负 · 积分 14 · 10:12（净 -2）"><span class="r">13</span><span class="n">德岛漩渦</span><span class="s">14</span></span>
-      <span class="std-chip " title="11 场 4胜1平6负 · 积分 13 · 11:9（净 +2）"><span class="r">14</span><span class="n">山形山神</span><span class="s">13</span></span>
-      <span class="std-chip " title="11 场 3胜4平4负 · 积分 13 · 12:12（净 +0）"><span class="r">15</span><span class="n">秋田闪电</span><span class="s">13</span></span>
-      <span class="std-chip " title="11 场 3胜2平6负 · 积分 11 · 17:18（净 -1）"><span class="r">16</span><span class="n">櫪木市FC</span><span class="s">11</span></span>
-      <span class="std-chip " title="11 场 3胜2平6负 · 积分 11 · 13:19（净 -6）"><span class="r">17</span><span class="n">札幌冈萨</span><span class="s">11</span></span>
-      <span class="std-chip " title="11 场 3胜2平6负 · 积分 11 · 14:22（净 -8）"><span class="r">18</span><span class="n">FC今治</span><span class="s">11</span></span>
-      <span class="std-chip " title="11 场 3胜2平6负 · 积分 11 · 9:20（净 -11）"><span class="r">19</span><span class="n">八户云罗里</span><span class="s">11</span></span>
-      <span class="std-chip " title="11 场 3胜1平7负 · 积分 10 · 9:23（净 -14）"><span class="r">20</span><span class="n">甲府风林</span><span class="s">10</span></span>
+    <div class="lg-split">
+      <div class="lg-col">
+        <div class="col-h">积分榜</div>
+        <div class="std-scroll">
+          <table class="league-tbl standings std-main">
+            <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+            <tr class=""><td>1</td><td class="cell-left">仙台七夕</td><td>11</td><td>7</td><td>3</td><td>1</td><td>18</td><td>8</td><td>+10</td><td class="pts">24</td></tr>
+            <tr class="hi"><td>2</td><td class="cell-left">大宫松鼠</td><td>11</td><td>5</td><td>5</td><td>1</td><td>21</td><td>11</td><td>+10</td><td class="pts">20</td></tr>
+            <tr class=""><td>3</td><td class="cell-left">新潟天鹅</td><td>11</td><td>6</td><td>2</td><td>3</td><td>15</td><td>19</td><td>-4</td><td class="pts">20</td></tr>
+            <tr class="hi"><td>4</td><td class="cell-left">富山胜利</td><td>11</td><td>5</td><td>4</td><td>2</td><td>20</td><td>11</td><td>+9</td><td class="pts">19</td></tr>
+            <tr class=""><td>5</td><td class="cell-left">FC横滨</td><td>11</td><td>5</td><td>3</td><td>3</td><td>20</td><td>14</td><td>+6</td><td class="pts">18</td></tr>
+            <tr class=""><td>6</td><td class="cell-left">湘南比马</td><td>11</td><td>4</td><td>6</td><td>1</td><td>12</td><td>10</td><td>+2</td><td class="pts">18</td></tr>
+            <tr class=""><td>7</td><td class="cell-left">大分三神</td><td>11</td><td>4</td><td>5</td><td>2</td><td>16</td><td>9</td><td>+7</td><td class="pts">17</td></tr>
+            <tr class=""><td>8</td><td class="cell-left">磐城FC</td><td>11</td><td>5</td><td>0</td><td>6</td><td>18</td><td>17</td><td>+1</td><td class="pts">15</td></tr>
+            <tr class=""><td>9</td><td class="cell-left">藤枝MYFC</td><td>11</td><td>3</td><td>5</td><td>3</td><td>13</td><td>11</td><td>+2</td><td class="pts">14</td></tr>
+            <tr class=""><td>10</td><td class="cell-left">宮崎特格瓦雅罗</td><td>11</td><td>3</td><td>5</td><td>3</td><td>15</td><td>15</td><td>0</td><td class="pts">14</td></tr>
+            <tr class=""><td>11</td><td class="cell-left">磐田山叶</td><td>11</td><td>4</td><td>2</td><td>5</td><td>13</td><td>14</td><td>-1</td><td class="pts">14</td></tr>
+            <tr class=""><td>12</td><td class="cell-left">鸟棲砂岩</td><td>11</td><td>4</td><td>2</td><td>5</td><td>11</td><td>13</td><td>-2</td><td class="pts">14</td></tr>
+            <tr class=""><td>13</td><td class="cell-left">德岛漩渦</td><td>11</td><td>4</td><td>2</td><td>5</td><td>10</td><td>12</td><td>-2</td><td class="pts">14</td></tr>
+            <tr class=""><td>14</td><td class="cell-left">山形山神</td><td>11</td><td>4</td><td>1</td><td>6</td><td>11</td><td>9</td><td>+2</td><td class="pts">13</td></tr>
+            <tr class=""><td>15</td><td class="cell-left">秋田闪电</td><td>11</td><td>3</td><td>4</td><td>4</td><td>12</td><td>12</td><td>0</td><td class="pts">13</td></tr>
+            <tr class=""><td>16</td><td class="cell-left">櫪木市FC</td><td>11</td><td>3</td><td>2</td><td>6</td><td>17</td><td>18</td><td>-1</td><td class="pts">11</td></tr>
+            <tr class=""><td>17</td><td class="cell-left">札幌冈萨</td><td>11</td><td>3</td><td>2</td><td>6</td><td>13</td><td>19</td><td>-6</td><td class="pts">11</td></tr>
+            <tr class=""><td>18</td><td class="cell-left">FC今治</td><td>11</td><td>3</td><td>2</td><td>6</td><td>14</td><td>22</td><td>-8</td><td class="pts">11</td></tr>
+            <tr class=""><td>19</td><td class="cell-left">八户云罗里</td><td>11</td><td>3</td><td>2</td><td>6</td><td>9</td><td>20</td><td>-11</td><td class="pts">11</td></tr>
+            <tr class=""><td>20</td><td class="cell-left">甲府风林</td><td>11</td><td>3</td><td>1</td><td>7</td><td>9</td><td>23</td><td>-14</td><td class="pts">10</td></tr>
+          </table>
+        </div>
+        <div class="std-legend">高亮＝本日参赛队</div>
+      </div>
+      <div class="lg-col">
+        <div class="col-h">形势分析</div>
+        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="league-impact">
+          <div class="impact-row"><span class="tag tag-blue">周三003</span> 大宫松鼠 vs 富山胜利（分差 +1 · 卡位对话）</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">大宫松鼠 #2</span><span class="sit-now">20 分（11 场）</span><span class="sit-team">富山胜利 #4</span><span class="sit-now">19 分（11 场）</span><span class="sit-now">本场已结束（0-3），上列为赛后实际名次。</span></div><div class="sit-near">名次相邻：仙台七夕 #1 24分、新潟天鹅 #3 20分、FC横滨 #5 18分</div></div>
+        </div>
+        <p class="league-note">进球预期最高：周三003 大宫松鼠vs富山胜利（λ4.20） · 冷门风险最高：周三003 大宫松鼠vs富山胜利（54%） · 最胶着：周三003 大宫松鼠vs富山胜利（主45% / 客30%）</p>
+      </div>
     </div>
-    <div class="std-legend">高亮＝本日参赛队</div>
-    <details class="std-full"><summary>查看完整积分榜（20 队 · 场次 / 胜平负 / 进失球）</summary>
-    <table class="league-tbl standings">
-      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
-      <tr><td>1</td><td class="cell-left">仙台七夕</td><td>11</td><td>7</td><td>3</td><td>1</td><td>18</td><td>8</td><td>+10</td><td>24</td></tr>
-      <tr><td>2</td><td class="cell-left">大宫松鼠</td><td>11</td><td>5</td><td>5</td><td>1</td><td>21</td><td>11</td><td>+10</td><td>20</td></tr>
-      <tr><td>3</td><td class="cell-left">新潟天鹅</td><td>11</td><td>6</td><td>2</td><td>3</td><td>15</td><td>19</td><td>-4</td><td>20</td></tr>
-      <tr><td>4</td><td class="cell-left">富山胜利</td><td>11</td><td>5</td><td>4</td><td>2</td><td>20</td><td>11</td><td>+9</td><td>19</td></tr>
-      <tr><td>5</td><td class="cell-left">FC横滨</td><td>11</td><td>5</td><td>3</td><td>3</td><td>20</td><td>14</td><td>+6</td><td>18</td></tr>
-      <tr><td>6</td><td class="cell-left">湘南比马</td><td>11</td><td>4</td><td>6</td><td>1</td><td>12</td><td>10</td><td>+2</td><td>18</td></tr>
-      <tr><td>7</td><td class="cell-left">大分三神</td><td>11</td><td>4</td><td>5</td><td>2</td><td>16</td><td>9</td><td>+7</td><td>17</td></tr>
-      <tr><td>8</td><td class="cell-left">磐城FC</td><td>11</td><td>5</td><td>0</td><td>6</td><td>18</td><td>17</td><td>+1</td><td>15</td></tr>
-      <tr><td>9</td><td class="cell-left">藤枝MYFC</td><td>11</td><td>3</td><td>5</td><td>3</td><td>13</td><td>11</td><td>+2</td><td>14</td></tr>
-      <tr><td>10</td><td class="cell-left">宮崎特格瓦雅罗</td><td>11</td><td>3</td><td>5</td><td>3</td><td>15</td><td>15</td><td>+0</td><td>14</td></tr>
-      <tr><td>11</td><td class="cell-left">磐田山叶</td><td>11</td><td>4</td><td>2</td><td>5</td><td>13</td><td>14</td><td>-1</td><td>14</td></tr>
-      <tr><td>12</td><td class="cell-left">鸟棲砂岩</td><td>11</td><td>4</td><td>2</td><td>5</td><td>11</td><td>13</td><td>-2</td><td>14</td></tr>
-      <tr><td>13</td><td class="cell-left">德岛漩渦</td><td>11</td><td>4</td><td>2</td><td>5</td><td>10</td><td>12</td><td>-2</td><td>14</td></tr>
-      <tr><td>14</td><td class="cell-left">山形山神</td><td>11</td><td>4</td><td>1</td><td>6</td><td>11</td><td>9</td><td>+2</td><td>13</td></tr>
-      <tr><td>15</td><td class="cell-left">秋田闪电</td><td>11</td><td>3</td><td>4</td><td>4</td><td>12</td><td>12</td><td>+0</td><td>13</td></tr>
-      <tr><td>16</td><td class="cell-left">櫪木市FC</td><td>11</td><td>3</td><td>2</td><td>6</td><td>17</td><td>18</td><td>-1</td><td>11</td></tr>
-      <tr><td>17</td><td class="cell-left">札幌冈萨</td><td>11</td><td>3</td><td>2</td><td>6</td><td>13</td><td>19</td><td>-6</td><td>11</td></tr>
-      <tr><td>18</td><td class="cell-left">FC今治</td><td>11</td><td>3</td><td>2</td><td>6</td><td>14</td><td>22</td><td>-8</td><td>11</td></tr>
-      <tr><td>19</td><td class="cell-left">八户云罗里</td><td>11</td><td>3</td><td>2</td><td>6</td><td>9</td><td>20</td><td>-11</td><td>11</td></tr>
-      <tr><td>20</td><td class="cell-left">甲府风林</td><td>11</td><td>3</td><td>1</td><td>7</td><td>9</td><td>23</td><td>-14</td><td>10</td></tr>
-    </table>
-    </details>
-    <div class="league-impact">
-      <div class="impact-title">本日对阵 · 积分影响</div>
-      <div class="impact-row"><span class="tag tag-blue">周三003</span> 大宫松鼠 <b>#2 20分</b> vs 富山胜利 <b>#4 19分</b>（分差 +1） · 卡位对话</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">大宫松鼠 #2</span><span class="sit-now">20 分（11 场）</span><span class="sit-team">富山胜利 #4</span><span class="sit-now">19 分（11 场）</span><span class="sit-now">本场已结束（0-3），上列为结果落地后的实际名次。</span></div><div class="sit-near">名次相邻：仙台七夕（#1 24 分）、新潟天鹅（#3 20 分）、FC横滨（#5 18 分） —— 本场结果会直接改写这些队的位置。</div></div>
-    </div>
-    <p class="league-note">进球预期最高：周三003 大宫松鼠vs富山胜利（λ4.20） · 冷门风险最高：周三003 大宫松鼠vs富山胜利（54%） · 最胶着：周三003 大宫松鼠vs富山胜利（主45% / 客30%）</p>
   </div>
   <div class="league-card">
-    <h4>欧冠 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 积分榜</span></h4>
+    <h4>欧冠 <span class="h4-sub">· 积分榜</span></h4>
     <div class="league-src">数据更新：2026-10-22 09:39 ｜ 来源 腾讯体育（sports.qq.com）</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="3 场 3胜0平0负 · 积分 9"><span class="r">1</span><span class="n">巴黎圣日耳曼</span><span class="s">9</span></span>
-      <span class="std-chip z1 hi" title="3 场 3胜0平0负 · 积分 9 · 本日参赛"><span class="r">2</span><span class="n">阿斯顿维拉</span><span class="s">9</span></span>
-      <span class="std-chip z1" title="3 场 3胜0平0负 · 积分 9"><span class="r">3</span><span class="n">利物浦</span><span class="s">9</span></span>
-      <span class="std-chip z1 hi" title="3 场 3胜0平0负 · 积分 9 · 本日参赛"><span class="r">4</span><span class="n">皇家马德里</span><span class="s">9</span></span>
-      <span class="std-chip z1 hi" title="3 场 3胜0平0负 · 积分 9 · 本日参赛"><span class="r">5</span><span class="n">皇家贝蒂斯</span><span class="s">9</span></span>
-      <span class="std-chip z1" title="3 场 2胜1平0负 · 积分 7"><span class="r">6</span><span class="n">斯图加特</span><span class="s">7</span></span>
-      <span class="std-chip z1 hi" title="3 场 2胜1平0负 · 积分 7 · 本日参赛"><span class="r">7</span><span class="n">阿森纳</span><span class="s">7</span></span>
-      <span class="std-chip z1" title="3 场 2胜0平1负 · 积分 6"><span class="r">8</span><span class="n">巴塞罗那</span><span class="s">6</span></span>
-      <span class="std-chip z2 hi" title="3 场 2胜0平1负 · 积分 6 · 本日参赛"><span class="r">9</span><span class="n">科莫</span><span class="s">6</span></span>
-      <span class="std-chip z2" title="3 场 2胜0平1负 · 积分 6"><span class="r">10</span><span class="n">曼城</span><span class="s">6</span></span>
-      <span class="std-chip z2 hi" title="3 场 2胜0平1负 · 积分 6 · 本日参赛"><span class="r">11</span><span class="n">布鲁日</span><span class="s">6</span></span>
-      <span class="std-chip z2 hi" title="3 场 2胜0平1负 · 积分 6 · 本日参赛"><span class="r">12</span><span class="n">葡萄牙体育</span><span class="s">6</span></span>
-      <span class="std-chip z2" title="3 场 2胜0平1负 · 积分 6"><span class="r">13</span><span class="n">多特蒙德</span><span class="s">6</span></span>
-      <span class="std-chip z2 hi" title="3 场 1胜2平0负 · 积分 5 · 本日参赛"><span class="r">14</span><span class="n">拜仁慕尼黑</span><span class="s">5</span></span>
-      <span class="std-chip z2" title="3 场 1胜1平1负 · 积分 4"><span class="r">15</span><span class="n">罗马</span><span class="s">4</span></span>
-      <span class="std-chip z2" title="3 场 1胜1平1负 · 积分 4"><span class="r">16</span><span class="n">马德里竞技</span><span class="s">4</span></span>
-      <span class="std-chip z2" title="3 场 1胜1平1负 · 积分 4"><span class="r">17</span><span class="n">顿涅茨克矿工</span><span class="s">4</span></span>
-      <span class="std-chip z2" title="3 场 1胜1平1负 · 积分 4"><span class="r">18</span><span class="n">埃因霍温</span><span class="s">4</span></span>
-      <span class="std-chip z2" title="3 场 1胜0平2负 · 积分 3"><span class="r">19</span><span class="n">比利亚雷亚尔</span><span class="s">3</span></span>
-      <span class="std-chip z2" title="3 场 1胜0平2负 · 积分 3"><span class="r">20</span><span class="n">国际米兰</span><span class="s">3</span></span>
-      <span class="std-chip z2 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">21</span><span class="n">曼联</span><span class="s">3</span></span>
-      <span class="std-chip z2" title="3 场 1胜0平2负 · 积分 3"><span class="r">22</span><span class="n">那不勒斯</span><span class="s">3</span></span>
-      <span class="std-chip z2 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">23</span><span class="n">加拉塔萨雷</span><span class="s">3</span></span>
-      <span class="std-chip z2 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">24</span><span class="n">林茨</span><span class="s">3</span></span>
-      <span class="std-chip z3" title="3 场 1胜0平2负 · 积分 3"><span class="r">25</span><span class="n">Sabah</span><span class="s">3</span></span>
-      <span class="std-chip z3 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">26</span><span class="n">费耶诺德</span><span class="s">3</span></span>
-      <span class="std-chip z3 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">27</span><span class="n">朗斯</span><span class="s">3</span></span>
-      <span class="std-chip z3" title="3 场 1胜0平2负 · 积分 3"><span class="r">28</span><span class="n">博德闪耀</span><span class="s">3</span></span>
-      <span class="std-chip z3" title="3 场 1胜0平2负 · 积分 3"><span class="r">29</span><span class="n">雅典AEK</span><span class="s">3</span></span>
-      <span class="std-chip z3 hi" title="3 场 1胜0平2负 · 积分 3 · 本日参赛"><span class="r">30</span><span class="n">RB莱比锡</span><span class="s">3</span></span>
-      <span class="std-chip z3" title="3 场 0胜2平1负 · 积分 2"><span class="r">31</span><span class="n">费内巴切</span><span class="s">2</span></span>
-      <span class="std-chip z3" title="3 场 0胜1平2负 · 积分 1"><span class="r">32</span><span class="n">布拉格斯拉维亚</span><span class="s">1</span></span>
-      <span class="std-chip z3 hi" title="3 场 0胜1平2负 · 积分 1 · 本日参赛"><span class="r">33</span><span class="n">Viking</span><span class="s">1</span></span>
-      <span class="std-chip z3" title="3 场 0胜0平3负 · 积分 0"><span class="r">34</span><span class="n">波尔图</span><span class="s">0</span></span>
-      <span class="std-chip z3 hi" title="3 场 0胜0平3负 · 积分 0 · 本日参赛"><span class="r">35</span><span class="n">里尔</span><span class="s">0</span></span>
-      <span class="std-chip z3" title="3 场 0胜0平3负 · 积分 0"><span class="r">36</span><span class="n">布拉迪斯拉发</span><span class="s">0</span></span>
-    </div>
+    <div class="lg-split">
+      <div class="lg-col">
+        <div class="col-h">积分榜</div>
+        <div class="std-scroll">
+          <table class="league-tbl standings std-main">
+            <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>分</th></tr>
+            <tr class="z1"><td>1</td><td class="cell-left">巴黎圣日耳曼</td><td>3</td><td>3</td><td>0</td><td>0</td><td class="pts">9</td></tr>
+            <tr class="z1 hi"><td>2</td><td class="cell-left">阿斯顿维拉</td><td>3</td><td>3</td><td>0</td><td>0</td><td class="pts">9</td></tr>
+            <tr class="z1"><td>3</td><td class="cell-left">利物浦</td><td>3</td><td>3</td><td>0</td><td>0</td><td class="pts">9</td></tr>
+            <tr class="z1 hi"><td>4</td><td class="cell-left">皇家马德里</td><td>3</td><td>3</td><td>0</td><td>0</td><td class="pts">9</td></tr>
+            <tr class="z1 hi"><td>5</td><td class="cell-left">皇家贝蒂斯</td><td>3</td><td>3</td><td>0</td><td>0</td><td class="pts">9</td></tr>
+            <tr class="z1"><td>6</td><td class="cell-left">斯图加特</td><td>3</td><td>2</td><td>1</td><td>0</td><td class="pts">7</td></tr>
+            <tr class="z1 hi"><td>7</td><td class="cell-left">阿森纳</td><td>3</td><td>2</td><td>1</td><td>0</td><td class="pts">7</td></tr>
+            <tr class="z1"><td>8</td><td class="cell-left">巴塞罗那</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2 hi"><td>9</td><td class="cell-left">科莫</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2"><td>10</td><td class="cell-left">曼城</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2 hi"><td>11</td><td class="cell-left">布鲁日</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2 hi"><td>12</td><td class="cell-left">葡萄牙体育</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2"><td>13</td><td class="cell-left">多特蒙德</td><td>3</td><td>2</td><td>0</td><td>1</td><td class="pts">6</td></tr>
+            <tr class="z2 hi"><td>14</td><td class="cell-left">拜仁慕尼黑</td><td>3</td><td>1</td><td>2</td><td>0</td><td class="pts">5</td></tr>
+            <tr class="z2"><td>15</td><td class="cell-left">罗马</td><td>3</td><td>1</td><td>1</td><td>1</td><td class="pts">4</td></tr>
+            <tr class="z2"><td>16</td><td class="cell-left">马德里竞技</td><td>3</td><td>1</td><td>1</td><td>1</td><td class="pts">4</td></tr>
+            <tr class="z2"><td>17</td><td class="cell-left">顿涅茨克矿工</td><td>3</td><td>1</td><td>1</td><td>1</td><td class="pts">4</td></tr>
+            <tr class="z2"><td>18</td><td class="cell-left">埃因霍温</td><td>3</td><td>1</td><td>1</td><td>1</td><td class="pts">4</td></tr>
+            <tr class="z2"><td>19</td><td class="cell-left">比利亚雷亚尔</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z2"><td>20</td><td class="cell-left">国际米兰</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z2 hi"><td>21</td><td class="cell-left">曼联</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z2"><td>22</td><td class="cell-left">那不勒斯</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z2 hi"><td>23</td><td class="cell-left">加拉塔萨雷</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z2 hi"><td>24</td><td class="cell-left">林茨</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3"><td>25</td><td class="cell-left">Sabah</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3 hi"><td>26</td><td class="cell-left">费耶诺德</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3 hi"><td>27</td><td class="cell-left">朗斯</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3"><td>28</td><td class="cell-left">博德闪耀</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3"><td>29</td><td class="cell-left">雅典AEK</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3 hi"><td>30</td><td class="cell-left">RB莱比锡</td><td>3</td><td>1</td><td>0</td><td>2</td><td class="pts">3</td></tr>
+            <tr class="z3"><td>31</td><td class="cell-left">费内巴切</td><td>3</td><td>0</td><td>2</td><td>1</td><td class="pts">2</td></tr>
+            <tr class="z3"><td>32</td><td class="cell-left">布拉格斯拉维亚</td><td>3</td><td>0</td><td>1</td><td>2</td><td class="pts">1</td></tr>
+            <tr class="z3 hi"><td>33</td><td class="cell-left">Viking</td><td>3</td><td>0</td><td>1</td><td>2</td><td class="pts">1</td></tr>
+            <tr class="z3"><td>34</td><td class="cell-left">波尔图</td><td>3</td><td>0</td><td>0</td><td>3</td><td class="pts">0</td></tr>
+            <tr class="z3 hi"><td>35</td><td class="cell-left">里尔</td><td>3</td><td>0</td><td>0</td><td>3</td><td class="pts">0</td></tr>
+            <tr class="z3"><td>36</td><td class="cell-left">布拉迪斯拉发</td><td>3</td><td>0</td><td>0</td><td>3</td><td class="pts">0</td></tr>
+          </table>
+        </div>
     <div class="std-legend">绿＝前 8 直接进 16 强 ｜ 橙＝9-24 打附加赛 ｜ 灰＝25-36 淘汰 ｜ 高亮＝本日参赛队</div>
-    <details class="std-full"><summary>查看完整积分榜（36 队 · 场次 / 胜平负）</summary>
-    <table class="league-tbl standings">
-      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>分</th></tr>
-      <tr><td>1</td><td class="cell-left">巴黎圣日耳曼</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td></tr>
-      <tr><td>2</td><td class="cell-left">阿斯顿维拉</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td></tr>
-      <tr><td>3</td><td class="cell-left">利物浦</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td></tr>
-      <tr><td>4</td><td class="cell-left">皇家马德里</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td></tr>
-      <tr><td>5</td><td class="cell-left">皇家贝蒂斯</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td></tr>
-      <tr><td>6</td><td class="cell-left">斯图加特</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td></tr>
-      <tr><td>7</td><td class="cell-left">阿森纳</td><td>3</td><td>2</td><td>1</td><td>0</td><td>7</td></tr>
-      <tr><td>8</td><td class="cell-left">巴塞罗那</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>9</td><td class="cell-left">科莫</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>10</td><td class="cell-left">曼城</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>11</td><td class="cell-left">布鲁日</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>12</td><td class="cell-left">葡萄牙体育</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>13</td><td class="cell-left">多特蒙德</td><td>3</td><td>2</td><td>0</td><td>1</td><td>6</td></tr>
-      <tr><td>14</td><td class="cell-left">拜仁慕尼黑</td><td>3</td><td>1</td><td>2</td><td>0</td><td>5</td></tr>
-      <tr><td>15</td><td class="cell-left">罗马</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4</td></tr>
-      <tr><td>16</td><td class="cell-left">马德里竞技</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4</td></tr>
-      <tr><td>17</td><td class="cell-left">顿涅茨克矿工</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4</td></tr>
-      <tr><td>18</td><td class="cell-left">埃因霍温</td><td>3</td><td>1</td><td>1</td><td>1</td><td>4</td></tr>
-      <tr><td>19</td><td class="cell-left">比利亚雷亚尔</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>20</td><td class="cell-left">国际米兰</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>21</td><td class="cell-left">曼联</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>22</td><td class="cell-left">那不勒斯</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>23</td><td class="cell-left">加拉塔萨雷</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>24</td><td class="cell-left">林茨</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>25</td><td class="cell-left">Sabah</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>26</td><td class="cell-left">费耶诺德</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>27</td><td class="cell-left">朗斯</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>28</td><td class="cell-left">博德闪耀</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>29</td><td class="cell-left">雅典AEK</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>30</td><td class="cell-left">RB莱比锡</td><td>3</td><td>1</td><td>0</td><td>2</td><td>3</td></tr>
-      <tr><td>31</td><td class="cell-left">费内巴切</td><td>3</td><td>0</td><td>2</td><td>1</td><td>2</td></tr>
-      <tr><td>32</td><td class="cell-left">布拉格斯拉维亚</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1</td></tr>
-      <tr><td>33</td><td class="cell-left">Viking</td><td>3</td><td>0</td><td>1</td><td>2</td><td>1</td></tr>
-      <tr><td>34</td><td class="cell-left">波尔图</td><td>3</td><td>0</td><td>0</td><td>3</td><td>0</td></tr>
-      <tr><td>35</td><td class="cell-left">里尔</td><td>3</td><td>0</td><td>0</td><td>3</td><td>0</td></tr>
-      <tr><td>36</td><td class="cell-left">布拉迪斯拉发</td><td>3</td><td>0</td><td>0</td><td>3</td><td>0</td></tr>
-    </table>
-    </details>
-    <div class="league-impact">
-      <div class="impact-title">本日对阵 · 积分形势影响</div>
-      <div class="impact-row"><span class="tag tag-blue">周三004</span> 科莫 vs 曼联</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">科莫 #9</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">曼联 #21</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">科莫 6 分（距第8名 +0、距第24名 +3） · 曼联 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：斯图加特（#6 7 分）、阿森纳（#7 7 分）、巴塞罗那（#8 6 分）、曼城（#10 6 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三005</span> 里尔 vs 加拉塔萨</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">里尔 #35</span><span class="sit-now">0 分（3 场）</span><span class="sit-team">加拉塔萨 #23</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">里尔 0 分（距第8名 -6、距第24名 -3） · 加拉塔萨 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：布拉格斯拉维亚（#32 1 分）、Viking（#33 1 分）、波尔图（#34 0 分）、布拉迪斯拉发（#36 0 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三007</span> 皇马 vs 莱红牛</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">皇马 #4</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">莱红牛 #30</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">皇马 9 分（距第8名 +3、距第24名 +6） · 莱红牛 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：巴黎圣日耳曼（#1 9 分）、阿斯顿维拉（#2 9 分）、利物浦（#3 9 分）、皇家贝蒂斯（#5 9 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三008</span> 维拉 vs 维京</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">维拉 #2</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">维京 #33</span><span class="sit-now">1 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">维拉 9 分（距第8名 +3、距第24名 +6） · 维京 1 分（距第8名 -5、距第24名 -2）</div>
-<div class="sit-near">名次相邻：巴黎圣日耳曼（#1 9 分）、利物浦（#3 9 分）、皇家马德里（#4 9 分）、皇家贝蒂斯（#5 9 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三009</span> 贝蒂斯 vs 费耶诺德</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">贝蒂斯 #5</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">费耶诺德 #26</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">贝蒂斯 9 分（距第8名 +3、距第24名 +6） · 费耶诺德 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：阿斯顿维拉（#2 9 分）、利物浦（#3 9 分）、皇家马德里（#4 9 分）、斯图加特（#6 7 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三010</span> 拜仁 vs 阿森纳</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">拜仁 #14</span><span class="sit-now">5 分（3 场）</span><span class="sit-team">阿森纳 #7</span><span class="sit-now">7 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">拜仁 5 分（距第8名 -1、距第24名 +2） · 阿森纳 7 分（距第8名 +1、距第24名 +4）</div>
-<div class="sit-near">名次相邻：布鲁日（#11 6 分）、葡萄牙体育（#12 6 分）、多特蒙德（#13 6 分）、罗马（#15 4 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三011</span> 里斯本 vs LASK林茨</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">里斯本 #12</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">LASK林茨 #24</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">里斯本 6 分（距第8名 +0、距第24名 +3） · LASK林茨 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：科莫（#9 6 分）、曼城（#10 6 分）、布鲁日（#11 6 分）、多特蒙德（#13 6 分） —— 本场结果会直接改写这些队的位置。</div></div>
-      <div class="impact-row"><span class="tag tag-blue">周三012</span> 布鲁日 vs 朗斯</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">布鲁日 #11</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">朗斯 #27</span><span class="sit-now">3 分（3 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-line">关键线：第 8 名 6 分（前 8 直接进 16 强） ｜ 第 24 名 3 分（附加赛末位）</div>
-<div class="sit-line">布鲁日 6 分（距第8名 +0、距第24名 +3） · 朗斯 3 分（距第8名 -3、距第24名 +0）</div>
-<div class="sit-near">名次相邻：巴塞罗那（#8 6 分）、科莫（#9 6 分）、曼城（#10 6 分）、葡萄牙体育（#12 6 分） —— 本场结果会直接改写这些队的位置。</div></div>
+      </div>
+      <div class="lg-col">
+        <div class="col-h">形势分析</div>
+        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="sit-zone">关键线：第 8 名 <b>6</b> 分 · 巴塞罗那（前 8 直接进 16 强） ｜ 第 24 名 <b>3</b> 分 · 林茨（附加赛末位）</div>
+        <div class="league-impact">
+          <div class="impact-row"><span class="tag tag-blue">周三004</span> 科莫 vs 曼联</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">科莫 #9</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">曼联 #21</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：斯图加特 #6 7分、阿森纳 #7 7分、巴塞罗那 #8 6分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三005</span> 里尔 vs 加拉塔萨</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">里尔 #35</span><span class="sit-now">0 分（3 场）</span><span class="sit-team">加拉塔萨 #23</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：布拉格斯拉维亚 #32 1分、Viking #33 1分、波尔图 #34 0分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三007</span> 皇马 vs 莱红牛</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">皇马 #4</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">莱红牛 #30</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：巴黎圣日耳曼 #1 9分、阿斯顿维拉 #2 9分、利物浦 #3 9分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三008</span> 维拉 vs 维京</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">维拉 #2</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">维京 #33</span><span class="sit-now">1 分（3 场）</span></div><div class="sit-near">名次相邻：巴黎圣日耳曼 #1 9分、利物浦 #3 9分、皇家马德里 #4 9分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三009</span> 贝蒂斯 vs 费耶诺德</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">贝蒂斯 #5</span><span class="sit-now">9 分（3 场）</span><span class="sit-team">费耶诺德 #26</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：阿斯顿维拉 #2 9分、利物浦 #3 9分、皇家马德里 #4 9分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三010</span> 拜仁 vs 阿森纳</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">拜仁 #14</span><span class="sit-now">5 分（3 场）</span><span class="sit-team">阿森纳 #7</span><span class="sit-now">7 分（3 场）</span></div><div class="sit-near">名次相邻：布鲁日 #11 6分、葡萄牙体育 #12 6分、多特蒙德 #13 6分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三011</span> 里斯本 vs LASK林茨</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">里斯本 #12</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">LASK林茨 #24</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：科莫 #9 6分、曼城 #10 6分、布鲁日 #11 6分</div></div>
+          <div class="impact-row"><span class="tag tag-blue">周三012</span> 布鲁日 vs 朗斯</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">布鲁日 #11</span><span class="sit-now">6 分（3 场）</span><span class="sit-team">朗斯 #27</span><span class="sit-now">3 分（3 场）</span></div><div class="sit-near">名次相邻：巴塞罗那 #8 6分、科莫 #9 6分、曼城 #10 6分</div></div>
+        </div>
+        <p class="league-note">欧冠联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。名次区间为本场结果落地后的可能范围，「最好」按其余球队本轮不再得分估算，「最差」按落后 3 分以内的球队本轮全赢估算。后续轮次的对手与赛程以官方公布为准，本节只分析积分榜层面的直接影响。</p>
+      </div>
     </div>
-    <p class="league-note">欧冠联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。名次区间为本场结果落地后的可能范围，「最好」按其余球队本轮不再得分估算，「最差」按落后 3 分以内的球队本轮全赢估算。后续轮次的对手与赛程以官方公布为准，本节只分析积分榜层面的直接影响。</p>
   </div>
   <div class="league-card">
-    <h4>西甲 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026-2027 西班牙甲组联赛</span></h4>
+    <h4>西甲 <span class="h4-sub">· 2026-2027 西班牙甲组联赛</span></h4>
     <div class="league-src">数据更新：2026/10/20 6:22:59 ｜ 来源 7M 体育数据库</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="9 场 9胜0平0负 · 积分 27 · 39:9（净 +30）"><span class="r">1</span><span class="n">巴萨</span><span class="s">27</span></span>
-      <span class="std-chip z1" title="9 场 7胜1平1负 · 积分 22 · 19:8（净 +11）"><span class="r">2</span><span class="n">马竞</span><span class="s">22</span></span>
-      <span class="std-chip z1" title="9 场 7胜0平2负 · 积分 21 · 23:9（净 +14）"><span class="r">3</span><span class="n">皇马</span><span class="s">21</span></span>
-      <span class="std-chip z1" title="9 场 6胜1平2负 · 积分 19 · 16:14（净 +2）"><span class="r">4</span><span class="n">贝蒂斯</span><span class="s">19</span></span>
-      <span class="std-chip z1" title="9 场 5胜1平3负 · 积分 16 · 17:17（净 +0）"><span class="r">5</span><span class="n">皇家社会</span><span class="s">16</span></span>
-      <span class="std-chip z1" title="9 场 4胜2平3负 · 积分 14 · 14:16（净 -2）"><span class="r">6</span><span class="n">塞维利亚</span><span class="s">14</span></span>
-      <span class="std-chip " title="9 场 3胜2平4负 · 积分 11 · 13:10（净 +3）"><span class="r">7</span><span class="n">阿拉维斯</span><span class="s">11</span></span>
-      <span class="std-chip " title="9 场 2胜5平2负 · 积分 11 · 10:7（净 +3）"><span class="r">8</span><span class="n">塞尔塔</span><span class="s">11</span></span>
-      <span class="std-chip " title="9 场 2胜5平2负 · 积分 11 · 13:12（净 +1）"><span class="r">9</span><span class="n">拉科</span><span class="s">11</span></span>
-      <span class="std-chip " title="9 场 3胜2平4负 · 积分 11 · 10:18（净 -8）"><span class="r">10</span><span class="n">奥萨苏纳</span><span class="s">11</span></span>
-      <span class="std-chip hi" title="7 场 2胜3平2负 · 积分 9 · 7:6（净 +1） · 本日参赛"><span class="r">11</span><span class="n">毕尔巴鄂</span><span class="s">9</span></span>
-      <span class="std-chip " title="9 场 2胜3平4负 · 积分 9 · 13:13（净 +0）"><span class="r">12</span><span class="n">比利亚雷</span><span class="s">9</span></span>
-      <span class="std-chip " title="8 场 2胜3平3负 · 积分 9 · 12:17（净 -5）"><span class="r">13</span><span class="n">巴列卡诺</span><span class="s">9</span></span>
-      <span class="std-chip " title="9 场 2胜3平4负 · 积分 9 · 5:11（净 -6）"><span class="r">14</span><span class="n">赫塔费</span><span class="s">9</span></span>
-      <span class="std-chip " title="9 场 2胜2平5负 · 积分 8 · 11:12（净 -1）"><span class="r">15</span><span class="n">西班牙人</span><span class="s">8</span></span>
-      <span class="std-chip " title="9 场 2胜2平5负 · 积分 8 · 13:25（净 -12）"><span class="r">16</span><span class="n">桑坦德</span><span class="s">8</span></span>
-      <span class="std-chip hi" title="8 场 1胜4平3负 · 积分 7 · 12:16（净 -4） · 本日参赛"><span class="r">17</span><span class="n">莱万特</span><span class="s">7</span></span>
-      <span class="std-chip z3" title="9 场 1胜4平4负 · 积分 7 · 11:17（净 -6）"><span class="r">18</span><span class="n">埃尔切</span><span class="s">7</span></span>
-      <span class="std-chip z3" title="9 场 1胜3平5负 · 积分 6 · 6:15（净 -9）"><span class="r">19</span><span class="n">巴伦西亚</span><span class="s">6</span></span>
-      <span class="std-chip z3" title="9 场 0胜4平5负 · 积分 4 · 6:18（净 -12）"><span class="r">20</span><span class="n">马拉加</span><span class="s">4</span></span>
+    <div class="lg-split">
+      <div class="lg-col">
+        <div class="col-h">积分榜</div>
+        <div class="std-scroll">
+          <table class="league-tbl standings std-main">
+            <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+            <tr class="z1"><td>1</td><td class="cell-left">巴萨</td><td>9</td><td>9</td><td>0</td><td>0</td><td>39</td><td>9</td><td>+30</td><td class="pts">27</td></tr>
+            <tr class="z1"><td>2</td><td class="cell-left">马竞</td><td>9</td><td>7</td><td>1</td><td>1</td><td>19</td><td>8</td><td>+11</td><td class="pts">22</td></tr>
+            <tr class="z1"><td>3</td><td class="cell-left">皇马</td><td>9</td><td>7</td><td>0</td><td>2</td><td>23</td><td>9</td><td>+14</td><td class="pts">21</td></tr>
+            <tr class="z1"><td>4</td><td class="cell-left">贝蒂斯</td><td>9</td><td>6</td><td>1</td><td>2</td><td>16</td><td>14</td><td>+2</td><td class="pts">19</td></tr>
+            <tr class="z1"><td>5</td><td class="cell-left">皇家社会</td><td>9</td><td>5</td><td>1</td><td>3</td><td>17</td><td>17</td><td>0</td><td class="pts">16</td></tr>
+            <tr class="z1"><td>6</td><td class="cell-left">塞维利亚</td><td>9</td><td>4</td><td>2</td><td>3</td><td>14</td><td>16</td><td>-2</td><td class="pts">14</td></tr>
+            <tr class=""><td>7</td><td class="cell-left">阿拉维斯</td><td>9</td><td>3</td><td>2</td><td>4</td><td>13</td><td>10</td><td>+3</td><td class="pts">11</td></tr>
+            <tr class=""><td>8</td><td class="cell-left">塞尔塔</td><td>9</td><td>2</td><td>5</td><td>2</td><td>10</td><td>7</td><td>+3</td><td class="pts">11</td></tr>
+            <tr class=""><td>9</td><td class="cell-left">拉科</td><td>9</td><td>2</td><td>5</td><td>2</td><td>13</td><td>12</td><td>+1</td><td class="pts">11</td></tr>
+            <tr class=""><td>10</td><td class="cell-left">奥萨苏纳</td><td>9</td><td>3</td><td>2</td><td>4</td><td>10</td><td>18</td><td>-8</td><td class="pts">11</td></tr>
+            <tr class="hi"><td>11</td><td class="cell-left">毕尔巴鄂</td><td>7</td><td>2</td><td>3</td><td>2</td><td>7</td><td>6</td><td>+1</td><td class="pts">9</td></tr>
+            <tr class=""><td>12</td><td class="cell-left">比利亚雷</td><td>9</td><td>2</td><td>3</td><td>4</td><td>13</td><td>13</td><td>0</td><td class="pts">9</td></tr>
+            <tr class=""><td>13</td><td class="cell-left">巴列卡诺</td><td>8</td><td>2</td><td>3</td><td>3</td><td>12</td><td>17</td><td>-5</td><td class="pts">9</td></tr>
+            <tr class=""><td>14</td><td class="cell-left">赫塔费</td><td>9</td><td>2</td><td>3</td><td>4</td><td>5</td><td>11</td><td>-6</td><td class="pts">9</td></tr>
+            <tr class=""><td>15</td><td class="cell-left">西班牙人</td><td>9</td><td>2</td><td>2</td><td>5</td><td>11</td><td>12</td><td>-1</td><td class="pts">8</td></tr>
+            <tr class=""><td>16</td><td class="cell-left">桑坦德</td><td>9</td><td>2</td><td>2</td><td>5</td><td>13</td><td>25</td><td>-12</td><td class="pts">8</td></tr>
+            <tr class="hi"><td>17</td><td class="cell-left">莱万特</td><td>8</td><td>1</td><td>4</td><td>3</td><td>12</td><td>16</td><td>-4</td><td class="pts">7</td></tr>
+            <tr class="z3"><td>18</td><td class="cell-left">埃尔切</td><td>9</td><td>1</td><td>4</td><td>4</td><td>11</td><td>17</td><td>-6</td><td class="pts">7</td></tr>
+            <tr class="z3"><td>19</td><td class="cell-left">巴伦西亚</td><td>9</td><td>1</td><td>3</td><td>5</td><td>6</td><td>15</td><td>-9</td><td class="pts">6</td></tr>
+            <tr class="z3"><td>20</td><td class="cell-left">马拉加</td><td>9</td><td>0</td><td>4</td><td>5</td><td>6</td><td>18</td><td>-12</td><td class="pts">4</td></tr>
+          </table>
+        </div>
+        <div class="std-legend">绿＝杯赛/欧战区 ｜ 灰＝降级区 ｜ 高亮＝本日参赛队</div>
+      </div>
+      <div class="lg-col">
+        <div class="col-h">形势分析</div>
+        <div class="sit-note">本报告为历史日期补跑，榜单已是赛后状态，以下只列当前榜位与名次相邻对手，不做赛前推演。</div>
+        <div class="league-impact">
+          <div class="impact-row"><span class="tag tag-blue">周三006</span> 莱万特 vs 毕尔巴鄂（分差 -2 · 卡位对话）</div>
+<div class="sit-block"><div class="sit-row"><span class="sit-team">莱万特 #17</span><span class="sit-now">7 分（8 场）</span><span class="sit-team">毕尔巴鄂 #11</span><span class="sit-now">9 分（7 场）</span></div><div class="sit-near">名次相邻：赫塔费 #14 9分、西班牙人 #15 8分、桑坦德 #16 8分</div></div>
+        </div>
+        <p class="league-note">进球预期最高：周三006 莱万特vs毕尔巴鄂（λ3.08） · 冷门风险最高：周三006 莱万特vs毕尔巴鄂（58%） · 最胶着：周三006 莱万特vs毕尔巴鄂（主30% / 客42%）</p>
+      </div>
     </div>
-    <div class="std-legend">绿＝杯赛/欧战区 ｜ 灰＝降级区 ｜ 高亮＝本日参赛队</div>
-    <details class="std-full"><summary>查看完整积分榜（20 队 · 场次 / 胜平负 / 进失球）</summary>
-    <table class="league-tbl standings">
-      <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
-      <tr><td>1</td><td class="cell-left">巴萨</td><td>9</td><td>9</td><td>0</td><td>0</td><td>39</td><td>9</td><td>+30</td><td>27</td></tr>
-      <tr><td>2</td><td class="cell-left">马竞</td><td>9</td><td>7</td><td>1</td><td>1</td><td>19</td><td>8</td><td>+11</td><td>22</td></tr>
-      <tr><td>3</td><td class="cell-left">皇马</td><td>9</td><td>7</td><td>0</td><td>2</td><td>23</td><td>9</td><td>+14</td><td>21</td></tr>
-      <tr><td>4</td><td class="cell-left">贝蒂斯</td><td>9</td><td>6</td><td>1</td><td>2</td><td>16</td><td>14</td><td>+2</td><td>19</td></tr>
-      <tr><td>5</td><td class="cell-left">皇家社会</td><td>9</td><td>5</td><td>1</td><td>3</td><td>17</td><td>17</td><td>+0</td><td>16</td></tr>
-      <tr><td>6</td><td class="cell-left">塞维利亚</td><td>9</td><td>4</td><td>2</td><td>3</td><td>14</td><td>16</td><td>-2</td><td>14</td></tr>
-      <tr><td>7</td><td class="cell-left">阿拉维斯</td><td>9</td><td>3</td><td>2</td><td>4</td><td>13</td><td>10</td><td>+3</td><td>11</td></tr>
-      <tr><td>8</td><td class="cell-left">塞尔塔</td><td>9</td><td>2</td><td>5</td><td>2</td><td>10</td><td>7</td><td>+3</td><td>11</td></tr>
-      <tr><td>9</td><td class="cell-left">拉科</td><td>9</td><td>2</td><td>5</td><td>2</td><td>13</td><td>12</td><td>+1</td><td>11</td></tr>
-      <tr><td>10</td><td class="cell-left">奥萨苏纳</td><td>9</td><td>3</td><td>2</td><td>4</td><td>10</td><td>18</td><td>-8</td><td>11</td></tr>
-      <tr><td>11</td><td class="cell-left">毕尔巴鄂</td><td>7</td><td>2</td><td>3</td><td>2</td><td>7</td><td>6</td><td>+1</td><td>9</td></tr>
-      <tr><td>12</td><td class="cell-left">比利亚雷</td><td>9</td><td>2</td><td>3</td><td>4</td><td>13</td><td>13</td><td>+0</td><td>9</td></tr>
-      <tr><td>13</td><td class="cell-left">巴列卡诺</td><td>8</td><td>2</td><td>3</td><td>3</td><td>12</td><td>17</td><td>-5</td><td>9</td></tr>
-      <tr><td>14</td><td class="cell-left">赫塔费</td><td>9</td><td>2</td><td>3</td><td>4</td><td>5</td><td>11</td><td>-6</td><td>9</td></tr>
-      <tr><td>15</td><td class="cell-left">西班牙人</td><td>9</td><td>2</td><td>2</td><td>5</td><td>11</td><td>12</td><td>-1</td><td>8</td></tr>
-      <tr><td>16</td><td class="cell-left">桑坦德</td><td>9</td><td>2</td><td>2</td><td>5</td><td>13</td><td>25</td><td>-12</td><td>8</td></tr>
-      <tr><td>17</td><td class="cell-left">莱万特</td><td>8</td><td>1</td><td>4</td><td>3</td><td>12</td><td>16</td><td>-4</td><td>7</td></tr>
-      <tr><td>18</td><td class="cell-left">埃尔切</td><td>9</td><td>1</td><td>4</td><td>4</td><td>11</td><td>17</td><td>-6</td><td>7</td></tr>
-      <tr><td>19</td><td class="cell-left">巴伦西亚</td><td>9</td><td>1</td><td>3</td><td>5</td><td>6</td><td>15</td><td>-9</td><td>6</td></tr>
-      <tr><td>20</td><td class="cell-left">马拉加</td><td>9</td><td>0</td><td>4</td><td>5</td><td>6</td><td>18</td><td>-12</td><td>4</td></tr>
-    </table>
-    </details>
-    <div class="league-impact">
-      <div class="impact-title">本日对阵 · 积分影响</div>
-      <div class="impact-row"><span class="tag tag-blue">周三006</span> 莱万特 <b>#17 7分</b> vs 毕尔巴鄂 <b>#11 9分</b>（分差 -2） · 卡位对话</div>
-<div class="sit-block"><div class="sit-row"><span class="sit-team">莱万特 #17</span><span class="sit-now">7 分（8 场）</span><span class="sit-team">毕尔巴鄂 #11</span><span class="sit-now">9 分（7 场）</span><span class="sit-now">本报告为历史日期补跑，榜单已是赛后状态，故只列当前榜位。</span></div><div class="sit-near">名次相邻：赫塔费（#14 9 分）、西班牙人（#15 8 分）、桑坦德（#16 8 分）、埃尔切（#18 7 分） —— 本场结果会直接改写这些队的位置。</div></div>
-    </div>
-    <p class="league-note">进球预期最高：周三006 莱万特vs毕尔巴鄂（λ3.08） · 冷门风险最高：周三006 莱万特vs毕尔巴鄂（58%） · 最胶着：周三006 莱万特vs毕尔巴鄂（主30% / 客42%）</p>
   </div>
   <div class="league-card">
-    <h4>解放者杯 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 小组积分榜</span></h4>
+    <h4>解放者杯 <span class="h4-sub">· 小组积分榜</span></h4>
     <div class="league-src">数据更新：2026-10-22 09:47 ｜ 来源 Fox Sports（foxsports.com）</div>
-    <div class="std-grp">
-      <div class="std-grp-block">
-        <div class="gname">C 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 5胜1平0负 · 积分 16 · 15:6（净 +9）"><span class="r">1</span><span class="n">里瓦达维亚独立</span><span class="s">16</span></span>
-      <span class="std-chip z1 hi" title="6 场 2胜2平2负 · 积分 8 · 7:7（净 +0） · 本日参赛"><span class="r">2</span><span class="n">弗鲁米嫩塞</span><span class="s">8</span></span>
-      <span class="std-chip z2" title="6 场 1胜2平3负 · 积分 5 · 6:8（净 -2）"><span class="r">3</span><span class="n">玻利瓦尔</span><span class="s">5</span></span>
-      <span class="std-chip z3" title="6 场 0胜3平3负 · 积分 3 · 6:13（净 -7）"><span class="r">4</span><span class="n">拉瓜伊拉</span><span class="s">3</span></span>
-    </div>
-      </div>
-      <div class="std-grp-block">
-        <div class="gname">F 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 4胜1平1负 · 积分 13 · 6:2（净 +4）"><span class="r">1</span><span class="n">波特诺山丘</span><span class="s">13</span></span>
-      <span class="std-chip z1 hi" title="6 场 3胜2平1负 · 积分 11 · 10:5（净 +5） · 本日参赛"><span class="r">2</span><span class="n">帕尔梅拉斯</span><span class="s">11</span></span>
-      <span class="std-chip z2" title="6 场 2胜0平4负 · 积分 6 · 6:9（净 -3）"><span class="r">3</span><span class="n">水晶体育</span><span class="s">6</span></span>
-      <span class="std-chip z3" title="6 场 1胜1平4负 · 积分 4 · 5:11（净 -6）"><span class="r">4</span><span class="n">巴兰基亚青年</span><span class="s">4</span></span>
-    </div>
-      </div>
-    </div>
+    <div class="lg-split">
+      <div class="lg-col">
+        <div class="col-h">积分榜</div>
+        <div class="std-grp">
+          <div class="std-grp-block">
+            <div class="gname">C 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">里瓦达维亚独立</td><td>6</td><td>5</td><td>1</td><td>0</td><td>15</td><td>6</td><td>+9</td><td class="pts">16</td></tr>
+              <tr class="z1 hi"><td>2</td><td class="cell-left">弗鲁米嫩塞</td><td>6</td><td>2</td><td>2</td><td>2</td><td>7</td><td>7</td><td>0</td><td class="pts">8</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">玻利瓦尔</td><td>6</td><td>1</td><td>2</td><td>3</td><td>6</td><td>8</td><td>-2</td><td class="pts">5</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">拉瓜伊拉</td><td>6</td><td>0</td><td>3</td><td>3</td><td>6</td><td>13</td><td>-7</td><td class="pts">3</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">F 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">波特诺山丘</td><td>6</td><td>4</td><td>1</td><td>1</td><td>6</td><td>2</td><td>+4</td><td class="pts">13</td></tr>
+              <tr class="z1 hi"><td>2</td><td class="cell-left">帕尔梅拉斯</td><td>6</td><td>3</td><td>2</td><td>1</td><td>10</td><td>5</td><td>+5</td><td class="pts">11</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">水晶体育</td><td>6</td><td>2</td><td>0</td><td>4</td><td>6</td><td>9</td><td>-3</td><td class="pts">6</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">巴兰基亚青年</td><td>6</td><td>1</td><td>1</td><td>4</td><td>5</td><td>11</td><td>-6</td><td class="pts">4</td></tr>
+            </table>
+          </div>
+        </div>
     <div class="std-legend">绿＝组内前 2 晋级 16 强 ｜ 橙＝第 3 转南美杯 ｜ 灰＝小组出局 ｜ 高亮＝本日参赛队</div>
-    <details class="std-full"><summary>其余 6 个小组（A 组、B 组、D 组、E 组、G 组、H 组）</summary>
-    <div class="std-grp">
-      <div class="std-grp-block">
-        <div class="gname">A 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 5胜1平0负 · 积分 16 · 14:2（净 +12）"><span class="r">1</span><span class="n">弗拉门戈</span><span class="s">16</span></span>
-      <span class="std-chip z1" title="6 场 2胜3平1负 · 积分 9 · 6:5（净 +1）"><span class="r">2</span><span class="n">大学生</span><span class="s">9</span></span>
-      <span class="std-chip z2" title="6 场 2胜1平3负 · 积分 7 · 6:11（净 -5）"><span class="r">3</span><span class="n">麦德林独立</span><span class="s">7</span></span>
-      <span class="std-chip z3" title="6 场 0胜1平5负 · 积分 1 · 4:12（净 -8）"><span class="r">4</span><span class="n">库斯科</span><span class="s">1</span></span>
-    </div>
+        <details class="std-full"><summary>其余 6 个小组（A 组、B 组、D 组、E 组、G 组、H 组）</summary>
+          <div class="std-grp-block">
+            <div class="gname">A 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">弗拉门戈</td><td>6</td><td>5</td><td>1</td><td>0</td><td>14</td><td>2</td><td>+12</td><td class="pts">16</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">大学生</td><td>6</td><td>2</td><td>3</td><td>1</td><td>6</td><td>5</td><td>+1</td><td class="pts">9</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">麦德林独立</td><td>6</td><td>2</td><td>1</td><td>3</td><td>6</td><td>11</td><td>-5</td><td class="pts">7</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">库斯科</td><td>6</td><td>0</td><td>1</td><td>5</td><td>4</td><td>12</td><td>-8</td><td class="pts">1</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">B 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">科金博</td><td>6</td><td>3</td><td>1</td><td>2</td><td>8</td><td>6</td><td>+2</td><td class="pts">10</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">托利马</td><td>6</td><td>2</td><td>2</td><td>2</td><td>7</td><td>6</td><td>+1</td><td class="pts">8</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">乌拉圭国民</td><td>6</td><td>2</td><td>2</td><td>2</td><td>7</td><td>9</td><td>-2</td><td class="pts">8</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">大学体育</td><td>6</td><td>1</td><td>3</td><td>2</td><td>5</td><td>6</td><td>-1</td><td class="pts">6</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">D 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">天主教大学</td><td>6</td><td>4</td><td>1</td><td>1</td><td>8</td><td>4</td><td>+4</td><td class="pts">13</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">克鲁塞罗</td><td>6</td><td>3</td><td>2</td><td>1</td><td>8</td><td>3</td><td>+5</td><td class="pts">11</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">博卡青年</td><td>6</td><td>2</td><td>1</td><td>3</td><td>6</td><td>5</td><td>+1</td><td class="pts">7</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">巴塞罗那SC</td><td>6</td><td>1</td><td>0</td><td>5</td><td>2</td><td>12</td><td>-10</td><td class="pts">3</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">E 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">科林蒂安</td><td>6</td><td>3</td><td>2</td><td>1</td><td>8</td><td>4</td><td>+4</td><td class="pts">11</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">普拉滕塞</td><td>6</td><td>3</td><td>1</td><td>2</td><td>8</td><td>7</td><td>+1</td><td class="pts">10</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">圣塔菲独立</td><td>6</td><td>2</td><td>2</td><td>2</td><td>6</td><td>7</td><td>-1</td><td class="pts">8</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">佩纳罗尔</td><td>6</td><td>0</td><td>3</td><td>3</td><td>4</td><td>8</td><td>-4</td><td class="pts">3</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">G 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">基多大学</td><td>6</td><td>4</td><td>0</td><td>2</td><td>8</td><td>5</td><td>+3</td><td class="pts">12</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">米拉索尔</td><td>6</td><td>4</td><td>0</td><td>2</td><td>7</td><td>4</td><td>+3</td><td class="pts">12</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">拉努斯</td><td>6</td><td>3</td><td>0</td><td>3</td><td>3</td><td>7</td><td>-4</td><td class="pts">9</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">阿尔维斯雷迪</td><td>6</td><td>1</td><td>0</td><td>5</td><td>7</td><td>9</td><td>-2</td><td class="pts">3</td></tr>
+            </table>
+          </div>
+          <div class="std-grp-block">
+            <div class="gname">H 组</div>
+            <table class="league-tbl standings std-main">
+              <tr><th>#</th><th class="cell-left">球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+              <tr class="z1"><td>1</td><td class="cell-left">山谷独立</td><td>6</td><td>4</td><td>1</td><td>1</td><td>11</td><td>6</td><td>+5</td><td class="pts">13</td></tr>
+              <tr class="z1"><td>2</td><td class="cell-left">罗萨里奥中央</td><td>6</td><td>4</td><td>1</td><td>1</td><td>9</td><td>1</td><td>+8</td><td class="pts">13</td></tr>
+              <tr class="z2"><td>3</td><td class="cell-left">UCV FC</td><td>6</td><td>3</td><td>0</td><td>3</td><td>7</td><td>11</td><td>-4</td><td class="pts">9</td></tr>
+              <tr class="z3"><td>4</td><td class="cell-left">亚松森自由</td><td>6</td><td>0</td><td>0</td><td>6</td><td>4</td><td>13</td><td>-9</td><td class="pts">0</td></tr>
+            </table>
+          </div>
+        </details>
       </div>
-      <div class="std-grp-block">
-        <div class="gname">B 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 3胜1平2负 · 积分 10 · 8:6（净 +2）"><span class="r">1</span><span class="n">科金博</span><span class="s">10</span></span>
-      <span class="std-chip z1" title="6 场 2胜2平2负 · 积分 8 · 7:6（净 +1）"><span class="r">2</span><span class="n">托利马</span><span class="s">8</span></span>
-      <span class="std-chip z2" title="6 场 2胜2平2负 · 积分 8 · 7:9（净 -2）"><span class="r">3</span><span class="n">乌拉圭国民</span><span class="s">8</span></span>
-      <span class="std-chip z3" title="6 场 1胜3平2负 · 积分 6 · 5:6（净 -1）"><span class="r">4</span><span class="n">大学体育</span><span class="s">6</span></span>
-    </div>
-      </div>
-      <div class="std-grp-block">
-        <div class="gname">D 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 4胜1平1负 · 积分 13 · 8:4（净 +4）"><span class="r">1</span><span class="n">天主教大学</span><span class="s">13</span></span>
-      <span class="std-chip z1" title="6 场 3胜2平1负 · 积分 11 · 8:3（净 +5）"><span class="r">2</span><span class="n">克鲁塞罗</span><span class="s">11</span></span>
-      <span class="std-chip z2" title="6 场 2胜1平3负 · 积分 7 · 6:5（净 +1）"><span class="r">3</span><span class="n">博卡青年</span><span class="s">7</span></span>
-      <span class="std-chip z3" title="6 场 1胜0平5负 · 积分 3 · 2:12（净 -10）"><span class="r">4</span><span class="n">巴塞罗那SC</span><span class="s">3</span></span>
-    </div>
-      </div>
-      <div class="std-grp-block">
-        <div class="gname">E 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 3胜2平1负 · 积分 11 · 8:4（净 +4）"><span class="r">1</span><span class="n">科林蒂安</span><span class="s">11</span></span>
-      <span class="std-chip z1" title="6 场 3胜1平2负 · 积分 10 · 8:7（净 +1）"><span class="r">2</span><span class="n">普拉滕塞</span><span class="s">10</span></span>
-      <span class="std-chip z2" title="6 场 2胜2平2负 · 积分 8 · 6:7（净 -1）"><span class="r">3</span><span class="n">圣塔菲独立</span><span class="s">8</span></span>
-      <span class="std-chip z3" title="6 场 0胜3平3负 · 积分 3 · 4:8（净 -4）"><span class="r">4</span><span class="n">佩纳罗尔</span><span class="s">3</span></span>
-    </div>
-      </div>
-      <div class="std-grp-block">
-        <div class="gname">G 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 4胜0平2负 · 积分 12 · 8:5（净 +3）"><span class="r">1</span><span class="n">基多大学</span><span class="s">12</span></span>
-      <span class="std-chip z1" title="6 场 4胜0平2负 · 积分 12 · 7:4（净 +3）"><span class="r">2</span><span class="n">米拉索尔</span><span class="s">12</span></span>
-      <span class="std-chip z2" title="6 场 3胜0平3负 · 积分 9 · 3:7（净 -4）"><span class="r">3</span><span class="n">拉努斯</span><span class="s">9</span></span>
-      <span class="std-chip z3" title="6 场 1胜0平5负 · 积分 3 · 7:9（净 -2）"><span class="r">4</span><span class="n">阿尔维斯雷迪</span><span class="s">3</span></span>
-    </div>
-      </div>
-      <div class="std-grp-block">
-        <div class="gname">H 组</div>
-    <div class="std-chips">
-      <span class="std-chip z1" title="6 场 4胜1平1负 · 积分 13 · 11:6（净 +5）"><span class="r">1</span><span class="n">山谷独立</span><span class="s">13</span></span>
-      <span class="std-chip z1" title="6 场 4胜1平1负 · 积分 13 · 9:1（净 +8）"><span class="r">2</span><span class="n">罗萨里奥中央</span><span class="s">13</span></span>
-      <span class="std-chip z2" title="6 场 3胜0平3负 · 积分 9 · 7:11（净 -4）"><span class="r">3</span><span class="n">UCV FC</span><span class="s">9</span></span>
-      <span class="std-chip z3" title="6 场 0胜0平6负 · 积分 0 · 4:13（净 -9）"><span class="r">4</span><span class="n">亚松森自由</span><span class="s">0</span></span>
-    </div>
-      </div>
-    </div>
-    </details>
-    <div class="league-impact">
-      <div class="impact-title">本日对阵 · 小组处境</div>
-      <div class="impact-row"><span class="tag tag-blue">周三013</span> 帕梅拉斯 vs 弗鲁米嫩</div>
+      <div class="lg-col">
+        <div class="col-h">形势分析</div>
+        <div class="league-impact">
+          <div class="impact-row"><span class="tag tag-blue">周三013</span> 帕梅拉斯 vs 弗鲁米嫩</div>
 <div class="sit-block">
 <div class="sit-row"><span class="sit-team">帕梅拉斯</span><span class="sit-now">F 组第 2 · 11 分（6 场 3胜2平1负）→ <b>出线</b></span></div>
 <div class="sit-row"><span class="sit-team">弗鲁米嫩</span><span class="sit-now">C 组第 2 · 8 分（6 场 2胜2平2负）→ <b>出线</b></span></div>
 <div class="sit-line">小组赛已收官（各组均踢满 6 轮），榜单为最终成绩，本场淘汰赛不再产生小组积分变动；淘汰赛阶段无积分榜，晋级只看两回合比分。</div>
 </div>
+        </div>
+        <p class="league-note">解放者杯赛制：32 队分 8 组、每组单循环 6 轮，组内前 2 名晋级 16 强，第 3 名转南美杯，第 4 名出局。小组赛结束后进入两回合淘汰赛，淘汰赛不再产生积分榜。「组内处境」只讲积分与名次，不涉及两回合的客场进球等细则。</p>
+      </div>
     </div>
-    <p class="league-note">解放者杯赛制：32 队分 8 组、每组单循环 6 轮，组内前 2 名晋级 16 强，第 3 名转南美杯，第 4 名出局。小组赛结束后进入两回合淘汰赛，淘汰赛不再产生积分榜。「组内处境」只讲积分与名次，不涉及两回合的客场进球等细则。</p>
   </div>
 </div>
 

@@ -51,6 +51,11 @@
 - **概率数字唯一渲染器 = `_conf_tag(p, nd=1)` → `<span class="pct pct-hi|pct-mid|pct-lo">`**（≥60 绿 / 45~60 橙 / <45 灰，同一字形字号内边距）。`_gen_report.py` 里**禁止**再手写裸百分比 span（`style="font-family:monospace;color:var(--muted);">…%`）——2026-10-21 前同一列出现「有框 tag / 裸灰字」混排（006 的 40.5% vs 069 的 66.9%），已在回顾区、4.1/4.2/4.3 表、当天双榜全部统一。`_conf_tag`/`_conf_bucket`/`_conf_split`/`_star_txt` 必须定义在 `build_league_sec` **之前**（模块级调用点在 1900 行附近，定义晚了会 NameError）。
 - 红线：公开页 grep「用户|你说|定调|目标函数|口径一致性|偏差归因|probe|χ²|Brier|argmax|McNemar」须空。
 
+## 第六节（联赛/杯赛形势）布局定稿
+- **左积分榜、右形势分析**，每个赛事一块；积分榜必须**完整表格常驻**（禁色块/折叠，用户 2026-10-22 明确否掉色块网格）。
+- 唯一表格渲染器 `std_table()`（`.hi` 整行高亮、z1~z3 分区、`td.pts`）；卡片骨架 `_split_card()`；外层 `.league-overview-grid` 必须**单列**，分栏只在卡片内部（`.lg-split`）。
+- 「关键线」「历史补跑说明」每赛事说一次（`_zone_line()` / `_past_note()` 挂右栏顶部），**禁止逐场重复**。
+
 ## 第六节积分榜：色块网格，不铺长表（2026-10-22 定）
 - **默认形态 = `std_chips()` 色块网格**（一队一枚 chip：名次＋队名＋积分，详情进 title），完整表一律进 `<details class="std-full">` 折叠。**别再退回整表铺开**（36 队=36 行，卡片高达 3600px）。
 - 三个榜源分工：7M（各国联赛）→ 腾讯 `qq_standings.json`（欧冠）→ Fox `fox_standings.json`（解放者杯/欧罗巴）。腾讯、Fox 用 `std_league_card()`；分组赛（解放者杯）用 `std_group_card()`，**只展开本日参赛队所在小组**，其余组折叠。
