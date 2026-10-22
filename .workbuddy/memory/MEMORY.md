@@ -51,7 +51,7 @@
 - 章节序：一总览/二市场信心/三逐场/四预测汇总/**五联赛与杯赛形势**/六核心策略与风险提示/动态校准/今日比分精选/大胆档（`{league_sec}` 在 `{strategy_sec}` 之前）。
 - 第五节：**左积分榜、右形势分析**；积分榜**完整表格常驻**（禁色块/折叠，`std_chips()` 已删）。唯一渲染器 `std_table()`；外层 `.league-overview-grid` **单列**，分栏只在卡内（`.lg-split` 1fr 1fr，≤900px 单列）。
 - 「关键线」「历史补跑说明」每赛事说一次（`_zone_line()`/`_past_note()` 挂右栏顶部），**禁止逐场重复**。
-- 三榜源：7M（各国联赛）→ 腾讯 `qq_standings.json`（欧冠，须 `limit=50`）→ Fox `fox_standings.json`（解放者杯/欧罗巴，SSR 正则解析 `<table id="live-standings-table-N">`，bifrost 恒 401 别试）。腾讯/Fox 用 `std_league_card()`；分组赛用 `std_group_card()` 只展开本日队所在小组。小组赛收官（场次齐平且≥3）不做名次模拟，改给组内名次+出线结论。腾讯赛事 ID：欧冠5/英超8/意甲21/德甲22/西甲23/法甲18。
+- 榜源四级链：7M（各国联赛）→ 腾讯 `qq_standings.json`（欧冠等，须 `limit=50`）→ Fox `fox_standings.json`（解放者杯/欧罗巴，SSR 正则解析 `<table id="live-standings-table-N">`，bifrost 恒 401 别试）→ UEFA `uefa_standings.json`（欧协联，`_fetch_uefa_standings.py` 解析 uefa.com 官方页；**本机直连 uefa.com 两域名恒 read timeout**，失败保留原文件，刷新走 WorkBuddy WebFetch 通道抓官方页后落盘）。腾讯/Fox/UEFA 用 `std_league_card()`；分组赛用 `std_group_card()` 只展开本日队所在小组。小组赛收官（场次齐平且≥3）不做名次模拟，改给组内名次+出线结论。腾讯赛事 ID（1-399 全扫描实证）：欧冠5/英超8/意甲21/德甲22/西甲23/**法甲24（18 是无效 ID，已修）**。
 - 第三节逐场序：队名+排名 → 赔率三格 → 积分排名·赛事（3列）→ H2H 两卡 → 历史底蕴 → **历史交锋+近期战绩（始终并列）** → 伤停与赛前分析 → 冷门/让球 → 比分与方向。榜位唯一入口 `std_rows(lg)`（7M→腾讯→Fox）与 `std_of(team,lg)`；`rank_of` 已改走它。底蕴表头「队名（国家）」；两国相同则维度名加「（国名）」。
 - 文案红线：**不写「怎么看表」的说明句**；数据缺口用最短一句（如 `暂无交锋记录`）。
 - 窄屏 `@media(max-width:640px)`：`.form-grid`/`.odds-grid` 用 `minmax(0,1fr)`。

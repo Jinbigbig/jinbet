@@ -487,3 +487,9 @@
 - 步骤4.5 复盘 10-21：方向 6/13=46%、单点 0、双档 1/13=8%、λ偏差 +0.31。近10日方向 61.1%、λ偏差符号翻转 → 未触发重拟合。
 - 步骤4.6 **采纳新参数**（37 天：比分精选 58.38→59.19、大胆档 24.73→35.41；bd_min_total 3→2）→ 重跑报告、selection_tuning.json 入 report commit。
 - 记忆：本次把 MEMORY.md 从 17.5k 精简重写至 ~11k（合并重复 Matlas 两节），已随 chore commit 入库。
+
+## 2026-10-22（14:44 追加任务）— 欧协联接入 UEFA 官方积分榜
+- 用户指定源 fr.uefa.com：本机直连恒超时（CDN），match.uefa.com 路径全 404，Sofascore/worldfootball/Wikipedia/Fox/腾讯(1-399 扫描) 全不可用 → **WebFetch 通道抓 www.uefa.com 官方页成功**（榜在 HTML 里，36 队全量）。
+- 交付：uefa_standings.json + _fetch_uefa_standings.py（失败保留原文件；master 正本 fetch_uefa_standings.py）+ _gen_report.py 四级榜源链（7M→腾讯→Fox→UEFA）+ 欧协联分区配色/图例/关键线/赛制 note。逐场榜位验证：阿贾克斯25/亚特兰大4/摩纳哥9/弗赖堡7。
+- 顺带修：腾讯法甲 ID 18→24（全扫描实证）。gh-pages d8f736a、master fbcdd6f 均核验。
+- **后续运维**：uefa.com 直连大概率持续超时 → 欧协联有比赛的当日，用 WebFetch 抓官方页核对/更新 uefa_standings.json（脚本失败时文件不动，数据可能滞后一轮）。
