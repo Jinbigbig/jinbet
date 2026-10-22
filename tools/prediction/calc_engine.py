@@ -1106,6 +1106,51 @@ def big_goals_analysis(odds):
 def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
 
+# ---------------------------------------------------------------- 半全场（HT/FT）
+# 上半场进球占比：主流联赛长期统计约 43%~46%，取 0.45 常数。
+# 上下半场各自独立泊松（半场 λ = 全场 λ × 0.45），合成九宫格 P(半场i, 全场j)。
+# 纯模型口径（与 4.3 进球同源），不吃市场 —— 半全场盘口日常缺价，无法去水。
+HALF_SHARE = 0.45
+HTFT_NAMES = ["主/主", "主/平", "主/客", "平/主", "平/平", "平/客", "客/主", "客/平", "客/客"]
+
+
+def htft_analysis(lam_h, lam_a, half_share=HALF_SHARE, kmax=7):
+    """半全场九宫格：P(半场结果, 全场结果)。
+
+    半场 (h1,a1) ~ Poisson(lam×half_share)，下半场 (h2,a2) ~ Poisson(lam×(1-half_share))，
+    全场 = 两段相加。返回 top3 半全场组合 + 半场三率（供复盘追踪）。
+    """
+    lh, la = lam_h * half_share, lam_a * half_share
+    mh, ma = lam_h - lh, lam_a - la
+    ph = [pmf(k, lh) for k in range(kmax)]
+    pa = [pmf(k, la) for k in range(kmax)]
+    qh = [pmf(k, mh) for k in range(kmax)]
+    qa = [pmf(k, ma) for k in range(kmax)]
+    cells = [0.0] * 9
+    half = [0.0] * 3
+    for h1 in range(kmax):
+        for a1 in range(kmax):
+            p1 = ph[h1] * pa[a1]
+            if p1 < 1e-9:
+                continue
+            r1 = 0 if h1 > a1 else (1 if h1 == a1 else 2)
+            half[r1] += p1
+            for h2 in range(kmax):
+                for a2 in range(kmax):
+                    p2 = qh[h2] * qa[a2]
+                    if p2 < 1e-12:
+                        continue
+                    ft = (h1 + h2) - (a1 + a2)
+                    r2 = 0 if ft > 0 else (1 if ft == 0 else 2)
+                    cells[r1 * 3 + r2] += p1 * p2
+    order = sorted(range(9), key=lambda i: -cells[i])
+    return {
+        "half": {"home": round(half[0] * 100, 1), "draw": round(half[1] * 100, 1),
+                 "away": round(half[2] * 100, 1)},
+        "cells": {HTFT_NAMES[i]: round(cells[i] * 100, 1) for i in range(9)},
+        "top": [(HTFT_NAMES[i], round(cells[i] * 100, 1)) for i in order[:3]],
+    }
+
 def wavg(vals):
     """指数衰减加权平均，vals[0] 为最近一场。"""
     w = [DECAY ** i for i in range(len(vals))]
@@ -2626,6 +2671,8 @@ def dump_prediction_snapshot(out_matches, date=None):
             "rq_best_pick": ((m.get("rq") or {}).get("best") or {}).get("pick"),
             "rq_best_ev": ((m.get("rq") or {}).get("best") or {}).get("ev"),
             "rq_best_odds": ((m.get("rq") or {}).get("best") or {}).get("odds"),
+            # 半全场九宫格（复盘追踪用：half=半场三率，top=top3 组合，cells=全 9 格）
+            "htft": m.get("htft"),
             "upset_prob": (m.get("upset") or {}).get("prob"),
             "upset_level": (m.get("upset") or {}).get("level"),
             # 冷启动标记必须落盘：报告回顾与选取回放都要靠它排除冷启动场次。
@@ -3189,6 +3236,7 @@ def calc_match(m, calib, ctx=None):
         "headline": {"score": _hs, "prob": _hp},
         "prob": {"home": round(p_home * 100, 1), "draw": round(p_draw * 100, 1),
                  "away": round(p_away * 100, 1)},
+        "htft": htft_analysis(lam_h, lam_a),
         "quad_top": quad_top,
         "score_align": ({"ratio": [round(x, 4) for x in align_ratio],
                          "raw": [round(p_home_raw * 100, 1), round(p_draw_raw * 100, 1),
