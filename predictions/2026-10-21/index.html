@@ -180,6 +180,27 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
   .sit-item { display:inline-block; margin-right:0.6rem; }
   .sit-item b { color:var(--accent3,#e07a2f); }
+  /* 比赛时段天气（Open-Meteo）：正常灰、需留意橙、恶劣红 */
+  .wx-chip { display:inline-block; margin-left:0.45rem; padding:0.06rem 0.42rem;
+    border:1px solid rgba(0,0,0,0.1); border-radius:999px; background:rgba(0,0,0,0.03);
+    font-size:0.72rem; line-height:1.5; color:var(--muted,#7a8ba0); white-space:nowrap; }
+  .wx-chip.wx-warn { color:#8a5a00; border-color:rgba(200,140,0,0.35); background:rgba(255,193,7,0.13); }
+  .wx-chip.wx-bad { color:#a3252f; border-color:rgba(200,50,60,0.35); background:rgba(220,53,69,0.11); }
+  /* 结构化伤停名单：主客各一行，队名左对齐 */
+  .inj-block { margin:0 0 0.5rem; }
+  .inj-row { display:flex; gap:0.5rem; font-size:0.84rem; line-height:1.62; padding:0.12rem 0; }
+  .inj-team { flex:0 0 auto; font-weight:700; color:var(--ink,#1a1a2e); }
+  .inj-list { color:var(--muted,#7a8ba0); min-width:0; }
+  .inj-list b { color:#a3252f; font-weight:700; }
+  .inj-src { font-size:0.72rem; color:var(--muted,#7a8ba0); opacity:0.85; margin-top:0.15rem; }
+  @media (max-width: 640px) {
+    .inj-row { display:block; } .inj-team { display:block; }
+    /* 窄屏天气 chip 独占一行，避免 nowrap 把卡片撑破 */
+    .wx-chip { flex:1 0 100%; margin-left:0; white-space:normal; }
+    /* 1fr 的 min-content 下限会让三格赔率在 420px 撑破卡片，改用 minmax(0,1fr) */
+    .odds-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .insight-grid { grid-template-columns: 1fr; }
+  }
   .sit-line, .sit-near { font-size:0.74rem; color:var(--muted,#7a8ba0);
     line-height:1.6; margin-top:0.05rem; }
   .sit-zone { font-size:0.74rem; color:var(--muted,#7a8ba0); line-height:1.6;
@@ -231,7 +252,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-10-21 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 13场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-10-22 10:10 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-10-22 10:32 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -338,7 +359,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三001</span>
     <span class="match-league">日职</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 东京 23~25℃ · 降雨 6% · 风 13km/h</span>
   </div>
 
   <div class="match-teams">
@@ -365,6 +386,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">3-1</td><td>主胜</td></tr></tbody></table></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -440,7 +462,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三002</span>
     <span class="match-league">日职</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 川崎 24~25℃ · 降雨 0% · 风 15km/h</span>
   </div>
 
   <div class="match-teams">
@@ -467,6 +489,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>日职</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">川崎前锋 · 日职近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>川崎前锋</b> vs 神户胜利</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-11</td><td class="cell-left"><b>川崎前锋</b> vs 名古屋鲸</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-02</td><td class="cell-left"><b>川崎前锋</b> vs 町田泽维</td><td style="font-family:monospace;">1-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-09</td><td class="cell-left"><b>川崎前锋</b> vs 东京绿茵</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left">广岛三箭 vs <b>川崎前锋</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">神户胜利 · 日职近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">川崎前锋 vs <b>神户胜利</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-09</td><td class="cell-left">柏太阳神 vs <b>神户胜利</b></td><td style="font-family:monospace;">4-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-20</td><td class="cell-left">大阪钢巴 vs <b>神户胜利</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left">东京FC vs <b>神户胜利</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">06-06</td><td class="cell-left"><b>神户胜利</b> vs 鹿岛鹿角</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -542,7 +565,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三003</span>
     <span class="match-league">日乙</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 埼玉 23~25℃ · 降雨 0% · 风 18km/h</span>
   </div>
 
   <div class="match-teams">
@@ -569,6 +592,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>日乙</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">大宫松鼠 · 日乙近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left"><b>大宫松鼠</b> vs 富山胜利</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>大宫松鼠</b> vs 甲府风林</td><td style="font-family:monospace;">5-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-19</td><td class="cell-left">藤枝MYFC vs <b>大宫松鼠</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-29</td><td class="cell-left">湘南海洋 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-08</td><td class="cell-left">新潟天鹅 vs <b>大宫松鼠</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">富山胜利 · 日乙近 3 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-21</td><td class="cell-left">大宫松鼠 vs <b>富山胜利</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-26</td><td class="cell-left"><b>富山胜利</b> vs 横滨FC</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-15</td><td class="cell-left"><b>富山胜利</b> vs 秋田闪电</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -644,7 +668,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三004</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-bad" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）｜雨战：地面传控与门将脱手风险上升，进球预期偏保守">🌦 科莫 14~16℃ · 降雨 100%（1.6mm） · 风 16km/h</span>
   </div>
 
   <div class="match-teams">
@@ -671,6 +695,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">科莫 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">费耶诺德 vs <b>科莫</b></td><td style="font-family:monospace;">3-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>科莫</b> vs 莱红牛</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">曼联 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">马竞 vs <b>曼联</b></td><td style="font-family:monospace;">2-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>曼联</b> vs 萨巴赫</td><td style="font-family:monospace;">4-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -746,7 +771,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三005</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 里尔 8~11℃ · 降雨 39%（0.9mm） · 风 23km/h</span>
   </div>
 
   <div class="match-teams">
@@ -783,6 +808,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">里尔 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">阿森纳 vs <b>里尔</b></td><td style="font-family:monospace;">3-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>里尔</b> vs 贝蒂斯</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div><div class="form-block"><div class="form-title">加拉塔萨 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>加拉塔萨</b> vs 巴萨</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">里斯本 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-18</td><td class="cell-left"><b>加拉塔萨</b> vs 利物浦</td><td style="font-family:monospace;">0-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-10</td><td class="cell-left">利物浦 vs <b>加拉塔萨</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-25</td><td class="cell-left"><b>加拉塔萨</b> vs 尤文图斯</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -858,7 +884,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三006</span>
     <span class="match-league">西甲</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 瓦伦西亚 20~26℃ · 降雨 0% · 风 12km/h</span>
   </div>
 
   <div class="match-teams">
@@ -885,6 +911,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--loss);">2-4</td><td>客胜</td></tr></tbody></table></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.08&gt;1.0(主胜有价值)</strong>；</div>
@@ -960,7 +987,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三007</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 马德里 12~18℃ · 降雨 0% · 风 10km/h</span>
   </div>
 
   <div class="match-teams">
@@ -997,7 +1024,8 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">皇马 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left">罗马 vs <b>皇马</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>皇马</b> vs 国际米兰</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>皇马</b> vs 拜仁</td><td style="font-family:monospace;">3-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">拜仁 vs <b>皇马</b></td><td style="font-family:monospace;">2-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left"><b>皇马</b> vs 曼城</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">莱红牛 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>莱红牛</b> vs 埃因霍温</td><td style="font-family:monospace;">1-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">科莫 vs <b>莱红牛</b></td><td style="font-family:monospace;">4-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
+  <div class="inj-block"><div class="inj-row"><span class="inj-team">莱红牛</span><span class="inj-list">缺阵 <b>3</b> 人：Gebel（膝）、Guiu（腿筋）、Ouédraogo（肩）；出战存疑：Baumgartner（大腿）</span></div><div class="inj-src">伤停来源：德甲官方 Team News ｜ 更新 2026-10-22 10:31</div></div>
+  
 
   
   <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 19.5%</b> <span class="tag tag-green">低风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 78.3%（历史同档翻车率均值 48.1%）；模型−市场分歧 -26.2pp、|让球|2、λ和 3.50、市场熵 0.670。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
@@ -1072,7 +1100,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三008</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 伯明翰 6~9℃ · 降雨 27% · 风 19km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1109,6 +1137,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">维拉 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>维拉</b> vs 费内巴切</td><td style="font-family:monospace;">6-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">布鲁日 vs <b>维拉</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">维京 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>维京</b> vs 拜仁</td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">斯图加特 vs <b>维京</b></td><td style="font-family:monospace;">3-1</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-26</td><td class="cell-left">萨迪纳摩 vs <b>维京</b></td><td style="font-family:monospace;">1-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-18</td><td class="cell-left"><b>维京</b> vs 萨迪纳摩</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">07-14</td><td class="cell-left"><b>维京</b> vs 杰尔</td><td style="font-family:monospace;">2-2</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -1184,7 +1213,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三009</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 塞维利亚 18~24℃ · 降雨 0% · 风 6km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1221,7 +1250,8 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋（近1场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr></tbody></table></div>
 
   <h4>伤停与赛前分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
+  <div class="inj-block"><div class="inj-row"><span class="inj-team">费耶诺德</span><span class="inj-list">缺阵 <b>7</b> 人：Anis Hadj Moussa（伤病）、Bart Nieuwkoop（伤病）、Gijs Smal（脚踝伤）、Jakub Moder（膝伤）、Jordan Bos（膝伤）、Thomas Beelen（足伤）等</span></div><div class="inj-src">伤停来源：FCUpdate 荷甲 ｜ 更新 2026-10-22 10:31</div></div>
+  
 
   
   <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 41.4%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 64.1%（历史同档翻车率均值 48.1%）；模型−市场分歧 -25.7pp、|让球|1、λ和 3.77、市场熵 0.901。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
@@ -1296,7 +1326,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三010</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-bad" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）｜雨战：地面传控与门将脱手风险上升，进球预期偏保守">🌦 慕尼黑 8~10℃ · 降雨 100%（4.4mm） · 风 16km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1333,7 +1363,8 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">拜仁 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">维京 vs <b>拜仁</b></td><td style="font-family:monospace;">3-3</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left"><b>拜仁</b> vs 博德闪耀</td><td style="font-family:monospace;">5-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-06</td><td class="cell-left">巴黎圣曼 vs <b>拜仁</b></td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-28</td><td class="cell-left"><b>拜仁</b> vs 巴黎圣曼</td><td style="font-family:monospace;">4-5</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left">皇马 vs <b>拜仁</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">阿森纳 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>阿森纳</b> vs 里尔</td><td style="font-family:monospace;">3-0</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left">那不勒斯 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-30</td><td class="cell-left"><b>阿森纳</b> vs 巴黎圣曼</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">05-05</td><td class="cell-left">马竞 vs <b>阿森纳</b></td><td style="font-family:monospace;">0-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-29</td><td class="cell-left"><b>阿森纳</b> vs 马竞</td><td style="font-family:monospace;">1-1</td><td style="color:var(--draw);font-weight:700;">平</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
-  <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
+  <div class="inj-block"><div class="inj-row"><span class="inj-team">拜仁</span><span class="inj-list">缺阵 <b>1</b> 人：Musiala（腿筋）</span></div><div class="inj-src">伤停来源：德甲官方 Team News ｜ 更新 2026-10-22 10:31</div></div>
+  
 
   <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.03&gt;1.0(主胜有价值)</strong>；</div>
   <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 44.0%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 46.3%（历史同档翻车率均值 48.1%）；模型−市场分歧 +19.2pp、|让球|1、λ和 3.94、市场熵 1.062。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
@@ -1408,7 +1439,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三011</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 里斯本 13~18℃ · 降雨 0% · 风 14km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1445,6 +1476,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">里斯本 · 欧冠近 5 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">朗斯 vs <b>里斯本</b></td><td style="font-family:monospace;">0-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-09</td><td class="cell-left"><b>里斯本</b> vs 加拉塔萨</td><td style="font-family:monospace;">3-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-15</td><td class="cell-left"><b>里斯本</b> vs 阿森纳</td><td style="font-family:monospace;">0-0</td><td style="color:var(--draw);font-weight:700;">平</td></tr><tr><td style="font-family:monospace;color:var(--muted);">04-07</td><td class="cell-left">阿森纳 vs <b>里斯本</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">03-17</td><td class="cell-left">博德闪耀 vs <b>里斯本</b></td><td style="font-family:monospace;">0-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">LASK林茨 · 欧冠近 4 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>LASK林茨</b> vs 利物浦</td><td style="font-family:monospace;">3-6</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left">雅典AEK vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-0</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-25</td><td class="cell-left">凯尔特人 vs <b>LASK林茨</b></td><td style="font-family:monospace;">1-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">08-19</td><td class="cell-left"><b>LASK林茨</b> vs 凯尔特人</td><td style="font-family:monospace;">0-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   <div class="warning">⚠️ 冷门信号：<strong>凯利指数1.05&gt;1.0(主胜有价值)</strong>；</div>
@@ -1520,7 +1552,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三012</span>
     <span class="match-league">欧冠</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-warn" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）｜小雨或阵风，影响有限">🌦 布鲁日 9~12℃ · 降雨 41%（0.2mm） · 风 28km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1557,6 +1589,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋</h4><p class="form-note">两队赛果库里暂无交锋记录（数据自 2025-12 起），改看双方在 <b>欧冠</b> 的近期战绩 —— 主队在左、客队在右，「结果」按各自视角计（胜/平/负）。</p><div class="form-grid"><div class="form-block"><div class="form-title">布鲁日 · 欧冠近 4 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left">国际米兰 vs <b>布鲁日</b></td><td style="font-family:monospace;">3-4</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-08</td><td class="cell-left"><b>布鲁日</b> vs 维拉</td><td style="font-family:monospace;">2-3</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">02-24</td><td class="cell-left"><b>布鲁日</b> vs 马竞</td><td style="font-family:monospace;">1-4</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">01-20</td><td class="cell-left"><b>布鲁日</b> vs 阿拉木图</td><td style="font-family:monospace;">4-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">朗斯 · 欧冠近 2 场</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-13</td><td class="cell-left"><b>朗斯</b> vs 里斯本</td><td style="font-family:monospace;">0-2</td><td style="color:var(--loss);font-weight:700;">负</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-10</td><td class="cell-left">斯拉维亚 vs <b>朗斯</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
@@ -1632,7 +1665,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="card-header">
     <span class="match-id">周三013</span>
     <span class="match-league">解放者杯</span>
-    <span class="match-time">2026-10-21</span>
+    <span class="match-time">2026-10-21</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时实况（Open-Meteo，更新 2026-10-22 10:30）">🌦 圣保罗 17~19℃ · 降雨 4%（0.2mm） · 风 10km/h</span>
   </div>
 
   <div class="match-teams">
@@ -1669,6 +1702,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h4>历史交锋（近2场）</h4><div class="table-wrap"><table class="history-table"><thead><tr><th>比分</th><th>赛果</th></tr></thead><tbody><tr><td style="color:var(--win);">2-1</td><td>主胜</td></tr><tr><td style="color:var(--loss);">2-3</td><td>客胜</td></tr></tbody></table></div>
 
   <h4>伤停与赛前分析</h4>
+  
   <p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">暂无公开伤停 / 赛前信息。</p>
 
   
