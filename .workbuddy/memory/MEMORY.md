@@ -62,13 +62,15 @@
 - 腾讯榜接口必须 `limit=50`，否则只回 top10；赛事 ID 欧冠 5 / 英超 8 / 意甲 21 / 德甲 22 / 西甲 23 / 法甲 18。
 
 
-## 赛前信息：天气 + 伤停（2026-10-22 建）
-- 链路：`_fetch_weather.py`→`weather.json`（Open-Meteo，竞彩简称→TEAM_CITY 城市→经纬度缓存 `stadium_geo.json`，取当地 18:00-23:00 逐时，风速单位 km/h，bad≥35km/h 或降雨≥70%）；`_fetch_injuries.py`→`injuries.json`（德甲官方 Team News 的 JSON-LD `articleBody` 文本 / 荷甲 FCUpdate 的 `matches-block--suspension-injury` 块）。
-- 由 `_gen_report.py` 顶部 `_ensure_side_data()` 自动触发（天气判 `date==TODAY`、伤停判 `updated` 日期），**不必改流水线顺序**——天气依赖 `_calc_engine.py` 产出的 `_calc_result.json`。
-- 渲染：卡片头部 `.wx-chip`（ok/warn/bad 三档，title 给雨战/大风提示）；「伤停与赛前分析」下 `injury_html()` 出主客两行「缺阵 N 人：X（膝）…；出战存疑：Y」，有名单时不再叠「暂无公开伤停」；≤640px chip 独占一行、`.odds-grid` 用 minmax(0,1fr) 防撑破。
-- 映射表：`TEAM_CITY`+`CITY_ZH`（天气）、`EN2ZH`（伤停，英文/荷兰语队名→竞彩简称）。新联赛球队首次进报告前先补表，否则那场无天气/无名单。
-- **实测不可用（勿再试）**：Transfermarkt 全域名对本机 IP 返 405 拦截页；premierinjuries 403；Sports.ru 403；OTempo 超时；premierleague.com 官方名单靠 JS 渲染（HTML 内 0 个球员名）；百度体育是 SPA、无公开接口；Ligue1 / Lance! 只有文章列表。
-- 人工兜底：`injuries_manual.json`（结构 `{teams:{队名:{league,out:[{name,reason,since,back}],doubtful:[]}}}`），优先级高于抓取，供五大联赛手工补充。
+## 赛前信息：阵容/伤停 + 天气（2026-10-22 建，同日接入 lineupstoday）
+- **主源 = lineupstoday.com**（`_fetch_lineups.py`→`lineups.json`）：WP 站，逐场 URL 可拼 `https://lineupstoday.com/<league>/<home-slug>-<away-slug>-<DD-MM-YYYY>/`，slug 映射在脚本 `_RAW_TEAMS`（按联赛分组，zh 别名=slug，别名可多个）。覆盖英超/英冠/西甲/意甲/德甲/法甲/荷甲/比甲/土超/欧冠/欧罗巴/欧会杯。实测 22-10 欧战 19/21 场有数据、每场 3–15 人伤停、两队首发齐全。
+- 两个结构化区块（**不需要浏览器**）：`<section class="ov-blok" id="opstelling">` 阵容 → `ov-panel ov-elftal` + `<strong>队名</strong><em>4-2-3-1</em>` + `ov-veld__speler`（`ov-veld__nr`/`ov-veld__naam`，各 11 人）；`id="absenties"` 伤停 → `ov-panel` + `ul.ov-absenties > li.ov-absentie`（`__naam`/`__reden`/`ov-status--out|twijfel|rood`）。区块 id 全是荷兰语，按 id 切块再切 `ov-panel`，别按 h2 文案找。
+- 坑：①赛后页没有 `absenties`（换成 `samenvatting`/`statistieken`），故必须赛前抓；脚本用 `played` 标记并在渲染时把「预计首发」改成「首发」。②`ov-veld__speler` 会带 `is-twijfel` 后缀，切块要用 `<div class="ov-veld__speler[^"]*"`。③赛后 `em` 是「阵型 · 主教练」，阵型要正则截前段。④英文队名从 JSON-LD `SportsEvent`（homeTeam/awayTeam/startDate）取，**不可**用 slug 反查中文表。⑤「Not in the squad」不是伤病，解析时丢弃。
+- 顺序：`_ensure_side_data()` 里 **阵容 → 天气 → 德甲/荷甲伤停补充**（`_fetch_injuries.py` 降级为兜底，只补阵容源没覆盖的场次）。都判 `date==TODAY`，不必改流水线顺序。
+- 渲染：`injury_html()` 优先读 `lineups.json`（按 `matchNumStr`）→ 主客两行「队名 + `.inj-fm` 阵型徽标 + 缺阵 N 人/停赛/出战存疑」+ 每队一个 `<details class="inj-xi">` 折起 11 人首发（含球衣号），标题「预计首发」。无阵容数据才回退 `injuries.json`（德甲官方 Team News / FCUpdate 荷甲）。
+- 天气：`_fetch_weather.py`→`weather.json`（Open-Meteo，竞彩简称→`TEAM_CITY` 城市→经纬度缓存 `stadium_geo.json`，取当地 18:00–23:00 逐时，风速 km/h，bad≥35km/h 或降雨≥70%）；`lineups.json` 里已存 `kickoff`（带时区），后续可用来精确定位开球那一小时。
+- **实测不可用（勿再试）**：Transfermarkt 全域名对本机 IP 返 405；premierinjuries 403；Sports.ru 403；OTempo 超时；premierleague.com 官方名单靠 JS 渲染；百度体育是 SPA；Ligue1 / Lance! 只有文章列表。
+- lineupstoday 注意：单页 2–15s，偶发 `Connection aborted`/SSL 握手失败，需重试 1 次；首页 200 但子页可能超时（重试即好）；`wp-json` 返回 `[]`，无 REST 接口；sitemap 有 100 条截断，**发现场次靠联赛页或直接拼 URL，别依赖 sitemap**；欧罗巴/欧会杯没有联赛页（404），只有 `sitemap-<lg>-wedstrijden.xml`。
 
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
