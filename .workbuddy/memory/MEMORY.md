@@ -51,5 +51,12 @@
 - **概率数字唯一渲染器 = `_conf_tag(p, nd=1)` → `<span class="pct pct-hi|pct-mid|pct-lo">`**（≥60 绿 / 45~60 橙 / <45 灰，同一字形字号内边距）。`_gen_report.py` 里**禁止**再手写裸百分比 span（`style="font-family:monospace;color:var(--muted);">…%`）——2026-10-21 前同一列出现「有框 tag / 裸灰字」混排（006 的 40.5% vs 069 的 66.9%），已在回顾区、4.1/4.2/4.3 表、当天双榜全部统一。`_conf_tag`/`_conf_bucket`/`_conf_split`/`_star_txt` 必须定义在 `build_league_sec` **之前**（模块级调用点在 1900 行附近，定义晚了会 NameError）。
 - 红线：公开页 grep「用户|你说|定调|目标函数|口径一致性|偏差归因|probe|χ²|Brier|argmax|McNemar」须空。
 
+## 第六节积分榜：色块网格，不铺长表（2026-10-22 定）
+- **默认形态 = `std_chips()` 色块网格**（一队一枚 chip：名次＋队名＋积分，详情进 title），完整表一律进 `<details class="std-full">` 折叠。**别再退回整表铺开**（36 队=36 行，卡片高达 3600px）。
+- 三个榜源分工：7M（各国联赛）→ 腾讯 `qq_standings.json`（欧冠）→ Fox `fox_standings.json`（解放者杯/欧罗巴）。腾讯、Fox 用 `std_league_card()`；分组赛（解放者杯）用 `std_group_card()`，**只展开本日参赛队所在小组**，其余组折叠。
+- Fox 榜单页是 SSR，直接正则解析 `<table id="live-standings-table-N">`；它调的 bifrost 接口恒 401，别试。队名英文，`_fetch_fox_standings.py` 内置 EN→ZH 对照表（只收能确认的，缺则保留英文）。
+- 小组赛已收官（各队场次齐平且 ≥3）时**不做「赢/平/负→名次」模拟**，改给两队的组内名次与出线结论——淘汰赛阶段没有积分榜。
+- `.league-overview-grid` ≥980px 固定**双列**：auto-fit 在 1160px 下会切 4 列、卡片仅 ~280px，色块被挤竖排、文字狂折行，双列反而更矮。
+
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
