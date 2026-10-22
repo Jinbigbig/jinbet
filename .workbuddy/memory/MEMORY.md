@@ -62,5 +62,13 @@
 - 腾讯榜接口必须 `limit=50`，否则只回 top10；赛事 ID 欧冠 5 / 英超 8 / 意甲 21 / 德甲 22 / 西甲 23 / 法甲 18。
 
 
+## 赛前信息：天气 + 伤停（2026-10-22 建）
+- 链路：`_fetch_weather.py`→`weather.json`（Open-Meteo，竞彩简称→TEAM_CITY 城市→经纬度缓存 `stadium_geo.json`，取当地 18:00-23:00 逐时，风速单位 km/h，bad≥35km/h 或降雨≥70%）；`_fetch_injuries.py`→`injuries.json`（德甲官方 Team News 的 JSON-LD `articleBody` 文本 / 荷甲 FCUpdate 的 `matches-block--suspension-injury` 块）。
+- 由 `_gen_report.py` 顶部 `_ensure_side_data()` 自动触发（天气判 `date==TODAY`、伤停判 `updated` 日期），**不必改流水线顺序**——天气依赖 `_calc_engine.py` 产出的 `_calc_result.json`。
+- 渲染：卡片头部 `.wx-chip`（ok/warn/bad 三档，title 给雨战/大风提示）；「伤停与赛前分析」下 `injury_html()` 出主客两行「缺阵 N 人：X（膝）…；出战存疑：Y」，有名单时不再叠「暂无公开伤停」；≤640px chip 独占一行、`.odds-grid` 用 minmax(0,1fr) 防撑破。
+- 映射表：`TEAM_CITY`+`CITY_ZH`（天气）、`EN2ZH`（伤停，英文/荷兰语队名→竞彩简称）。新联赛球队首次进报告前先补表，否则那场无天气/无名单。
+- **实测不可用（勿再试）**：Transfermarkt 全域名对本机 IP 返 405 拦截页；premierinjuries 403；Sports.ru 403；OTempo 超时；premierleague.com 官方名单靠 JS 渲染（HTML 内 0 个球员名）；百度体育是 SPA、无公开接口；Ligue1 / Lance! 只有文章列表。
+- 人工兜底：`injuries_manual.json`（结构 `{teams:{队名:{league,out:[{name,reason,since,back}],doubtful:[]}}}`），优先级高于抓取，供五大联赛手工补充。
+
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
