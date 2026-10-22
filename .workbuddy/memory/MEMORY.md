@@ -72,5 +72,13 @@
 - **实测不可用（勿再试）**：Transfermarkt 全域名对本机 IP 返 405；premierinjuries 403；Sports.ru 403；OTempo 超时；premierleague.com 官方名单靠 JS 渲染；百度体育是 SPA；Ligue1 / Lance! 只有文章列表。
 - lineupstoday 注意：单页 2–15s，偶发 `Connection aborted`/SSL 握手失败，需重试 1 次；首页 200 但子页可能超时（重试即好）；`wp-json` 返回 `[]`，无 REST 接口；sitemap 有 100 条截断，**发现场次靠联赛页或直接拼 URL，别依赖 sitemap**；欧罗巴/欧会杯没有联赛页（404），只有 `sitemap-<lg>-wedstrijden.xml`。
 
+## 第三节逐场卡片（2026-10-22 定稿）
+- 结构顺序：队名+排名小字 → 赔率三格 → `积分排名 · 赛事`（3 列 项目/主队/客队，行：名次/积分/场次/战绩/进失，源无 gf 时自动省「进/失」行）→ H2H 两张卡 → 历史底蕴 → **历史交锋 + 近期战绩（两者始终并列，不再二选一）** → 伤停与赛前分析 → 冷门/让球 → 比分与方向。
+- 榜位唯一入口 `std_rows(lg)`（7M `league_data` → 腾讯 `QQ_STD` → Fox `FOX_STD`，分组赛拍平带 `grp`）与 `std_of(team,lg)`；`rank_of` 已改走它，**不要再退回只读 7M**（否则欧冠/解放者杯全是「第-」）。Fox/腾讯无进失球，`gf/ga` 为 None。
+- 队名旁排名：`team_with_rank(name, rank, lg)`，`_CUP_LGS` 里的赛事写「第 N」，其余写「联赛第 N」。
+- 底蕴表：`COUNTRY`（手工 `_COUNTRY` + `_fetch_lineups._RAW_TEAMS` 按联赛自动补）→ 表头写「队名（国家）」；两国相同时维度名再加「（国名）」。`本国` 的行名只是保留说法，国别看表头。
+- 文案红线（用户 2026-10-22 二次强调）：**不写「怎么看表」的说明句**——如「主队在左、客队在右」「「最好」按其余球队本轮不再得分估算」「注：荣誉是公开慢变量…」「—— 只看进球量级」等一律删；交代数据缺口用最短一句（`暂无交锋记录`），不要解释数据从哪年起、为什么改看别的。
+- 窄屏 `@media(max-width:640px)`：`.form-grid` 用 `minmax(0,1fr)`（1fr 的 min-content 下限会把卡片撑破），`.odds-grid` 同样处理。
+
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
