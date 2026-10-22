@@ -43,6 +43,7 @@
 
 ## 三引擎 / 渲染纪律
 - A=_calc_engine（4.1 胜负/4.4 让球/4.5 冷门）；B=score_engine（4.2 比分，prob_temp=1.20、market_mix=0.70 勿降）；C=selection_algo（两档）；另 4.3 进球/4.6 大比分。
+- **半全场（2026-10-22 起常态）**：引擎 `htft_analysis`（半场 λ=全场×0.45 `HALF_SHARE`，上下半场独立泊松 9 格，**纯模型不吃市场**）；每场 `htft` 字段入 `_calc_result`+快照；报告=卡片「总进球倾向」下方「半全场」行（top3 `_conf_tag`+半场倾向）+ 4.3 表末列；引擎未产出时自动省略。复盘追踪可用快照 htft 字段（暂未接入 gen_review）。
 - 词表统一 **可用/慎用/别跟**；让球分级唯一实现 `rq_grade(prob,conf)`（≥50% 且置信非低 可用 / ≥42% 慎用 / 其余别跟）。回顾表用 `_rq_grade/_rq_tag/_rq_cell`；快照无 rq 置信度 → `_rq_conf_of(hc)` 按 |让球| 还原（1 高/2 中/≥3 低）。
 - **概率唯一渲染器 = `_conf_tag(p,nd=1)` → `<span class="pct pct-hi|pct-mid|pct-lo">`**（≥60 绿/45~60 橙/<45 灰）。`_gen_report.py` 禁手写裸百分比 span。`_conf_tag`/`_conf_bucket`/`_conf_split`/`_star_txt` 必须定义在 `build_league_sec` **之前**。
 - 红线：公开页 grep「用户|你说|定调|目标函数|口径一致性|偏差归因|probe|χ²|Brier|argmax|McNemar」须空。
