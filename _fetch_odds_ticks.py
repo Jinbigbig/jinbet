@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 """盘口时序采集：把当天场次的竞彩赔率/让球按时间点留档，供「初盘→临场」变化曲线使用。
 
-官方只给当前值，没有历史，所以曲线靠多次抓取累积。建议每 2 小时一次。
+官方只给当前值，没有历史，所以曲线靠多次抓取累积。每日三个时点采集：
+11:10（盘口刚开＝初盘）、14:00（预测流水线内）、19:00（临场）。
+跨时点即使赔率没变也记点，曲线上才看得到「到点无变化」。
 
 产出 odds_ticks.json：
     {"updated": "2026-10-23 18:00",
@@ -58,11 +60,16 @@ def _point(stamp: str, rec: dict) -> dict:
 
 
 def _same(a: dict, b: dict) -> bool:
-    """赔率与让球都没变就不记新点，避免整点重复写同样的数。"""
+    """赔率与让球都没变。"""
     keys = ("胜", "平", "负")
     if any(a.get(k) != b.get(k) for k in keys):
         return False
     return (a.get("让球") or []) == (b.get("让球") or [])
+
+
+def _same_hour(t1: str, t2: str) -> bool:
+    """同一小时内（精确到小时）。"""
+    return str(t1)[:13] == str(t2)[:13]
 
 
 def main() -> int:
@@ -89,15 +96,18 @@ def main() -> int:
     ticks: dict[str, list] = data["ticks"]
 
     cutoff = (now - dt.timedelta(days=KEEP_DAYS)).strftime("%Y-%m-%d")
-    added = same = 0
+    added = same = moved = 0
     for key, rec in odds.items():
         point = _point(stamp, rec)
         if not any(point[k] is not None for k in ("胜", "平", "负")):
             continue
         seq = [p for p in ticks.get(key, []) if str(p.get("t", ""))[:10] >= cutoff]
-        if seq and _same(seq[-1], point):
+        # 同一小时里重复跑且数值没变才跳过；跨小时一律记点——三个采集时点都要在曲线上
+        if seq and _same_hour(seq[-1].get("t", ""), stamp) and _same(seq[-1], point):
             same += 1
         else:
+            if seq and not _same(seq[-1], point):
+                moved += 1
             seq.append(point)
             added += 1
         ticks[key] = seq
@@ -113,7 +123,7 @@ def main() -> int:
                    encoding="utf-8")
     multi = sum(1 for v in data["ticks"].values() if len(v) >= 2)
     print(f"[盘口时序] {stamp} 场次 {len(data['ticks'])} · 新增 {added} 点 · "
-          f"未变 {same} 点 · 已有 ≥2 点 {multi} 场 → {OUT.name}")
+          f"赔率变动 {moved} 场 · 同小时未变 {same} 点 · 已有 ≥2 点 {multi} 场 → {OUT.name}")
     return 0
 
 
