@@ -2894,9 +2894,16 @@ def fetch_and_save_results(days_back=7, archive_days=7):
         except:
             print('  读取历史赛果失败，将使用新数据')
 
-    # 合并
+    # 合并（同时统计变更：新增赛果 / 已有赛果被补充或修正）
     merged_results = dict(existing_results)
+    _added_keys = []
+    _updated_keys = []
     for key, val in new_results.items():
+        old = existing_results.get(key)
+        if old is None:
+            _added_keys.append(key)
+        elif old != val:
+            _updated_keys.append(key)
         merged_results[key] = val
 
     # canonical 清洗 merged_results 的 key（队名变体归一化 + 同方向去重）
@@ -3243,6 +3250,7 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     yesterday_api = sum(1 for k in new_results if k.startswith(yesterday))
     yesterday_local = sum(1 for k in merged_results if k.startswith(yesterday))
     stats = {'fetched': fetched_bytes, 'parsed': len(new_results), 'merged': len(merged_results),
+             'added': len(_added_keys), 'updated': len(_updated_keys),
              'yesterday_api': yesterday_api, 'yesterday_local': yesterday_local, 'source': source}
     if yesterday_api > 0 and yesterday_local == 0:
         print(f'\n[致命错误] 赛果同步断裂：API拿到{yesterday}共{yesterday_api}场赛果，但写入本地后为0条')
@@ -3302,17 +3310,29 @@ if __name__ == '__main__':
         if not success:
             print('\n[致命错误] 赛果抓取失败，退出码1')
             exit_code = 1
-        elif not no_push:
-            # results-only 模式：赛果修改必须单独 commit+push，否则就像"抓了白抓"
-            pushed = push_to_gh_pages(
-                commit_message=results_msg,
-                extra_files=results_files,
-                sync_master_first=True,
-                skip_ghpages=False,
-            )
-            if not pushed:
-                print('\n[致命错误] 赛果抓取成功但推送失败，退出码1')
-                exit_code = 1
+        else:
+            # 变更判定：只有真的补到新赛果 / 修正了已有赛果才提交推送，
+            # 否则跳过 —— 避免每天上午 8 点产生一次空提交，把 master 历史搅脏。
+            _added = stats.get('added', 0) or 0
+            _updated = stats.get('updated', 0) or 0
+            print(f'\n[变更判定] 新增赛果 {_added} 条 / 更新赛果 {_updated} 条'
+                  f'（本次解析 {stats.get("parsed", 0)} 场，库内共 {stats.get("merged", 0)} 条）')
+            if _added == 0 and _updated == 0:
+                print('  ℹ️  无赛果更新 → 跳过提交与推送（退出码 0）')
+                print('  注：本地 odds_data.json 的 updated 时间戳会被顺带刷新，属预期，不是数据变化')
+            elif no_push:
+                print('  ℹ️  已带 --no-push，仅落盘不推送')
+            else:
+                # results-only 模式：赛果修改必须单独 commit+push，否则就像"抓了白抓"
+                pushed = push_to_gh_pages(
+                    commit_message=results_msg,
+                    extra_files=results_files,
+                    sync_master_first=True,
+                    skip_ghpages=False,
+                )
+                if not pushed:
+                    print('\n[致命错误] 赛果抓取成功但推送失败，退出码1')
+                    exit_code = 1
     elif '--full' in sys.argv:
         print('\n' + '#' * 60)
         print('  完整模式: 赔率 + 赛果 一键更新')
