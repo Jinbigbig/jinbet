@@ -60,12 +60,18 @@
 ## 赛前信息：阵容/伤停 + 天气
 - 主源 lineupstoday.com（`_fetch_lineups.py`→lineups.json）：URL 拼法 `/<league>/<home-slug>-<away-slug>-<DD-MM-YYYY>/`，slug 映射在 `_RAW_TEAMS`。⚠️ **映射表存全称、报告用简称，精确查表查不到会静默 skip（reason=unmapped，miss 里 None 即缺的 slug），报告表现为「暂无公开伤停」**——欧战新军必须补简称别名（10-23 补了格风暴/波兹南/萨迪纳摩/克里特/贝西克塔/利勒斯特，命中 6/12→12/12）。`_RAW_TEAMS` 改动须同步云端 master `tools/prediction/fetch_lineups.py`。区块 id 荷兰语：`opstelling`（阵容，ov-panel ov-elftal + ov-veld__speler）与 `absenties`（伤停，li.ov-absentie），按 id 切块别按 h2。
 - 坑：赛后页无 `absenties`（须赛前抓）；`ov-veld__speler` 带 `is-twijfel` 后缀；赛后 em 是「阵型 · 主教练」；英文队名取 JSON-LD SportsEvent 不可用 slug 反查；「Not in the squad」丢弃。单页 2–15s 偶发 SSL 失败重试 1 次；发现场次靠联赛页/拼 URL，别依赖 sitemap。
-- 渲染：`injury_html()` 优先 lineups.json（按 matchNumStr）→ 阵型徽标+缺阵数+`<details class="inj-xi">` 折 11 人首发；无数据才回退 injuries.json。天气 `_fetch_weather.py`→weather.json（Open-Meteo，18–23 时，bad≥35km/h 或降雨≥70%）。`_ensure_side_data()` 顺序：阵容→香港赛马会→天气→伤停兜底（`_fetch_injuries.py`）→开赛时间。jobs 是 `(tag, script, extra_args)` 3 元组。
+- 渲染：`injury_html()` 优先 lineups.json（按 matchNumStr）→ 阵型徽标+缺阵数+`<details class="inj-xi">` 折 11 人首发；无数据才回退 injuries.json。天气 `_fetch_weather.py`→weather.json（Open-Meteo，18–23 时，bad≥35km/h 或降雨≥70%）。**天气脚本读 `_calc_result.json` 的 today → 必须在步骤3 之后跑**，步骤2.6 阶段跑会取到昨日日期（`_gen_report` 内 `_ensure_side_data` 会重取，故报告正确）。`_ensure_side_data()` 顺序：阵容→香港赛马会→天气→伤停兜底（`_fetch_injuries.py`）→开赛时间。jobs 是 `(tag, script, extra_args)` 3 元组。
 - **开赛时间（10-23 起常态）**：`_fetch_match_times.py`→match_times.json，源=网易竞彩赛程 `matchList/1?days=YYYY-MM-DD 12:00:00` 的 `matchTime`（毫秒/北京时间）；抓 date±1 天合并，按 `jcNum` 建表，label 相对 date（同日 `HH:MM` / 次日 `次日 HH:MM`）。卡片位置：`<span class="match-time">{TODAY}</span>` 后紧跟 `<span class="kickoff">`，再是天气。唯一入口 `kickoff_of(num)`；**加载时必须校验 match_times.json 的 date==TODAY**（编号每周复用，跨日脏数据会挂错场）。体彩 `getUniformMatchResultV1.qry` 只有 matchDate 无时分秒，别用它取时间。
 - **实测不可用勿再试**：Transfermarkt 405、premierinjuries 403、Sports.ru 403、OTempo 超时、premierleague.com JS 渲染、百度体育 SPA。
 
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
+## 赛果补录定时任务（每日 08:00）
+- 入口 `_sync_results.py`（master `tools/prediction/sync_results.py`）：`--no-push --results-only` 落盘 → 读 `[变更判定] 新增/更新` → 0/0 跳过不推；有变化则 add 4 个路径（index.html/results_data.json/results_history/odds_history）→ commit → **先直接 push**（被拒才 `rebase --autostash`）。
+- ⚠️ 不能直接跑 `update_odds_net.py --results-only`：`push_to_gh_pages()` 硬要求当前分支 master，而仓库日常在 gh-pages 且本地 master 落后云端 126 提交。
+- ⚠️ `existing_results` **必须优先读 results_data.json**（26 字段）。历史实现读 index.html 的 `const RESULTS`（`update_html_results()` 只写 15 字段）→ 写回时静默降级历史条目（实测 3242 条丢让球/比分盘/总进球/半全场）。
+- ⚠️ 变更判定必须 `_norm()` 归一：index.html 里数字是字符串 `'4.05'`，API 是数字 `4.05`，直比恒不等（曾每天误报 109 条更新）。
+- 待办：归档里仍有 1637 条带「让球」的完整记录可回填 results_data.json，等确认。
 
 ## 兄弟项目 Matlas（C:\Users\Jin\matlas，与 jinbet 零 import）
 - 定位：jinbet=算（引擎/回测/调优），Matlas=发（per-match 落地页、留档核验、llms.txt/sitemap/Schema.org）。唯一耦合=`matlas/models.py` 数据契约 v1.0（`Match.from_dict`），jinbet 侧映射等用户指示。

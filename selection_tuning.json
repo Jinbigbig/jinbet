@@ -18,18 +18,18 @@
   "bd_exclusive": 1,
   "bd_lean_src": "engine",
   "_meta": {
-    "tuned_at": "2026-10-22",
-    "days_used": 37,
+    "tuned_at": "2026-10-23",
+    "days_used": 38,
     "note": "grid search on rolling history",
     "pk": {
-      "base_obj": 58.38,
-      "tuned_obj": 59.19,
+      "base_obj": 58.42,
+      "tuned_obj": 59.21,
       "adopted": true
     },
     "bd": {
-      "base_obj": 24.73,
-      "tuned_obj": 35.41,
-      "holdout_base": 19.58,
+      "base_obj": 25.53,
+      "tuned_obj": 34.47,
+      "holdout_base": 24.17,
       "holdout_tuned": 39.58,
       "params": {
         "bd_total_shift": 0,
