@@ -2881,20 +2881,62 @@ def fetch_and_save_results(days_back=7, archive_days=7):
     else:
         print(f'\n  [跳过] 网易主源自带编号/联赛，无需体彩编号接口')
 
-    # 读取已有RESULTS
-    results_pattern = r'const RESULTS = \{([\s\S]*?)\};'
-    match = re.search(results_pattern, html_content)
+    # 读取已有赛果：**优先 results_data.json**（完整字段库，26 字段）
+    #
+    # 坑（2026-10-23 定位）：原实现只从 index.html 内联的 `const RESULTS` 反解，
+    # 而 update_html_results() 只写 15 个字段（halfScore/fullScore/winFlag/handicap/
+    # league/leagueAbbr/home/away/matchId/matchNumStr/matchNo/status/胜/平/负），
+    # 不含 score/hda*/hhda*/让球/比分/总进球/半全场。以它为 existing 会导致：
+    #   ① 合并写回 results_data.json 时把历史条目静默降级（实测 3242 条只剩 15 字段、
+    #      183 条只剩 12 字段，只有最近一批完整）；
+    #   ② 变更判定把"字段缺失"误判成"更新"，每天误报 100+ 条更新并推空提交。
+    # 所以基准必须是落盘的完整库，index.html 仅在 results_data.json 缺失时兜底。
     existing_results = {}
-    if match:
-        results_str = '{' + match.group(1) + '}'
+    _rd_path = os.path.join(BASE_DIR, 'results_data.json')
+    if os.path.exists(_rd_path):
         try:
-            results_json = parse_js_obj_to_json(results_str)
-            existing_results = json.loads(results_json)
-            print(f'  原有赛果: {len(existing_results)} 条')
-        except:
-            print('  读取历史赛果失败，将使用新数据')
+            with open(_rd_path, 'r', encoding='utf-8') as _rd_f:
+                existing_results = json.load(_rd_f) or {}
+            print(f'  原有赛果（results_data.json）: {len(existing_results)} 条')
+        except Exception as _e:
+            print(f'  ⚠️ results_data.json 读取失败({_e})，回退 index.html')
+            existing_results = {}
+
+    if not existing_results:
+        results_pattern = r'const RESULTS = \{([\s\S]*?)\};'
+        match = re.search(results_pattern, html_content)
+        if match:
+            results_str = '{' + match.group(1) + '}'
+            try:
+                results_json = parse_js_obj_to_json(results_str)
+                existing_results = json.loads(results_json)
+                print(f'  原有赛果（index.html 兜底）: {len(existing_results)} 条')
+            except:
+                print('  读取历史赛果失败，将使用新数据')
 
     # 合并（同时统计变更：新增赛果 / 已有赛果被补充或修正）
+    def _norm(v):
+        """归一化字段值后再比较。
+
+        坑（2026-10-23 实测）：existing_results 是从 index.html 内联的 `const RESULTS`
+        反解出来的，那里所有值都被格式化成字符串（"胜": '4.05'）；而 API 返回的是数字
+        4.05 —— 直接 `old != val` 会把同一个值判成"变化"，导致每天误报 109 条更新、
+        每天推一次空提交。所以数字/数字字符串统一按数值比。
+        """
+        if isinstance(v, dict):
+            return ('d', tuple(sorted((str(k), _norm(x)) for k, x in v.items())))
+        if isinstance(v, (list, tuple)):
+            return ('l', tuple(_norm(x) for x in v))
+        if isinstance(v, bool):
+            return ('b', v)
+        if isinstance(v, (int, float)):
+            return ('n', round(float(v), 6))
+        s = str(v)
+        try:
+            return ('n', round(float(s), 6))
+        except (TypeError, ValueError):
+            return ('s', s)
+
     merged_results = dict(existing_results)
     _added_keys = []
     _updated_keys = []
@@ -2902,7 +2944,7 @@ def fetch_and_save_results(days_back=7, archive_days=7):
         old = existing_results.get(key)
         if old is None:
             _added_keys.append(key)
-        elif old != val:
+        elif _norm(old) != _norm(val):
             _updated_keys.append(key)
         merged_results[key] = val
 
