@@ -58,9 +58,10 @@
 - 窄屏 `@media(max-width:640px)`：`.form-grid`/`.odds-grid` 用 `minmax(0,1fr)`。
 
 ## 赛前信息：阵容/伤停 + 天气
-- 主源 lineupstoday.com（`_fetch_lineups.py`→lineups.json）：URL 拼法 `/<league>/<home-slug>-<away-slug>-<DD-MM-YYYY>/`，slug 映射在 `_RAW_TEAMS`。区块 id 荷兰语：`opstelling`（阵容，ov-panel ov-elftal + ov-veld__speler）与 `absenties`（伤停，li.ov-absentie），按 id 切块别按 h2。
+- 主源 lineupstoday.com（`_fetch_lineups.py`→lineups.json）：URL 拼法 `/<league>/<home-slug>-<away-slug>-<DD-MM-YYYY>/`，slug 映射在 `_RAW_TEAMS`。⚠️ **映射表存全称、报告用简称，精确查表查不到会静默 skip（reason=unmapped，miss 里 None 即缺的 slug），报告表现为「暂无公开伤停」**——欧战新军必须补简称别名（10-23 补了格风暴/波兹南/萨迪纳摩/克里特/贝西克塔/利勒斯特，命中 6/12→12/12）。`_RAW_TEAMS` 改动须同步云端 master `tools/prediction/fetch_lineups.py`。区块 id 荷兰语：`opstelling`（阵容，ov-panel ov-elftal + ov-veld__speler）与 `absenties`（伤停，li.ov-absentie），按 id 切块别按 h2。
 - 坑：赛后页无 `absenties`（须赛前抓）；`ov-veld__speler` 带 `is-twijfel` 后缀；赛后 em 是「阵型 · 主教练」；英文队名取 JSON-LD SportsEvent 不可用 slug 反查；「Not in the squad」丢弃。单页 2–15s 偶发 SSL 失败重试 1 次；发现场次靠联赛页/拼 URL，别依赖 sitemap。
-- 渲染：`injury_html()` 优先 lineups.json（按 matchNumStr）→ 阵型徽标+缺阵数+`<details class="inj-xi">` 折 11 人首发；无数据才回退 injuries.json。天气 `_fetch_weather.py`→weather.json（Open-Meteo，18–23 时，bad≥35km/h 或降雨≥70%）。`_ensure_side_data()` 顺序：阵容→天气→德甲/荷甲伤停兜底（`_fetch_injuries.py`）。
+- 渲染：`injury_html()` 优先 lineups.json（按 matchNumStr）→ 阵型徽标+缺阵数+`<details class="inj-xi">` 折 11 人首发；无数据才回退 injuries.json。天气 `_fetch_weather.py`→weather.json（Open-Meteo，18–23 时，bad≥35km/h 或降雨≥70%）。`_ensure_side_data()` 顺序：阵容→香港赛马会→天气→伤停兜底（`_fetch_injuries.py`）→开赛时间。jobs 是 `(tag, script, extra_args)` 3 元组。
+- **开赛时间（10-23 起常态）**：`_fetch_match_times.py`→match_times.json，源=网易竞彩赛程 `matchList/1?days=YYYY-MM-DD 12:00:00` 的 `matchTime`（毫秒/北京时间）；抓 date±1 天合并，按 `jcNum` 建表，label 相对 date（同日 `HH:MM` / 次日 `次日 HH:MM`）。卡片位置：`<span class="match-time">{TODAY}</span>` 后紧跟 `<span class="kickoff">`，再是天气。唯一入口 `kickoff_of(num)`；**加载时必须校验 match_times.json 的 date==TODAY**（编号每周复用，跨日脏数据会挂错场）。体彩 `getUniformMatchResultV1.qry` 只有 matchDate 无时分秒，别用它取时间。
 - **实测不可用勿再试**：Transfermarkt 405、premierinjuries 403、Sports.ru 403、OTempo 超时、premierleague.com JS 渲染、百度体育 SPA。
 
 ## 复盘/诊断
