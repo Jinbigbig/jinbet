@@ -122,7 +122,7 @@ _RAW_TEAMS = {
     """,
     'super-lig': """
         加拉塔萨=加拉塔萨雷=galatasaray 阿梅德斯堡=阿梅德=amedspor 费内巴切=fenerbahce
-        特拉布宗=特拉布宗体育=trabzonspor 贝西克塔斯=besiktas 乔鲁姆=corum-fk
+        特拉布宗=特拉布宗体育=trabzonspor 贝西克塔斯=贝西克塔=besiktas 乔鲁姆=corum-fk
         卡斯帕萨=kasimpasa 科贾埃利=kocaelispor 阿拉尼亚=阿兰亚=alanyaspor
         巴萨克塞希尔=伊斯坦布尔BB=basaksehir 埃尔祖鲁姆=erzurumspor 里泽=rizespor
         戈兹特佩=goztepe 加济安泰普=gaziantep-fk 根奇莱尔=genclerbirligi 科尼亚=konyaspor
@@ -137,8 +137,8 @@ _RAW_TEAMS = {
         萨尔茨堡=红牛萨尔茨堡=red-bull-salzburg 巴塞尔=basel 布拉迪斯拉发=slovan-bratislava
         萨巴赫=sabah 帕纳辛纳科斯=panathinaikos 费伦茨瓦罗斯=费伦茨=ferencvaros
         米迪兰特=中日德兰=midtjylland 贝尔谢巴=贝尔谢巴工人=hapoel-beer-sheva
-        格拉茨=格拉茨风暴=sturm-graz 萨格勒布迪纳摩=dinamo-zagreb 波兹南莱赫=莱赫波兹南=lech-poznan
-        OFI克里特=OFI=ofi 亚美尼亚阿拉拉特=ararat-armenia 利勒斯特罗姆=lillestrom
+        格拉茨=格拉茨风暴=格风暴=sturm-graz 萨格勒布迪纳摩=萨迪纳摩=dinamo-zagreb 波兹南莱赫=莱赫波兹南=波兹南=lech-poznan
+        OFI克里特=OFI=克里特=ofi 亚美尼亚阿拉拉特=ararat-armenia 利勒斯特罗姆=利勒斯特=lillestrom
         亚盖洛尼亚=乔治罗尼亚=jagiellonia 卢加诺=fc-lugano 中洛锡安=哈茨=heart-of-midlothian
         亚布洛内茨=fk-jablonec 林肯红魔=林肯城红魔=lincoln-red-imps AEK雅典=aek-athene
         布拉格斯拉维亚=斯拉维亚=slavia-praag 采列=celje 布兰=brann 特罗姆瑟=tromso
