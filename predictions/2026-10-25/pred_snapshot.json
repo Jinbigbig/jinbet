@@ -1,0 +1,3110 @@
+{
+ "date": "2026-10-25",
+ "count": 29,
+ "engine": "poisson-v2.2",
+ "matches": [
+  {
+   "id": "周日001",
+   "home": "悉尼FC",
+   "away": "阿德莱德",
+   "league": "澳超",
+   "lam_home": 1.267,
+   "lam_away": 1.107,
+   "lam_total": 2.374,
+   "top_score": "1:1",
+   "top_prob": 18.0,
+   "stars": 1,
+   "prob_home": 34.3,
+   "prob_draw": 36.5,
+   "prob_away": 29.1,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 18.0
+    },
+    {
+     "score": "0:0",
+     "prob": 11.1
+    },
+    {
+     "score": "1:0",
+     "prob": 9.5
+    },
+    {
+     "score": "0:1",
+     "prob": 9.3
+    },
+    {
+     "score": "2:1",
+     "prob": 7.7
+    },
+    {
+     "score": "1:2",
+     "prob": 6.5
+    }
+   ],
+   "headline": {
+    "score": "1:0",
+    "prob": 9.3
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 9.5
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 18.0
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 9.3
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.959,
+   "rq_best_odds": 1.6,
+   "htft": {
+    "half": {
+     "home": 30.0,
+     "draw": 44.8,
+     "away": 25.2
+    },
+    "cells": {
+     "主/主": 23.4,
+     "主/平": 4.9,
+     "主/客": 1.7,
+     "平/主": 14.7,
+     "平/平": 17.9,
+     "平/客": 12.3,
+     "客/主": 2.0,
+     "客/平": 4.9,
+     "客/客": 18.3
+    },
+    "top": [
+     [
+      "主/主",
+      23.4
+     ],
+     [
+      "客/客",
+      18.3
+     ],
+     [
+      "平/平",
+      17.9
+     ]
+    ]
+   },
+   "upset_prob": 62.0,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 16,
+    "away": 15
+   },
+   "odds": {
+    "胜": "2.03",
+    "平": "3.4",
+    "负": "2.92"
+   }
+  },
+  {
+   "id": "周日002",
+   "home": "新潟天鹅",
+   "away": "仙台七夕",
+   "league": "日乙",
+   "lam_home": 0.855,
+   "lam_away": 1.609,
+   "lam_total": 2.464,
+   "top_score": "0:1",
+   "top_prob": 16.8,
+   "stars": 4,
+   "prob_home": 6.1,
+   "prob_draw": 26.4,
+   "prob_away": 67.5,
+   "top_scores": [
+    {
+     "score": "0:1",
+     "prob": 16.8
+    },
+    {
+     "score": "1:1",
+     "prob": 13.7
+    },
+    {
+     "score": "0:2",
+     "prob": 13.5
+    },
+    {
+     "score": "1:2",
+     "prob": 11.5
+    },
+    {
+     "score": "0:0",
+     "prob": 7.3
+    },
+    {
+     "score": "0:3",
+     "prob": 7.2
+    }
+   ],
+   "headline": {
+    "score": "0:1",
+    "prob": 12.4
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 1.9
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 13.7
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 16.8
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.841,
+   "rq_best_odds": 1.95,
+   "htft": {
+    "half": {
+     "home": 17.6,
+     "draw": 42.8,
+     "away": 39.6
+    },
+    "cells": {
+     "主/主": 10.8,
+     "主/平": 4.4,
+     "主/客": 2.4,
+     "平/主": 8.0,
+     "平/平": 16.1,
+     "平/客": 18.7,
+     "客/主": 1.1,
+     "客/平": 4.4,
+     "客/客": 34.1
+    },
+    "top": [
+     [
+      "客/客",
+      34.1
+     ],
+     [
+      "平/客",
+      18.7
+     ],
+     [
+      "平/平",
+      16.1
+     ]
+    ]
+   },
+   "upset_prob": 46.7,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 2,
+    "away": 2
+   },
+   "odds": {
+    "胜": "4",
+    "平": "3.66",
+    "负": "1.65"
+   }
+  },
+  {
+   "id": "周日003",
+   "home": "东京FC",
+   "away": "水户蜀葵",
+   "league": "日职",
+   "lam_home": 1.946,
+   "lam_away": 0.541,
+   "lam_total": 2.486,
+   "top_score": "1:0",
+   "top_prob": 17.9,
+   "stars": 5,
+   "prob_home": 78.2,
+   "prob_draw": 19.7,
+   "prob_away": 2.1,
+   "top_scores": [
+    {
+     "score": "1:0",
+     "prob": 17.9
+    },
+    {
+     "score": "2:0",
+     "prob": 17.4
+    },
+    {
+     "score": "3:0",
+     "prob": 11.3
+    },
+    {
+     "score": "2:1",
+     "prob": 9.4
+    },
+    {
+     "score": "1:1",
+     "prob": 8.8
+    },
+    {
+     "score": "0:0",
+     "prob": 8.4
+    }
+   ],
+   "headline": {
+    "score": "2:0",
+    "prob": 15.6
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 17.9
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 8.8
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 1.0
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.704,
+   "rq_best_odds": 1.8,
+   "htft": {
+    "half": {
+     "home": 50.0,
+     "draw": 40.0,
+     "away": 9.9
+    },
+    "cells": {
+     "主/主": 46.6,
+     "主/平": 3.0,
+     "主/客": 0.5,
+     "平/主": 22.2,
+     "平/平": 13.7,
+     "平/客": 4.1,
+     "客/主": 2.2,
+     "客/平": 3.0,
+     "客/客": 4.8
+    },
+    "top": [
+     [
+      "主/主",
+      46.6
+     ],
+     [
+      "平/主",
+      22.2
+     ],
+     [
+      "平/平",
+      13.7
+     ]
+    ]
+   },
+   "upset_prob": 29.7,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 9,
+    "away": 8
+   },
+   "odds": {
+    "胜": "1.21",
+    "平": "5",
+    "负": "9.7"
+   }
+  },
+  {
+   "id": "周日004",
+   "home": "川崎前锋",
+   "away": "冈山绿雉",
+   "league": "日职",
+   "lam_home": 1.521,
+   "lam_away": 0.995,
+   "lam_total": 2.516,
+   "top_score": "1:1",
+   "top_prob": 16.4,
+   "stars": 2,
+   "prob_home": 48.7,
+   "prob_draw": 31.6,
+   "prob_away": 19.6,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 16.4
+    },
+    {
+     "score": "2:1",
+     "prob": 10.9
+    },
+    {
+     "score": "1:0",
+     "prob": 10.5
+    },
+    {
+     "score": "2:0",
+     "prob": 8.0
+    },
+    {
+     "score": "0:0",
+     "prob": 7.9
+    },
+    {
+     "score": "0:1",
+     "prob": 6.4
+    }
+   ],
+   "headline": {
+    "score": "2:1",
+    "prob": 12.7
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 10.9
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 16.4
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 6.4
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.085,
+   "rq_best_odds": 1.84,
+   "htft": {
+    "half": {
+     "home": 36.2,
+     "draw": 42.9,
+     "away": 20.9
+    },
+    "cells": {
+     "主/主": 30.0,
+     "主/平": 4.8,
+     "主/客": 1.4,
+     "平/主": 17.0,
+     "平/平": 16.3,
+     "平/客": 9.6,
+     "客/主": 2.4,
+     "客/平": 4.8,
+     "客/客": 13.8
+    },
+    "top": [
+     [
+      "主/主",
+      30.0
+     ],
+     [
+      "平/主",
+      17.0
+     ],
+     [
+      "平/平",
+      16.3
+     ]
+    ]
+   },
+   "upset_prob": 58.6,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 15,
+    "away": 5
+   },
+   "odds": {
+    "胜": "1.72",
+    "平": "3.65",
+    "负": "3.65"
+   }
+  },
+  {
+   "id": "周日005",
+   "home": "福图纳",
+   "away": "SBV精英",
+   "league": "荷甲",
+   "lam_home": 1.83,
+   "lam_away": 1.774,
+   "lam_total": 3.604,
+   "top_score": "1:1",
+   "top_prob": 12.5,
+   "stars": 1,
+   "prob_home": 35.7,
+   "prob_draw": 29.6,
+   "prob_away": 34.8,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 12.5
+    },
+    {
+     "score": "2:2",
+     "prob": 10.1
+    },
+    {
+     "score": "1:2",
+     "prob": 7.8
+    },
+    {
+     "score": "2:1",
+     "prob": 7.7
+    },
+    {
+     "score": "3:1",
+     "prob": 4.7
+    },
+    {
+     "score": "1:3",
+     "prob": 4.6
+    }
+   ],
+   "headline": {
+    "score": "2:2",
+    "prob": 7.1
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 7.7
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 12.5
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 7.8
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.982,
+   "rq_best_odds": 1.57,
+   "htft": {
+    "half": {
+     "home": 33.2,
+     "draw": 35.0,
+     "away": 31.8
+    },
+    "cells": {
+     "主/主": 24.6,
+     "主/平": 5.5,
+     "主/客": 3.1,
+     "平/主": 12.4,
+     "平/平": 10.9,
+     "平/客": 11.8,
+     "客/主": 3.2,
+     "客/平": 5.5,
+     "客/客": 23.0
+    },
+    "top": [
+     [
+      "主/主",
+      24.6
+     ],
+     [
+      "客/客",
+      23.0
+     ],
+     [
+      "平/主",
+      12.4
+     ]
+    ]
+   },
+   "upset_prob": 60.5,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 13,
+    "away": 12
+   },
+   "odds": {
+    "胜": "2.11",
+    "平": "3.46",
+    "负": "2.73"
+   }
+  },
+  {
+   "id": "周日006",
+   "home": "国际米兰",
+   "away": "佛罗伦萨",
+   "league": "意甲",
+   "lam_home": 2.609,
+   "lam_away": 0.925,
+   "lam_total": 3.534,
+   "top_score": "2:0",
+   "top_prob": 11.4,
+   "stars": 4,
+   "prob_home": 82.0,
+   "prob_draw": 15.4,
+   "prob_away": 2.6,
+   "top_scores": [
+    {
+     "score": "2:0",
+     "prob": 11.4
+    },
+    {
+     "score": "2:1",
+     "prob": 10.5
+    },
+    {
+     "score": "3:0",
+     "prob": 9.9
+    },
+    {
+     "score": "3:1",
+     "prob": 9.1
+    },
+    {
+     "score": "1:0",
+     "prob": 8.7
+    },
+    {
+     "score": "1:1",
+     "prob": 7.2
+    }
+   ],
+   "headline": {
+    "score": "2:0",
+    "prob": 10.5
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:0",
+     "prob": 11.4
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 7.2
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 0.8
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.843,
+   "rq_best_odds": 1.73,
+   "htft": {
+    "half": {
+     "home": 55.2,
+     "draw": 31.6,
+     "away": 13.1
+    },
+    "cells": {
+     "主/主": 50.7,
+     "主/平": 3.5,
+     "主/客": 0.9,
+     "平/主": 19.0,
+     "平/平": 8.5,
+     "平/客": 4.1,
+     "客/主": 3.6,
+     "客/平": 3.5,
+     "客/客": 6.0
+    },
+    "top": [
+     [
+      "主/主",
+      50.7
+     ],
+     [
+      "平/主",
+      19.0
+     ],
+     [
+      "平/平",
+      8.5
+     ]
+    ]
+   },
+   "upset_prob": 24.0,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.22",
+    "平": "5.4",
+    "负": "8"
+   }
+  },
+  {
+   "id": "周日007",
+   "home": "毕尔巴鄂",
+   "away": "赫塔费",
+   "league": "西甲",
+   "lam_home": 1.488,
+   "lam_away": 0.657,
+   "lam_total": 2.145,
+   "top_score": "1:0",
+   "top_prob": 19.7,
+   "stars": 4,
+   "prob_home": 64.7,
+   "prob_draw": 28.7,
+   "prob_away": 6.6,
+   "top_scores": [
+    {
+     "score": "1:0",
+     "prob": 19.7
+    },
+    {
+     "score": "2:0",
+     "prob": 14.7
+    },
+    {
+     "score": "0:0",
+     "prob": 12.8
+    },
+    {
+     "score": "1:1",
+     "prob": 12.5
+    },
+    {
+     "score": "2:1",
+     "prob": 9.6
+    },
+    {
+     "score": "3:0",
+     "prob": 7.3
+    }
+   ],
+   "headline": {
+    "score": "1:0",
+    "prob": 20.1
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 19.7
+    },
+    "draw": {
+     "score": "0:0",
+     "prob": 12.8
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 3.1
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.183,
+   "rq_best_odds": 2.37,
+   "htft": {
+    "half": {
+     "home": 39.6,
+     "draw": 46.0,
+     "away": 14.4
+    },
+    "cells": {
+     "主/主": 35.1,
+     "主/平": 3.8,
+     "主/客": 0.7,
+     "平/主": 20.3,
+     "平/平": 18.6,
+     "平/客": 7.0,
+     "客/主": 1.9,
+     "客/平": 3.8,
+     "客/客": 8.6
+    },
+    "top": [
+     [
+      "主/主",
+      35.1
+     ],
+     [
+      "平/主",
+      20.3
+     ],
+     [
+      "平/平",
+      18.6
+     ]
+    ]
+   },
+   "upset_prob": 48.2,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.43",
+    "平": "3.6",
+    "负": "6.55"
+   }
+  },
+  {
+   "id": "周日008",
+   "home": "盖斯",
+   "away": "哥德堡",
+   "league": "瑞超",
+   "lam_home": 1.371,
+   "lam_away": 1.358,
+   "lam_total": 2.729,
+   "top_score": "1:1",
+   "top_prob": 16.5,
+   "stars": 1,
+   "prob_home": 31.5,
+   "prob_draw": 34.8,
+   "prob_away": 33.7,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 16.5
+    },
+    {
+     "score": "0:0",
+     "prob": 8.9
+    },
+    {
+     "score": "0:1",
+     "prob": 8.1
+    },
+    {
+     "score": "2:2",
+     "prob": 7.7
+    },
+    {
+     "score": "1:2",
+     "prob": 7.6
+    },
+    {
+     "score": "1:0",
+     "prob": 7.5
+    }
+   ],
+   "headline": {
+    "score": "2:1",
+    "prob": 10.2
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 7.5
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 16.5
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 8.1
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.899,
+   "rq_best_odds": 1.43,
+   "htft": {
+    "half": {
+     "home": 29.5,
+     "draw": 41.4,
+     "away": 29.1
+    },
+    "cells": {
+     "主/主": 22.0,
+     "主/平": 5.2,
+     "主/客": 2.2,
+     "平/主": 13.2,
+     "平/平": 15.2,
+     "平/客": 13.0,
+     "客/主": 2.3,
+     "客/平": 5.2,
+     "客/客": 21.6
+    },
+    "top": [
+     [
+      "主/主",
+      22.0
+     ],
+     [
+      "客/客",
+      21.6
+     ],
+     [
+      "平/平",
+      15.2
+     ]
+    ]
+   },
+   "upset_prob": 62.8,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 16,
+    "away": 16
+   },
+   "odds": {
+    "胜": "2.38",
+    "平": "3.28",
+    "负": "2.47"
+   }
+  },
+  {
+   "id": "周日009",
+   "home": "赫尔辛基",
+   "away": "库奥皮奥",
+   "league": "芬超",
+   "lam_home": 1.967,
+   "lam_away": 1.244,
+   "lam_total": 3.21,
+   "top_score": "1:1",
+   "top_prob": 11.1,
+   "stars": 4,
+   "prob_home": 60.9,
+   "prob_draw": 24.6,
+   "prob_away": 14.4,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 11.1
+    },
+    {
+     "score": "2:1",
+     "prob": 11.0
+    },
+    {
+     "score": "1:0",
+     "prob": 9.0
+    },
+    {
+     "score": "2:0",
+     "prob": 8.8
+    },
+    {
+     "score": "3:1",
+     "prob": 7.2
+    },
+    {
+     "score": "2:2",
+     "prob": 6.8
+    }
+   ],
+   "headline": {
+    "score": "1:0",
+    "prob": 10.8
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 11.0
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 11.1
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 3.7
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.926,
+   "rq_best_odds": 1.95,
+   "htft": {
+    "half": {
+     "home": 41.2,
+     "draw": 36.8,
+     "away": 22.0
+    },
+    "cells": {
+     "主/主": 34.4,
+     "主/平": 5.0,
+     "主/客": 1.8,
+     "平/主": 16.4,
+     "平/平": 11.9,
+     "平/客": 8.5,
+     "客/主": 3.3,
+     "客/平": 5.0,
+     "客/客": 13.7
+    },
+    "top": [
+     [
+      "主/主",
+      34.4
+     ],
+     [
+      "平/主",
+      16.4
+     ],
+     [
+      "客/客",
+      13.7
+     ]
+    ]
+   },
+   "upset_prob": 47.7,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 20,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.64",
+    "平": "3.71",
+    "负": "4"
+   }
+  },
+  {
+   "id": "周日010",
+   "home": "埃因霍温",
+   "away": "费耶诺德",
+   "league": "荷甲",
+   "lam_home": 2.376,
+   "lam_away": 1.824,
+   "lam_total": 4.2,
+   "top_score": "2:1",
+   "top_prob": 8.8,
+   "stars": 2,
+   "prob_home": 55.0,
+   "prob_draw": 23.1,
+   "prob_away": 21.9,
+   "top_scores": [
+    {
+     "score": "2:1",
+     "prob": 8.8
+    },
+    {
+     "score": "2:2",
+     "prob": 8.5
+    },
+    {
+     "score": "1:1",
+     "prob": 7.8
+    },
+    {
+     "score": "3:1",
+     "prob": 7.0
+    },
+    {
+     "score": "3:2",
+     "prob": 6.4
+    },
+    {
+     "score": "1:2",
+     "prob": 4.6
+    }
+   ],
+   "headline": {
+    "score": "2:2",
+    "prob": 7.9
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 8.8
+    },
+    "draw": {
+     "score": "2:2",
+     "prob": 8.5
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 4.6
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.847,
+   "rq_best_odds": 1.75,
+   "htft": {
+    "half": {
+     "home": 40.8,
+     "draw": 31.6,
+     "away": 27.6
+    },
+    "cells": {
+     "主/主": 32.5,
+     "主/平": 5.4,
+     "主/客": 2.9,
+     "平/主": 13.7,
+     "平/平": 8.8,
+     "平/客": 9.0,
+     "客/主": 4.2,
+     "客/平": 5.4,
+     "客/客": 18.0
+    },
+    "top": [
+     [
+      "主/主",
+      32.5
+     ],
+     [
+      "客/客",
+      18.0
+     ],
+     [
+      "平/主",
+      13.7
+     ]
+    ]
+   },
+   "upset_prob": 46.1,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.82",
+    "平": "4.05",
+    "负": "3"
+   }
+  },
+  {
+   "id": "周日011",
+   "home": "维京",
+   "away": "特罗姆瑟",
+   "league": "挪超",
+   "lam_home": 2.434,
+   "lam_away": 1.121,
+   "lam_total": 3.555,
+   "top_score": "2:1",
+   "top_prob": 11.2,
+   "stars": 4,
+   "prob_home": 76.4,
+   "prob_draw": 18.2,
+   "prob_away": 5.4,
+   "top_scores": [
+    {
+     "score": "2:1",
+     "prob": 11.2
+    },
+    {
+     "score": "2:0",
+     "prob": 10.0
+    },
+    {
+     "score": "3:1",
+     "prob": 9.1
+    },
+    {
+     "score": "1:1",
+     "prob": 8.2
+    },
+    {
+     "score": "1:0",
+     "prob": 8.2
+    },
+    {
+     "score": "3:0",
+     "prob": 8.1
+    }
+   ],
+   "headline": {
+    "score": "2:1",
+    "prob": 11.9
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 11.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 8.2
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 1.6
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.137,
+   "rq_best_odds": 2.76,
+   "htft": {
+    "half": {
+     "home": 50.1,
+     "draw": 33.0,
+     "away": 16.9
+    },
+    "cells": {
+     "主/主": 44.4,
+     "主/平": 4.3,
+     "主/客": 1.4,
+     "平/主": 17.9,
+     "平/平": 9.4,
+     "平/客": 5.7,
+     "客/主": 3.8,
+     "客/平": 4.3,
+     "客/客": 8.8
+    },
+    "top": [
+     [
+      "主/主",
+      44.4
+     ],
+     [
+      "平/主",
+      17.9
+     ],
+     [
+      "平/平",
+      9.4
+     ]
+    ]
+   },
+   "upset_prob": 36.2,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 22,
+    "away": 13
+   },
+   "odds": {
+    "胜": "1.33",
+    "平": "4.75",
+    "负": "6"
+   }
+  },
+  {
+   "id": "周日012",
+   "home": "赫尔城",
+   "away": "布伦特",
+   "league": "英超",
+   "lam_home": 0.829,
+   "lam_away": 1.522,
+   "lam_total": 2.351,
+   "top_score": "0:1",
+   "top_prob": 16.8,
+   "stars": 4,
+   "prob_home": 8.4,
+   "prob_draw": 29.6,
+   "prob_away": 62.1,
+   "top_scores": [
+    {
+     "score": "0:1",
+     "prob": 16.8
+    },
+    {
+     "score": "1:1",
+     "prob": 13.7
+    },
+    {
+     "score": "0:2",
+     "prob": 12.8
+    },
+    {
+     "score": "0:0",
+     "prob": 10.8
+    },
+    {
+     "score": "1:2",
+     "prob": 10.6
+    },
+    {
+     "score": "0:3",
+     "prob": 6.5
+    }
+   ],
+   "headline": {
+    "score": "1:2",
+    "prob": 11.9
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 3.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 13.7
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 16.8
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.977,
+   "rq_best_odds": 2.15,
+   "htft": {
+    "half": {
+     "home": 17.7,
+     "draw": 44.2,
+     "away": 38.2
+    },
+    "cells": {
+     "主/主": 11.1,
+     "主/平": 4.4,
+     "主/客": 2.2,
+     "平/主": 8.3,
+     "平/平": 17.2,
+     "平/客": 18.6,
+     "客/主": 1.1,
+     "客/平": 4.4,
+     "客/客": 32.8
+    },
+    "top": [
+     [
+      "客/客",
+      32.8
+     ],
+     [
+      "平/客",
+      18.6
+     ],
+     [
+      "平/平",
+      17.2
+     ]
+    ]
+   },
+   "upset_prob": 46.3,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 19,
+    "away": 25
+   },
+   "odds": {
+    "胜": "4.7",
+    "平": "3.86",
+    "负": "1.52"
+   }
+  },
+  {
+   "id": "周日013",
+   "home": "水晶宫",
+   "away": "纽卡斯尔",
+   "league": "英超",
+   "lam_home": 1.549,
+   "lam_away": 1.696,
+   "lam_total": 3.245,
+   "top_score": "1:1",
+   "top_prob": 13.6,
+   "stars": 1,
+   "prob_home": 26.0,
+   "prob_draw": 30.1,
+   "prob_away": 43.9,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 13.6
+    },
+    {
+     "score": "1:2",
+     "prob": 9.2
+    },
+    {
+     "score": "2:2",
+     "prob": 8.9
+    },
+    {
+     "score": "0:1",
+     "prob": 7.0
+    },
+    {
+     "score": "2:1",
+     "prob": 6.2
+    },
+    {
+     "score": "0:2",
+     "prob": 6.0
+    }
+   ],
+   "headline": {
+    "score": "1:2",
+    "prob": 10.6
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 6.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 13.6
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 9.2
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.901,
+   "rq_best_odds": 1.56,
+   "htft": {
+    "half": {
+     "home": 29.4,
+     "draw": 37.3,
+     "away": 33.3
+    },
+    "cells": {
+     "主/主": 21.0,
+     "主/平": 5.4,
+     "主/客": 2.9,
+     "平/主": 11.7,
+     "平/平": 12.3,
+     "平/客": 13.3,
+     "客/主": 2.6,
+     "客/平": 5.4,
+     "客/客": 25.2
+    },
+    "top": [
+     [
+      "客/客",
+      25.2
+     ],
+     [
+      "主/主",
+      21.0
+     ],
+     [
+      "平/客",
+      13.3
+     ]
+    ]
+   },
+   "upset_prob": 57.1,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "2.7",
+    "平": "3.45",
+    "负": "2.13"
+   }
+  },
+  {
+   "id": "周日014",
+   "home": "曼联",
+   "away": "伯恩茅斯",
+   "league": "英超",
+   "lam_home": 1.463,
+   "lam_away": 1.315,
+   "lam_total": 2.778,
+   "top_score": "1:1",
+   "top_prob": 16.6,
+   "stars": 1,
+   "prob_home": 36.8,
+   "prob_draw": 33.2,
+   "prob_away": 30.0,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 16.6
+    },
+    {
+     "score": "2:1",
+     "prob": 8.6
+    },
+    {
+     "score": "2:2",
+     "prob": 8.0
+    },
+    {
+     "score": "1:0",
+     "prob": 7.6
+    },
+    {
+     "score": "1:2",
+     "prob": 7.3
+    },
+    {
+     "score": "0:1",
+     "prob": 6.9
+    }
+   ],
+   "headline": {
+    "score": "1:2",
+    "prob": 8.1
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 8.6
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 16.6
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 7.3
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.95,
+   "rq_best_odds": 1.6,
+   "htft": {
+    "half": {
+     "home": 31.6,
+     "draw": 40.9,
+     "away": 27.4
+    },
+    "cells": {
+     "主/主": 24.3,
+     "主/平": 5.2,
+     "主/客": 2.1,
+     "平/主": 14.0,
+     "平/平": 14.9,
+     "平/客": 12.1,
+     "客/主": 2.4,
+     "客/平": 5.2,
+     "客/客": 19.8
+    },
+    "top": [
+     [
+      "主/主",
+      24.3
+     ],
+     [
+      "客/客",
+      19.8
+     ],
+     [
+      "平/平",
+      14.9
+     ]
+    ]
+   },
+   "upset_prob": 59.6,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "2.02",
+    "平": "3.43",
+    "负": "2.92"
+   }
+  },
+  {
+   "id": "周日015",
+   "home": "热那亚",
+   "away": "威尼斯",
+   "league": "意甲",
+   "lam_home": 1.575,
+   "lam_away": 1.159,
+   "lam_total": 2.735,
+   "top_score": "1:1",
+   "top_prob": 14.4,
+   "stars": 2,
+   "prob_home": 49.5,
+   "prob_draw": 30.4,
+   "prob_away": 20.2,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 14.4
+    },
+    {
+     "score": "1:0",
+     "prob": 10.8
+    },
+    {
+     "score": "2:1",
+     "prob": 9.9
+    },
+    {
+     "score": "2:0",
+     "prob": 8.5
+    },
+    {
+     "score": "0:0",
+     "prob": 7.9
+    },
+    {
+     "score": "2:2",
+     "prob": 6.6
+    }
+   ],
+   "headline": {
+    "score": "1:1",
+    "prob": 13.6
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 10.8
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 14.4
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 5.4
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.935,
+   "rq_best_odds": 1.66,
+   "htft": {
+    "half": {
+     "home": 35.4,
+     "draw": 41.1,
+     "away": 23.6
+    },
+    "cells": {
+     "主/主": 28.5,
+     "主/平": 5.0,
+     "主/客": 1.8,
+     "平/主": 15.8,
+     "平/平": 14.9,
+     "平/客": 10.3,
+     "客/主": 2.6,
+     "客/平": 5.0,
+     "客/客": 15.9
+    },
+    "top": [
+     [
+      "主/主",
+      28.5
+     ],
+     [
+      "客/客",
+      15.9
+     ],
+     [
+      "平/主",
+      15.8
+     ]
+    ]
+   },
+   "upset_prob": 58.4,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 8
+   },
+   "odds": {
+    "胜": "1.94",
+    "平": "3.1",
+    "负": "3.43"
+   }
+  },
+  {
+   "id": "周日016",
+   "home": "亚特兰大",
+   "away": "弗洛西诺",
+   "league": "意甲",
+   "lam_home": 1.875,
+   "lam_away": 1.145,
+   "lam_total": 3.02,
+   "top_score": "1:1",
+   "top_prob": 11.9,
+   "stars": 3,
+   "prob_home": 61.9,
+   "prob_draw": 25.2,
+   "prob_away": 12.9,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 11.9
+    },
+    {
+     "score": "2:1",
+     "prob": 11.2
+    },
+    {
+     "score": "1:0",
+     "prob": 10.5
+    },
+    {
+     "score": "2:0",
+     "prob": 9.8
+    },
+    {
+     "score": "3:1",
+     "prob": 7.0
+    },
+    {
+     "score": "2:2",
+     "prob": 6.4
+    }
+   ],
+   "headline": {
+    "score": "1:0",
+    "prob": 8.7
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 11.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 11.9
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 3.4
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.991,
+   "rq_best_odds": 1.97,
+   "htft": {
+    "half": {
+     "home": 40.9,
+     "draw": 38.1,
+     "away": 21.0
+    },
+    "cells": {
+     "主/主": 34.3,
+     "主/平": 4.9,
+     "主/客": 1.7,
+     "平/主": 17.0,
+     "平/平": 12.8,
+     "平/客": 8.4,
+     "客/主": 3.1,
+     "客/平": 4.9,
+     "客/客": 13.0
+    },
+    "top": [
+     [
+      "主/主",
+      34.3
+     ],
+     [
+      "平/主",
+      17.0
+     ],
+     [
+      "客/客",
+      13.0
+     ]
+    ]
+   },
+   "upset_prob": 50.5,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 8
+   },
+   "odds": {
+    "胜": "1.62",
+    "平": "4",
+    "负": "3.82"
+   }
+  },
+  {
+   "id": "周日017",
+   "home": "摩纳哥",
+   "away": "里尔",
+   "league": "法甲",
+   "lam_home": 1.707,
+   "lam_away": 1.114,
+   "lam_total": 2.821,
+   "top_score": "1:1",
+   "top_prob": 13.2,
+   "stars": 2,
+   "prob_home": 56.8,
+   "prob_draw": 27.7,
+   "prob_away": 15.4,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 13.2
+    },
+    {
+     "score": "1:0",
+     "prob": 11.3
+    },
+    {
+     "score": "2:1",
+     "prob": 10.8
+    },
+    {
+     "score": "2:0",
+     "prob": 9.7
+    },
+    {
+     "score": "0:0",
+     "prob": 6.8
+    },
+    {
+     "score": "2:2",
+     "prob": 6.3
+    }
+   ],
+   "headline": {
+    "score": "1:1",
+    "prob": 13.1
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 11.3
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 13.2
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 4.1
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.878,
+   "rq_best_odds": 1.8,
+   "htft": {
+    "half": {
+     "home": 38.3,
+     "draw": 40.0,
+     "away": 21.7
+    },
+    "cells": {
+     "主/主": 31.7,
+     "主/平": 4.9,
+     "主/客": 1.6,
+     "平/主": 16.7,
+     "平/平": 14.1,
+     "平/客": 9.2,
+     "客/主": 2.8,
+     "客/平": 4.9,
+     "客/客": 14.0
+    },
+    "top": [
+     [
+      "主/主",
+      31.7
+     ],
+     [
+      "平/主",
+      16.7
+     ],
+     [
+      "平/平",
+      14.1
+     ]
+    ]
+   },
+   "upset_prob": 50.9,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 22,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.76",
+    "平": "3.45",
+    "负": "3.7"
+   }
+  },
+  {
+   "id": "周日018",
+   "home": "霍芬海姆",
+   "away": "勒沃库森",
+   "league": "德甲",
+   "lam_home": 1.674,
+   "lam_away": 2.037,
+   "lam_total": 3.71,
+   "top_score": "1:1",
+   "top_prob": 10.6,
+   "stars": 3,
+   "prob_home": 22.6,
+   "prob_draw": 26.3,
+   "prob_away": 51.1,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 10.6
+    },
+    {
+     "score": "1:2",
+     "prob": 9.8
+    },
+    {
+     "score": "2:2",
+     "prob": 9.0
+    },
+    {
+     "score": "1:3",
+     "prob": 6.6
+    },
+    {
+     "score": "2:3",
+     "prob": 5.5
+    },
+    {
+     "score": "0:2",
+     "prob": 5.3
+    }
+   ],
+   "headline": {
+    "score": "2:2",
+    "prob": 8.2
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 5.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 10.6
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 9.8
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.835,
+   "rq_best_odds": 1.66,
+   "htft": {
+    "half": {
+     "home": 28.3,
+     "draw": 34.3,
+     "away": 37.5
+    },
+    "cells": {
+     "主/主": 19.2,
+     "主/平": 5.4,
+     "主/客": 3.6,
+     "平/主": 10.2,
+     "平/平": 10.4,
+     "平/客": 13.7,
+     "客/主": 2.8,
+     "客/平": 5.4,
+     "客/客": 29.2
+    },
+    "top": [
+     [
+      "客/客",
+      29.2
+     ],
+     [
+      "主/主",
+      19.2
+     ],
+     [
+      "平/客",
+      13.7
+     ]
+    ]
+   },
+   "upset_prob": 48.9,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "2.8",
+    "平": "3.93",
+    "负": "1.93"
+   }
+  },
+  {
+   "id": "周日019",
+   "home": "塞尔塔",
+   "away": "贝蒂斯",
+   "league": "西甲",
+   "lam_home": 1.327,
+   "lam_away": 1.735,
+   "lam_total": 3.062,
+   "top_score": "1:1",
+   "top_prob": 13.6,
+   "stars": 2,
+   "prob_home": 16.5,
+   "prob_draw": 28.2,
+   "prob_away": 55.3,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 13.6
+    },
+    {
+     "score": "1:2",
+     "prob": 11.0
+    },
+    {
+     "score": "0:1",
+     "prob": 9.6
+    },
+    {
+     "score": "0:2",
+     "prob": 8.3
+    },
+    {
+     "score": "2:2",
+     "prob": 7.8
+    },
+    {
+     "score": "1:3",
+     "prob": 6.4
+    }
+   ],
+   "headline": {
+    "score": "1:1",
+    "prob": 13.0
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 4.5
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 13.6
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 11.0
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.848,
+   "rq_best_odds": 1.66,
+   "htft": {
+    "half": {
+     "home": 25.2,
+     "draw": 38.4,
+     "away": 36.3
+    },
+    "cells": {
+     "主/主": 17.0,
+     "主/平": 5.2,
+     "主/客": 3.0,
+     "平/主": 10.3,
+     "平/平": 13.0,
+     "平/客": 15.1,
+     "客/主": 2.1,
+     "客/平": 5.2,
+     "客/客": 29.0
+    },
+    "top": [
+     [
+      "客/客",
+      29.0
+     ],
+     [
+      "主/主",
+      17.0
+     ],
+     [
+      "平/客",
+      15.1
+     ]
+    ]
+   },
+   "upset_prob": 53.0,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "3.1",
+    "平": "3.37",
+    "负": "1.96"
+   }
+  },
+  {
+   "id": "周日020",
+   "home": "雷恩",
+   "away": "斯特拉斯",
+   "league": "法甲",
+   "lam_home": 2.104,
+   "lam_away": 1.34,
+   "lam_total": 3.444,
+   "top_score": "2:1",
+   "top_prob": 10.8,
+   "stars": 4,
+   "prob_home": 62.0,
+   "prob_draw": 23.4,
+   "prob_away": 14.6,
+   "top_scores": [
+    {
+     "score": "2:1",
+     "prob": 10.8
+    },
+    {
+     "score": "1:1",
+     "prob": 10.1
+    },
+    {
+     "score": "2:0",
+     "prob": 8.1
+    },
+    {
+     "score": "1:0",
+     "prob": 7.7
+    },
+    {
+     "score": "3:1",
+     "prob": 7.6
+    },
+    {
+     "score": "2:2",
+     "prob": 7.1
+    }
+   ],
+   "headline": {
+    "score": "2:0",
+    "prob": 7.9
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 10.8
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 10.1
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 3.7
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.144,
+   "rq_best_odds": 2.05,
+   "htft": {
+    "half": {
+     "home": 42.3,
+     "draw": 35.2,
+     "away": 22.5
+    },
+    "cells": {
+     "主/主": 35.3,
+     "主/平": 5.0,
+     "主/客": 2.0,
+     "平/主": 16.1,
+     "平/平": 10.9,
+     "平/客": 8.2,
+     "客/主": 3.6,
+     "客/平": 5.0,
+     "客/客": 13.8
+    },
+    "top": [
+     [
+      "主/主",
+      35.3
+     ],
+     [
+      "平/主",
+      16.1
+     ],
+     [
+      "客/客",
+      13.8
+     ]
+    ]
+   },
+   "upset_prob": 52.2,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 14,
+    "away": 24
+   },
+   "odds": {
+    "胜": "1.57",
+    "平": "4.12",
+    "负": "4"
+   }
+  },
+  {
+   "id": "周日021",
+   "home": "桑德兰",
+   "away": "利兹联",
+   "league": "英超",
+   "lam_home": 1.171,
+   "lam_away": 1.387,
+   "lam_total": 2.559,
+   "top_score": "1:1",
+   "top_prob": 16.3,
+   "stars": 1,
+   "prob_home": 22.7,
+   "prob_draw": 34.1,
+   "prob_away": 43.1,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 16.3
+    },
+    {
+     "score": "0:1",
+     "prob": 11.1
+    },
+    {
+     "score": "0:0",
+     "prob": 9.9
+    },
+    {
+     "score": "1:2",
+     "prob": 9.0
+    },
+    {
+     "score": "0:2",
+     "prob": 7.7
+    },
+    {
+     "score": "2:2",
+     "prob": 6.6
+    }
+   ],
+   "headline": {
+    "score": "1:1",
+    "prob": 15.6
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 6.5
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 16.3
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 11.1
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.807,
+   "rq_best_odds": 1.42,
+   "htft": {
+    "half": {
+     "home": 25.4,
+     "draw": 42.9,
+     "away": 31.7
+    },
+    "cells": {
+     "主/主": 18.1,
+     "主/平": 5.1,
+     "主/客": 2.3,
+     "平/主": 11.8,
+     "平/平": 16.3,
+     "平/客": 14.8,
+     "客/主": 1.8,
+     "客/平": 5.1,
+     "客/客": 24.8
+    },
+    "top": [
+     [
+      "客/客",
+      24.8
+     ],
+     [
+      "主/主",
+      18.1
+     ],
+     [
+      "平/平",
+      16.3
+     ]
+    ]
+   },
+   "upset_prob": 57.9,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "2.75",
+    "平": "2.87",
+    "负": "2.4"
+   }
+  },
+  {
+   "id": "周日022",
+   "home": "弗赖堡",
+   "away": "拜仁",
+   "league": "德甲",
+   "lam_home": 1.076,
+   "lam_away": 2.546,
+   "lam_total": 3.621,
+   "top_score": "1:2",
+   "top_prob": 11.2,
+   "stars": 5,
+   "prob_home": 3.3,
+   "prob_draw": 17.3,
+   "prob_away": 79.4,
+   "top_scores": [
+    {
+     "score": "1:2",
+     "prob": 11.2
+    },
+    {
+     "score": "0:2",
+     "prob": 9.9
+    },
+    {
+     "score": "1:3",
+     "prob": 9.5
+    },
+    {
+     "score": "0:3",
+     "prob": 8.4
+    },
+    {
+     "score": "1:1",
+     "prob": 7.9
+    },
+    {
+     "score": "0:1",
+     "prob": 7.8
+    }
+   ],
+   "headline": {
+    "score": "1:3",
+    "prob": 9.6
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 1.0
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 7.9
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 11.2
+    }
+   },
+   "rq_handicap": "+2",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 0.965,
+   "rq_best_odds": 1.81,
+   "htft": {
+    "half": {
+     "home": 15.6,
+     "draw": 32.1,
+     "away": 52.3
+    },
+    "cells": {
+     "主/主": 7.7,
+     "主/平": 4.0,
+     "主/客": 3.8,
+     "平/主": 5.0,
+     "平/平": 8.8,
+     "平/客": 18.2,
+     "客/主": 1.2,
+     "客/平": 4.0,
+     "客/客": 47.1
+    },
+    "top": [
+     [
+      "客/客",
+      47.1
+     ],
+     [
+      "平/客",
+      18.2
+     ],
+     [
+      "平/平",
+      8.8
+     ]
+    ]
+   },
+   "upset_prob": 22.9,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "6.5",
+    "平": "5.7",
+    "负": "1.25"
+   }
+  },
+  {
+   "id": "周日023",
+   "home": "莱切",
+   "away": "尤文图斯",
+   "league": "意甲",
+   "lam_home": 0.944,
+   "lam_away": 2.317,
+   "lam_total": 3.261,
+   "top_score": "0:2",
+   "top_prob": 12.0,
+   "stars": 4,
+   "prob_home": 3.1,
+   "prob_draw": 18.4,
+   "prob_away": 78.4,
+   "top_scores": [
+    {
+     "score": "0:2",
+     "prob": 12.0
+    },
+    {
+     "score": "1:2",
+     "prob": 11.4
+    },
+    {
+     "score": "0:1",
+     "prob": 10.4
+    },
+    {
+     "score": "0:3",
+     "prob": 9.3
+    },
+    {
+     "score": "1:1",
+     "prob": 8.8
+    },
+    {
+     "score": "1:3",
+     "prob": 8.8
+    }
+   ],
+   "headline": {
+    "score": "0:1",
+    "prob": 14.3
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 1.0
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 8.8
+    },
+    "away": {
+     "score": "0:2",
+     "prob": 12.0
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.852,
+   "rq_best_odds": 2.16,
+   "htft": {
+    "half": {
+     "home": 14.9,
+     "draw": 34.4,
+     "away": 50.6
+    },
+    "cells": {
+     "主/主": 7.5,
+     "主/平": 3.9,
+     "主/客": 3.4,
+     "平/主": 5.2,
+     "平/平": 10.2,
+     "平/客": 19.0,
+     "客/主": 1.1,
+     "客/平": 3.9,
+     "客/客": 45.6
+    },
+    "top": [
+     [
+      "客/客",
+      45.6
+     ],
+     [
+      "平/客",
+      19.0
+     ],
+     [
+      "平/平",
+      10.2
+     ]
+    ]
+   },
+   "upset_prob": 31.8,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "7.25",
+    "平": "4.27",
+    "负": "1.32"
+   }
+  },
+  {
+   "id": "周日024",
+   "home": "皇家社会",
+   "away": "莱万特",
+   "league": "西甲",
+   "lam_home": 2.065,
+   "lam_away": 1.17,
+   "lam_total": 3.235,
+   "top_score": "2:1",
+   "top_prob": 11.4,
+   "stars": 5,
+   "prob_home": 66.5,
+   "prob_draw": 22.8,
+   "prob_away": 10.7,
+   "top_scores": [
+    {
+     "score": "2:1",
+     "prob": 11.4
+    },
+    {
+     "score": "1:1",
+     "prob": 10.5
+    },
+    {
+     "score": "2:0",
+     "prob": 9.7
+    },
+    {
+     "score": "1:0",
+     "prob": 9.4
+    },
+    {
+     "score": "3:1",
+     "prob": 7.8
+    },
+    {
+     "score": "3:0",
+     "prob": 6.7
+    }
+   ],
+   "headline": {
+    "score": "2:1",
+    "prob": 12.4
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 11.4
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 10.5
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 2.9
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.268,
+   "rq_best_odds": 2.5,
+   "htft": {
+    "half": {
+     "home": 43.7,
+     "draw": 36.2,
+     "away": 20.1
+    },
+    "cells": {
+     "主/主": 37.3,
+     "主/平": 4.8,
+     "主/客": 1.6,
+     "平/主": 17.2,
+     "平/平": 11.5,
+     "平/客": 7.5,
+     "客/主": 3.4,
+     "客/平": 4.8,
+     "客/客": 11.9
+    },
+    "top": [
+     [
+      "主/主",
+      37.3
+     ],
+     [
+      "平/主",
+      17.2
+     ],
+     [
+      "客/客",
+      11.9
+     ]
+    ]
+   },
+   "upset_prob": 45.7,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.4",
+    "平": "4.38",
+    "负": "5.35"
+   }
+  },
+  {
+   "id": "周日025",
+   "home": "阿尔克马",
+   "away": "特温特",
+   "league": "荷甲",
+   "lam_home": 1.53,
+   "lam_away": 1.399,
+   "lam_total": 2.929,
+   "top_score": "1:1",
+   "top_prob": 15.8,
+   "stars": 1,
+   "prob_home": 35.1,
+   "prob_draw": 32.4,
+   "prob_away": 32.5,
+   "top_scores": [
+    {
+     "score": "1:1",
+     "prob": 15.8
+    },
+    {
+     "score": "2:2",
+     "prob": 8.4
+    },
+    {
+     "score": "2:1",
+     "prob": 8.3
+    },
+    {
+     "score": "1:2",
+     "prob": 7.6
+    },
+    {
+     "score": "0:1",
+     "prob": 6.8
+    },
+    {
+     "score": "1:0",
+     "prob": 6.4
+    }
+   ],
+   "headline": {
+    "score": "2:2",
+    "prob": 8.0
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 8.3
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 15.8
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 7.6
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.018,
+   "rq_best_odds": 1.65,
+   "htft": {
+    "half": {
+     "home": 32.0,
+     "draw": 39.7,
+     "away": 28.4
+    },
+    "cells": {
+     "主/主": 24.3,
+     "主/平": 5.3,
+     "主/客": 2.3,
+     "平/主": 13.7,
+     "平/平": 13.9,
+     "平/客": 12.1,
+     "客/主": 2.6,
+     "客/平": 5.3,
+     "客/客": 20.4
+    },
+    "top": [
+     [
+      "主/主",
+      24.3
+     ],
+     [
+      "客/客",
+      20.4
+     ],
+     [
+      "平/平",
+      13.9
+     ]
+    ]
+   },
+   "upset_prob": 61.5,
+   "upset_level": "高",
+   "cold": false,
+   "data_n": {
+    "home": 24,
+    "away": 20
+   },
+   "odds": {
+    "胜": "1.98",
+    "平": "3.65",
+    "负": "2.85"
+   }
+  },
+  {
+   "id": "周日026",
+   "home": "乌迪内斯",
+   "away": "AC米兰",
+   "league": "意甲",
+   "lam_home": 1.131,
+   "lam_away": 2.0,
+   "lam_total": 3.131,
+   "top_score": "1:2",
+   "top_prob": 11.6,
+   "stars": 4,
+   "prob_home": 9.0,
+   "prob_draw": 23.8,
+   "prob_away": 67.2,
+   "top_scores": [
+    {
+     "score": "1:2",
+     "prob": 11.6
+    },
+    {
+     "score": "1:1",
+     "prob": 11.0
+    },
+    {
+     "score": "0:2",
+     "prob": 10.3
+    },
+    {
+     "score": "0:1",
+     "prob": 10.3
+    },
+    {
+     "score": "1:3",
+     "prob": 7.8
+    },
+    {
+     "score": "0:3",
+     "prob": 6.9
+    }
+   ],
+   "headline": {
+    "score": "1:2",
+    "prob": 11.9
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 2.4
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 11.0
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 11.6
+    }
+   },
+   "rq_handicap": "+1",
+   "rq_best_pick": "让球胜",
+   "rq_best_ev": 1.044,
+   "rq_best_odds": 2.11,
+   "htft": {
+    "half": {
+     "home": 19.9,
+     "draw": 37.0,
+     "away": 43.1
+    },
+    "cells": {
+     "主/主": 11.8,
+     "主/平": 4.7,
+     "主/客": 3.3,
+     "平/主": 7.7,
+     "平/平": 12.0,
+     "平/客": 17.4,
+     "客/主": 1.6,
+     "客/平": 4.7,
+     "客/客": 36.8
+    },
+    "top": [
+     [
+      "客/客",
+      36.8
+     ],
+     [
+      "平/客",
+      17.4
+     ],
+     [
+      "平/平",
+      12.0
+     ]
+    ]
+   },
+   "upset_prob": 48.7,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "4.6",
+    "平": "3.75",
+    "负": "1.55"
+   }
+  },
+  {
+   "id": "周日027",
+   "home": "巴萨",
+   "away": "皇马",
+   "league": "西甲",
+   "lam_home": 2.414,
+   "lam_away": 1.608,
+   "lam_total": 4.022,
+   "top_score": "2:1",
+   "top_prob": 10.2,
+   "stars": 4,
+   "prob_home": 61.8,
+   "prob_draw": 22.1,
+   "prob_away": 16.1,
+   "top_scores": [
+    {
+     "score": "2:1",
+     "prob": 10.2
+    },
+    {
+     "score": "1:1",
+     "prob": 8.2
+    },
+    {
+     "score": "3:1",
+     "prob": 8.2
+    },
+    {
+     "score": "2:2",
+     "prob": 8.0
+    },
+    {
+     "score": "3:2",
+     "prob": 6.6
+    },
+    {
+     "score": "2:0",
+     "prob": 5.1
+    }
+   ],
+   "headline": {
+    "score": "3:1",
+    "prob": 8.0
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:1",
+     "prob": 10.2
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 8.2
+    },
+    "away": {
+     "score": "1:2",
+     "prob": 3.8
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 0.986,
+   "rq_best_odds": 2.13,
+   "htft": {
+    "half": {
+     "home": 43.8,
+     "draw": 32.0,
+     "away": 24.2
+    },
+    "cells": {
+     "主/主": 36.2,
+     "主/平": 5.1,
+     "主/客": 2.4,
+     "平/主": 15.0,
+     "平/平": 9.0,
+     "平/客": 8.0,
+     "客/主": 4.2,
+     "客/平": 5.1,
+     "客/客": 14.8
+    },
+    "top": [
+     [
+      "主/主",
+      36.2
+     ],
+     [
+      "平/主",
+      15.0
+     ],
+     [
+      "客/客",
+      14.8
+     ]
+    ]
+   },
+   "upset_prob": 42.2,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 25
+   },
+   "odds": {
+    "胜": "1.53",
+    "平": "5.22",
+    "负": "3.52"
+   }
+  },
+  {
+   "id": "周日028",
+   "home": "里斯本",
+   "away": "维塞乌",
+   "league": "葡超",
+   "lam_home": 2.379,
+   "lam_away": 0.584,
+   "lam_total": 2.963,
+   "top_score": "2:0",
+   "top_prob": 16.1,
+   "stars": 4,
+   "prob_home": 84.2,
+   "prob_draw": 14.6,
+   "prob_away": 1.2,
+   "top_scores": [
+    {
+     "score": "2:0",
+     "prob": 16.1
+    },
+    {
+     "score": "1:0",
+     "prob": 13.6
+    },
+    {
+     "score": "3:0",
+     "prob": 12.8
+    },
+    {
+     "score": "2:1",
+     "prob": 9.4
+    },
+    {
+     "score": "4:0",
+     "prob": 7.6
+    },
+    {
+     "score": "3:1",
+     "prob": 7.5
+    }
+   ],
+   "headline": {
+    "score": "3:0",
+    "prob": 11.7
+   },
+   "quad_top": {
+    "home": {
+     "score": "2:0",
+     "prob": 16.1
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 7.2
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 0.4
+    }
+   },
+   "rq_handicap": "-2",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.071,
+   "rq_best_odds": 2.25,
+   "htft": {
+    "half": {
+     "home": 56.6,
+     "draw": 34.3,
+     "away": 9.0
+    },
+    "cells": {
+     "主/主": 53.5,
+     "主/平": 2.7,
+     "主/客": 0.4,
+     "平/主": 21.3,
+     "平/平": 9.9,
+     "平/客": 3.1,
+     "客/主": 2.6,
+     "客/平": 2.7,
+     "客/客": 3.8
+    },
+    "top": [
+     [
+      "主/主",
+      53.5
+     ],
+     [
+      "平/主",
+      21.3
+     ],
+     [
+      "平/平",
+      9.9
+     ]
+    ]
+   },
+   "upset_prob": 17.4,
+   "upset_level": "低",
+   "cold": false,
+   "data_n": {
+    "home": 25,
+    "away": 4
+   },
+   "odds": {
+    "胜": "1.2844",
+    "平": "7.4625",
+    "负": "11.4413"
+   }
+  },
+  {
+   "id": "周日029",
+   "home": "洛杉矶FC",
+   "away": "洛城银河",
+   "league": "美职",
+   "lam_home": 1.83,
+   "lam_away": 0.92,
+   "lam_total": 2.751,
+   "top_score": "1:0",
+   "top_prob": 13.4,
+   "stars": 5,
+   "prob_home": 67.0,
+   "prob_draw": 24.5,
+   "prob_away": 8.5,
+   "top_scores": [
+    {
+     "score": "1:0",
+     "prob": 13.4
+    },
+    {
+     "score": "2:0",
+     "prob": 12.3
+    },
+    {
+     "score": "1:1",
+     "prob": 11.7
+    },
+    {
+     "score": "2:1",
+     "prob": 11.3
+    },
+    {
+     "score": "3:0",
+     "prob": 7.5
+    },
+    {
+     "score": "0:0",
+     "prob": 6.9
+    }
+   ],
+   "headline": {
+    "score": "2:0",
+    "prob": 8.4
+   },
+   "quad_top": {
+    "home": {
+     "score": "1:0",
+     "prob": 13.4
+    },
+    "draw": {
+     "score": "1:1",
+     "prob": 11.7
+    },
+    "away": {
+     "score": "0:1",
+     "prob": 2.7
+    }
+   },
+   "rq_handicap": "-1",
+   "rq_best_pick": "让球负",
+   "rq_best_ev": 1.05,
+   "rq_best_odds": 2.34,
+   "htft": {
+    "half": {
+     "home": 42.8,
+     "draw": 39.8,
+     "away": 17.4
+    },
+    "cells": {
+     "主/主": 37.3,
+     "主/平": 4.4,
+     "主/客": 1.2,
+     "平/主": 18.7,
+     "平/平": 13.8,
+     "平/客": 7.2,
+     "客/主": 2.8,
+     "客/平": 4.4,
+     "客/客": 10.2
+    },
+    "top": [
+     [
+      "主/主",
+      37.3
+     ],
+     [
+      "平/主",
+      18.7
+     ],
+     [
+      "平/平",
+      13.8
+     ]
+    ]
+   },
+   "upset_prob": 44.7,
+   "upset_level": "中",
+   "cold": false,
+   "data_n": {
+    "home": 11,
+    "away": 6
+   },
+   "odds": {
+    "胜": "1.46",
+    "平": "4.3",
+    "负": "4.72"
+   }
+  }
+ ]
+}
