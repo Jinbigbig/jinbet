@@ -10,6 +10,13 @@
   - 双档 = 模型排序第 2、第 3 可能比分（_gen_report.hit_band；4036 场回测 Top2 11.6% + Top3 8.9% ≈ 20.5%）。
   旧口径（λ 期望取整 + 同倾向次高，单点 13.8%/双档 26.0%）与「头条+第2档」口径均已弃用，λ 期望值仅作「量级参考」。
 
+半全场（2026-10-26 起接入）：
+  - 首选 = 半全场九宫格概率最高的组合；实际 = 半场结果 / 全场结果（halfScore + fullScore）。
+  - 老快照无 `htft` 字段时，按当时 λ 用 `_calc_engine.htft_analysis` 复算（84 场实测 84/84 与引擎输出一致）。
+
+总进球（2026-10-26 起接入）：
+  - 众数 = λ 总分泊松分布的众数档（0-11 档）；实际总进球 = fullScore 两队相加，>11 归入 11 档。
+
 特点：
   - 不依赖市场赔率，覆盖该日全部预测场次（含只有让球盘、无 1X2 赔率的场次）。
   - 输出落到 predictions/<date+1 天>/review_<date>.html（沿用历史约定：复盘 D 放在 D+1 当日目录）。
@@ -80,6 +87,35 @@ def load_json(p):
         return json.load(f)
 
 
+def _res_char(h, a):
+    """比分 → 主/平/客。"""
+    return '主' if h > a else ('平' if h == a else '客')
+
+
+def htft_top(m):
+    """半全场 top3 组合（首选在前）。优先快照 htft.top，老快照按当日 λ 用引擎同一实现复算。"""
+    top = (m.get('htft') or {}).get('top') or []
+    if top:
+        return [t[0] for t in top]
+    lh, la = float(m.get('lam_home') or 0), float(m.get('lam_away') or 0)
+    if lh <= 0 or la <= 0:
+        return []
+    try:
+        from _calc_engine import htft_analysis
+        return [t[0] for t in htft_analysis(lh, la)['top']]
+    except Exception:
+        return []
+
+
+def goals_mode(m):
+    """总进球众数档（λ总分泊松，0-11 档）。"""
+    import math
+    lt = float(m.get('lam_total') or 0) or (float(m.get('lam_home') or 0) + float(m.get('lam_away') or 0))
+    if lt <= 0:
+        return None
+    return max(range(0, 12), key=lambda k: math.exp(-lt) * lt ** k / math.factorial(k))
+
+
 def load_results_all():
     recs = {}
     for f in sorted(glob.glob(os.path.join(ROOT, 'results_history', '*.json'))):
@@ -105,6 +141,10 @@ def load_results_all():
 
 def parse_score(rec):
     s = rec.get('score') or rec.get('fullScore') or ''
+    return _two(s)
+
+
+def _two(s):
     if not isinstance(s, str) or ':' not in s:
         return None
     a, b = s.split(':', 1)
@@ -135,7 +175,7 @@ tr:nth-child(even){background:#fafafa}
 
 
 def day_rows(ds):
-    """读某日快照并与赛果配对 → (snap, [(match, (h,a) | None)])；无快照返回 (None, None)"""
+    """读某日快照并与赛果配对 → (snap, [(match, (h,a) | None, 半场(h,a) | None)])"""
     snap_path = os.path.join(ROOT, 'predictions', ds, 'pred_snapshot.json')
     if not os.path.exists(snap_path):
         return None, None
@@ -145,14 +185,19 @@ def day_rows(ds):
     for m in snap.get('matches') or []:
         key = f'{ds}_{m.get("home")}_{m.get("away")}'
         rec = recs.get(key)
-        rows.append((m, parse_score(rec) if rec else None))
+        rows.append((m, parse_score(rec) if rec else None,
+                     _two(rec.get('halfScore')) if rec else None))
     return snap, rows
 
 
 def tally(rows):
-    """统计 (已出赛果场次, 方向命中, 命中比分单点, 双档命中)"""
-    nres = dh = hh = bh = 0
-    for m, sc in rows:
+    """累计统计：场次 / 方向 / 比分单点 / 比分双档 / 半全场首选 / 总进球众数。
+
+    半全场与总进球各有独立分母（ht_n / tg_n）：老快照没有 λ 时无法复算，
+    不能计入分母，否则会比率虚低。
+    """
+    out = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
+    for m, sc, hf in rows:
         if not sc:
             continue
         hit_sc, band, _ = predict_scores(m)
@@ -160,11 +205,22 @@ def tally(rows):
                       float(m.get('prob_away', 0) or 0))
         pred_dir = '主胜' if ph >= pd and ph >= pa else ('客胜' if pa >= pd else '平局')
         actual = f'{sc[0]}:{sc[1]}'
-        nres += 1
-        dh += 1 if pred_dir == outcome_label(*sc) else 0
-        hh += 1 if actual == hit_sc else 0
-        bh += 1 if actual in band else 0
-    return nres, dh, hh, bh
+        out['n'] += 1
+        out['dir'] += 1 if pred_dir == outcome_label(*sc) else 0
+        # 方向双选 = 首选 + 次选（对应报告 4.1「备选方向」列）
+        _o = sorted([('主胜', ph), ('平局', pd), ('客胜', pa)], key=lambda x: -x[1])
+        out['dir2'] += 1 if outcome_label(*sc) in (_o[0][0], _o[1][0]) else 0
+        out['sc'] += 1 if actual == hit_sc else 0
+        out['band'] += 1 if actual in band else 0
+        top = htft_top(m)
+        if top and hf:
+            out['ht_n'] += 1
+            out['ht'] += 1 if f'{_res_char(*hf)}/{_res_char(*sc)}' == top[0] else 0
+        gm = goals_mode(m)
+        if gm is not None:
+            out['tg_n'] += 1
+            out['tg'] += 1 if min(sc[0] + sc[1], 11) == gm else 0
+    return out
 
 
 def cumulative_kpi(up_to, since='2026-09-08'):
@@ -179,21 +235,21 @@ def cumulative_kpi(up_to, since='2026-09-08'):
     """
     import glob as _g
     days = []
-    tot = [0, 0, 0, 0]
+    tot = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
     files = sorted(_g.glob(os.path.join(ROOT, 'predictions', '*', 'pred_snapshot.json')))
     for f in files:
         ds = os.path.basename(os.path.dirname(f))
         if ds < since or ds > up_to:
             continue
         snap, rows = day_rows(ds)
-        if not rows or not any(m.get('top_scores') for m, _ in rows):
+        if not rows or not any(m.get('top_scores') for m, _, _ in rows):
             continue
-        nres, dh, hh, bh = tally(rows)
-        if not nres:
+        t = tally(rows)
+        if not t['n']:
             continue
-        days.append((ds, nres, dh, hh, bh))
-        for i, v in enumerate((nres, dh, hh, bh)):
-            tot[i] += v
+        days.append((ds, t))
+        for k in tot:
+            tot[k] += t[k]
     return days, tot
 
 
@@ -212,13 +268,23 @@ def main():
 
     if a.kpi:
         days, tot = cumulative_kpi(ds)
-        print(f'累计目标函数（截止 {ds}，口径 = 报告头条联合众数 / 双档）')
-        print(f"{'日期':<12}{'场次':>6}{'方向':>10}{'命中比分单点':>14}{'双档':>10}")
-        for d_, n_, dh_, hh_, bh_ in days:
-            print(f'{d_:<12}{n_:>6}{dh_:>7}({dh_/n_*100:.0f}%){hh_:>8}({hh_/n_*100:.0f}%){bh_:>6}({bh_/n_*100:.0f}%)')
-        if tot[0]:
-            print(f"{'合计':<12}{tot[0]:>6}{tot[1]:>7}({tot[1]/tot[0]*100:.1f}%)"
-                  f"{tot[2]:>8}({tot[2]/tot[0]*100:.1f}%){tot[3]:>6}({tot[3]/tot[0]*100:.1f}%)")
+        print(f'累计目标函数（截止 {ds}，口径 = 报告头条联合众数 / 双档 / 半全场首选 / 总进球众数）')
+        print(f"{'日期':<12}{'场次':>6}{'方向':>10}{'方向双选':>10}{'命中比分单点':>14}{'双档':>10}"
+              f"{'半全场':>10}{'总进球':>10}")
+        for d_, t in days:
+            n_ = t['n']
+            print(f'{d_:<12}{n_:>6}{t["dir"]:>7}({t["dir"]/n_*100:.0f}%)'
+                  f'{t["dir2"]:>6}({t["dir2"]/n_*100:.0f}%)'
+                  f'{t["sc"]:>8}({t["sc"]/n_*100:.0f}%){t["band"]:>6}({t["band"]/n_*100:.0f}%)'
+                  f'{t["ht"]:>6}({t["ht"]/t["ht_n"]*100 if t["ht_n"] else 0:.0f}%)'
+                  f'{t["tg"]:>6}({t["tg"]/t["tg_n"]*100 if t["tg_n"] else 0:.0f}%)')
+        if tot['n']:
+            n_ = tot['n']
+            print(f"{'合计':<12}{n_:>6}{tot['dir']:>7}({tot['dir']/n_*100:.1f}%)"
+                  f"{tot['dir2']:>6}({tot['dir2']/n_*100:.1f}%)"
+                  f"{tot['sc']:>8}({tot['sc']/n_*100:.1f}%){tot['band']:>6}({tot['band']/n_*100:.1f}%)"
+                  f"{tot['ht']:>6}({tot['ht']/tot['ht_n']*100 if tot['ht_n'] else 0:.1f}%)"
+                  f"{tot['tg']:>6}({tot['tg']/tot['tg_n']*100 if tot['tg_n'] else 0:.1f}%)")
         return
 
     snap, rows = day_rows(ds)
@@ -228,11 +294,12 @@ def main():
 
     n = len(rows)
     dir_hit = score_hit = any_hit = exp_hit = 0
+    ht_hit = ht_n = tg_hit = tg_n = 0
     lam_model_sum = 0.0
     lam_actual_sum = 0.0
     table = []
     misses = []
-    for m, sc in rows:
+    for m, sc, hf in rows:
         home, away, lid = m.get('home'), m.get('away'), m.get('league', '')
         ph, pd, pa = float(m.get('prob_home', 0)), float(m.get('prob_draw', 0)), float(m.get('prob_away', 0))
         pred_dir = '主胜' if ph >= pd and ph >= pa else ('客胜' if pa >= pd else '平局')
@@ -261,22 +328,47 @@ def main():
             sc_cell = f'<span class="{"ok" if sh else "no"}">{"✔" if sh else "✘"}</span>'
         else:
             dir_cell = sc_cell = '<span style="color:#999">⏳</span>'
+        ht_top = htft_top(m)
+        gm = goals_mode(m)
+        hts = f'{_res_char(*hf)}/{_res_char(*sc)}' if (hf and sc) else None
+        ht_ok = bool(hts and ht_top and hts == ht_top[0])
+        tg_ok = bool(sc and gm is not None and min(sc[0] + sc[1], 11) == gm)
+        if sc and ht_top:
+            ht_n += 1
+            ht_hit += ht_ok
+        if sc and gm is not None:
+            tg_n += 1
+            tg_hit += tg_ok
+        if sc and ht_top:
+            ht_cell = (f'<span class="{"ok" if ht_ok else "no"}">{"✔" if ht_ok else "✘"}</span>'
+                       f' <span style="color:#888;font-size:11px;">{ht_top[0]}</span>')
+        else:
+            ht_cell = '<span style="color:#999">—</span>'
+        if sc and gm is not None:
+            tg_cell = (f'<span class="{"ok" if tg_ok else "no"}">{"✔" if tg_ok else "✘"}</span>'
+                       f' <span style="color:#888;font-size:11px;">{gm} 球</span>')
+        else:
+            tg_cell = '<span style="color:#999">—</span>'
         table.append(
             f'<tr><td class="b">{m.get("id")}</td><td>{lid}</td><td class="b">{home} vs {away}</td>'
             f'<td class="dir">{pred_dir}</td>'
             f'<td class="b">{exp_sc}</td><td>{"/".join(band_order)}</td><td>{stars}</td>'
             f'<td class="b">{actual_score}</td><td class="b">{actual}</td>'
             f'<td>{dir_cell}</td>'
-            f'<td>{sc_cell}</td></tr>'
+            f'<td>{sc_cell}</td>'
+            f'<td>{ht_cell}</td>'
+            f'<td>{tg_cell}</td></tr>'
         )
 
-    nres = sum(1 for _, sc in rows if sc)
+    nres = sum(1 for _, sc, _ in rows if sc)
     lam_bias = (lam_model_sum - lam_actual_sum) / nres if nres else 0.0
     if nres:
         concl = (f'{ds} 共预测 {n} 场，赛果到 {nres} 场；方向命中 {dir_hit}/{nres}'
                  f'={dir_hit/nres*100:.0f}%，命中比分单点 {exp_hit}/{nres}'
                  f'={exp_hit/nres*100:.0f}%，比分双档命中 {score_hit}/{nres}'
-                 f'={score_hit/nres*100:.0f}%，至少一项命中 {any_hit}/{nres}'
+                 f'={score_hit/nres*100:.0f}%，半全场首选 {ht_hit}/{ht_n}'
+                 f'={ht_hit/ht_n*100 if ht_n else 0:.0f}%，总进球众数 {tg_hit}/{tg_n}'
+                 f'={tg_hit/tg_n*100 if tg_n else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
                  f'={any_hit/nres*100:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
         miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
     else:
@@ -286,22 +378,27 @@ def main():
 
     _days, _tot = cumulative_kpi(ds)
     cum_html = ''
-    if _tot[0]:
-        cum_html = (f'<div class="sum"><b>累计命中（{len(_days)} 个比赛日 · {_tot[0]} 场）：</b>'
-                    f'方向 <b>{_tot[1]}</b>（{_tot[1]/_tot[0]*100:.1f}%）· '
-                    f'命中比分单点 <b>{_tot[2]}</b>（{_tot[2]/_tot[0]*100:.1f}%）· '
-                    f'双档 <b>{_tot[3]}</b>（{_tot[3]/_tot[0]*100:.1f}%）。'
-                    f'长期基准：单点约 15% · 双档约 20%。</div>')
+    if _tot['n']:
+        _n = _tot['n']
+        _hx = f' · 半全场首选 <b>{_tot["ht"]}</b>（{_tot["ht"]/_tot["ht_n"]*100:.1f}%）' if _tot['ht_n'] else ''
+        _tx = f' · 总进球众数 <b>{_tot["tg"]}</b>（{_tot["tg"]/_tot["tg_n"]*100:.1f}%）' if _tot['tg_n'] else ''
+        cum_html = (f'<div class="sum"><b>累计命中（{len(_days)} 个比赛日 · {_n} 场）：</b>'
+                    f'方向 <b>{_tot["dir"]}</b>（{_tot["dir"]/_n*100:.1f}%）· '
+                    f'方向双选 <b>{_tot["dir2"]}</b>（{_tot["dir2"]/_n*100:.1f}%）· '
+                    f'命中比分单点 <b>{_tot["sc"]}</b>（{_tot["sc"]/_n*100:.1f}%）· '
+                    f'双档 <b>{_tot["band"]}</b>（{_tot["band"]/_n*100:.1f}%）{_hx}{_tx}'
+                    f'<br>长期基准：方向约 56% · 单点约 11% · 双档约 21% · 半全场首选约 34% · 总进球众数约 19%。'
+                    f'「方向双选」= 首选 + 次选两选一，三选二的随机基线为 67%。</div>')
 
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>
 <h1>{ds} 竞彩预测复盘</h1>
-<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 命中比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 至少一项命中 {any_hit}/{nres}</h2>
+<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 命中比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 半全场首选 {ht_hit}/{ht_n} · 总进球众数 {tg_hit}/{tg_n} · 至少一项命中 {any_hit}/{nres}</h2>
 {cum_html}
 <div class="sum"><b>关键复盘结论：</b>{concl}{miss_note}
 次日建议：方向失手集中在{"冷门/平局爆冷" if misses else "无"}场次，强弱对话与深让盘依 V3.3 滚动校准自动修正，无需每日手调；若连续多日方向命中率低于 50% 或 λ 总进球偏差持续 >0.2 球，应触发离线重拟合（market_calib / Platt）。</div>
 <table>
-<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>命中比分(头条)</th><th>双档</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th></tr>
+<tr><th>编号</th><th>联赛</th><th>主队 vs 客队</th><th>预测方向</th><th>命中比分(头条)</th><th>双档</th><th>信心</th><th>实际比分</th><th>实际结果</th><th>方向</th><th>比分</th><th>半全场</th><th>总进球</th></tr>
 {''.join(table)}
 </table></body></html>"""
 
@@ -317,6 +414,8 @@ def main():
     print(f'复盘指标: 方向 {dir_hit}/{nres}={(dir_hit/nres*100) if nres else 0:.0f}% | '
           f'命中比分单点 {exp_hit}/{nres}={(exp_hit/nres*100) if nres else 0:.0f}% | '
           f'比分双档 {score_hit}/{nres}={(score_hit/nres*100) if nres else 0:.0f}% | '
+          f'半全场首选 {ht_hit}/{ht_n}={(ht_hit/ht_n*100) if ht_n else 0:.0f}% | '
+          f'总进球众数 {tg_hit}/{tg_n}={(tg_hit/tg_n*100) if tg_n else 0:.0f}% | '
           f'λ总进球偏差 {lam_bias:+.2f} 球/场')
 
 
