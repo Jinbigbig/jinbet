@@ -67,7 +67,9 @@
 ## 复盘/诊断
 - 三指标：方向/双档/λ偏差；连续多日方向<50% 或 λ偏差>0.2 → 提示重拟合。问准不准 → `python daily_diag.py --days 10`。联赛形势源=7M standing.js，新队名补 `league_match.ALIAS`。
 ## 赛果补录定时任务（每日 08:00）
-- 入口 `_sync_results.py`（master `tools/prediction/sync_results.py`）：`--no-push --results-only` 落盘 → 读 `[变更判定] 新增/更新` → 0/0 跳过不推；有变化则 add 4 个路径（index.html/results_data.json/results_history/odds_history）→ commit → **先直接 push**（被拒才 `rebase --autostash`）。
+- 入口 `_sync_results.py`（master `tools/prediction/sync_results.py`，LF）：**[0/3] 对齐远端基线** → `--no-push --results-only` 落盘 → 读 `[变更判定]` → 0/0 跳过不推 → `git add` 5 路径 + `commit -- pathspec`（index.html/results_data.json/results_history/odds_history/version.txt）→ push（被拒才 `rebase --autostash`）。
+- **⚠️ 根因与根治（10-26）**：本地克隆恒落后远端当天 3 次「自动更新赔率+赛果」提交，若在旧基线算完再推 → non-fast-forward → rebase 要把补录 diff 重放到远端，两侧同改 index.html/results_data.json/results_history/ → JSON 无法合并 → **连续 10-24/25/26 退出码 1**。根治=`align_to_remote()` 放在抓取之前：fetch → 纯落后则 `merge --ff-only`（脏文件挡住退 `reset --keep`）→ 分叉且本地提交**全是** `data: 赛果补录` 则 `reset --keep` 回远端基线**重算**（赛果幂等，不丢数据）→ 分叉含人工数据提交则退出码 2 交人工，绝不自动丢弃。
+- ⚠️ commit 必须带 pathspec + 提交后 `git reset -q`：否则索引里残留的 `odds_data.json` 等会被一起提交（曾出现）。
 - ⚠️ 不能直接跑 `update_odds_net.py --results-only`：`push_to_gh_pages()` 硬要求当前分支 master，而仓库日常在 gh-pages 且本地 master 落后云端 126 提交。
 - ⚠️ `existing_results` **必须优先读 results_data.json**（26 字段）。历史实现读 index.html 的 `const RESULTS`（`update_html_results()` 只写 15 字段）→ 写回时静默降级历史条目（实测 3242 条丢让球/比分盘/总进球/半全场）。
 - ⚠️ 变更判定必须 `_norm()` 归一：index.html 里数字是字符串 `'4.05'`，API 是数字 `4.05`，直比恒不等（曾每天误报 109 条更新）。
