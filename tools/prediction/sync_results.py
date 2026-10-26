@@ -22,7 +22,11 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 BRANCH = "gh-pages"
 
 # 只提交赛果链路的产物；严禁 add -A（会把 _ 开头的调试脚本、记忆文件一起带进去）
-RESULT_FILES = ["index.html", "results_data.json", "results_history", "odds_history"]
+# version.txt 是缓存刷新号，赛果落盘会自增，必须跟数据一起走，否则线上不刷新
+RESULT_FILES = ["index.html", "results_data.json", "results_history", "odds_history", "version.txt"]
+
+# 本脚本自己的提交信息前缀，用于识别「上次未推送的补录提交」
+OWN_COMMIT_PREFIX = "data: 赛果补录"
 
 
 def run(cmd, timeout=1800, check=False):
@@ -52,6 +56,84 @@ def fail(msg, code=1):
     return code
 
 
+def _existing_tracked():
+    return [p for p in RESULT_FILES if os.path.exists(os.path.join(BASE, p))]
+
+
+def align_to_remote():
+    """把本地对齐到远端 gh-pages 基线，返回 True 表示可以继续抓赛果。
+
+    为什么必须先对齐（这是连续三天推送失败的根因）：
+      本地克隆长期落后远端若干次「自动更新赔率+赛果」提交。若直接在旧基线上重算赛果
+      再推送，必然 non-fast-forward；此时 rebase 要把本次补录的 diff 重放到远端，
+      而两侧同时改 index.html / results_data.json / results_history/ —— 数据类 JSON
+      无法自动合并，rebase 恒失败（10-24、10-25、10-26 同一现象）。
+
+    正确姿势是「先站到远端基线上再算」：赛果来自口径稳定的上游 API，同一天重算结果
+    一致，所以丢掉上次未推送的补录提交、回到远端基线重算，不会丢任何赛果。
+    """
+    f = git("fetch", "origin", BRANCH, timeout=300)
+    if f.returncode != 0:
+        say(f"   ⚠️  fetch 失败，跳过基线对齐（本次推送可能被拒）：{out(f)[:150]}")
+        return True
+    remote_sha = out(git("rev-parse", f"origin/{BRANCH}")).strip()
+    head = out(git("rev-parse", "HEAD")).strip()
+    if not remote_sha:
+        say("   ⚠️  取不到 origin/gh-pages 的 SHA，跳过基线对齐")
+        return True
+    if head == remote_sha:
+        say(f"   ✅ 基线已是最新（{remote_sha[:8]}）")
+        return True
+
+    # 情形一：本地是远端祖先（纯落后）→ 直接快进，不产生任何数据风险
+    if git("merge-base", "--is-ancestor", "HEAD", remote_sha).returncode == 0:
+        n = out(git("rev-list", "--count", f"HEAD..{remote_sha}")).strip()
+        m = git("merge", "--ff-only", remote_sha)
+        if m.returncode == 0:
+            say(f"   ✅ 已快进到远端 {remote_sha[:8]}（补上落后 {n} 个提交）")
+            return True
+        k = git("reset", "--keep", remote_sha)
+        if k.returncode == 0:
+            say(f"   ✅ 已对齐到远端 {remote_sha[:8]}（快进被脏文件挡住，改用 reset --keep）")
+            return True
+        say(f"   ⚠️  无法快进到远端基线：{out(m)[:150]}")
+        return True
+
+    # 情形二：本地与远端分叉 —— 先看分叉的提交都是谁
+    rows = []
+    for ln in out(git("log", "--format=%H%x09%s", f"{remote_sha}..HEAD")).splitlines():
+        if "\t" in ln:
+            sha, subj = ln.split("\t", 1)
+            rows.append((sha.strip(), subj.strip()))
+    data_shes = set(out(git("log", "--format=%H", f"{remote_sha}..HEAD", "--",
+                            *RESULT_FILES)).split())
+
+    if rows and all(s.startswith(OWN_COMMIT_PREFIX) for _, s in rows):
+        # 全是本脚本上次没推成功的补录提交 → 丢弃重算（幂等）
+        r = git("reset", "--keep", remote_sha)
+        if r.returncode != 0:
+            # 工作区有改动挡路（如 odds_ticks.json），只还原赛果产物，保住其他脏文件
+            git("reset", "--soft", remote_sha)
+            rr = git("restore", f"--source={remote_sha}", "--staged", "--worktree",
+                     "--", *_existing_tracked())
+            if rr.returncode != 0:
+                return fail(f"无法回到远端基线，需人工处理：{out(rr)[:200]}", 2)
+        say(f"   ✅ 已丢弃 {len(rows)} 个未推送的补录提交，回到远端 {remote_sha[:8]} 重新计算")
+        return True
+
+    if any(sha in data_shes for sha, _ in rows):
+        subs = "; ".join(s for sha, s in rows if sha in data_shes)
+        return fail(f"本地有未推送的人工数据提交（{subs[:120]}），不自动丢弃，请人工处理", 2)
+
+    # 分叉的是脚本/记忆类提交，不碰赛果文件 → 常规 rebase 不会冲突
+    rb = git("rebase", "--autostash", "--no-fork-point", remote_sha, timeout=180)
+    if rb.returncode != 0:
+        git("rebase", "--abort")
+        return fail(f"rebase 到远端基线失败，已 abort：{out(rb)[:200]}", 2)
+    say(f"   ✅ 已 rebase 到远端 {remote_sha[:8]}")
+    return True
+
+
 def main():
     say("=" * 60)
     say(f"  赛果补录（{datetime.datetime.now():%Y-%m-%d %H:%M}）")
@@ -66,6 +148,12 @@ def main():
     br = out(git("rev-parse", "--abbrev-ref", "HEAD")).strip()
     if br != BRANCH:
         return fail(f"当前分支是 {br}，不是 {BRANCH}；本脚本不做分支切换（避免误伤工作区）", 2)
+
+    # --- [0/3] 对齐远端基线：必须放在抓赛果之前 ---
+    # 否则就是在旧基线上算数据 → 推送必被拒 → rebase 撞数据类 JSON 冲突。
+    say("\n[0/3] 对齐远端 gh-pages 基线...")
+    if not align_to_remote():
+        return 2
 
     # --- 抓赛果（只落盘，不推送）---
     say("\n[1/3] 抓取赛果（--no-push --results-only）...")
@@ -107,9 +195,13 @@ def main():
 
     msg = (f"data: 赛果补录 新增{added}条/更新{updated}条"
            f"（{datetime.date.today().isoformat()} 08:00 定时任务）")
-    c = git("commit", "-m", msg)
+    # 显式带 pathspec：即使索引里残留其他文件的旧条目，也不会被这次提交带进去
+    c = git("commit", "-m", msg, "--", *existing)
     if c.returncode != 0:
         return fail(f"commit 失败：{out(c)[:200]}", 1)
+    # 清掉索引里与本次无关的残留暂存项（如自动更新链路留下的 odds_data.json），
+    # 只重置索引、不动工作区文件
+    git("reset", "-q")
     say(f"   ✅ 已提交：{msg}")
 
     # 先直接 push：绝大多数情况是 fast-forward，不需要 rebase。
