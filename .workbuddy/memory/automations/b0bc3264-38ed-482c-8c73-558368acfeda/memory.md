@@ -529,3 +529,13 @@
 - 4.6 保持默认（40 天，pk 59.00→59.75 / bd 24.25→34.12 已最优，旋钮逐字一致）。
 - matlas：导入 46 交易日 / 670 场；**导入器有损**（历史日 injuries/weather/form_net/mood 被清空，本次 6 天/221 值），用外部补丁脚本从 HEAD 逐字段补回后再 build --strict（1195 文件、红线 0）与 publish（main 数据 `669a9f1d5`、产物 `05f8d8d10`）。
 - 新坑记录：① `git show <未 fetch 的 master SHA>:路径` 会 fatal 且把目标文件截成 0 字节（本次 update_odds_net.py 被截，`git checkout --` 恢复；正解先 `git fetch origin master`）；② `_update_index.py` 日期常量写死，每日须先改。
+
+## 2026-10-26（14:07 常规流水线 + matlas 同步）— 全链跑通，4 场
+- 步骤0 `[DEDUP-ALIGN]` 235/277（结果 3605/ODDS 3497）；4 场（周一001–004 葡超/法乙/西甲/巴甲），赔率 4/4，冷启动 0 → 1 档（精选 6 / 大胆 4），串关 4 组（方向A/B + 信心A/B + 冷门A/B）。
+- 链路标记齐全：Platt n=2432、MARKET_BLEND_PROB / SCORE_ALIGN / ON·生效 / ON·观察 全在；DRIFT 仅 league_baselines 漂移（亚冠精英/德乙/日联杯，非今日赛事）。
+- 复盘 10-25：方向 14/29=48%、单点 14%、双档 31%、半全 34%、总进球 28%、λ偏差 +0.22。近 10 日方向 55.7%（不触发重拟合）；1X2 校准出现客胜低估 -5.8pp/主胜高估 +5.2pp，记为观察项。
+- 4.6 优化：41 天回放，pk 59.27→60.00 / bd 25.37→33.29 但**旋钮逐字未变**（仅 _meta 刷新）→ 视为保持现有参数；因文件内容变更仍重跑一次报告并提交。
+- gh-pages `5a52a738 → 798ff020`（ls-remote 核验；线上报告/复盘 200）。master 无需同步（今日未改引擎脚本）。
+- **MEMORY.md 精简重写**：17.6k → ~11k，合并重复段（Matlas/记忆规则），随 report commit 入库。
+- matlas：伤停 2 队/2 条、军情 1 场；盘口 73 场（新增 4 点）；导入 **47 交易日 / 674 场**；导入器仍有损（**215 格**：form_net 168 / injuries 22 / weather 21 / mood 4）→ 用外部脚本 `C:/Users/Jin/_matlas_tools/_restore_extras.py --apply` 从 HEAD 逐字段补回，复核 0 缺失；build --strict（1201 文件、红线 0）、publish 通过（main 数据 `460250cdb`、产物 `ef00e0aa4`）。
+- **新坑**：① `publish.sh` 用 `git status --porcelain | grep -v '^.. data/'` 拦未提交改动 → **临时脚本不能留在 matlas 仓库内**（本次 `_restore_extras.py` 导致首次发布被拒），一律放 `C:/Users/Jin/_matlas_tools/`；② 用 heredoc 传 Python 时 `'\'` 会被 shell 吃掉一层 → 处理 Windows 路径反斜杠改用 `chr(92)` 或写文件；③ `git show HEAD:data/days\xxx.json` 用反斜杠路径会静默返回空 → 统一 `.replace(chr(92),'/')`。
