@@ -13,6 +13,9 @@
 - 推 master 用 worktree：`git worktree add --detach "C:/Users/Jin/_wt_master" <SHA>`（**须 C:/ 风格**）→覆盖→commit→`push origin HEAD:refs/heads/master`→`worktree remove --force`。
 - ⚠️ `reset --hard` 会删被跟踪的 root `_` 脚本与 league_data.json、并抹掉 `.workbuddy/memory/` 未提交改动 → 先 `git tag -f backup_<日期>_pre <本地提交>`；记忆写完随当日 commit（chore 前缀）入库。
 - ⚠️ `git show <未 fetch 的 ref>:路径` 会 fatal 且**把目标截成 0 字节** → 先 fetch 再 show。
+- ⚠️ **未跟踪文件挡住 ff**（10-27 新坑）：`_sync_results.py [0/3]` 报 `untracked working tree files would be overwritten by merge: odds_history/<日期>.json` = 工作区有与远端同路径的生成残留。**只删不够**（上一轮提交可能已把它纳入版本控制，删后是 ` D`，`reset --keep` 照样被挡）→ 用 `git checkout <远端SHA> -- <路径>` 恢复基线版本（autocrlf 会转回 CRLF，字节数不变，status 干净即可），再重跑即快进成功。
+- ⚠️ **results_history 净删几万行≠回滚去重成果**：远端每日 3 次「自动更新赔率+赛果」会重新写入膨胀归档（实测 10-26 三次 → 1531 条跨日重复），次日 08:00 补录再清理，故提交常呈大幅净删。判据只用「唯一 matchId 是否下降」：10-27 实测 3596→3606（升），0 重复，属正常。根治在 `update_odds_net.py` 归档写入端（人工维护区）。
+- results_history 归档结构=dict，键 `日期_主队_客队`，值含 `matchId` 等 26 字段；核验去重须遍历 dict values，**按 list 解析会得 0 条**。
 
 ## 云端正本布局
 - master `tools/prediction/`=脚本正本（去 `_` 前缀，LF）+ 根 update_odds_net.py/platt_params.json/league_profile.json。`gen_report` 有 5 处去下划线须保留。
