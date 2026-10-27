@@ -539,3 +539,12 @@
 - **MEMORY.md 精简重写**：17.6k → ~11k，合并重复段（Matlas/记忆规则），随 report commit 入库。
 - matlas：伤停 2 队/2 条、军情 1 场；盘口 73 场（新增 4 点）；导入 **47 交易日 / 674 场**；导入器仍有损（**215 格**：form_net 168 / injuries 22 / weather 21 / mood 4）→ 用外部脚本 `C:/Users/Jin/_matlas_tools/_restore_extras.py --apply` 从 HEAD 逐字段补回，复核 0 缺失；build --strict（1201 文件、红线 0）、publish 通过（main 数据 `460250cdb`、产物 `ef00e0aa4`）。
 - **新坑**：① `publish.sh` 用 `git status --porcelain | grep -v '^.. data/'` 拦未提交改动 → **临时脚本不能留在 matlas 仓库内**（本次 `_restore_extras.py` 导致首次发布被拒），一律放 `C:/Users/Jin/_matlas_tools/`；② 用 heredoc 传 Python 时 `'\'` 会被 shell 吃掉一层 → 处理 Windows 路径反斜杠改用 `chr(92)` 或写文件；③ `git show HEAD:data/days\xxx.json` 用反斜杠路径会静默返回空 → 统一 `.replace(chr(92),'/')`。
+
+## 2026-10-27（14:09 常规流水线 + matlas 同步）— 全链跑通，10 场
+- 步骤0 `[DEDUP-ALIGN]` 235/278（赛果 3609 / ODDS 3520）；10 场（周二001–010，赔率 10/10，冷启动 0）→ 1 档（精选 6 / 大胆 4），串关 4 组；红线 grep 0。
+- 链路标记：市场混合( ×10 / 比分矩阵对齐发布 1X2 ×10 / Platt n=2432；DRIFT 仅 league_baselines（亚冠精英/德乙/日联杯）。
+- 复盘 10-26：方向 3/4=75%、单点 25%、双档 25%、半全 50%、总进球 75%、λ偏差 +0.01；近 10 日方向未触发重拟合。
+- 4.6：41 天 pk 59.27→60.00 / bd 25.37→33.29，**旋钮逐字未变**（仅 tuned_at）→ 保持现有参数，因文件变更重跑报告并入库。
+- 发布 gh-pages `e216967a → cd6ef412`（ls-remote 核验）；master 未动（135cbd6a）。
+- matlas：伤停 0 队/军情 1 场、盘口新增 23 点；导入 48 日/684 场；restore dry-run 报 0 缺失故未 --apply；build --strict（1213 文件、红线 0）、publish main `e1c60768a` / 产物 `6c451cd0e`。
+- 新坑：`import_jinbet.py` 并非每次都清历史 extras → restore 先 dry-run 再决定是否 --apply。`_update_index.py` 日期常量每日必改。

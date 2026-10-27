@@ -36,6 +36,18 @@
   - **产物 commit `529984da6`**（site: 构建产物 2026-10-25T19:01:37）。
 - **约束核对**：未改动 matlas 源码；未手工 commit/push main（data 自动提交系 publish.sh 设计内行为，源码零改动）；main 仍落后 origin/main。
 
+## 2026-10-26 19:00 执行（当日第三采集点：11:10 初盘 → 14:00 流水线 → 19:00 临场）
+
+**结果：成功**
+
+- **jinbet 采集** `_fetch_odds_ticks.py`：场次 **73** · 新增 **4** 点 · 赔率变动 **4** 场 · 同小时未变 0 点 · 已有 ≥2 点 **72** 场 → `odds_ticks.json`。无「源不可用/解析后无赔率」。
+- **matlas 发布链路**：
+  - `import_jinbet.py`：47 交易日 / 674 场 / 赛果 665；2026-10-26 当日 4 场（赛果 0，未开赛）。
+  - `build.py --strict`：通过，红线自检 0 违规，1201 文件。
+  - publish.sh：main 干净；`data/` 数据变动由脚本自动提交 `6842ac523`（非手工 commit、未触碰源码）→ 推送 gh-pages `7ea552ff7..be70882b4`。
+  - **产物 commit `be70882b4`**（site: 构建产物 2026-10-26T19:01:29）。
+- **约束核对**：未改动 matlas 源码；未手工 commit/push main（data 自动提交系 publish.sh 设计内行为，源码零改动）；main 未受影响。
+
 ## 备注
 - 当日 17:11 已有 `32a5b68d` 把 11:10+14:00 两点入库、17:59 发布 `77ed9788`，证明「import 改数据文件 → 提交 → publish」是既定环节。
 - 若用户收紧约束为「main 绝对零提交」，则需在 import 后、publish 前由其他进程提交 `data/days/*.json`，否则 publish.sh 必被干净校验拦截。
