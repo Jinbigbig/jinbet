@@ -14,6 +14,7 @@
 """
 import os
 import re
+import shutil
 import subprocess
 import sys
 import datetime
@@ -56,8 +57,98 @@ def fail(msg, code=1):
     return code
 
 
-def _existing_tracked():
-    return [p for p in RESULT_FILES if os.path.exists(os.path.join(BASE, p))]
+def _remote_paths(sha):
+    """远端该提交的全部文件路径集合（用于判断哪些工作区文件会挡住快进）。"""
+    r = git("ls-tree", "-r", "-z", "--name-only", sha, timeout=300)
+    if r.returncode != 0:
+        return set()
+    return {p for p in (r.stdout or "").split("\0") if p}
+
+
+def unblock_worktree(remote_sha):
+    """清掉会挡住基线对齐的工作区文件，返回 (移走的未跟踪数, 还原的脏跟踪数)。
+
+    为什么必须自动做（10-27、10-28 连续两天同一处卡死）：
+      update_odds_net.py 每次抓取都会把 odds_history/<日期>.json 写进工作区。若上一次
+      运行在中途失败（或本地 HEAD 尚未包含远端那个提交），这些文件在本地就是「未跟踪」，
+      而远端已跟踪同一路径 → `merge --ff-only` 与 `reset --keep` 都会被 git 直接拒绝
+      （untracked working tree files would be overwritten by merge）。
+
+      此前脚本只打一行警告就继续按旧基线算，之后推必被拒、rebase 必撞数据类 JSON 冲突，
+      于是每天退出码 1。修法：把这些挡路文件先备份到 _untracked_backup/<时间戳>/ 再移走，
+      让远端版本正常落盘 —— 内容本来就和远端一致（差异只是 CRLF），不丢任何数据。
+
+    只处理「远端确实有该路径」的文件，绝不动其他调试脚本与记忆文件。
+    """
+    remote_paths = _remote_paths(remote_sha)
+    if not remote_paths:
+        return (0, 0)
+
+    moved = 0
+    restored = 0
+
+    # 1) 未跟踪但与远端同路径 → 备份后移走
+    r = git("ls-files", "--others", "--exclude-standard", "-z", timeout=300)
+    clash = [p for p in (r.stdout or "").split("\0") if p and p in remote_paths]
+    if clash:
+        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        bdir = os.path.join(BASE, "_untracked_backup", stamp)
+        for rel in clash:
+            src = os.path.join(BASE, rel.replace("/", os.sep))
+            dst = os.path.join(bdir, rel.replace("/", os.sep))
+            try:
+                os.makedirs(os.path.dirname(dst) or bdir, exist_ok=True)
+                shutil.copy2(src, dst)
+                os.remove(src)
+                moved += 1
+            except OSError as e:
+                say(f"   ⚠️  无法移走挡路文件 {rel}：{e}")
+
+    # 2) 已跟踪但工作区被改动/删除，且远端也要改它 → 还原成 HEAD 版本
+    #    （10-27 踩过：把文件删掉后状态是 " D"，reset --keep 照样被挡，必须 checkout 回来）
+    r = git("diff", "--name-only", "-z", "--diff-filter=MD", timeout=180)
+    dirty = [p for p in (r.stdout or "").split("\0") if p and p in remote_paths]
+    for rel in dirty:
+        if git("checkout", "HEAD", "--", rel).returncode == 0:
+            restored += 1
+
+    return (moved, restored)
+
+
+def force_align(remote_sha):
+    """把 HEAD 与工作区数据文件对齐到远端基线。四级阶梯，逐级降级但绝不放弃。
+
+    1) merge --ff-only              —— 最干净，不产生任何数据风险
+    2) 清掉挡路文件后再 ff-only      —— 解决 untracked / 脏跟踪文件挡住快进
+    3) reset --keep                 —— 保留本地不冲突的改动
+    4) reset --mixed + 只还原数据文件 —— 兜底。mixed 不动工作区，避免 reset --hard
+       误删被跟踪的 _ 开头脚本（历史老坑），且只强制还原 RESULT_FILES，其他改动照旧保留
+    """
+    m = git("merge", "--ff-only", remote_sha)
+    if m.returncode == 0:
+        return True
+
+    moved, restored = unblock_worktree(remote_sha)
+    if moved or restored:
+        say(f"   🧹 清掉 {moved} 个挡路未跟踪文件（已备份 _untracked_backup/）"
+            f" + 还原 {restored} 个脏跟踪文件")
+        m = git("merge", "--ff-only", remote_sha)
+        if m.returncode == 0:
+            return True
+
+    k = git("reset", "--keep", remote_sha)
+    if k.returncode == 0:
+        return True
+
+    git("reset", "--mixed", remote_sha)
+    rf = [p for p in RESULT_FILES
+          if git("cat-file", "-e", f"{remote_sha}:{p}").returncode == 0]
+    rr = git("restore", f"--source={remote_sha}", "--worktree", "--", *rf) if rf else None
+    if rr is None or rr.returncode == 0:
+        say("   ⚠️  快进与 reset --keep 均被挡，已用「重置索引 + 还原数据文件」对齐"
+            "（其他未提交改动保留）")
+        return True
+    return False
 
 
 def align_to_remote():
@@ -88,16 +179,12 @@ def align_to_remote():
     # 情形一：本地是远端祖先（纯落后）→ 直接快进，不产生任何数据风险
     if git("merge-base", "--is-ancestor", "HEAD", remote_sha).returncode == 0:
         n = out(git("rev-list", "--count", f"HEAD..{remote_sha}")).strip()
-        m = git("merge", "--ff-only", remote_sha)
-        if m.returncode == 0:
+        if force_align(remote_sha):
             say(f"   ✅ 已快进到远端 {remote_sha[:8]}（补上落后 {n} 个提交）")
             return True
-        k = git("reset", "--keep", remote_sha)
-        if k.returncode == 0:
-            say(f"   ✅ 已对齐到远端 {remote_sha[:8]}（快进被脏文件挡住，改用 reset --keep）")
-            return True
-        say(f"   ⚠️  无法快进到远端基线：{out(m)[:150]}")
-        return True
+        # 关键：对齐不了就停下。以前这里 return True 让脚本带着旧基线继续算，
+        # 结果推必被拒、rebase 必撞冲突，白跑一趟还留一堆脏数据。
+        return fail(f"无法对齐到远端基线 {remote_sha[:8]}，本次不抓取（避免在旧基线上算数据）", 2)
 
     # 情形二：本地与远端分叉 —— 先看分叉的提交都是谁
     rows = []
@@ -110,14 +197,8 @@ def align_to_remote():
 
     if rows and all(s.startswith(OWN_COMMIT_PREFIX) for _, s in rows):
         # 全是本脚本上次没推成功的补录提交 → 丢弃重算（幂等）
-        r = git("reset", "--keep", remote_sha)
-        if r.returncode != 0:
-            # 工作区有改动挡路（如 odds_ticks.json），只还原赛果产物，保住其他脏文件
-            git("reset", "--soft", remote_sha)
-            rr = git("restore", f"--source={remote_sha}", "--staged", "--worktree",
-                     "--", *_existing_tracked())
-            if rr.returncode != 0:
-                return fail(f"无法回到远端基线，需人工处理：{out(rr)[:200]}", 2)
+        if not force_align(remote_sha):
+            return fail(f"无法回到远端基线 {remote_sha[:8]}，需人工处理", 2)
         say(f"   ✅ 已丢弃 {len(rows)} 个未推送的补录提交，回到远端 {remote_sha[:8]} 重新计算")
         return True
 
