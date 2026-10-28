@@ -548,3 +548,14 @@
 - 发布 gh-pages `e216967a → cd6ef412`（ls-remote 核验）；master 未动（135cbd6a）。
 - matlas：伤停 0 队/军情 1 场、盘口新增 23 点；导入 48 日/684 场；restore dry-run 报 0 缺失故未 --apply；build --strict（1213 文件、红线 0）、publish main `e1c60768a` / 产物 `6c451cd0e`。
 - 新坑：`import_jinbet.py` 并非每次都清历史 extras → restore 先 dry-run 再决定是否 --apply。`_update_index.py` 日期常量每日必改。
+
+## 2026-10-28（14:19 常规流水线 + matlas 同步）— 全链跑通，17 场
+- 步骤0 `[DEDUP-ALIGN]` 235/279（赛果 3619 / 归档 3521）；无陈旧 batch；master HEAD 已是 29f624f8（含 10-28 第二根治）。
+- 17 场（周三001–017，赔率 17/17，冷启动 0；意甲5/英联赛杯4/亚冠精英2/其余各1）→ 1 档（精选 6 / 大胆 4），串关 4 组（方向A/B + 信心A/B + 冷门A/B）；红线 grep 0。
+- 链路标记：Platt n=2454、市场概率混合已启用(V3.2) ×17、比分矩阵对齐发布 1X2 ×17、ON·生效/ON·观察 齐全；DRIFT 仅 league_baselines（亚冠精英/德乙/日联杯，非今日赛事）。
+- 复盘 10-27：方向 8/10=80%、单点 0%、双档 10%、半全 40%、总进球 0%、λ偏差 **-1.76**；近 10 日方向 56.5% → 不触发重拟合（λ 属单日翻转，10-25 为 +0.77）。
+- 4.6：42 天 pk 57.86→58.57 / bd 24.76→33.81，**旋钮逐字未变**（仅 _meta/tuned_at 变）→ 保持现有参数，因文件变更重跑报告并入库。
+- 发布 gh-pages `870857ed → 9c9e11ee`，补 data commit 后 `→ db61750e`（均 ls-remote 核验；线上报告/复盘 200）。master 未动。
+- matlas：军情抓取 **0 队/0 场**（今日多为杯赛/亚冠，7M 无覆盖）、盘口新增 17 点；导入 **49 日 / 701 场**（赛果 679）；restore dry-run 0 缺失未 --apply；build --strict（1233 文件、红线 0）、publish 产物 `a4a433767`。
+- 新坑：① `_update_index.py` 日期常量每日必改（本次已改 10-28/周三/17 场/联赛分布）；② 首次 curl 线上今日报告 404 = GitHub Pages 构建滞后，约 1–2 分钟后 200，别误判成推送失败；③ 我误把步骤0第一条命令（--no-push）重复跑了一次，无害但浪费 1 分钟——顺序必须是 `--no-push` 然后 `--no-push --results-only`。
+- MEMORY.md 16.7k → ~11k 精简重写，随 report commit 入库。
