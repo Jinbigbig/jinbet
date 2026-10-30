@@ -27,6 +27,10 @@ OUT = 'weather.json'
 
 # 球队中文简称（竞彩官方简称）→ 主场所在城市（英文，供 Geocoding 使用）
 TEAM_CITY = {
+    # 2026-10-23 补充：欧战缺失映射
+    '格风暴': 'Graz', '波兹南': 'Poznan', '萨迪纳摩': 'Zagreb', '尤文图斯': 'Turin',
+    '克里特': 'Heraklion', '贝西克塔': 'Istanbul', '利勒斯特': 'Lillestrom',
+    '尤文': 'Turin', '博德闪耀': 'Bodo', '布拉加': 'Braga', '费伦茨瓦': 'Budapest',
     # 日本
     '东京FC': 'Tokyo', '柏太阳神': 'Kashiwa', '川崎前锋': 'Kawasaki', '神户胜利': 'Kobe',
     '横滨水手': 'Yokohama', '浦和红钻': 'Saitama', '鹿岛鹿角': 'Kashima', '名古屋鲸': 'Nagoya',
@@ -84,6 +88,18 @@ TEAM_CITY = {
     '达伽马': 'Rio de Janeiro', '克鲁塞罗': 'Belo Horizonte', '米内罗竞技': 'Belo Horizonte',
     '格雷米奥': 'Porto Alegre', '国际': 'Porto Alegre', '巴伊亚': 'Salvador',
     '福塔雷萨': 'Fortaleza', '桑托斯': 'Santos', '布拉干蒂诺': 'Braganca Paulista',
+    # 2026-10-23 补充：今日竞彩主队缺失映射
+    '布里斯班': 'Brisbane', '珀斯': 'Perth',
+    '波鸿': 'Bochum',
+    '埃夫斯堡': 'Boras',
+    '前进之鹰': 'Deventer',
+    '布雷达': 'Breda', '赫拉克勒': 'Almelo',
+    '伊普斯': 'Ipswich', '诺丁汉': 'Nottingham',
+    '博尔顿': 'Bolton', '米堡': 'Middlesbrough',
+    '吉马良斯': 'Guimaraes', '马里迪莫': 'Funchal',
+    # 2026-10-30 补充：德乙/荷乙/德甲/英冠/西甲/葡超缺失映射
+    '科特布斯': 'Cottbus', '福伦丹': 'Volendam', '埃沃斯堡': 'Elversberg',
+    '谢菲联': 'Sheffield', '比利亚雷': 'Villarreal', '卡萨皮亚': 'Lisbon',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -132,6 +148,12 @@ CITY_ZH = {
     'Belo Horizonte': '贝洛奥里藏特', 'Porto Alegre': '阿雷格里港',
     'Salvador': '萨尔瓦多', 'Fortaleza': '福塔莱萨', 'Santos': '桑托斯',
     'Braganca Paulista': '布拉干萨保利斯塔',
+    'Brisbane': '布里斯班', 'Perth': '珀斯', 'Bochum': '波鸿',
+    'Boras': '布罗斯', 'Deventer': '代芬特尔', 'Breda': '布雷达',
+    'Almelo': '阿尔梅洛', 'Ipswich': '伊普斯威奇', 'Bolton': '博尔顿',
+    'Middlesbrough': '米德尔斯堡', 'Guimaraes': '吉马良斯', 'Funchal': '丰沙尔',
+    'Cottbus': '科特布斯', 'Volendam': '福伦丹', 'Elversberg': '埃弗斯堡',
+    'Sheffield': '谢菲尔德',
 }
 
 GRADE_TXT = {
