@@ -569,3 +569,11 @@
 - 发布 gh-pages `1aac05a7 → f1e3b894`（ls-remote 核验；线上报告/复盘均 200）。master 未动（今日无脚本改动）。
 - matlas：伤停 0 队 / 军情 1 场、盘口新增 19 点（119 场）；导入 **50 日 / 708 场**（赛果 696）；restore dry-run 0 缺失未 --apply；build --strict（1241 文件、红线 0）、publish 产物 `aaebdf706`，main 数据提交（本地）`69d7dfe52`。
 - 新坑：① 步骤0第一条（--no-push）连跑两次（无害但浪费，务必只跑一次）；② matlas `_restore_extras.py` 对**当日新增文件**会报 `Expecting value: line 1 column 1`（HEAD 无此文件）→ 正常 skip；③ `publish.sh` **只本地提交 main 不推送**，远端 main（`28105bfb1`）本地已领先 34 个数据提交属既有状态，勿手工推。
+
+## 2026-10-30（14:11 常规流水线 + matlas 同步）— 全链跑通，12 场
+- 步骤0 `[DEDUP-ALIGN]` 235/281（赛果 3643 / ODDS 3586）；12 场全部赔率到位，冷启动 0 → 1 档（精选 6 / 大胆 4），串关 4 组；红线 grep 0。
+- 复盘 10-29：方向 4/7=57%、单点 0%、双档 2/7=29%、半全 4/7=57%、λ偏差 -0.46；近 10 日方向 50.3%（临界未破 50%）→ 不触发重拟合。
+- 4.6：44 天 pk 57.95→58.86 / bd 24.89→33.52，旋钮逐字未变（仅 `_meta`）→ 保持现有参数，文件变更故重跑报告并入库。
+- 发布 gh-pages `28f2aa17 → f1a0d665`（ls-remote 核验，线上报告/复盘 200）；master `5435745e → fb55db07`（补 fetch_weather 城市映射）。
+- matlas：军情 4 场 / 伤停 2 队 6 条、盘口新增 54 点；导入 **51 日 / 720 场**（赛果 703）；restore dry-run 0 缺失未 --apply；build --strict（1257 文件、红线 0）、publish 产物 `31874f67f`，main 数据提交 `e1d554253`。
+- 新坑：① master `tools/prediction/fetch_weather.py` 比本地旧，锚点替换会 MISS → 整文件覆盖即可（git 自动归一 CRLF）；② `_fetch_weather.py` 在 gh-pages **是**被跟踪的（与多数 `_` 脚本不同）；③ `_update_index.py` 日期/场次/联赛分布写死，每日先改。
