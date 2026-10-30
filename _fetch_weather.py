@@ -97,6 +97,9 @@ TEAM_CITY = {
     '伊普斯': 'Ipswich', '诺丁汉': 'Nottingham',
     '博尔顿': 'Bolton', '米堡': 'Middlesbrough',
     '吉马良斯': 'Guimaraes', '马里迪莫': 'Funchal',
+    # 2026-10-30 补充：德乙/荷乙/德甲/英冠/西甲/葡超缺失映射
+    '科特布斯': 'Cottbus', '福伦丹': 'Volendam', '埃沃斯堡': 'Elversberg',
+    '谢菲联': 'Sheffield', '比利亚雷': 'Villarreal', '卡萨皮亚': 'Lisbon',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -149,6 +152,8 @@ CITY_ZH = {
     'Boras': '布罗斯', 'Deventer': '代芬特尔', 'Breda': '布雷达',
     'Almelo': '阿尔梅洛', 'Ipswich': '伊普斯威奇', 'Bolton': '博尔顿',
     'Middlesbrough': '米德尔斯堡', 'Guimaraes': '吉马良斯', 'Funchal': '丰沙尔',
+    'Cottbus': '科特布斯', 'Volendam': '福伦丹', 'Elversberg': '埃弗斯堡',
+    'Sheffield': '谢菲尔德',
 }
 
 GRADE_TXT = {
