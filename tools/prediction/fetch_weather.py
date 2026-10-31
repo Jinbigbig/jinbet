@@ -100,6 +100,11 @@ TEAM_CITY = {
     # 2026-10-30 补充：德乙/荷乙/德甲/英冠/西甲/葡超缺失映射
     '科特布斯': 'Cottbus', '福伦丹': 'Volendam', '埃沃斯堡': 'Elversberg',
     '谢菲联': 'Sheffield', '比利亚雷': 'Villarreal', '卡萨皮亚': 'Lisbon',
+    # 2026-10-31 补充：日乙/韩K/澳超/英冠/德甲/挪超缺失映射
+    '冈山绿雉': 'Okayama', '仙台七夕': 'Sendai', '光州FC': 'Gwangju',
+    '麦克阿瑟': 'Sydney', '林肯城': 'Lincoln', '沙尔克04': 'Gelsenkirchen',
+    '不来梅': 'Bremen', '考文垂': 'Coventry', '赫尔城': 'Hull',
+    '布伦特': 'London', '腓特烈': 'Fredrikstad',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -128,6 +133,9 @@ CITY_ZH = {
     'Bremen': '不来梅', 'Freiburg': '弗莱堡', 'Monchengladbach': '门兴格拉德巴赫',
     'Wolfsburg': '沃尔夫斯堡', 'Sinsheim': '辛斯海姆', 'Mainz': '美因茨',
     'Augsburg': '奥格斯堡', 'Berlin': '柏林', 'Hamburg': '汉堡', 'Cologne': '科隆',
+    'Okayama': '冈山', 'Sendai': '仙台', 'Gwangju': '光州', 'Sydney': '悉尼',
+    'Lincoln': '林肯', 'Gelsenkirchen': '盖尔森基兴', 'Coventry': '考文垂',
+    'Hull': '赫尔', 'Fredrikstad': '腓特烈斯塔',
     'Heidenheim': '海登海姆',
     'Lille': '里尔', 'Lens': '朗斯', 'Paris': '巴黎', 'Marseille': '马赛',
     'Monaco': '摩纳哥', 'Lyon': '里昂', 'Nice': '尼斯', 'Rennes': '雷恩',
