@@ -105,6 +105,11 @@ TEAM_CITY = {
     '麦克阿瑟': 'Sydney', '林肯城': 'Lincoln', '沙尔克04': 'Gelsenkirchen',
     '不来梅': 'Bremen', '考文垂': 'Coventry', '赫尔城': 'Hull',
     '布伦特': 'London', '腓特烈': 'Fredrikstad',
+    # 2026-11-01 补充：日乙/韩K/荷甲/西甲/意乙/葡超/美职缺失映射
+    '长崎航海': 'Nagasaki', '蔚山现代': 'Ulsan', '首尔FC': 'Seoul',
+    '兹沃勒': 'Zwolle', 'SBV精英': 'Rotterdam', '格罗宁根': 'Groningen',
+    '赫塔费': 'Getafe', '弗洛西诺': 'Frosinone', '维塞乌': 'Viseu',
+    '新英格兰': 'Foxborough',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -156,6 +161,10 @@ CITY_ZH = {
     'Belo Horizonte': '贝洛奥里藏特', 'Porto Alegre': '阿雷格里港',
     'Salvador': '萨尔瓦多', 'Fortaleza': '福塔莱萨', 'Santos': '桑托斯',
     'Braganca Paulista': '布拉干萨保利斯塔',
+    # 2026-11-01 补充
+    'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
+    'Groningen': '格罗宁根', 'Getafe': '赫塔费', 'Frosinone': '弗洛西诺内',
+    'Viseu': '维塞乌', 'Foxborough': '福克斯堡',
     'Brisbane': '布里斯班', 'Perth': '珀斯', 'Bochum': '波鸿',
     'Boras': '布罗斯', 'Deventer': '代芬特尔', 'Breda': '布雷达',
     'Almelo': '阿尔梅洛', 'Ipswich': '伊普斯威奇', 'Bolton': '博尔顿',
