@@ -1,49 +1,49 @@
 {
  "brier_opt": {
-  "date": "2026-10-26",
+  "date": "2026-11-02",
   "param": "MARKET_W",
   "old": 0.8,
-  "best": 0.85,
-  "best_brier": 0.19674,
-  "default_brier": 0.19676,
+  "best": 0.9,
+  "best_brier": 0.19588,
+  "default_brier": 0.19591,
   "improvement_pct": 0.01,
   "scores": [
    [
-    0.85,
-    0.19674
+    0.9,
+    0.19588
    ],
    [
-    0.9,
-    0.19674
+    0.85,
+    0.19589
    ],
    [
     0.8,
-    0.19676
+    0.19591
    ],
    [
     0.7,
-    0.19689
+    0.19604
    ],
    [
     0.6,
-    0.19711
+    0.19627
    ],
    [
     0.5,
-    0.19744
+    0.1966
    ]
   ],
   "applied": false
  },
  "hedge": {
   "weights": {
-   "model": 0.319,
-   "market": 0.681
+   "model": 0.3207,
+   "market": 0.6793
   },
   "losses": {
-   "model": 1.06607,
-   "market": 0.93965,
-   "blend": 0.9505,
+   "model": 1.06642,
+   "market": 0.94133,
+   "blend": 0.95199,
    "n": 500
   },
   "w": 0.7,
@@ -54,32 +54,32 @@
  "kalman": {
   "n_teams": 653,
   "applied": true,
-  "mods_non_neutral": 22
+  "mods_non_neutral": 8
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3702,
+  "n_samples": 3706,
   "drift_detected": true,
   "flags": [
    "league_baselines"
   ],
   "detail": {
    "global_goals": {
-    "psi": 0.0012,
+    "psi": 0.0011,
     "ks": 0.0095,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
     "psi": 0.0333,
-    "ks": 0.0775,
+    "ks": 0.0776,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 6.19,
-    "std_delta_pct": 12.51,
+    "mean_delta_pct": 6.21,
+    "std_delta_pct": 12.53,
     "top3_changed": [
      [
       "亚冠精英",
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-11-01",
+ "date": "2026-11-02",
  "history": [
   {
    "date": "2026-09-14",
@@ -533,6 +533,16 @@
   },
   {
    "date": "2026-11-01",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-11-02",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,

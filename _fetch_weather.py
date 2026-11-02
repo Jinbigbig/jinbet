@@ -110,6 +110,9 @@ TEAM_CITY = {
     '兹沃勒': 'Zwolle', 'SBV精英': 'Rotterdam', '格罗宁根': 'Groningen',
     '赫塔费': 'Getafe', '弗洛西诺': 'Frosinone', '维塞乌': 'Viseu',
     '新英格兰': 'Foxborough',
+    # 2026-11-02 补充：芬超/瑞超/法乙/西甲/巴甲缺失映射
+    '国际图': 'Turku', '盖斯': 'Gothenburg', '圣旺红星': 'Paris',
+    '拉科': 'A Coruna', '布拉干RB': 'Braganca Paulista',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -143,6 +146,7 @@ CITY_ZH = {
     'Hull': '赫尔', 'Fredrikstad': '腓特烈斯塔',
     'Heidenheim': '海登海姆',
     'Lille': '里尔', 'Lens': '朗斯', 'Paris': '巴黎', 'Marseille': '马赛',
+    'Turku': '图尔库', 'Gothenburg': '哥德堡', 'A Coruna': '拉科鲁尼亚',
     'Monaco': '摩纳哥', 'Lyon': '里昂', 'Nice': '尼斯', 'Rennes': '雷恩',
     'Nantes': '南特', 'Strasbourg': '斯特拉斯堡', 'Toulouse': '图卢兹',
     'Montpellier': '蒙彼利埃', 'Brest': '布雷斯特', 'Reims': '兰斯',
