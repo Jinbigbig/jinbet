@@ -58,6 +58,7 @@ canonical=官方简称（沃夫斯堡、布城、奥斯KFUM、卡塔尔23…）�
 - 坑：赛后页无 `absenties`（须赛前抓）；`ov-veld__speler` 带 `is-twijfel`；「Not in the squad」丢弃；单页 2–15s 偶发 SSL 重试 1 次。
 - 渲染 `injury_html()` 优先 lineups.json（按 matchNumStr）→ 阵型徽标+缺阵数+`<details class="inj-xi">` 折 11 人首发；无数据回退 injuries.json。天气 `_fetch_weather.py`→weather.json（Open-Meteo，18–23 时，bad≥35km/h 或降雨≥70%）。**天气脚本读 `_calc_result.json` 的 today → 步骤3 之后跑**；缺场次=TEAM_CITY/CITY_ZH 没该队，补两表即 100%（10-30 补 6 队后 12/12）；`_fetch_weather.py` 在 gh-pages **是被跟踪的**。⚠️ master `fetch_weather.py` 可能比本地旧 → 锚点替换会 MISS，直接整文件 cp（git 自动归一 CRLF，diff 只剩真实新增行）。`_ensure_side_data` 顺序：阵容→赛马会→天气→伤停兜底→开赛时间；jobs 是 3 元组。
 - **开赛时间**：`_fetch_match_times.py`→match_times.json，源=网易竞彩赛程 `matchList/1?days=YYYY-MM-DD 12:00:00` 的 `matchTime`（北京时间毫秒），抓 date±1 合并、按 `jcNum` 建表。卡片：`match-time` 后紧 `<span class="kickoff">` 再天气；唯一入口 `kickoff_of(num)`；**加载须校验 date==TODAY**（编号每周复用）。
+- ⚠️ **红彩 matchId 会指向旧场次**：`_fetch_hongcai.py` 直接把 matches_data 的 matchId 当 matchInfoId，返回的可能是完全不同的比赛（11-03 周二002 拿到「水户蜀葵vs山口雷诺」，编号还报 周六103）。脚本不校验队名 → 必须核对 `hongcai.json` 的 home/away，错配场次移入 `missing` 再生成报告；且任何一次 `_fetch_hongcai.py` 重跑都会重新写回，matlas 环节之后要再剔一遍。
 - **实测不可用勿再试**：Transfermarkt 405、premierinjuries 403、Sports.ru 403、OTempo 超时、premierleague.com JS、百度体育 SPA。
 
 ## 复盘/诊断
