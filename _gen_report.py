@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # 由 _calc_result.json + _data_batch*.json 生成 2026-09-05 V2.2 报告
 # 版式严格复刻 2026-07-21 风格（与上午云端旧版一致）：CSS 直接取自 _old_0905.html
-import json, re, html, datetime, math
+import json, re, html, datetime, math, os
 from collections import Counter
 
 # 选取算法（比分精选 / 大胆档）统一由 selection_algo 提供，本文件只做渲染。
@@ -4832,6 +4832,8 @@ page = f'''<!DOCTYPE html>
 </html>'''
 
 out = f'predictions/{TODAY}/index.html'
+# 新比赛日的目录不会被任何前序步骤创建，缺了会直接 FileNotFoundError（2026-11-03 实撞）
+os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, 'w', encoding='utf-8') as f:
     f.write(page)
 print(f'已生成 {out}: {len(page)} 字符, {len(MATCHES)} 场卡片, 串关 {len(parlays)} 组')
