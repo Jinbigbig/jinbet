@@ -424,7 +424,7 @@ def main():
               for k in ('out', 'susp', 'doubt'))
     print(f'[HKJC] {date} 简报 {len(keep)}/{len(matches)} 场有伤停，共 {tot} 条（稿件 {len(arts)} 篇，窗口 {lo}~{date}）')
     if unmatched:
-        print('[HKJC] 未匹配队名：' + '、'.join(sorted(unmatched)[:12]))
+        print('[HKJC] 已匹配但对阵稿件无伤停段：' + '、'.join(sorted(unmatched)[:12]))
     return 0
 
 
