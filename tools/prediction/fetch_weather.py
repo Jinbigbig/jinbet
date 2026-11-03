@@ -27,6 +27,8 @@ OUT = 'weather.json'
 
 # 球队中文简称（竞彩官方简称）→ 主场所在城市（英文，供 Geocoding 使用）
 TEAM_CITY = {
+    # 2026-11-03 补充：亚冠精英澳/泰球队（Newcastle 特指澳洲 NSW，避免命中英国同名城）
+    '纽喷气机': 'Newcastle NSW', '曼谷港务': 'Bangkok',
     # 2026-10-23 补充：欧战缺失映射
     '格风暴': 'Graz', '波兹南': 'Poznan', '萨迪纳摩': 'Zagreb', '尤文图斯': 'Turin',
     '克里特': 'Heraklion', '贝西克塔': 'Istanbul', '利勒斯特': 'Lillestrom',
@@ -123,6 +125,7 @@ CITY_ZH = {
     'Machida': '町田', 'Kyoto': '京都',
     'Manchester': '曼彻斯特', 'London': '伦敦', 'Birmingham': '伯明翰',
     'Liverpool': '利物浦', 'Newcastle upon Tyne': '纽卡斯尔', 'Brighton': '布莱顿',
+    'Newcastle NSW': '纽卡斯尔(澳)', 'Bangkok': '曼谷',
     'Wolverhampton': '伍尔弗汉普顿', 'Nottingham': '诺丁汉', 'Bournemouth': '伯恩茅斯',
     'Burnley': '伯恩利', 'Leeds': '利兹', 'Sunderland': '桑德兰',
     'Leicester': '莱斯特', 'Southampton': '南安普敦',
