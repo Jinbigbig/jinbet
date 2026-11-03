@@ -289,9 +289,10 @@ CSS += '''
   .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
     color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
   /* 开赛时间：紧跟在日期之后，弱化处理，不与日期争夺视觉权重 */
-  .match-time .kickoff { margin-left: 0.32rem; padding: 0.02rem 0.34rem; border-radius: 0.28rem;
+  .card-header .kickoff, .match-time .kickoff {
+    display: inline-block; margin-left: 0.32rem; padding: 0.02rem 0.34rem; border-radius: 0.28rem;
     background: rgba(47,125,224,0.14); color: var(--accent, #2f7de0); font-weight: 600;
-    font-size: 0.72rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    font-size: 0.72rem; line-height: 1.5; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .league-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:0.35rem; }
   .league-tbl th, .league-tbl td { border-bottom:1px solid rgba(128,128,128,0.22); padding:0.3rem 0.45rem; text-align:left; white-space:nowrap; }
   .league-tbl th { color:var(--muted,#7a8ba0); font-weight:600; font-size:0.72rem; }
@@ -417,6 +418,37 @@ CSS += '''
   .dish-row.away .dish-bar i { background:var(--away,#e76f51); }
   .dish-v { font-size:0.74rem; color:var(--muted,#7a8ba0); font-variant-numeric:tabular-nums;
     white-space:nowrap; }
+  /* 子板块：标题与内容同框，避免各段挤在一起看不出分组 */
+  .sub-box { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
+    border-radius: 10px; padding: 0.85rem 1rem 0.75rem; margin: 0.9rem 0; }
+  .sub-box > h4 { margin: 0 0 0.6rem; padding-left: 0.5rem;
+    border-left: 3px solid var(--home, #457b9d); }
+  .sub-box > h4 + * { margin-top: 0; }
+  .sub-box > *:last-child { margin-bottom: 0; }
+  .sub-box .table-wrap { margin-bottom: 0; }
+  /* 比分与方向预测：两行内收完 */
+  .prediction { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
+    border-radius: 10px; padding: 0.8rem 1rem 0.85rem; margin: 0.9rem 0; }
+  .prediction .pred-title { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.55rem; }
+  .prediction .pred-dir { font-size: 0.74rem; font-weight: 600; color: var(--home, #457b9d);
+    background: rgba(69,123,157,0.12); border-radius: 999px; padding: 0.05rem 0.5rem;
+    letter-spacing: 0; text-transform: none; }
+  .prediction .pred-main { display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0.4rem 0.55rem; margin-top: 0.55rem; }
+  .prediction .pred-item { display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--bg, #f0f2f5); border-radius: 8px; padding: 0.28rem 0.6rem; }
+  .prediction .pred-k { font-size: 0.72rem; color: var(--muted, #6c757d); }
+  .prediction .pred-score { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.05rem;
+    font-weight: 700; color: var(--ink, #1a1a2e); background: none; border: none;
+    padding: 0; border-radius: 0; }
+  .prediction .pred-score.sm { font-size: 0.9rem; }
+  .prediction .pred-v { font-size: 0.86rem; font-weight: 700; color: var(--ink, #1a1a2e); }
+  .prediction .pred-note { margin-top: 0.45rem; font-size: 0.74rem; color: var(--muted, #6c757d); }
+  .prediction .pred-row { margin: 0.45rem 0 0; }
+  .prediction .pred-value { font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--ink, #1a1a2e); }
+  .prediction .pred-label { font-size: 0.74rem; }
+  .prediction .tag { font-size: 0.72rem; }
   /* 结构化伤停名单：主客各一行，队名左对齐 */
   .inj-block { margin:0 0 0.5rem; }
   .inj-row { display:flex; gap:0.5rem; font-size:0.84rem; line-height:1.62; padding:0.12rem 0; }
@@ -494,13 +526,20 @@ CSS += '''
     table.std-main th, table.std-main td { padding:0.08rem 0.12rem; }
   }
   /* 历史交锋：汇总行 + 逐场表（对齐网易交锋战绩版式） */
-  .h2h-sum { display:flex; flex-wrap:wrap; align-items:baseline; gap:0.25rem 0.8rem;
-    margin:0.1rem 0 0.45rem; }
-  .h2h-sum .who { font-weight:700; font-size:0.86rem; color:var(--ink,#111); }
-  .h2h-sum .who > span { font-weight:400; font-size:0.75rem; color:var(--muted,#7a8ba0); margin-left:0.4rem; }
-  .h2h-sum .kv { display:inline-flex; flex-wrap:wrap; gap:0.2rem 0.7rem;
-    font-size:0.78rem; color:var(--muted,#7a8ba0); }
-  .h2h-sum .kv b { color:var(--ink,#111); font-variant-numeric:tabular-nums; }
+  .h2h-cols { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:0.6rem; margin:0 0 0.6rem; }
+  .h2h-col { background:var(--bg,#f0f2f5); border-radius:8px; padding:0.55rem 0.7rem; }
+  .h2h-col-h { display:flex; align-items:baseline; justify-content:space-between; gap:0.4rem;
+    font-size:0.78rem; font-weight:700; color:var(--ink,#111); }
+  .h2h-col-h span { font-size:0.7rem; font-weight:400; color:var(--muted,#7a8ba0); white-space:nowrap; }
+  .h2h-wdl { font-size:0.78rem; color:var(--muted,#7a8ba0); margin-top:0.12rem; }
+  .h2h-wdl b { font-size:1.05rem; font-variant-numeric:tabular-nums; margin:0 0.08rem; }
+  .h2h-wdl b.w { color:var(--win,#2a9d8f); }
+  .h2h-wdl b.d { color:var(--draw,#f4a261); }
+  .h2h-wdl b.l { color:var(--loss,#e63946); }
+  .h2h-col-sub { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-top:0.1rem; }
+  tr.h2h-grp td { background:rgba(128,128,128,0.10); font-size:0.72rem; font-weight:700;
+    color:var(--muted,#7a8ba0); text-align:left !important; padding:0.25rem 0.45rem !important; }
   table.h2h-t th, table.h2h-t td { text-align:center; }
   table.h2h-t th { white-space:nowrap; }
   table.h2h-t th.lg, table.h2h-t td.lg { text-align:left; }
@@ -520,8 +559,9 @@ CSS += '''
     table.h2h-t .vs { gap:0.22rem; }
     table.h2h-t .vs .th, table.h2h-t .vs .ta { overflow:visible; text-overflow:clip; }
     table.h2h-t .vs .sc { flex:0 0 2.7em; }
-    .h2h-sum .who { font-size:0.82rem; }
-    .h2h-sum .kv { font-size:0.74rem; }
+    .h2h-cols { grid-template-columns:1fr; gap:0.4rem; }
+    .h2h-col { padding:0.45rem 0.6rem; }
+    tr.h2h-grp td { font-size:0.68rem; }
   }
 </style>'''
 # 第五节已改为按当日实际联赛动态生成（见 build_league_sec），不再回收旧报告静态段落
@@ -1658,60 +1698,84 @@ def _half_line(half, full):
     return ''
 
 
-def h2h_block(m, hh):
-    """历史交锋：汇总行（红彩口径）+ 逐场表（站内赛果库，带半场），版式对齐网易交锋战绩。"""
-    mt = (HC.get(m.get('matchNumStr')) or {}).get('meeting') or {}
-    hb = mt.get('home') or {}
-    agg = next((hb[k] for k in ('all12', 'all6') if (hb.get(k) or {}).get('n')), {})
-    n = agg.get('n') or len(hh)
+def _h2h_col(rec, label, sub):
+    """一组交锋汇总：标题 + 胜平负大数 + 进失/赢盘/大球。"""
+    if not rec or not rec.get('n'):
+        return ''
+    w, d, l = rec.get('w'), rec.get('d'), rec.get('l')
+    big = (f'<div class="h2h-wdl"><b class="w">{w}</b>胜<b class="d">{d}</b>平'
+           f'<b class="l">{l}</b>负</div>' if None not in (w, d, l) else '')
+    bits = []
+    if rec.get('gf') is not None and rec.get('ga') is not None:
+        bits.append(f'进 {rec["gf"]} 失 {rec["ga"]}')
+    for lab, key in (('赢盘', 'plate_rate'), ('大球', 'big_rate')):
+        v = rec.get(key)
+        if isinstance(v, (int, float)):
+            bits.append(f'{lab} {v:g}%')
+    sub_txt = ' · '.join(x for x in (f'近 {rec["n"]} 场', sub) if x)
+    return (f'<div class="h2h-col"><div class="h2h-col-h">{esc(label)}'
+            f'<span>{esc(sub_txt)}</span></div>{big}'
+            f'<div class="h2h-col-sub">{esc(" · ".join(bits))}</div></div>')
 
-    rows = ''
-    shown = 0
-    for x in hh[:8]:
+
+def h2h_block(m, hh):
+    """历史交锋：两组口径（最近交锋 / 同联赛交锋）+ 逐场表（站内赛果库，带半场）。
+
+    两组并列是本板块的重点：只给「全部赛事」会让人误以为杯赛/欧战也算联赛交手，
+    只给「同联赛」又常常样本太少（小球会一年只有 1-2 次）。两个口径一起看才准确。
+    """
+    mt = (HC.get(m.get('matchNumStr')) or {}).get('meeting') or {}
+    side = mt.get('home') or mt.get('guest') or {}
+    lg = m.get('league') or ''
+
+    def pick(pre):
+        for k in (pre + '12', pre + '6'):
+            r = side.get(k) or {}
+            if r.get('n'):
+                return r
+        return {}
+
+    all_rec = pick('all')
+    lg_rec = pick('lg')
+    cols = (_h2h_col(all_rec, '最近交锋', '不限赛事')
+            + _h2h_col(lg_rec, '同联赛交锋', lg))
+    if not cols:
+        return ''
+
+    # 逐场表：同联赛在前，其余赛事在后，组内按日期倒序
+    def row(x):
         hg, ag = x.get('home_goals'), x.get('away_goals')
-        if hg is None or ag is None:
-            continue
         res = '胜' if hg > ag else ('平' if hg == ag else '负')
         col = 'var(--win)' if hg > ag else ('var(--draw)' if hg == ag else 'var(--loss)')
         full = (x.get('full') or f'{hg}:{ag}')
         half = _half_line(x.get('half'), full)
-        shown += 1
-        rows += ('<tr>'
-                 f'<td class="lg">{esc(x.get("league") or "—")}</td>'
-                 f'<td>{(x.get("date") or "")[2:] or "—"}</td>'
-                 f'<td><span class="vs"><span class="th">{esc(x.get("home") or m["home"])}</span>'
-                 f'<span class="sc">{esc(full.replace(":", "-"))}</span>'
-                 f'<span class="ta">{esc(x.get("away") or m["away"])}</span></span></td>'
-                 f'<td>{esc(half) or "—"}</td>'
-                 f'<td style="color:{col};font-weight:700;">{res}</td>'
-                 '</tr>')
+        return ('<tr>'
+                f'<td class="lg">{esc(x.get("league") or "—")}</td>'
+                f'<td>{(x.get("date") or "")[2:] or "—"}</td>'
+                f'<td><span class="vs"><span class="th">{esc(x.get("home") or m["home"])}</span>'
+                f'<span class="sc">{esc(full.replace(":", "-"))}</span>'
+                f'<span class="ta">{esc(x.get("away") or m["away"])}</span></span></td>'
+                f'<td>{esc(half) or "—"}</td>'
+                f'<td style="color:{col};font-weight:700;">{res}</td>'
+                '</tr>')
 
-    kv = []
-    if None not in (agg.get('w'), agg.get('d'), agg.get('l')):
-        kv.append(f'<b>{agg["w"]}胜{agg["d"]}平{agg["l"]}负</b>')
-    if agg.get('gf') is not None and agg.get('ga') is not None:
-        kv.append(f'进 <b>{agg["gf"]}</b> 失 <b>{agg["ga"]}</b>')
-    for lab, key in (('赢盘率', 'plate_rate'), ('胜率', 'win_rate'), ('大球率', 'big_rate')):
-        v = agg.get(key)
-        if isinstance(v, (int, float)):
-            kv.append(f'{lab} <b>{v:g}%</b>')
-    if shown and n and shown < n:
-        kv.append(f'逐场 <b>{shown}</b> 场')
-    head = (f'<div class="h2h-sum"><span class="who">{esc(m["home"])} VS {esc(m["away"])}'
-            + (f'<span>近 {n} 场</span>' if n else '') + '</span>')
-    head += ('<span class="kv">' + ''.join(f'<span>{x}</span>' for x in kv) + '</span>') if kv else ''
-    head += '</div>'
+    same = [x for x in hh if (x.get('league') or '') == lg and x.get('home_goals') is not None]
+    other = [x for x in hh if (x.get('league') or '') != lg and x.get('home_goals') is not None]
+    body = ''
+    if same:
+        body += f'<tr class="h2h-grp"><td colspan="5">同联赛 · {esc(lg)}</td></tr>'
+        body += ''.join(row(x) for x in same[:6])
+    if other:
+        body += '<tr class="h2h-grp"><td colspan="5">其他赛事</td></tr>'
+        body += ''.join(row(x) for x in other[:4])
 
-    if not rows:
-        if not kv:
-            return '<h4>历史交锋</h4><p class="form-empty" style="margin:0 0 0.5rem;">暂无交锋记录</p>'
-        return ('<h4>历史交锋</h4>' + head
-                + '<p class="form-empty" style="margin:0.2rem 0 0.5rem;">暂无逐场记录</p>')
-    return ('<h4>历史交锋</h4>' + head
-            + '<div class="table-wrap"><table class="history-table h2h-t">'
-              '<thead><tr><th class="lg">赛事</th><th>日期</th><th>对阵</th>'
-              '<th>半场</th><th>赛果</th></tr></thead>'
-              f'<tbody>{rows}</tbody></table></div>')
+    table = ''
+    if body:
+        table = ('<div class="table-wrap"><table class="history-table h2h-t">'
+                 '<thead><tr><th class="lg">赛事</th><th>日期</th><th>对阵</th>'
+                 '<th>半场</th><th>赛果</th></tr></thead>'
+                 f'<tbody>{body}</tbody></table></div>')
+    return '<h4>历史交锋</h4><div class="h2h-cols">' + cols + '</div>' + table
 
 
 def news_html(m):
@@ -2113,12 +2177,16 @@ def hc_ref_block(m):
     segs = [f'主裁判 <b>{esc(r["name"])}</b>']
     car = r.get('career') or {}
     if car:
-        segs.append(f'近{car.get("n")}场 主队{car.get("w")}胜{car.get("d")}平{car.get("l")}负，'
-                    f'场均黄{car.get("yellow")}红{car.get("red")}点{car.get("pen")}')
+        segs.append(f'近 {car.get("n")} 场 主队 {car.get("w")}胜{car.get("d")}平{car.get("l")}负')
+        avg = ' · '.join(f'{lab} {car.get(k)}' for lab, k in
+                         (('场均黄牌', 'yellow'), ('红牌', 'red'), ('点球', 'pen'))
+                         if car.get(k) is not None)
+        if avg:
+            segs.append(avg)
     for key, team in (('by_home', m['home']), ('by_away', m['away'])):
         b = r.get(key) or {}
         if b:
-            segs.append(f'执法{esc(team)} {b.get("n")}场 '
+            segs.append(f'执法 {esc(team)} {b.get("n")} 场 '
                         f'{b.get("w")}胜{b.get("d")}平{b.get("l")}负')
     return ('<h4>裁判执法</h4><p style="font-size:0.88rem;line-height:1.85;margin:0 0 0.5rem;">'
             + '；'.join(segs) + '</p>')
@@ -3009,6 +3077,12 @@ def rank_table(m):
             f'<tbody>{body}</tbody></table></div>\n')
 
 
+def _sub(html):
+    """子板块统一加框：标题与内容同框，空块不落框。"""
+    txt = (html or '').strip()
+    return f'<div class="sub-box">{txt}</div>' if txt else ''
+
+
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     olabel, okey, dscore, dprob, oprob = direction_pick(m)
@@ -3033,6 +3107,7 @@ def match_card(m):
         _covB = f'Top3 {coverage(m,3):.1f}% · Top5 {coverage(m,5):.1f}%'
     escore, eprob, esame = expect_score(m)
     qp_join = ' + '.join(f'{dash(s)} {p:.1f}%' for s, p in qp) or dash(dscore)
+    qp_plain = ' / '.join(dash(s) for s, _ in qp) or dash(dscore)
     qp_sum = sum(p for _, p in qp)
     hprob_str = f'｜模型给该比分 {hprob:.1f}%' if hprob is not None else ''
     # 联合众数落在倾向象限之外时（约 6 成场次会发生：P(主胜)>P(平) 但 P(1:1)>P(1:0)），
@@ -3041,8 +3116,7 @@ def match_card(m):
                else ('draw' if int(hscore.split(':')[0]) == int(hscore.split(':')[1]) else 'away')
                ) if ':' in str(hscore) else okey
     hm_mark = ('' if _hs_dir == okey else
-               f'<br><span style="font-size:0.78rem;color:var(--muted);">'
-               f'注：首选比分不在{olabel}方向内，双档已覆盖两者。</span>')
+               f'<div class="pred-note">首选比分不在{olabel}方向内，双档已覆盖两者</div>')
     cred_tag, cred_cls = score_cred(m)
     # 注：不再展示「全局众数」（结构性退化为 1:1），改由 score_group / coverage 呈现
     hm = h2h_mean(m)
@@ -3054,10 +3128,11 @@ def match_card(m):
     # 双方本赛事近况与交锋并列展示（两者互补，不是二选一）
     lfh = LG_FORM.get((m['home'], m['league'])) or []
     lfa = LG_FORM.get((m['away'], m['league'])) or []
+    form_html = ''
     if lfh or lfa:
-        hist_html += (f'<h4>近期战绩 · {esc(m["league"])}</h4>'
-                      f'<div class="form-grid">{_form_block(m, m["home"], lfh)}'
-                      f'{_form_block(m, m["away"], lfa)}</div>')
+        form_html = (f'<h4>近期战绩 · {esc(m["league"])}</h4>'
+                     f'<div class="form-grid">{_form_block(m, m["home"], lfh)}'
+                     f'{_form_block(m, m["away"], lfa)}</div>')
     # 冷门信号块
     sig_html = ''
     if m['signals'] and m['signals'] != ['无明显冷门信号']:
@@ -3098,73 +3173,41 @@ def match_card(m):
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">{esc(o.get("负","-"))}</div></div>
   </div>
 
-{rank_html}
+{_sub(rank_html)}
   <div class="insight-grid">
     <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">{hm_str}</div></div>
     <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">{esc(factor_str)}</div></div>
   </div>
 
-  {pedigree_block(m)}
-  {hist_html}
-
-  {hc_stats}
-  {hc_goal}
-  {hc_ref}
-  {hc_dish}
-
-  <h4>伤停与缺阵</h4>
-  {inj_html}
+  {_sub(pedigree_block(m))}
+  {_sub(hist_html)}
+  {_sub(form_html)}
+  {_sub(hc_stats)}
+  {_sub(hc_goal)}
+  {_sub(hc_ref)}
+  {_sub(hc_dish)}
+  {_sub('<h4>伤停与缺阵</h4>' + inj_html)}
 
   {sig_html}
   {upset_block(m)}
   {rq_block(m)}
   <div class="prediction">
-    <div class="pred-title">🎯 比分与方向预测</div>
-    <div class="pred-row">
-      <span class="pred-label">比分预测:</span>
-      <span class="pred-score">{dash(hscore)}</span>
-      <span class="pred-value">（{olabel}倾向｜<b>首选比分</b>{hprob_str}）{hm_mark}</span>
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">{olabel}倾向</span>
+      <span class="tag {cred_cls}">可信度 {esc(cred_tag)}</span>{upset_tag}
     </div>
-    <div class="pred-row">
-      <span class="pred-label">比分双档:</span>
-      <span class="pred-score">{esc(qp_join)}</span>
-      <span class="pred-value">（除首选外概率最高的两个比分，合计 <b>{qp_sum:.1f}%</b>
-        <span style="color:var(--muted);">· 长期双档命中约 20%</span>）</span>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">{dash(hscore)}</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">{esc(qp_plain)}</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">{f'{bp*100:.1f}%' if bp is not None else '-'}</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span>{stars_html(m['stars'])}</span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">{tg['tag']} · 最可能 {tg['mode']} 球</span></span>
     </div>
-    <div class="pred-row">
-      <span class="pred-label">量级参考:</span>
-      <span class="pred-score">{dash(escore)}</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ 期望进球取整（{_lhB:.2f}:{_laB:.2f}{'' if esame else '｜象限内已修正'}）</span></span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">±1球覆盖:</span>
-      <span class="pred-score">{f'{bp*100:.1f}%' if bp is not None else '-'}</span>
-      <span class="pred-value"><span style="color:var(--muted);">实际比分落在头条比分上下各 1 球内（长期约 <b>67%</b>）</span></span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">比分概率组:</span>
-      <span class="pred-value">{esc(_grpB)}</span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">覆盖汇总:</span>
-      <span class="pred-value">{esc(_covB)}
-        <span style="color:var(--muted);">（长期命中：榜首约 15% · Top3 约 39% · ±1球 约 67%）</span></span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">可信度:</span>
-      <span class="tag {cred_cls}">{esc(cred_tag)}</span>
-      <span class="pred-value"><span style="color:var(--muted);">λ总量 {m['lam_home']+m['lam_away']:.2f}，按历史同档实测</span></span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">信心评级:</span>
-      {stars_html(m['stars'])}{upset_tag}
-      <span class="pred-value"><span style="color:var(--muted);">方向确定性 {max(m["prob"]["home"], m["prob"]["draw"], m["prob"]["away"]):.1f}%（★ 越多越确定）</span></span>
-    </div>
-    <div class="pred-row">
-      <span class="pred-label">总进球倾向:</span>
-      <span class="tag {tg['cls']}" style="margin-right:0.5rem;">{tg['tag']}</span>
-      <span class="pred-value">≥3球 {tg['ge3']*100:.0f}% · ≥4球 {tg['ge4']*100:.0f}% · 最可能{tg['mode']}球 (λ总{tg['lt']:.2f})</span>
-    </div>
+    {hm_mark}
     {htft_card_row(m)}
     {('<div style="margin-top:0.35rem;font-size:0.76rem;color:var(--accent3);">'
       '⚠️ 本场竞彩未开出胜平负，<b>1X2 由比分盘反推</b>（31 档比分赔率去水后按主/平/客聚合）。</div>')
@@ -3273,7 +3316,7 @@ def _sub_table(title, note, head, body):
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
 <p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
-<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 综合比分盘定价与模型分布选出的首选比分（小字为模型给该比分的概率，与逐场卡片一致；该比分与 4.1 的方向倾向可能不同象限，卡片会单独标注）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率，两者可能不同象限）。
+<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 综合比分盘定价与模型分布选出的首选比分（与逐场卡片一致；该比分与 4.1 的方向倾向可能不同象限，卡片会单独标注）；<b>比分双档</b> = 除首选外概率最高的两个比分（两者可能不同象限）。
 单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
 只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
 {_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>备选方向</b> = 三率第二高者，方向可信度未达「可用」（最高率 &lt;50%）时并列给出 —— 这类场次首选与次选合看明显高于只看首选。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>校准概率≥50% 且置信度≥中 可用</b>、<b>≥42% 慎用</b>、<b>其余别跟</b>（小字为最可能结果、概率与置信度）。',
