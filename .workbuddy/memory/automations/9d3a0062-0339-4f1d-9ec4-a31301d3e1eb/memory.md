@@ -165,3 +165,30 @@
 - 残留边界：若工作区对 `index.html`/`results_data.json` 有未提交改动且远端也改了同一文件，快进与 `reset --keep` 都会被拒 → 会打警告后照旧流程跑（可能失败）。此时人工先 `git restore` 掉这些脏改动即可。
 - matlas 侧须知（沿用 19:00 任务经验）：import 会改 `data/days/*.json`，publish.sh 有 main 干净校验，脏则被拦。
 - 10-25 实测：matlas import+build+publish 全绿（641 场 / 635 赛果 / 1161 文件 / 0 违规）。
+
+---
+
+## ⚠️ 本文件会周期性丢失记录（11-04 发现）
+`[0/3]` 对齐的 `unblock_worktree()` 里有「还原脏跟踪文件」这一步，而本记忆文件是**被 git 跟踪且长期处于未提交修改态** → 每次对齐都会被 `git checkout HEAD -- <路径>` 还原成上次提交的旧版本，导致前几天追加的记录消失（11-04 实测抹掉了 11-02、11-03 两条）。
+**对策**：追加后若内容重要，人工把本文件单独提交进 gh-pages（chore 前缀），使其不再是脏文件。自动化任务内不做该提交（规则禁止手工 git 写操作）。
+
+## 补录：2026-11-02 / 11-03 执行（原文已被还原抹掉，此处为摘要重建）
+
+- **11-02 08:07**：对齐清 1 未跟踪 + 还原 2 脏文件 → 快进 `ffe22fde`；网易 112 场唯一 / 102 场完赛；新增 9 条 / 更新 0；推送 `13585131`；归档 3707/唯一 3707/重复 0；matlas import 53 交易日 773 场 / 赛果 767，build 1316 文件 0 违规，publish 产物 `88efaf40f`。
+- **11-03 08:15（失败）**：新根因=本地有未推送的人工功能提交 `b512b24d`「feat: 接入网易红彩数据」，不含 RESULT_FILES 故未被「人工数据提交」判定拦下，落到常规 rebase 分支 → 与远端 3 个自动更新提交在 `hkjc.json`/`odds_ticks.json`/`predictions/2026-11-02/index.html` 冲突 → abort，退出码 1，matlas 跳过。
+  - **脚本缺陷（未修，交人工）**：`align_to_remote()` 的 fail-fast 实际失效——`fail()` 返回退出码 2，而调用处写 `if not align_to_remote(): return 2`，`not 2` 为 False → 对齐失败后仍带旧基线继续抓取并提交，每次重跑多留一个垃圾提交。正确应判 `!= 0` 或让 `fail()` 返回 None/False。
+- **11-03 09:48 人工重跑（全绿）**：`reset --mixed 8404f956` + `git checkout 8404f956 -- .`（未用 reset --hard）→ 红彩重新落成干净提交 `55308e3d`（**只含 `_fetch_hongcai.py` + `hongcai.json`**，剔除 `hkjc.json`/`odds_ticks.json`/`predictions/` 三个每日重生文件）→ 重跑新增 5 条 → 推送 `a0ddec58`；归档 3704/唯一 3704/重复 0；matlas import 54 日 782 场 / 赛果 777，build 1327 文件 0 违规，publish 产物 `c3edb5d17`。
+  - **数据流结论**：「本地红彩数据提交」与「每日自动更新」天然在 `hkjc.json`/`odds_ticks.json`/`predictions/<日期>/index.html` 重叠，只要 `_fetch_hongcai.py` 有未推送提交，`_sync_results.py` 的 rebase 必撞。
+
+## 2026-11-04 08:13 自动执行（一次性全绿）
+
+**结果：补录推送 `fbd353e9` → matlas 发布 `8a793ecf9`，无人工介入**
+
+- **对齐**：`[0/3]` 清掉 1 个挡路未跟踪文件（备份 `_untracked_backup/`）+ 还原 4 个脏跟踪文件 → 快进到远端 `b930d37e`（补上落后 3 个提交）。清理-对齐机制连续第 6 日生效；11-03 的「人工 feat 提交冲突」未复发（红彩已是干净提交 `55308e3d`）。
+- **抓取**：网易 116 场唯一 → 106 场已完赛 → 库内 3728 条。[变更判定] 新增 8 条 / 更新 0 条。
+- **推送**：直接 fast-forward 成功，commit `fbd353e9`，退出码 0。待提交列表含 2025-12-31 起几乎全部 results_history（去重归档重写，正常）。
+- **去重核验**：归档 3734 条 / 唯一 3734 / 跨日重复 **0**；与库内 3728 差 6（未归档新日期），无丢失。
+- **matlas**：import 55 交易日 / 793 场 / 赛果回填 788 场；history 池 3728 条、历史交锋 351 场。
+  - **有损风险复查**：仅 `data/days/2026-11-03.json` + `data/history.json` 变动；11-03 场次 11 不变，injuries 9→9 保留，result 0→11 回填 → **未触发字段清空**。
+  - build --strict：1339 文件 / 0 违规 / 11.84s。
+  - publish：main 数据提交 `29962b210`，产物 `8a793ecf9`（`ec2b09405..8a793ecf9`）。
