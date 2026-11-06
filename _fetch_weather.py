@@ -119,6 +119,10 @@ TEAM_CITY = {
     # 2026-11-02 补充：芬超/瑞超/法乙/西甲/巴甲缺失映射
     '国际图': 'Turku', '盖斯': 'Gothenburg', '圣旺红星': 'Paris',
     '拉科': 'A Coruna', '布拉干RB': 'Braganca Paulista',
+    # 2026-11-06 补充：澳超/德乙/瑞超/荷甲/荷乙/意甲/英冠/葡超/巴甲缺失映射
+    '悉尼FC': 'Sydney', '不伦瑞克': 'Braunschweig', '哈马比': 'Stockholm',
+    '威廉二世': 'Tilburg', '奥斯': 'Oss', '威尼斯': 'Venice', '德比郡': 'Derby',
+    '法马利康': 'Famalicao', '维多利亚': 'Salvador',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -172,6 +176,9 @@ CITY_ZH = {
     'Belo Horizonte': '贝洛奥里藏特', 'Porto Alegre': '阿雷格里港',
     'Salvador': '萨尔瓦多', 'Fortaleza': '福塔莱萨', 'Santos': '桑托斯',
     'Braganca Paulista': '布拉干萨保利斯塔',
+    # 2026-11-06 补充
+    'Braunschweig': '不伦瑞克', 'Stockholm': '斯德哥尔摩', 'Tilburg': '蒂尔堡',
+    'Oss': '奥斯', 'Venice': '威尼斯', 'Derby': '德比', 'Famalicao': '法马利康',
     # 2026-11-01 补充
     'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
     'Groningen': '格罗宁根', 'Getafe': '赫塔费', 'Frosinone': '弗洛西诺内',
