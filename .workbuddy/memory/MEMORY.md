@@ -80,3 +80,10 @@ canonical=官方简称（沃夫斯堡、布城、奥斯KFUM、卡塔尔23…）�
 - 定位：jinbet=算，Matlas=发（per-match 落地页、留档、llms.txt/sitemap/Schema.org）。唯一耦合=`matlas/models.py` 契约 v1.0。仓库 github.com/Jinbigbig/matlas（SSH）：`main`=源码+数据（`_site/` 不进 main）、`gh-pages`=产物。发布走 `./publish.sh`，勿手工混提交。
 - 线上：`jinbigbig.github.io/matlas/` + `matlas.app.workbuddy.host/?sharecode=…`（裸路径 403）。域名只在 `config.DEFAULT_BASE_URL`。红线落成 `matlas/rules.py`（`build.py --strict` 非零退出）；`prob_tag()` 唯一渲染器；`Match.fingerprint()` 赛前指纹。
 - ⚠️ `import_jinbet.py` **有损**：会清空历史日 injuries/weather/form_net/mood → 事后用外部脚本（放 `C:/Users/Jin/_matlas_tools/`，**不能留仓库内**，否则 `publish.sh` 拦未提交改动）从 HEAD 逐字段补回再 build。`_update_index.py` 日期常量写死，每日须先改。
+
+### Matlas 球员情报槽位（2026-11-07）
+- 流水线加两步（在 import 之后、build 之前）：`python -m matlas.fetch_squads` → `data/squads/<league_id>.json`；`python -m matlas.enrich_squads` → 注入 `match["squad"]`（默认近 3 天，范围外自动清，避免历史页时间错位）。
+- 源=球小策 `player-rankings` 页内嵌 `ABV2_DC.nonce` + admin-ajax `abv2_dc_rankings`（参数 `league_id`，limit≤100）。**nonce 须每次现取**，写死几小时即 403 `-1`。对外仅 6 项：GIM 影响力/OTI 进攻威胁/DII 防守参与/状态0-10/稳定度/疲劳，**无「硬仗属性」「缺阵影响」**。队名中文完全一致，仅 11 条巴西等别名；**球员名不可跨源匹配**（自译 vs 港译，实测 0/107）。
+- 渲染 `pages.py::_squad_panel`，门槛每队 ≥8 人才出（澳超每队 1-5 人整体省略）。评分走普通数字，**不能过 `pct` 类**（那是概率，`rules.py` 会误判）。
+- 详情页已按「结论→基本面→人员→市场推演→环境」重排；**「留档核验」整块删除**（`_ledger`→`_settled_panel` 只留赛果+四维命中），`seo.py`/导航/`days` 页的指纹文案同步清掉。`Match.fingerprint()` 已无调用者（保留待用）。
+- ⚠️ `main_pick` 0/148 有值：上游无此字段、import 未造，L1 结论层实际只有四宫格。
