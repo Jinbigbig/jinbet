@@ -123,6 +123,12 @@ TEAM_CITY = {
     '悉尼FC': 'Sydney', '不伦瑞克': 'Braunschweig', '哈马比': 'Stockholm',
     '威廉二世': 'Tilburg', '奥斯': 'Oss', '威尼斯': 'Venice', '德比郡': 'Derby',
     '法马利康': 'Famalicao', '维多利亚': 'Salvador',
+    # 2026-11-07 补充：日职/韩K/英冠/西乙/德甲/挪超/荷甲/瑞超/葡超/巴甲/美职缺失映射
+    '鸟栖沙岩': 'Tosu', '金泉尚武': 'Gimcheon', '朴次茅斯': 'Portsmouth',
+    '马拉加': 'Malaga', '帕德博恩': 'Paderborn', '伯明翰': 'Birmingham',
+    '克里斯蒂': 'Kristiansund', '福图纳': 'Sittard', '代格福什': 'Degerfors',
+    '阿尔维卡': 'Alverca do Ribatejo', '米竞技': 'Belo Horizonte',
+    '盐湖城': 'Salt Lake City',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -179,6 +185,10 @@ CITY_ZH = {
     # 2026-11-06 补充
     'Braunschweig': '不伦瑞克', 'Stockholm': '斯德哥尔摩', 'Tilburg': '蒂尔堡',
     'Oss': '奥斯', 'Venice': '威尼斯', 'Derby': '德比', 'Famalicao': '法马利康',
+    # 2026-11-07 补充
+    'Tosu': '鸟栖', 'Gimcheon': '金泉', 'Portsmouth': '朴次茅斯', 'Malaga': '马拉加',
+    'Paderborn': '帕德博恩', 'Kristiansund': '克里斯蒂安松', 'Sittard': '锡塔德',
+    'Degerfors': '代格福什', 'Alverca do Ribatejo': '阿尔韦卡', 'Salt Lake City': '盐湖城',
     # 2026-11-01 补充
     'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
     'Groningen': '格罗宁根', 'Getafe': '赫塔费', 'Frosinone': '弗洛西诺内',
