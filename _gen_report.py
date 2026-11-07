@@ -358,6 +358,18 @@ CSS += '''
     .form-grid { grid-template-columns: minmax(0, 1fr); }
     .form-block { overflow-x: auto; }
     .form-tbl th, .form-tbl td { padding: 0.2rem 0.2rem; font-size: 0.72rem; }
+    /* 移动端表格宽度按内容（max-content）而定，不再被容器压成逐字竖排；
+       4~5 列的表仍撑满容器不滚动，列多的表才出现横滑；min-width:100% 让窄表不缩成一条 */
+    .table-wrap > table { width: max-content; min-width: 100%; white-space: nowrap; }
+    .table-wrap > table th, .table-wrap > table td {
+      padding: 0.18rem 0.3rem; font-size: 0.72rem; }
+    .table-wrap td.cell-left, .table-wrap th.cell-left { white-space: normal; }
+    /* 跨列的分组标题行（「第2档（其余高置信场次）」）必须能折行，否则被 nowrap 裁掉半句 */
+    .table-wrap > table td[colspan], .table-wrap > table th[colspan] { white-space: normal; }
+    /* 串关表不在 .table-wrap 内，5 列 + 长组合文本在 360px 下会顶出 8px */
+    .parlay-section { overflow-x: auto; }
+    .parlay-table { font-size: 0.76rem; }
+    .parlay-table th, .parlay-table td { padding: 0.4rem 0.42rem; }
   }
   /* 形势分析：本场三种结果对积分榜的影响 */
   .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
@@ -425,6 +437,9 @@ CSS += '''
     border-left: 3px solid var(--home, #457b9d); }
   .sub-box > h4 + * { margin-top: 0; }
   .sub-box > *:last-child { margin-bottom: 0; }
+  /* 窄屏兜底：没有 overflow 的 .table-wrap 会让多列表格把中文压成竖排单字，
+     行高随之暴涨（2026-11-07 实测单卡片 4300px、整页 18 万 px） */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .sub-box .table-wrap { margin-bottom: 0; }
   /* 比分与方向预测：两行内收完 */
   .prediction { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
@@ -494,7 +509,9 @@ CSS += '''
   /* 积分榜板块：卡片占满宽度，内部左右分栏（左=完整积分榜表格，右=形势分析）。
      榜单仍是完整表格（名次/队名/赛/胜平负/进失/积分全部直读），
      页面高度靠「并排」而不是「折叠/压缩」来控制。 */
-  .league-overview-grid { grid-template-columns: 1fr; }
+  /* grid 项默认 min-width:auto，会被内部 520px 保底的积分榜表撑到 556px，撑破窄屏 */
+  .league-overview-grid { grid-template-columns: minmax(0, 1fr); }
+  .league-card { min-width: 0; }
   .lg-split { display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap:0.5rem 1.2rem; align-items:start; margin-top:0.5rem; }
   .lg-col { min-width:0; }

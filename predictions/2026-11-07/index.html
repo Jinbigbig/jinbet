@@ -181,6 +181,18 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
     .form-grid { grid-template-columns: minmax(0, 1fr); }
     .form-block { overflow-x: auto; }
     .form-tbl th, .form-tbl td { padding: 0.2rem 0.2rem; font-size: 0.72rem; }
+    /* 移动端表格宽度按内容（max-content）而定，不再被容器压成逐字竖排；
+       4~5 列的表仍撑满容器不滚动，列多的表才出现横滑；min-width:100% 让窄表不缩成一条 */
+    .table-wrap > table { width: max-content; min-width: 100%; white-space: nowrap; }
+    .table-wrap > table th, .table-wrap > table td {
+      padding: 0.18rem 0.3rem; font-size: 0.72rem; }
+    .table-wrap td.cell-left, .table-wrap th.cell-left { white-space: normal; }
+    /* 跨列的分组标题行（「第2档（其余高置信场次）」）必须能折行，否则被 nowrap 裁掉半句 */
+    .table-wrap > table td[colspan], .table-wrap > table th[colspan] { white-space: normal; }
+    /* 串关表不在 .table-wrap 内，5 列 + 长组合文本在 360px 下会顶出 8px */
+    .parlay-section { overflow-x: auto; }
+    .parlay-table { font-size: 0.76rem; }
+    .parlay-table th, .parlay-table td { padding: 0.4rem 0.42rem; }
   }
   /* 形势分析：本场三种结果对积分榜的影响 */
   .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
@@ -248,6 +260,9 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
     border-left: 3px solid var(--home, #457b9d); }
   .sub-box > h4 + * { margin-top: 0; }
   .sub-box > *:last-child { margin-bottom: 0; }
+  /* 窄屏兜底：没有 overflow 的 .table-wrap 会让多列表格把中文压成竖排单字，
+     行高随之暴涨（2026-11-07 实测单卡片 4300px、整页 18 万 px） */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .sub-box .table-wrap { margin-bottom: 0; }
   /* 比分与方向预测：两行内收完 */
   .prediction { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
@@ -317,7 +332,9 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   /* 积分榜板块：卡片占满宽度，内部左右分栏（左=完整积分榜表格，右=形势分析）。
      榜单仍是完整表格（名次/队名/赛/胜平负/进失/积分全部直读），
      页面高度靠「并排」而不是「折叠/压缩」来控制。 */
-  .league-overview-grid { grid-template-columns: 1fr; }
+  /* grid 项默认 min-width:auto，会被内部 520px 保底的积分榜表撑到 556px，撑破窄屏 */
+  .league-overview-grid { grid-template-columns: minmax(0, 1fr); }
+  .league-card { min-width: 0; }
   .lg-split { display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap:0.5rem 1.2rem; align-items:start; margin-top:0.5rem; }
   .lg-col { min-width:0; }
@@ -395,7 +412,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-11-07 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 30场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-11-07 12:06 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-11-07 12:34 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -841,7 +858,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <div class="sub-box"><h4>进球时段</h4><div class="gd-list"><div class="gd-row"><span class="gd-team">珀斯</span><div class="gd-cells"><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.66">33%</span><span class="gd-cell h" style="--a:0.43">16%</span><span class="gd-cell h" style="--a:0.66">33%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.43">16%</span></div></div><div class="gd-row"><span class="gd-team">纽喷气机</span><div class="gd-cells"><span class="gd-cell a" style="--a:0.66">33%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.66">33%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.66">33%</span></div></div><div class="gd-row"><span></span><div class="gd-axis"><span>1-15′</span><span>16-30′</span><span>31-45′</span><span>46-60′</span><span>61-75′</span><span>76-90′</span></div></div></div><p class="cmp-note">进球时段：珀斯集中在 16-30′（33%），纽喷气机集中在 1-15′（33%）。</p></div>
   
   <div class="sub-box"><h4>盘路走势</h4><div class="dish-list"><div class="dish-row "><span class="dish-team">珀斯</span><div class="dish-track"><div class="dish-bar"><i style="width:45%"></i></div><span class="dish-v">赢盘 近12 45% · 近6 20%</span></div></div><div class="dish-row away"><span class="dish-team">纽喷气机</span><div class="dish-track"><div class="dish-bar"><i style="width:17%"></i></div><span class="dish-v">赢盘 近12 17% · 近6 0%</span></div></div></div><p class="cmp-note">珀斯近期赢盘更稳（28 个百分点）。</p></div>
-  <div class="sub-box"><h4>伤停与缺阵</h4><div class="inj-block"><div class="inj-row"><span class="inj-team">珀斯</span><span class="inj-list">缺阵 <b>3</b> 人：奥尼尔（中场·轮休）、B.卡尔塔克（后卫·未知伤病）、霍尔（中场·受伤）；停赛：纽文霍夫（中场·无法出战）、沙蒙（后卫·无法出战）、登奇（后卫·无法出战）等</span></div><div class="inj-row"><span class="inj-team">纽喷气机</span><span class="inj-list">缺阵 <b>3</b> 人：弗赖尔（前锋·膝关节损伤）、布拉科（中场·轮休）、肯尼迪（后卫·足部受伤）；停赛：科克尔（前锋·无法出战）、纳西普（守门员·无法出战）、沃尔什（后卫·无法出战）等</span></div><div class="inj-src">伤停与阵容：网易红彩赛前名单</div></div></div>
+  <div class="sub-box"><h4>伤停与缺阵</h4><div class="inj-block"><div class="inj-row"><span class="inj-team">珀斯</span><span class="inj-list">缺阵 <b>2</b> 人：奥尼尔（中场·轮休）、霍尔（中场·受伤）；停赛：纽文霍夫（中场·无法出战）、沙蒙（后卫·无法出战）、登奇（后卫·无法出战）等</span></div><div class="inj-row"><span class="inj-team">纽喷气机</span><span class="inj-list">缺阵 <b>3</b> 人：弗赖尔（前锋·膝关节损伤）、布拉科（中场·轮休）、肯尼迪（后卫·足部受伤）；停赛：科克尔（前锋·无法出战）、纳西普（守门员·无法出战）、沃尔什（后卫·无法出战）等</span></div><div class="inj-src">伤停与阵容：网易红彩赛前名单</div></div></div>
 
   
   <div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 57.2%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 42.2%（历史同档翻车率均值 47.8%）；模型−市场分歧 -7.9pp、|让球|1、λ和 3.66、市场熵 1.073。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
