@@ -73,7 +73,7 @@ canonical=官方简称（沃夫斯堡、布城、奥斯KFUM、卡塔尔23…）�
 ## 兄弟项目 Matlas（C:\Users\Jin\matlas，零 import）
 - 定位：jinbet=算，Matlas=发（per-match 落地页、留档、llms.txt/sitemap/Schema.org）。唯一耦合=`matlas/models.py` 契约 v1.0。仓库 github.com/Jinbigbig/matlas（SSH）：`main`=源码+数据（`_site/` 不进 main）、`gh-pages`=产物。发布 `./publish.sh`（`TMPDIR=/c/tmp/matlas-trash`，可 `SKIP_BUILD=1`），勿手工混提交。
 - 线上：`jinbigbig.github.io/matlas/` + `matlas.app.workbuddy.host/?sharecode=…`（裸路径 403）。域名只在 `config.DEFAULT_BASE_URL`。红线落成 `matlas/rules.py`（`build.py --strict` 非零退出）；`prob_tag()` 唯一渲染器。
-- ⚠️ `import_jinbet.py` 有损：会清空历史日 injuries/weather/form_net/mood → 事后用 `C:/Users/Jin/_matlas_tools/_restore_extras.py`（dry-run→`--apply`→复核 0；不能留仓库内）从 HEAD 补回再 build。
+- ⚠️ `import_jinbet.py` 有损：会清空历史日 injuries/weather/form_net/mood → 事后用 `C:/Users/Jin/_matlas_tools/_restore_extras.py`（dry-run→`--apply`→复核 0；不能留仓库内）从 HEAD 补回再 build。该脚本原本用 `separators=(',',':')` 写盘，会把整天压成单行 → 造成全量 diff，已改为 `indent=1` + 结尾换行（与 import 一致）。
 - ⚠️ `publish.sh` 护栏：`git status` 出现 `data/` 以外改动（源码 WIP、README/SLOTS）直接拒发布，只自动提交 `data/`。遇到即如实报告，禁止擅自在 main 提交或改源码。
 - 球员情报（2026-11-07）：import 后、build 前加 `python -m matlas.fetch_squads`（→`data/squads/<league_id>.json`）与 `python -m matlas.enrich_squads`（注入 `match["squad"]`，默认近 3 天，范围外清）。源=球小策 `player-rankings` 的 `ABV2_DC.nonce` + admin-ajax `abv2_dc_rankings`（nonce 每次现取，写死即 403 `-1`）。对外仅 6 项（GIM/OTI/DII/状态/稳定度/疲劳），无「硬仗属性」「缺阵影响」；球员名不可跨源匹配（0/107）。渲染 `pages.py::_squad_panel`，每队 ≥8 人才出；评分走普通数字，不能过 `pct` 类。`main_pick` 0/148 有值。
 - 详情页序：结论→基本面→人员→市场推演→环境；「留档核验」整块删除（`_ledger`→`_settled_panel` 只留赛果+四维命中）。
