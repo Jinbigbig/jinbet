@@ -117,6 +117,20 @@ def schedule_days() -> tuple[str, list[str]]:
     return m.group(1), keep
 
 
+def team_logo_ids(card: str) -> tuple[str, str]:
+    """从比赛卡里取主客队的队徽编号（wp-content/logo/teams/<id>.png）。
+
+    有的场次上游也没图，返回空串，渲染层再退回站内队名映射。
+    """
+    ids: dict[str, str] = {}
+    pat = (r'class="ms-team (home|away)"[^>]*>(.*?)'
+           r'(?=class="ms-team |class="ms-score-box"|class="ms-extra"|$)')
+    for m in re.finditer(pat, card, re.S):
+        lm = re.search(r'/logo/teams/(\d+)\.png', m.group(2))
+        ids[m.group(1)] = lm.group(1) if lm else ""
+    return ids.get("home", ""), ids.get("away", "")
+
+
 def parse_cards(frag: str) -> list[dict]:
     """赛程接口返回的 HTML 片段 → 场次列表。"""
     out = []
@@ -131,12 +145,15 @@ def parse_cards(frag: str) -> list[dict]:
         tbd = {"主队", "客队", "待定", "待确认", "tbd", "tbc", "TBD", "TBC", "-"}
         if not home or not away or home in tbd or away in tbd:
             continue
+        hid, aid = team_logo_ids(c)
         out.append({
             "code": "",
             "time": (t.group(1).strip() if t else "")[:5] or "—",
             "league": lg.group(1).strip() if lg else "",
             "home": home,
             "away": away,
+            "hid": hid,
+            "aid": aid,
             "jc": 0,
             "fid": int(fid.group(1)) if fid else None,
             "st": (st.group(1).strip() if st else "") or "未开赛",
@@ -198,6 +215,27 @@ def merge(jc: dict[str, list[dict]], full: dict[str, list[dict]]) -> dict[str, l
     return days
 
 
+def backfill_crest_ids(days: dict[str, list[dict]]) -> int:
+    """竞彩独有场次没有上游队徽编号，按队名从同一批赛程里借一个。"""
+    pool: dict[str, str] = {}
+    for rows in days.values():
+        for r in rows:
+            for name, tid in ((r.get("home"), r.get("hid")),
+                              (r.get("away"), r.get("aid"))):
+                if name and tid and name not in pool:
+                    pool[name] = tid
+    n = 0
+    for rows in days.values():
+        for r in rows:
+            for name_key, id_key in (("home", "hid"), ("away", "aid")):
+                if not r.get(id_key):
+                    tid = pool.get(r.get(name_key) or "")
+                    if tid:
+                        r[id_key] = tid
+                        n += 1
+    return n
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="只打印不写盘")
@@ -233,8 +271,11 @@ def main(argv: list[str] | None = None) -> int:
     if not days:
         print("[fixtures] 合并结果为空，保留上一份文件不动")
         return 1
+    filled = backfill_crest_ids(days)
     total = sum(len(v) for v in days.values())
     jc_n = sum(1 for v in days.values() for r in v if r.get("jc"))
+    crested = sum(1 for v in days.values() for r in v
+                  if r.get("hid") and r.get("aid"))
 
     if args.dry_run:
         for d, rows in sorted(days.items()):
@@ -254,6 +295,7 @@ def main(argv: list[str] | None = None) -> int:
                    encoding="utf-8")
     summary = "、".join(f"{d[5:]} {len(rows)} 场" for d, rows in sorted(days.items()))
     print(f"[fixtures] {len(days)} 天 / {total} 场（竞彩 {jc_n}）→ {OUT.name}")
+    print(f"[fixtures] 队徽编号覆盖 {crested}/{total} 场（借名回填 {filled} 处）")
     print(f"[fixtures] {summary}")
     return 0
 
