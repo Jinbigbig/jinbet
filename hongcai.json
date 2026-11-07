@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07 12:07",
+ "updated": "2026-11-07 15:02",
  "date": "2026-11-07",
  "source": "网易红彩",
  "count": 30,
@@ -120,7 +120,7 @@
      "l": 4,
      "gf": 8,
      "ga": 10,
-     "rank": 11,
+     "rank": 12,
      "pts": 6,
      "gd": -2
     },
@@ -142,7 +142,7 @@
      "l": 4,
      "gf": 8,
      "ga": 10,
-     "rank": 11,
+     "rank": 12,
      "pts": 6,
      "gd": -2
     }
@@ -150,9 +150,9 @@
    "referee": null,
    "weather": {
     "name": "晴",
-    "temperature": 20,
-    "humidity": 38,
-    "wind": 8,
+    "temperature": 16,
+    "humidity": 45,
+    "wind": 20,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -569,129 +569,13 @@
      "scored": [
       {
        "n": 6,
-       "pct": 30,
+       "pct": 28,
        "from": 1,
        "to": 15
       },
       {
        "n": 4,
-       "pct": 20,
-       "from": 16,
-       "to": 30
-      },
-      {
-       "n": 2,
-       "pct": 10,
-       "from": 31,
-       "to": 45
-      },
-      {
-       "n": 5,
-       "pct": 25,
-       "from": 46,
-       "to": 60
-      },
-      {
-       "n": 1,
-       "pct": 5,
-       "from": 61,
-       "to": 75
-      },
-      {
-       "n": 2,
-       "pct": 10,
-       "from": 76,
-       "to": 90
-      }
-     ],
-     "conceded": [
-      {
-       "n": 1,
-       "pct": 7,
-       "from": 1,
-       "to": 15
-      },
-      {
-       "n": 0,
-       "pct": 0,
-       "from": 16,
-       "to": 30
-      },
-      {
-       "n": 2,
-       "pct": 14,
-       "from": 31,
-       "to": 45
-      },
-      {
-       "n": 0,
-       "pct": 0,
-       "from": 46,
-       "to": 60
-      },
-      {
-       "n": 5,
-       "pct": 35,
-       "from": 61,
-       "to": 75
-      },
-      {
-       "n": 6,
-       "pct": 42,
-       "from": 76,
-       "to": 90
-      }
-     ]
-    },
-    "away": {
-     "scored": [
-      {
-       "n": 2,
-       "pct": 13,
-       "from": 1,
-       "to": 15
-      },
-      {
-       "n": 2,
-       "pct": 13,
-       "from": 16,
-       "to": 30
-      },
-      {
-       "n": 2,
-       "pct": 13,
-       "from": 31,
-       "to": 45
-      },
-      {
-       "n": 4,
-       "pct": 26,
-       "from": 46,
-       "to": 60
-      },
-      {
-       "n": 3,
-       "pct": 20,
-       "from": 61,
-       "to": 75
-      },
-      {
-       "n": 2,
-       "pct": 13,
-       "from": 76,
-       "to": 90
-      }
-     ],
-     "conceded": [
-      {
-       "n": 3,
-       "pct": 14,
-       "from": 1,
-       "to": 15
-      },
-      {
-       "n": 3,
-       "pct": 14,
+       "pct": 19,
        "from": 16,
        "to": 30
       },
@@ -708,14 +592,130 @@
        "to": 60
       },
       {
+       "n": 1,
+       "pct": 4,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 2,
+       "pct": 9,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 1,
+       "pct": 6,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 0,
+       "pct": 0,
+       "from": 16,
+       "to": 30
+      },
+      {
        "n": 3,
-       "pct": 14,
+       "pct": 20,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 0,
+       "pct": 0,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 5,
+       "pct": 33,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 6,
+       "pct": 40,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    },
+    "away": {
+     "scored": [
+      {
+       "n": 2,
+       "pct": 12,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 2,
+       "pct": 12,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 3,
+       "pct": 18,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 4,
+       "pct": 25,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 3,
+       "pct": 18,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 2,
+       "pct": 12,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 3,
+       "pct": 13,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 3,
+       "pct": 13,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 2,
+       "pct": 9,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 7,
+       "pct": 31,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 3,
+       "pct": 13,
        "from": 61,
        "to": 75
       },
       {
        "n": 4,
-       "pct": 19,
+       "pct": 18,
        "from": 76,
        "to": 90
       }
@@ -816,37 +816,37 @@
    },
    "range": {
     "home_total": {
-     "n": 15,
+     "n": 16,
      "w": 6,
      "d": 2,
-     "l": 7,
-     "gf": 15,
-     "ga": 17,
-     "rank": 12,
+     "l": 8,
+     "gf": 16,
+     "ga": 19,
+     "rank": 13,
      "pts": 20,
-     "gd": -2
+     "gd": -3
     },
     "away_total": {
-     "n": 15,
-     "w": 8,
+     "n": 16,
+     "w": 9,
      "d": 4,
      "l": 3,
-     "gf": 27,
-     "ga": 14,
-     "rank": 2,
-     "pts": 28,
-     "gd": 13
+     "gf": 29,
+     "ga": 15,
+     "rank": 3,
+     "pts": 31,
+     "gd": 14
     },
     "home_home": {
-     "n": 7,
+     "n": 8,
      "w": 5,
      "d": 0,
-     "l": 2,
-     "gf": 11,
-     "ga": 7,
-     "rank": 5,
+     "l": 3,
+     "gf": 12,
+     "ga": 9,
+     "rank": 8,
      "pts": 15,
-     "gd": 4
+     "gd": 3
     },
     "home_guest": {
      "n": 8,
@@ -871,45 +871,45 @@
      "gd": 3
     },
     "away_guest": {
-     "n": 7,
-     "w": 6,
+     "n": 8,
+     "w": 7,
      "d": 0,
      "l": 1,
-     "gf": 15,
-     "ga": 5,
+     "gf": 17,
+     "ga": 6,
      "rank": 1,
-     "pts": 18,
-     "gd": 10
+     "pts": 21,
+     "gd": 11
     },
     "home": {
-     "n": 7,
+     "n": 8,
      "w": 5,
      "d": 0,
-     "l": 2,
-     "gf": 11,
-     "ga": 7,
-     "rank": 5,
+     "l": 3,
+     "gf": 12,
+     "ga": 9,
+     "rank": 8,
      "pts": 15,
-     "gd": 4
+     "gd": 3
     },
     "away": {
-     "n": 7,
-     "w": 6,
+     "n": 8,
+     "w": 7,
      "d": 0,
      "l": 1,
-     "gf": 15,
-     "ga": 5,
+     "gf": 17,
+     "ga": 6,
      "rank": 1,
-     "pts": 18,
-     "gd": 10
+     "pts": 21,
+     "gd": 11
     }
    },
    "referee": null,
    "weather": {
     "name": "晴",
-    "temperature": 17,
-    "humidity": 44,
-    "wind": 20,
+    "temperature": 16,
+    "humidity": 43,
+    "wind": 22,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -1326,13 +1326,13 @@
      "scored": [
       {
        "n": 2,
-       "pct": 13,
+       "pct": 12,
        "from": 1,
        "to": 15
       },
       {
        "n": 2,
-       "pct": 13,
+       "pct": 12,
        "from": 16,
        "to": 30
       },
@@ -1344,27 +1344,27 @@
       },
       {
        "n": 2,
-       "pct": 13,
+       "pct": 12,
        "from": 46,
        "to": 60
       },
       {
-       "n": 3,
-       "pct": 20,
+       "n": 4,
+       "pct": 25,
        "from": 61,
        "to": 75
       },
       {
        "n": 5,
-       "pct": 33,
+       "pct": 31,
        "from": 76,
        "to": 90
       }
      ],
      "conceded": [
       {
-       "n": 1,
-       "pct": 5,
+       "n": 2,
+       "pct": 10,
        "from": 1,
        "to": 15
       },
@@ -1382,19 +1382,19 @@
       },
       {
        "n": 5,
-       "pct": 29,
+       "pct": 26,
        "from": 46,
        "to": 60
       },
       {
-       "n": 2,
-       "pct": 11,
+       "n": 3,
+       "pct": 15,
        "from": 61,
        "to": 75
       },
       {
        "n": 7,
-       "pct": 41,
+       "pct": 36,
        "from": 76,
        "to": 90
       }
@@ -1403,38 +1403,38 @@
     "away": {
      "scored": [
       {
-       "n": 0,
-       "pct": 0,
+       "n": 1,
+       "pct": 3,
        "from": 1,
        "to": 15
       },
       {
        "n": 4,
-       "pct": 14,
+       "pct": 13,
        "from": 16,
        "to": 30
       },
       {
        "n": 4,
-       "pct": 14,
+       "pct": 13,
        "from": 31,
        "to": 45
       },
       {
        "n": 7,
-       "pct": 25,
+       "pct": 24,
        "from": 46,
        "to": 60
       },
       {
-       "n": 5,
-       "pct": 18,
+       "n": 6,
+       "pct": 20,
        "from": 61,
        "to": 75
       },
       {
        "n": 7,
-       "pct": 25,
+       "pct": 24,
        "from": 76,
        "to": 90
       }
@@ -1442,31 +1442,31 @@
      "conceded": [
       {
        "n": 1,
-       "pct": 7,
+       "pct": 6,
        "from": 1,
        "to": 15
       },
       {
        "n": 4,
-       "pct": 28,
+       "pct": 26,
        "from": 16,
        "to": 30
       },
       {
        "n": 2,
-       "pct": 14,
+       "pct": 13,
        "from": 31,
        "to": 45
       },
       {
        "n": 2,
-       "pct": 14,
+       "pct": 13,
        "from": 46,
        "to": 60
       },
       {
-       "n": 5,
-       "pct": 35,
+       "n": 6,
+       "pct": 40,
        "from": 61,
        "to": 75
       },
@@ -1620,7 +1620,7 @@
      "l": 2,
      "gf": 10,
      "ga": 10,
-     "rank": 9,
+     "rank": 10,
      "pts": 8,
      "gd": 0
     },
@@ -1642,7 +1642,7 @@
      "l": 2,
      "gf": 10,
      "ga": 10,
-     "rank": 9,
+     "rank": 10,
      "pts": 8,
      "gd": 0
     }
@@ -1650,9 +1650,9 @@
    "referee": null,
    "weather": {
     "name": "晴",
-    "temperature": 17,
-    "humidity": 38,
-    "wind": 17,
+    "temperature": 19,
+    "humidity": 31,
+    "wind": 16,
     "by_home": {
      "n": 6,
      "w": 4,
@@ -2435,7 +2435,7 @@
      "l": 0,
      "gf": 0,
      "ga": 0,
-     "rank": 3,
+     "rank": 4,
      "pts": 0,
      "gd": 0
     },
@@ -2457,7 +2457,7 @@
      "l": 0,
      "gf": 0,
      "ga": 0,
-     "rank": 3,
+     "rank": 4,
      "pts": 0,
      "gd": 0
     }
@@ -2465,9 +2465,9 @@
    "referee": null,
    "weather": {
     "name": "晴",
-    "temperature": 9,
-    "humidity": 26,
-    "wind": 8,
+    "temperature": 10,
+    "humidity": 21,
+    "wind": 6,
     "by_home": {
      "n": 6,
      "w": 1,
@@ -4054,7 +4054,7 @@
    "weather": {
     "name": "阴",
     "temperature": 10,
-    "humidity": 82,
+    "humidity": 84,
     "wind": 4,
     "by_home": {
      "n": 6,
@@ -4649,30 +4649,6 @@
       "position": "前锋",
       "status": "out",
       "state": "膝关节损伤"
-     },
-     {
-      "name": "罗登",
-      "position": "后卫",
-      "status": "out",
-      "state": "肌肉受伤"
-     },
-     {
-      "name": "奥卡福尔",
-      "position": "前锋",
-      "status": "out",
-      "state": "腹股沟受伤"
-     },
-     {
-      "name": "施塔赫",
-      "position": "中场",
-      "status": "out",
-      "state": "足部受伤"
-     },
-     {
-      "name": "勒温",
-      "position": "前锋",
-      "status": "out",
-      "state": "足部受伤"
      }
     ],
     "guest": [
@@ -4895,7 +4871,7 @@
    "weather": {
     "name": "局部有云",
     "temperature": 21,
-    "humidity": 69,
+    "humidity": 67,
     "wind": 12,
     "by_home": {
      "n": 6,
@@ -5406,18 +5382,6 @@
       "position": "前锋",
       "status": "out",
       "state": "肌肉受伤"
-     },
-     {
-      "name": "马丁内斯",
-      "position": "中场",
-      "status": "out",
-      "state": "足部受伤"
-     },
-     {
-      "name": "普加",
-      "position": "后卫",
-      "status": "out",
-      "state": "受伤"
      }
     ],
     "guest": [
@@ -6205,22 +6169,10 @@
       "state": "肩部受伤"
      },
      {
-      "name": "福蒂尼",
-      "position": "后卫",
-      "status": "out",
-      "state": "大腿受伤"
-     },
-     {
       "name": "R罗",
       "position": "后卫",
       "status": "out",
       "state": "大腿受伤"
-     },
-     {
-      "name": "曼德拉戈拉",
-      "position": "中场",
-      "status": "out",
-      "state": "肌肉受伤"
      }
     ],
     "guest": [
@@ -6434,8 +6386,8 @@
    "weather": {
     "name": "阴",
     "temperature": 21,
-    "humidity": 51,
-    "wind": 12,
+    "humidity": 50,
+    "wind": 10,
     "by_home": {
      "n": 6,
      "w": 1,
@@ -7254,7 +7206,7 @@
     "name": "晴",
     "temperature": 5,
     "humidity": 80,
-    "wind": 8,
+    "wind": 9,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -7857,18 +7809,6 @@
       "position": "前锋",
       "status": "out",
       "state": "腿筋受伤"
-     },
-     {
-      "name": "芬克格雷夫",
-      "position": "后卫",
-      "status": "out",
-      "state": "大腿受伤"
-     },
-     {
-      "name": "努萨",
-      "position": "前锋",
-      "status": "out",
-      "state": "肌肉受伤"
      }
     ],
     "guest": [
@@ -8069,8 +8009,8 @@
    },
    "weather": {
     "name": "局部有云",
-    "temperature": 6,
-    "humidity": 73,
+    "temperature": 7,
+    "humidity": 71,
     "wind": 12,
     "by_home": {
      "n": 6,
@@ -8684,12 +8624,6 @@
       "position": "前锋",
       "status": "out",
       "state": "腿筋受伤"
-     },
-     {
-      "name": "格策",
-      "position": "中场",
-      "status": "out",
-      "state": "患病"
      }
     ]
    }
@@ -9300,12 +9234,6 @@
       "position": "中场",
       "status": "out",
       "state": "腿筋受伤"
-     },
-     {
-      "name": "贾梅拉",
-      "position": "后卫",
-      "status": "out",
-      "state": "大腿受伤"
      }
     ]
    }
@@ -9487,8 +9415,8 @@
    "weather": {
     "name": "局部有云",
     "temperature": 8,
-    "humidity": 70,
-    "wind": 5,
+    "humidity": 69,
+    "wind": 6,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -10115,12 +10043,6 @@
       "state": "肌肉受伤"
      },
      {
-      "name": "B.恩迪亚耶",
-      "position": "中场",
-      "status": "out",
-      "state": "阑尾切除手术"
-     },
-     {
       "name": "赛巴里",
       "position": "前锋",
       "status": "out",
@@ -10131,12 +10053,6 @@
       "position": "前锋",
       "status": "out",
       "state": "肌肉受伤"
-     },
-     {
-      "name": "戴维斯",
-      "position": "后卫",
-      "status": "out",
-      "state": "轮休"
      }
     ]
    }
@@ -10317,9 +10233,9 @@
    },
    "weather": {
     "name": "阴",
-    "temperature": 10,
-    "humidity": 82,
-    "wind": 4,
+    "temperature": 9,
+    "humidity": 85,
+    "wind": 3,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -10908,12 +10824,6 @@
    "injuries": {
     "home": [
      {
-      "name": "萨卡",
-      "position": "前锋",
-      "status": "out",
-      "state": "大腿受伤"
-     },
-     {
       "name": "道曼",
       "position": "中场",
       "status": "suspended",
@@ -11136,9 +11046,9 @@
    },
    "weather": {
     "name": "阴",
-    "temperature": 10,
-    "humidity": 82,
-    "wind": 4,
+    "temperature": 9,
+    "humidity": 85,
+    "wind": 3,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -11756,12 +11666,6 @@
       "position": "中场",
       "status": "out",
       "state": "肌肉受伤"
-     },
-     {
-      "name": "朴升洙",
-      "position": "前锋",
-      "status": "out",
-      "state": "受伤"
      }
     ]
    }
@@ -11990,8 +11894,8 @@
    "referee": null,
    "weather": {
     "name": "阴",
-    "temperature": 18,
-    "humidity": 71,
+    "temperature": 17,
+    "humidity": 72,
     "wind": 9,
     "by_home": {
      "n": 6,
@@ -12608,12 +12512,6 @@
       "state": "手腕损伤"
      },
      {
-      "name": "卡萨多",
-      "position": "中场",
-      "status": "out",
-      "state": "锁骨骨折"
-     },
-     {
       "name": "埃德",
       "position": "后卫",
       "status": "out",
@@ -12769,7 +12667,7 @@
    "weather": {
     "name": "阴",
     "temperature": 9,
-    "humidity": 84,
+    "humidity": 85,
     "wind": 7,
     "by_home": {
      "n": 6,
@@ -13630,7 +13528,7 @@
    "weather": {
     "name": "阴有雨",
     "temperature": 10,
-    "humidity": 89,
+    "humidity": 90,
     "wind": 8,
     "by_home": {
      "n": 6,
@@ -15021,12 +14919,6 @@
       "state": "膝关节损伤"
      },
      {
-      "name": "热苏斯",
-      "position": "前锋",
-      "status": "out",
-      "state": "小腿受伤"
-     },
-     {
       "name": "多明格斯",
       "position": "中场",
       "status": "out",
@@ -15221,7 +15113,7 @@
     "name": "阴",
     "temperature": 7,
     "humidity": 86,
-    "wind": 3,
+    "wind": 4,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -15839,12 +15731,6 @@
       "position": "中场",
       "status": "out",
       "state": "腹股沟受伤"
-     },
-     {
-      "name": "卡拉佐尔",
-      "position": "中场",
-      "status": "out",
-      "state": "肌肉受伤"
      }
     ],
     "guest": [
@@ -15883,12 +15769,6 @@
       "position": "前锋",
       "status": "out",
       "state": "肌肉受伤"
-     },
-     {
-      "name": "埃雷夫贝纳吉",
-      "position": "前锋",
-      "status": "out",
-      "state": "外侧脚踝韧带撕裂"
      },
      {
       "name": "维泽尔",
@@ -16876,7 +16756,7 @@
     "name": "局部有云",
     "temperature": 10,
     "humidity": 80,
-    "wind": 4,
+    "wind": 3,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -17692,9 +17572,9 @@
     }
    },
    "weather": {
-    "name": "阴",
-    "temperature": 20,
-    "humidity": 60,
+    "name": "局部有云",
+    "temperature": 19,
+    "humidity": 59,
     "wind": 7,
     "by_home": {
      "n": 6,
@@ -17705,10 +17585,10 @@
     },
     "by_away": {
      "n": 6,
-     "w": 2,
-     "d": 1,
-     "l": 3,
-     "win_rate": 33
+     "w": 0,
+     "d": 2,
+     "l": 4,
+     "win_rate": 0
     }
    },
    "dish": {
@@ -18456,7 +18336,7 @@
    "weather": {
     "name": "晴",
     "temperature": 13,
-    "humidity": 79,
+    "humidity": 80,
     "wind": 6,
     "by_home": {
      "n": 6,
@@ -19059,22 +18939,10 @@
       "state": "肌肉受伤"
      },
      {
-      "name": "迪巴拉",
-      "position": "前锋",
-      "status": "out",
-      "state": "小腿受伤"
-     },
-     {
       "name": "佩莱格里尼",
       "position": "中场",
       "status": "out",
       "state": "大腿受伤"
-     },
-     {
-      "name": "戈利尼",
-      "position": "守门员",
-      "status": "out",
-      "state": "后背受伤"
      },
      {
       "name": "伦施",
@@ -19191,7 +19059,7 @@
     "name": "阴有雨,局部有雷暴",
     "temperature": 27,
     "humidity": 65,
-    "wind": 12,
+    "wind": 13,
     "by_home": {
      "n": 6,
      "w": 3,
