@@ -118,6 +118,13 @@ try:
         _lm = importlib.util.module_from_spec(_spec)
         _spec.loader.exec_module(_lm)
         _ld = json.load(open(_ld_path, encoding="utf-8"))["leagues"]
+        # 7M 榜是港澳台译名 → 先归一成大陆简称，否则排名匹配全落空
+        try:
+            from standings_alias import cn_teams as _cn_teams
+            for _v in _ld.values():
+                _cn_teams(_v.get("teams"))
+        except Exception:
+            pass
         _idx = _lm.build_index(_ld)
         _ld_rank = {}
         for _m in matches:

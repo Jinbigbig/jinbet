@@ -169,6 +169,14 @@ def main():
     leagues = sorted(set(m['league'] for m in data['matches']))
     print(f'今日联赛 {len(leagues)} 个：{leagues}')
     result = fetch_league_data(leagues)
+    # 7M 返回港澳台译名（飛燕諾/阿積士/阿仙奴…）→ 落盘前统一成大陆常用简称。
+    # opencc 只能繁→简（飛燕諾→飞燕诺），港译人名仍需 standings_alias 映射。
+    try:
+        from standings_alias import cn_teams
+        for _v in result.values():
+            cn_teams(_v.get('teams'))
+    except Exception as _e:
+        print(f'[队名归一] 跳过：{_e}')
     out_path = os.path.join(here, 'league_data.json')
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump({'date': data.get('today', str(date.today())),
