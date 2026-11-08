@@ -3545,31 +3545,43 @@ _rq_hit = '、'.join(f"{m['matchNumStr']} {m['rq']['best']['pick']}({m['rq']['be
 _bigs = sorted([m for m in MATCHES if m.get('big')], key=lambda m: -m['big']['cal6'])
 _big_top = _bigs[0] if _bigs else None
 _big_any = (1 - math.prod(1 - m['big']['cal6'] / 100 for m in _bigs)) * 100 if _bigs else 0
-_big_card = ''
+# 以下 9 项策略自检指标 11-08 起只作内部记录，不再渲染到公开报告。
+# 内容属模型自检 / 口径 / 方法论说明，公开页重复逐场信息且暴露内部参数。
+_big_line = ''
 if _big_top:
     _bt = _big_top['big']
-    _big_card = (
-        '<div class="summary-card"><h4>🎯 大比分（6+）观察</h4>'
-        '<p style="font-size:0.9rem;">今日最像出 6+ 的一场：<strong style="color:var(--accent2);">'
-        f'{esc(_big_top["matchNumStr"])} {esc(_big_top["home"])}vs{esc(_big_top["away"])}</strong>'
-        f'（校准 P(6+)≈<strong>{_bt["cal6"]:.1f}%</strong>，市场隐含 {_bt["market6"]:.1f}%）；'
-        f'{len(_bigs)} 场「至少一场 6+」≈ <strong>{_big_any:.0f}%</strong>。'
-        '<b>但别押大球</b>：市场对高进球系统性定价偏高，按赔率买「6 球」与「7+」长期均亏损。'
-        '「最近天天有大球」是基础率 × 场次数的必然，不是可押的规律。</p></div>\n  ')
+    _big_line = (
+        f'今日最像出 6+ 的一场：{_big_top["matchNumStr"]} '
+        f'{_big_top["home"]}vs{_big_top["away"]}'
+        f'（校准 P(6+)≈{_bt["cal6"]:.1f}%，市场隐含 {_bt["market6"]:.1f}%）；'
+        f'{len(_bigs)} 场「至少一场 6+」≈ {_big_any:.0f}%。'
+        '市场对高进球系统性定价偏高，按赔率买「6 球」与「7+」长期均亏损；'
+        '「最近天天有大球」是基础率 × 场次数的必然，不是可押的规律。')
+
+# ---------- 内部记录：策略自检指标（不进公开报告，也不推 gh-pages） ----------
+try:
+    _idir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '_internal_strategy')
+    os.makedirs(_idir, exist_ok=True)
+    _ilines = [
+        f'# {TODAY} 策略自检（内部记录，不进公开报告）', '',
+        f'- 评级分布：{dist_desc}；最高 {top_star}★；信心池 {len(conf_pool_all)} 场，剔除高冷门风险 {len(_hi_risk)} 场，不足时回补 {len(_conf_backfill)} 场',
+        f'- 冷门信号场次：{cold_cnt}（凯利指数异常 / 排名与赔率背离 / 防平防冷等）',
+        f'- 场均总进球 λ：{lam_mean:.2f}；H2H 大球因子≥1.3x 偏大球，H2H 偏低偏闷平',
+        f'- 平均冷门概率：{_upset_mean:.1f}%；低/中/高风险 {_lvl.get("低",0)}/{_lvl.get("中",0)}/{_lvl.get("高",0)} 场；高风险 1/3 翻车率≈44% vs 低风险≈25%',
+        f'- 大比分观察：{_big_line or "无"}',
+        f'- 让球盘：概率≥50% 且置信度≥中 {len(_rq_val)} 场（{_rq_hit or "无"}）；概率达标但置信度低、判不可跟 {len(_rq_void)} 场。让球盘抽水约 13%，按概率给方向、不按赔率追价值',
+        f'- H2H 方向性调整：{dir_cnt} 场',
+        '- 伤病：多支球队伤病与战意已纳入逐场分析，核心球员缺阵影响强队战力',
+        '- 凯利指数：模型与市场方向背离的场次已在冷门列标注',
+        f'- 串关：方向 {parlay_dir_rows.count("<tr class=")} 组 / 比分 {parlay_rows.count("<tr class=")} 组，每组 {legs_per_group} 腿；比分串关仅彩票型展示（3 腿全中率 <1%）',
+    ]
+    with open(os.path.join(_idir, f'{TODAY}.md'), 'w', encoding='utf-8') as _f:
+        _f.write('\n'.join(_ilines) + '\n')
+except Exception:
+    pass
 
 strategy_sec = f'''
-<h2>六、核心策略与风险提示</h2>
-
-<div class="summary-grid">
-  <div class="summary-card"><h4>🎯 高信心场次</h4><p style="font-size:0.9rem;">本期最高评级 <strong style="color:var(--accent2);">{top_star}★</strong>（{dist_desc}），{hi_note}冷门信号普遍存在，串关按实际评级从严组串。</p></div>
-  <div class="summary-card"><h4>⚠️ 冷门预警场次</h4><p style="font-size:0.9rem;">共 <strong style="color:var(--accent3);">{cold_cnt}</strong> 场检测到冷门信号（凯利指数异常/排名与赔率背离等），组串时应回避或仅作博冷补充。</p></div>
-  <div class="summary-card"><h4>📊 大球概率</h4><p style="font-size:0.9rem;">本期场均总进球λ <strong>{lam_mean:.2f}</strong>；H2H大球因子≥1.3x的场次偏大球，H2H偏低的场次偏闷平。</p></div>
-  <div class="summary-card"><h4>🎲 冷门风险分布</h4><p style="font-size:0.9rem;">本期平均冷门概率 <strong style="color:var(--accent3);">{_upset_mean:.1f}%</strong>：低风险 <strong>{_lvl.get('低',0)}</strong> 场 · 中 <strong>{_lvl.get('中',0)}</strong> 场 · 高 <strong>{_lvl.get('高',0)}</strong> 场。<b>高风险场次已从信心串关中剔除</b>（时间外高风险 1/3 翻车率 ≈44% vs 低风险 ≈25%）。</p></div>
-  {_big_card}<div class="summary-card"><h4>⚖️ 让球盘方向</h4><p style="font-size:0.9rem;">让球盘联合校准后<b>最可能结果概率≥50%</b> 且置信度≥中 的场次 <strong style="color:var(--accent2);">{len(_rq_val)}</strong> 场{('：' + _rq_hit) if _rq_hit else ''}；另有 <strong>{len(_rq_void)}</strong> 场概率达标但<b>置信度低</b>（|让球|≥3 / 分歧&gt;25pp / 无1X2锚点）已判为不可跟。让球盘抽水约 13%，<b>按概率给方向、不按赔率追价值</b>，只作参考。</p></div>
-  <div class="summary-card"><h4>🔄 方向性调整</h4><p style="font-size:0.9rem;">本日 <strong style="color:var(--accent2);">{dir_cnt}</strong> 场应用了 H2H 方向性调整。</p></div>
-  <div class="summary-card"><h4>🚑 伤病影响</h4><p style="font-size:0.9rem;">多支球队的伤病与战意信息已纳入逐场分析，核心球员缺阵对强队战力影响显著，重点关注伤停卡片。</p></div>
-  <div class="summary-card"><h4>⚖️ 凯利指数</h4><p style="font-size:0.9rem;">部分场次赔率与模型预测存在偏差，模型与市场方向背离的场次已在冷门列标注，需谨慎对待。</p></div>
-</div>
+<h2>六、串关推荐与风险提示</h2>
 
 <div class="warning">
   <strong>风险提示：</strong>足球比赛存在较大不确定性，伤病、红牌、点球、VAR等因素均可能影响比赛结果。本报告基于历史数据和AI模型分析，仅供参考，不构成投注建议。请理性购彩，量力而行。
