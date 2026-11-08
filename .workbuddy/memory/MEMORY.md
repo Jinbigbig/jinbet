@@ -7,6 +7,7 @@
 
 ## 分支与推送
 - origin=SSH；只信 `git ls-remote`（本地 `origin/*` 恒滞后）；禁 force/GITHUB_TOKEN。
+- ⚠️ **本地 `master` 分支是个已分叉的死引用（11-08 `897636ae`，脚本只有 3334 行、无 `[变更判定]`），`git show master:update_odds_net.py` 会静默拿到旧脚本**；`git fetch origin master:master` 因 non-ff 被拒，无法快进。取正本一律用 `origin/master` 或 ls-remote 给的 SHA，绝不用裸 `master`。
 - gh-pages 被拒：`git rebase --no-fork-point <云端SHA>`（不带第二参数）；撞死→`reset --hard <云端SHA>`+`checkout <好提交> -- .`+单提交推；续跑须 `GIT_EDITOR=true`。
 - 推 master：`git worktree add --detach "C:/Users/Jin/_wt_master" <ls-remote SHA>`（须 C:/ 风格）→ 整文件 cp → `git add -- <单文件>` → commit → `push origin HEAD:refs/heads/master` → `worktree remove --force`。真实 diff 用普通 `git diff --stat`；`-c core.autocrlf=false` 会全树 LF/CRLF 噪声。
 - ⚠️ `reset --hard` 会删被跟踪的 root `_` 脚本与 league_data.json、抹掉 `.workbuddy/memory/` 未提交改动 → 先 `git tag -f backup_<日期>_pre`；记忆随当日 commit 入库。
