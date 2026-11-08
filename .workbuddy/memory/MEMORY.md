@@ -36,10 +36,10 @@ canonical=官方简称；缺映射补 `RESULT_TEAM_NAME_MAP`，别手工删。�
 - 红线 grep 公开页须空：`用户|你说|定调|目标函数|口径一致性|偏差归因|probe|χ²|Brier|argmax|McNemar`。
 
 ## 报告布局（11-08 定稿）
-- 章节序：总览/市场信心/逐场/预测汇总/联赛与杯赛形势/串关推荐与风险提示/动态校准/今日比分精选/大胆档。**第六节 9 张策略自检卡 11-08 起内部化**：只落 `_internal_strategy/<date>.md`（未跟踪、不发布），公开页只留风险提示+两张串关表+串关前日回顾。
+- 章节序：总览/市场信心/逐场/预测汇总/联赛与杯赛形势/串关推荐/动态校准/今日比分精选/大胆档。**第六节 9 张策略自检卡 11-08 起内部化**：只落 `_internal_strategy/<date>.md`（未跟踪、不发布），公开页只留两张串关表+串关前日回顾；风险提示免责条也已删。
 - 折叠唯一实现 `_fold(label,hint,body,cls,head_tag,open_)`，定义在 `_sub()` 之后、`deep_sec` 装配之前（否则 `match_card` NameError）。原生 `<details class="fold" data-fold>`，禁用 JS 也能展开；空内容不落块；CSS 在追加块末尾；`.fold-cta::after` 纯 CSS 切文字。⚠️ 不要全局展开/收起控制条（已删）；`FOLD_JS` 只留 beforeprint 全展开。
 - ① 每场卡片只常驻「卡头+队名+赔率」「🎯比分与方向预测」，中间 11 项合成一条 `mid_fold`；② 4.2~4.6 `_sub_table(fold=True)`，**4.1 常驻**（走 `_fold(open_=True)` 共用外壳，回顾条才落在区块内）；③ 第五节 h2 常驻、**13 个按联赛独立折叠**（`_fold_league_cards()` 用 div 栈切卡，联赛名上移为折叠头并删原 `<h4>`；已去 `.league-overview-grid` 外层，与 4.x 等宽）。
-- 所有前日回顾在装配层统一 `_wrap_recap()` 折叠（3 类渲染器/10 块）；它剥掉内容区自带重复标题、把日期并入折叠头。TOC `SKIP_TOC=/前日回顾|动态校准/`，目录项与滚动高亮拆两份列表；点目录项自动展开所在 `details.fold`，`spy()` 跳过 `offsetParent===null`。
+- 所有前日回顾在装配层统一 `_wrap_recap()` 折叠（3 类渲染器/10 块）；它剥掉内容区自带重复标题、把日期并入折叠头。TOC `SKIP_TOC=/前日回顾|动态校准|^(方向|比分)串关推荐$/`（14 项，第六节只留一个 h2），目录项与滚动高亮拆两份列表；点目录项自动展开所在 `details.fold`，`spy()` 跳过 `offsetParent===null`。
 - 11-08 说明段落全删：`_sub_table` 不渲染 note；四章说明、比分精选/大胆档前后说明、积分榜来源、回顾口径句、卡片让球分档句均删；`.league-src/.inj-src/.std-legend/.parlay-note` 用 CSS `display:none` 隐藏（56 处）。**保留**历史底蕴荣誉 notes、前日命中统计数字、`cmp-note/league-note/pred-note` 结论、`fold-hint`。
 - 4.2 表 9 列（去掉「可能进球(主)/(客)」；`_mode_h/_mode_a` 已删）：编号/主队/客队/预期进球(主/客)/比分预测/比分双档/±1球覆盖/Top3覆盖/可信度。
 - 回顶 `#backTop` 在 `TOC_BLOCK`/`FOLD_JS`（滚动>400px 显示、平滑、尊重 reduced-motion、打印隐藏）；`right:14px;bottom:22px` 与 `toc-toggle` 冲突 → ≤1399px `bottom:78px`，≥1400px 回 22px。

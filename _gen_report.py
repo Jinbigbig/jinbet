@@ -3581,11 +3581,7 @@ except Exception:
     pass
 
 strategy_sec = f'''
-<h2>六、串关推荐与风险提示</h2>
-
-<div class="warning">
-  <strong>风险提示：</strong>足球比赛存在较大不确定性，伤病、红牌、点球、VAR等因素均可能影响比赛结果。本报告基于历史数据和AI模型分析，仅供参考，不构成投注建议。请理性购彩，量力而行。
-</div>
+<h2>六、串关推荐</h2>
 
 <div class="parlay-section">
   <h3>方向串关推荐</h3>
@@ -4886,9 +4882,10 @@ TOC_BLOCK = '''
   var btn = document.getElementById('tocToggle');
   if (!nav || !list) return;
   var scope = document.querySelector('body > .container') || document.body;
-  // 目录只收主章节：前日回顾 · 明细折叠与动态校准 · 附录均不进目录；
-  // 滚动高亮仍按全量标题计算，命中被排除标题时回退到前一个已入目录标题。
-  var SKIP_TOC = /前日回顾|动态校准/;
+  // 目录只收主章节：前日回顾 · 明细折叠、动态校准 · 附录、串关表内两个子标题均不进目录
+  // （第六节只留「六、串关推荐」一项）；滚动高亮仍按全量标题计算，
+  // 命中被排除标题时回退到前一个已入目录标题。
+  var SKIP_TOC = /前日回顾|动态校准|^(方向|比分)串关推荐$/;
   var heads = [].filter.call(scope.querySelectorAll('h2, h3'), function (h) {
     return (h.textContent || '').trim().length > 0;
   });
