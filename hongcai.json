@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-08 12:09",
+ "updated": "2026-11-08 15:01",
  "date": "2026-11-08",
  "source": "网易红彩",
  "count": 30,
@@ -151,8 +151,8 @@
    "weather": {
     "name": "局部有云",
     "temperature": 18,
-    "humidity": 36,
-    "wind": 12,
+    "humidity": 35,
+    "wind": 8,
     "by_home": {
      "n": 6,
      "w": 4,
@@ -818,37 +818,37 @@
    },
    "range": {
     "home_total": {
-     "n": 34,
+     "n": 35,
      "w": 20,
      "d": 7,
-     "l": 7,
-     "gf": 61,
-     "ga": 30,
+     "l": 8,
+     "gf": 62,
+     "ga": 32,
      "rank": 1,
      "pts": 67,
-     "gd": 31
+     "gd": 30
     },
     "away_total": {
-     "n": 34,
-     "w": 16,
+     "n": 35,
+     "w": 17,
      "d": 6,
      "l": 12,
-     "gf": 54,
-     "ga": 48,
+     "gf": 56,
+     "ga": 49,
      "rank": 2,
-     "pts": 54,
-     "gd": 6
+     "pts": 57,
+     "gd": 7
     },
     "home_home": {
-     "n": 1,
+     "n": 2,
      "w": 0,
      "d": 0,
-     "l": 1,
-     "gf": 0,
-     "ga": 1,
-     "rank": 3,
+     "l": 2,
+     "gf": 1,
+     "ga": 3,
+     "rank": 4,
      "pts": 0,
-     "gd": -1
+     "gd": -2
     },
     "home_guest": {
      "n": 0,
@@ -857,7 +857,7 @@
      "l": 0,
      "gf": 0,
      "ga": 0,
-     "rank": 3,
+     "rank": 4,
      "pts": 0,
      "gd": 0
     },
@@ -873,37 +873,37 @@
      "gd": 1
     },
     "away_guest": {
-     "n": 0,
-     "w": 0,
+     "n": 1,
+     "w": 1,
      "d": 0,
      "l": 0,
-     "gf": 0,
-     "ga": 0,
-     "rank": 4,
-     "pts": 0,
-     "gd": 0
+     "gf": 2,
+     "ga": 1,
+     "rank": 1,
+     "pts": 3,
+     "gd": 1
     },
     "home": {
-     "n": 1,
+     "n": 2,
      "w": 0,
      "d": 0,
-     "l": 1,
-     "gf": 0,
-     "ga": 1,
-     "rank": 3,
-     "pts": 0,
-     "gd": -1
-    },
-    "away": {
-     "n": 0,
-     "w": 0,
-     "d": 0,
-     "l": 0,
-     "gf": 0,
-     "ga": 0,
+     "l": 2,
+     "gf": 1,
+     "ga": 3,
      "rank": 4,
      "pts": 0,
-     "gd": 0
+     "gd": -2
+    },
+    "away": {
+     "n": 1,
+     "w": 1,
+     "d": 0,
+     "l": 0,
+     "gf": 2,
+     "ga": 1,
+     "rank": 1,
+     "pts": 3,
+     "gd": 1
     }
    },
    "referee": null,
@@ -1328,7 +1328,7 @@
      "scored": [
       {
        "n": 8,
-       "pct": 13,
+       "pct": 12,
        "from": 1,
        "to": 15
       },
@@ -1346,19 +1346,19 @@
       },
       {
        "n": 21,
-       "pct": 34,
+       "pct": 33,
        "from": 46,
        "to": 60
       },
       {
-       "n": 6,
-       "pct": 9,
+       "n": 7,
+       "pct": 11,
        "from": 61,
        "to": 75
       },
       {
        "n": 13,
-       "pct": 21,
+       "pct": 20,
        "from": 76,
        "to": 90
       }
@@ -1366,37 +1366,37 @@
      "conceded": [
       {
        "n": 3,
-       "pct": 10,
+       "pct": 9,
        "from": 1,
        "to": 15
       },
       {
        "n": 4,
-       "pct": 13,
+       "pct": 12,
        "from": 16,
        "to": 30
       },
       {
-       "n": 3,
-       "pct": 10,
+       "n": 4,
+       "pct": 12,
        "from": 31,
        "to": 45
       },
       {
        "n": 4,
-       "pct": 13,
+       "pct": 12,
        "from": 46,
        "to": 60
       },
       {
        "n": 8,
-       "pct": 26,
+       "pct": 25,
        "from": 61,
        "to": 75
       },
       {
-       "n": 8,
-       "pct": 26,
+       "n": 9,
+       "pct": 28,
        "from": 76,
        "to": 90
       }
@@ -1417,14 +1417,14 @@
        "to": 30
       },
       {
-       "n": 7,
-       "pct": 12,
+       "n": 8,
+       "pct": 14,
        "from": 31,
        "to": 45
       },
       {
        "n": 10,
-       "pct": 18,
+       "pct": 17,
        "from": 46,
        "to": 60
       },
@@ -1435,8 +1435,8 @@
        "to": 75
       },
       {
-       "n": 13,
-       "pct": 24,
+       "n": 14,
+       "pct": 25,
        "from": 76,
        "to": 90
       }
@@ -1467,8 +1467,8 @@
        "to": 60
       },
       {
-       "n": 7,
-       "pct": 14,
+       "n": 8,
+       "pct": 16,
        "from": 61,
        "to": 75
       },
@@ -1674,8 +1674,8 @@
    "weather": {
     "name": "晴",
     "temperature": 23,
-    "humidity": 26,
-    "wind": 14,
+    "humidity": 23,
+    "wind": 15,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -2298,6 +2298,12 @@
     ],
     "guest": [
      {
+      "name": "因塞拉",
+      "position": "后卫",
+      "status": "out",
+      "state": "受伤"
+     },
+     {
       "name": "施林顿",
       "position": "后卫",
       "status": "suspended",
@@ -2453,7 +2459,7 @@
    "weather": {
     "name": "阴",
     "temperature": 17,
-    "humidity": 44,
+    "humidity": 45,
     "wind": 14,
     "by_home": {
      "n": 6,
@@ -3070,6 +3076,12 @@
       "state": "膝关节损伤"
      },
      {
+      "name": "荒木琉伟",
+      "position": "守门员",
+      "status": "out",
+      "state": "肘关节受伤"
+     },
+     {
       "name": "维尔顿",
       "position": "前锋",
       "status": "out",
@@ -3203,7 +3215,7 @@
      "l": 0,
      "gf": 0,
      "ga": 0,
-     "rank": 2,
+     "rank": 3,
      "pts": 1,
      "gd": 0
     },
@@ -3244,9 +3256,9 @@
    "referee": null,
    "weather": {
     "name": "多云有雨",
-    "temperature": 9,
+    "temperature": 8,
     "humidity": 75,
-    "wind": 4,
+    "wind": 1,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -4016,7 +4028,7 @@
    "weather": {
     "name": "局部有云",
     "temperature": 18,
-    "humidity": 65,
+    "humidity": 66,
     "wind": 7,
     "by_home": {
      "n": 6,
@@ -6410,7 +6422,7 @@
    "weather": {
     "name": "阴",
     "temperature": 9,
-    "humidity": 84,
+    "humidity": 83,
     "wind": 9,
     "by_home": {
      "n": 6,
@@ -7251,8 +7263,8 @@
    "weather": {
     "name": "多云有雨",
     "temperature": 5,
-    "humidity": 90,
-    "wind": 28,
+    "humidity": 91,
+    "wind": 27,
     "by_home": {
      "n": 6,
      "w": 6,
@@ -8069,8 +8081,8 @@
    "weather": {
     "name": "阴",
     "temperature": 10,
-    "humidity": 85,
-    "wind": 6,
+    "humidity": 86,
+    "wind": 7,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -8897,7 +8909,7 @@
    "weather": {
     "name": "阴",
     "temperature": 9,
-    "humidity": 84,
+    "humidity": 85,
     "wind": 7,
     "by_home": {
      "n": 6,
@@ -9695,8 +9707,8 @@
    "weather": {
     "name": "阴",
     "temperature": 9,
-    "humidity": 81,
-    "wind": 5,
+    "humidity": 82,
+    "wind": 6,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -10506,23 +10518,23 @@
     "by_away": null
    },
    "weather": {
-    "name": "晴",
+    "name": "局部有云",
     "temperature": 12,
-    "humidity": 69,
+    "humidity": 68,
     "wind": 6,
     "by_home": {
      "n": 6,
-     "w": 1,
-     "d": 1,
-     "l": 4,
-     "win_rate": 17
+     "w": 2,
+     "d": 2,
+     "l": 2,
+     "win_rate": 33
     },
     "by_away": {
      "n": 6,
-     "w": 3,
-     "d": 1,
+     "w": 2,
+     "d": 2,
      "l": 2,
-     "win_rate": 50
+     "win_rate": 33
     }
    },
    "dish": {
@@ -11333,23 +11345,23 @@
     }
    },
    "weather": {
-    "name": "阴",
+    "name": "局部有云",
     "temperature": 15,
-    "humidity": 66,
+    "humidity": 63,
     "wind": 9,
     "by_home": {
      "n": 6,
-     "w": 2,
-     "d": 4,
-     "l": 0,
-     "win_rate": 33
+     "w": 3,
+     "d": 0,
+     "l": 3,
+     "win_rate": 50
     },
     "by_away": {
      "n": 6,
-     "w": 1,
-     "d": 2,
+     "w": 3,
+     "d": 0,
      "l": 3,
-     "win_rate": 17
+     "win_rate": 50
     }
    },
    "dish": {
@@ -12146,8 +12158,8 @@
    "weather": {
     "name": "阴",
     "temperature": 10,
-    "humidity": 72,
-    "wind": 7,
+    "humidity": 73,
+    "wind": 6,
     "by_home": {
      "n": 6,
      "w": 4,
@@ -13797,7 +13809,7 @@
    "weather": {
     "name": "阴",
     "temperature": 2,
-    "humidity": 97,
+    "humidity": 96,
     "wind": 8,
     "by_home": {
      "n": 6,
@@ -14604,7 +14616,7 @@
     "name": "阴",
     "temperature": 8,
     "humidity": 95,
-    "wind": 12,
+    "wind": 13,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -15421,8 +15433,8 @@
    "weather": {
     "name": "局部有云",
     "temperature": 10,
-    "humidity": 74,
-    "wind": 9,
+    "humidity": 76,
+    "wind": 8,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -16029,8 +16041,8 @@
    "weather": {
     "name": "阴",
     "temperature": 8,
-    "humidity": 91,
-    "wind": 1,
+    "humidity": 90,
+    "wind": 3,
     "by_home": {
      "n": 6,
      "w": 4,
@@ -16866,7 +16878,7 @@
    "weather": {
     "name": "晴",
     "temperature": 7,
-    "humidity": 85,
+    "humidity": 84,
     "wind": 4,
     "by_home": {
      "n": 6,
@@ -19252,22 +19264,22 @@
    },
    "referee": null,
    "weather": {
-    "name": "阴",
+    "name": "阴有雨",
     "temperature": 19,
-    "humidity": 68,
-    "wind": 18,
+    "humidity": 66,
+    "wind": 17,
     "by_home": {
-     "n": 6,
-     "w": 2,
-     "d": 3,
+     "n": 4,
+     "w": 1,
+     "d": 2,
      "l": 1,
-     "win_rate": 33
+     "win_rate": 25
     },
     "by_away": {
-     "n": 6,
+     "n": 1,
      "w": 0,
-     "d": 3,
-     "l": 3,
+     "d": 0,
+     "l": 1,
      "win_rate": 0
     }
    },
@@ -20057,8 +20069,8 @@
    "weather": {
     "name": "多云有雨",
     "temperature": 18,
-    "humidity": 67,
-    "wind": 15,
+    "humidity": 69,
+    "wind": 16,
     "by_home": {
      "n": 6,
      "w": 3,
@@ -20854,23 +20866,23 @@
     }
    },
    "weather": {
-    "name": "阴",
+    "name": "局部有云",
     "temperature": 5,
     "humidity": 97,
     "wind": 4,
     "by_home": {
      "n": 6,
-     "w": 2,
-     "d": 2,
-     "l": 2,
-     "win_rate": 33
-    },
-    "by_away": {
-     "n": 6,
      "w": 3,
      "d": 0,
      "l": 3,
      "win_rate": 50
+    },
+    "by_away": {
+     "n": 6,
+     "w": 2,
+     "d": 1,
+     "l": 3,
+     "win_rate": 33
     }
    },
    "dish": {
@@ -21688,7 +21700,7 @@
    },
    "weather": {
     "name": "阴",
-    "temperature": 10,
+    "temperature": 11,
     "humidity": 88,
     "wind": 3,
     "by_home": {
@@ -23354,7 +23366,7 @@
     "name": "阴",
     "temperature": 15,
     "humidity": 71,
-    "wind": 7,
+    "wind": 8,
     "by_home": {
      "n": 6,
      "w": 2,
