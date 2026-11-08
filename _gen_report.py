@@ -3156,16 +3156,17 @@ def _sub(html):
     return f'<div class="sub-box">{txt}</div>' if txt else ''
 
 
-def _fold(label, hint, body, cls='', head_tag='h3'):
+def _fold(label, hint, body, cls='', head_tag='h3', open_=False):
     """统一折叠区：原生 <details>，禁用 JS 也能展开；空内容不落块。
 
     标题放进 summary 且保留 h3 语义，目录脚本扫描得到它；点目录项时会自动
     展开所在的 details，因此折叠不会让右侧目录失效。
+    open_=True 用于 4.1：常驻显示但仍套同一区块外壳，保证前日回顾落在区块内。
     """
     if not (body or '').strip():
         return ''
     tt = f'<h3>{label}</h3>' if head_tag == 'h3' else f'<b>{label}</b>'
-    return (f'<details class="fold {cls}" data-fold>'
+    return (f'<details class="fold {cls}" data-fold{" open" if open_ else ""}>'
             f'<summary class="fold-sum"><span class="fold-ico">▸</span>{tt}'
             f'<span class="fold-hint">{esc(hint)}</span>'
             f'<span class="fold-cta"></span></summary>'
@@ -3397,8 +3398,9 @@ def _sub_table(title, note, head, body, fold=False, hint=''):
              f'{_RECAP_MARK.get(title, "")}')
     if fold:
         return _fold(title, hint or f'{body.count("<tr")} 场明细 · 含前日回顾', inner)
-    return (f'<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">{title}</h3>\n'
-            + inner)
+    # 4.1 常驻显示，但套同一区块外壳（默认展开）：前日回顾落在区块内，
+    # 与 4.2~4.6 一样沿用 .fold-body 内的嵌套样式，不再漂在表格卡片外。
+    return _fold(title, hint or f'{body.count("<tr")} 场明细 · 含前日回顾', inner, open_=True)
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
