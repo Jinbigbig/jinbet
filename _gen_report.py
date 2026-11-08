@@ -379,10 +379,11 @@ CSS += '''
   .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
   .sit-item { display:inline-block; margin-right:0.6rem; }
   .sit-item b { color:var(--accent3,#e07a2f); }
-  /* 比赛时段天气（Open-Meteo）：正常灰、需留意橙、恶劣红 */
+  /* 比赛时段天气（Open-Meteo）：适宜淡绿、需留意橙、恶劣红 */
   .wx-chip { display:inline-block; margin-left:0.45rem; padding:0.06rem 0.42rem;
     border:1px solid rgba(0,0,0,0.1); border-radius:999px; background:rgba(0,0,0,0.03);
     font-size:0.72rem; line-height:1.5; color:var(--muted,#7a8ba0); white-space:nowrap; }
+  .wx-chip.wx-ok { color:#1f7a4d; border-color:rgba(46,160,90,0.32); background:rgba(46,160,90,0.13); }
   .wx-chip.wx-warn { color:#8a5a00; border-color:rgba(200,140,0,0.35); background:rgba(255,193,7,0.13); }
   .wx-chip.wx-bad { color:#a3252f; border-color:rgba(200,50,60,0.35); background:rgba(220,53,69,0.11); }
   /* 数据对比：六项核心指标的双向条（左主右客），只留势能差异 */
