@@ -52,6 +52,7 @@ canonical=官方简称（沃夫斯堡、布城、奥斯KFUM、卡塔尔23…）�
 - 第五节左积分榜右形势；积分榜完整表格常驻（禁色块/折叠），唯一渲染器 `std_table()`；外层单列，分栏只在卡内（`.lg-split` 1fr 1fr，≤900px 单列）。「关键线」「历史补跑说明」每赛事一次。
 - 榜源四级链：7M→腾讯 `qq_standings.json`（limit=50）→Fox `fox_standings.json`（SSR 正则 `<table id="live-standings-table-N">`，bifrost 恒 401）→UEFA `uefa_standings.json`（本机 timeout，用 WebFetch 落盘）。腾讯/Fox/UEFA 走 `std_league_card()`；分组赛 `std_group_card()` 只展开本日队小组；收官（场次齐平且≥3）不做名次模拟。腾讯赛事 ID：欧冠5/英超8/意甲21/德甲22/西甲23/法甲24。
 - ⚠️ **7M 榜全是港澳台译名**（飛燕諾/阿積士/阿仙奴/車路士/巴塞隆拿），且行内 `name`=繁体港译、`name_zh`=简体港译（飞燕诺/阿积士）；渲染层原优先读 name_zh → 只靠 difflib 匹配（繁简 0 相似）→ 排名大面积缺失、榜上显示港译。唯一归一处 `standings_alias.py::cn()`（11 联赛 200 队港译→大陆简称，幂等），三处必须都过：`_fetch_league_data` 落盘前、`_gen_report._std_teams`+`_qq_team`、`_build_today_extras` 读榜后。opencc 只能繁→简，解决不了港译人名。master 正本在 `tools/prediction/standings_alias.py`。
+- ⚠️ **7M 会把两段榜拼进同一组数组**（芬超：12 队先 22 轮常规赛再分组，`f_sds_tn` 给 24 项 = 25 轮总榜 + 22 轮常规赛榜），`parse_standing` 顺序编号 → 同队出现两次、名次排到 24、「高亮=本日参赛队」两处都亮。修法：按 `tid` 去重、保留 `p`（已赛场次）最多那行并重排名次（`_fetch_league_data.parse_standing`；master 同名补丁 `a67ac654`）。判据：`len(teams)==len({tid})`；正常联赛 12/16/18/20 行。
 - 第三节序：队名+排名 → 赔率三格 → 积分排名·赛事 → H2H 两卡 → 历史底蕴 → 历史交锋+近期战绩（始终并列）→ 伤停与赛前分析 → 冷门/让球 → 比分与方向。入口 `std_rows(lg)`/`std_of(team,lg)`。
 - 文案红线：不写「怎么看表」说明句；缺口用最短一句（`暂无交锋记录`）。窄屏 `@media(max-width:640px)` 用 `minmax(0,1fr)`。
 
