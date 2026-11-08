@@ -618,6 +618,8 @@ CSS += '''
   .fold-body details.fold.fold-recap { margin:0.5rem 0; border:0; background:none; }
   .fold-body details.fold.fold-recap > summary.fold-sum {
     border:1px dashed rgba(47,125,224,0.3); background:rgba(47,125,224,0.04); }
+  /* 第五节联赛折叠与 4.x 折叠条同层同宽，避免被内部宽表格撑出额外宽度 */
+  details.fold.fold-league { width:100%; box-sizing:border-box; min-width:0; }
   /* 纯来源 / 图例 / 口径标注一律不展示，只保留数据与结论 */
   .league-src, .inj-src, .std-legend, .parlay-note { display:none !important; }
   @media print {
@@ -3638,6 +3640,11 @@ def _fold_league_cards(sec):
     if cut < 0:
         return sec
     head, body = sec[:cut + 5], sec[cut + 5:]
+    # 联赛折叠条与 4.x 折叠条同层同宽：去掉多余的 league-overview-grid 包裹，
+    # 否则这层容器会带来额外边距，宽度与上面的折叠条对不齐。
+    body = body.replace('<div class="league-overview-grid">', '', 1).rstrip()
+    if body.endswith('</div>'):
+        body = body[:-len('</div>')]
     tag = '<div class="league-card">'
     out, pos, last = [head], 0, 0
     while True:
@@ -3664,7 +3671,7 @@ def _fold_league_cards(sec):
                 inner = inner[:h4a] + inner[h4b + 5:]
         if label:
             out.append(_fold(label, '', inner.strip(),
-                             cls='fold-league league-card', head_tag='b'))
+                             cls='fold-league', head_tag='b'))
         else:
             out.append(f'{tag}{inner}</div>')
         last = end + len('</div>')

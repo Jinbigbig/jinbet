@@ -441,6 +441,8 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   .fold-body details.fold.fold-recap { margin:0.5rem 0; border:0; background:none; }
   .fold-body details.fold.fold-recap > summary.fold-sum {
     border:1px dashed rgba(47,125,224,0.3); background:rgba(47,125,224,0.04); }
+  /* 第五节联赛折叠与 4.x 折叠条同层同宽，避免被内部宽表格撑出额外宽度 */
+  details.fold.fold-league { width:100%; box-sizing:border-box; min-width:0; }
   /* 纯来源 / 图例 / 口径标注一律不展示，只保留数据与结论 */
   .league-src, .inj-src, .std-legend, .parlay-note { display:none !important; }
   @media print {
@@ -455,7 +457,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-11-08 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 30场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-11-08 23:23 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-11-08 23:32 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -2519,9 +2521,9 @@ window.addEventListener('resize', function() { chart.resize(); });
 
 <h2>五、当日赛事联赛与杯赛形势</h2>
 
-<div class="league-overview-grid">
+
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>日职 <span class="h4-sub">· 2026-2027 日本职业联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:38:10 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>日职 <span class="h4-sub">· 2026-2027 日本职业联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:38:10 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2565,7 +2567,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>韩职 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· K 联赛 1 2026 · 第 31 轮</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">积分榜来源：WhenIsTheMatch（API-Football 数据，更新至 2026-09-24）/ SoccerStatsHub ｜ 赛程与赔率：网易彩票 ｜ 赛制：韩国职业足球联盟</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>韩职 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· K 联赛 1 2026 · 第 31 轮</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">积分榜来源：WhenIsTheMatch（API-Football 数据，更新至 2026-09-24）/ SoccerStatsHub ｜ 赛程与赔率：网易彩票 ｜ 赛制：韩国职业足球联盟</div>
     <ul style="margin:0.35rem 0 0.7rem;padding-left:1.15rem;font-size:0.82rem;line-height:1.8;"><li>12 队三循环共 33 轮常规赛；常规赛结束后前 6 名进入争冠组（Final A）、后 6 名进入保级组（Final B），各再打 5 轮。</li><li>冠军与亚冠精英联赛资格由 Final A 最终排名决定；Final B 末位直接降级，倒数第二参加升降级附加赛。</li><li>本日 周日001 江原FC（第 5，29 战 42 分）主场对阵仁川联（第 9，29 战 38 分），为争冠组席位的直接卡位战。</li></ul>
     <div style="margin-top:0.55rem;"><div class="impact-title">K 联赛 1 积分榜（截至 2026-09-24） 积分榜</div>
       <table class="league-tbl standings">
@@ -2603,10 +2605,10 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>澳超</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><p class="league-note">7M、腾讯体育、Fox Sports、UEFA 官方四个来源都未收录该赛事积分榜，本节跳过排名与形势分析。</p></div></details>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>澳超</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><p class="league-note">7M、腾讯体育、Fox Sports、UEFA 官方四个来源都未收录该赛事积分榜，本节跳过排名与形势分析。</p></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>意甲 <span class="h4-sub">· 2026-2027 意大利甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:25:20 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>意甲 <span class="h4-sub">· 2026-2027 意大利甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:25:20 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2676,7 +2678,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>西甲 <span class="h4-sub">· 2026-2027 西班牙甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:33:44 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>西甲 <span class="h4-sub">· 2026-2027 西班牙甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:33:44 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2746,7 +2748,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>芬超 <span class="h4-sub">· 2026 芬兰超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/9/30 4:56:08 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>芬超 <span class="h4-sub">· 2026 芬兰超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/9/30 4:56:08 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2784,7 +2786,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>荷甲 <span class="h4-sub">· 2026-2027 荷兰甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:37:07 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>荷甲 <span class="h4-sub">· 2026-2027 荷兰甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:37:07 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2834,7 +2836,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>挪超 <span class="h4-sub">· 2026 挪威超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:39:17 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>挪超 <span class="h4-sub">· 2026 挪威超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:39:17 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2876,7 +2878,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>英超 <span class="h4-sub">· 2026-2027 英格兰超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:34:50 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>英超 <span class="h4-sub">· 2026-2027 英格兰超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:34:50 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2940,7 +2942,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>德甲 <span class="h4-sub">· 2026-2027 德国甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:25:54 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>德甲 <span class="h4-sub">· 2026-2027 德国甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:25:54 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -2996,7 +2998,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>瑞超 <span class="h4-sub">· 2026 瑞典超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:38:46 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>瑞超 <span class="h4-sub">· 2026 瑞典超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:38:46 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -3038,7 +3040,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>法甲 <span class="h4-sub">· 2026-2027 法国甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:35:26 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>法甲 <span class="h4-sub">· 2026-2027 法国甲组联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 6:35:26 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -3088,7 +3090,7 @@ window.addEventListener('resize', function() { chart.resize(); });
     </div></div></details>
 
   
-<details class="fold fold-league league-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>葡超 <span class="h4-sub">· 2026-2027 葡萄牙超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 13:35:38 ｜ 来源 7M 体育数据库</div>
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>葡超 <span class="h4-sub">· 2026-2027 葡萄牙超级联赛</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">数据更新：2026/11/8 13:35:38 ｜ 来源 7M 体育数据库</div>
     <div class="lg-split">
       <div class="lg-col">
         <div class="col-h">积分榜</div>
@@ -3131,7 +3133,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       </div>
     </div></div></details>
 
-</div>
+
 
 <h2>六、核心策略与风险提示</h2>
 
