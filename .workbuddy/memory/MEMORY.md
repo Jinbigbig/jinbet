@@ -50,7 +50,10 @@ canonical=官方简称（沃夫斯堡、布城、奥斯KFUM、卡塔尔23…）�
 ## 报告布局（10-22 定稿）
 - 章节序：总览/市场信心/逐场/预测汇总/联赛与杯赛形势/核心策略与风险提示/动态校准/今日比分精选/大胆档。
 - 第五节左积分榜右形势；积分榜仍完整保留（唯一渲染器 `std_table()`），但 **11-08 起整节正文默认折叠**（用户新指令覆盖旧「禁折叠」约定，展开后表格原样）。外层单列，分栏只在卡内（`.lg-split` 1fr 1fr，≤900px 单列）。「关键线」「历史补跑说明」每赛事一次。
-- **折叠唯一实现 `_fold(label,hint,body,cls,head_tag)`**：定义在 `_sub()` 之后、`deep_sec` 装配之前（否则 `match_card` 调用时 NameError）。原生 `<details class="fold" data-fold>`，禁用 JS 也能展开；空内容不落块。CSS 在追加块末尾；`.fold-cta::after` 纯 CSS 切「展开/收起」文字。全局控制条 `#foldAll/#foldNone` + `FOLD_JS`（含 beforeprint 全展开）。
+- **折叠唯一实现 `_fold(label,hint,body,cls,head_tag)`**：定义在 `_sub()` 之后、`deep_sec` 装配之前（否则 `match_card` 调用时 NameError）。原生 `<details class="fold" data-fold>`，禁用 JS 也能展开；空内容不落块。CSS 在追加块末尾；`.fold-cta::after` 纯 CSS 切「展开/收起」文字。⚠️ **11-08 用户明确不要全局「全部展开/收起」控制条**（`#foldAll/#foldNone`/`fold-bar` 已全删），`FOLD_JS` 只保留 beforeprint 打印前全展开；只留各区块自己的展开按钮。
+- **11-08 说明段落全部去除**（用户「不需要说明描述，都检查一下，都不需要」）：`_sub_table` 不再渲染 `note` 段（一处覆盖 4.1~4.6）；四章章节说明、比分精选/大胆档表前表后说明、第五节积分榜来源、前日回顾的口径解释句、卡片让球分档说明句均删。纯来源/图例/注类小标注（`.league-src/.inj-src/.std-legend/.parlay-note`，共 56 处）用 CSS `display:none` 统一隐藏。**保留**：历史底蕴荣誉 notes（11 段数据）、前日回顾命中统计（10 段数字）、`cmp-note`/`league-note`/`pred-note` 结论、`fold-hint` 折叠条提示。
+- **4.2 比分预测表 11-08 起 9 列**（去掉「可能进球(主)/(客)」两列，`_mode_h/_mode_a` 变量已删），表头=编号/主队/客队/预期进球(主/客)/比分预测/比分双档/±1球覆盖/Top3覆盖/可信度。
+- **返回顶部按钮** `#backTop`：CSS/HTML/JS 都在 `TOC_BLOCK`/`FOLD_JS`（右下角圆形，滚动>400px 才显示，平滑回顶，尊重 reduced-motion，打印隐藏）。⚠️ `right:14px;bottom:22px` 被 `toc-toggle` 占用 → ≤1399px 时 `bottom:78px` 叠在目录按钮上方，≥1400px（目录按钮隐藏）自动落回 22px。
 - 三层折叠：① 每场卡片只常驻「卡头+队名+赔率」与「🎯比分与方向预测」两块，中间 11 项（排名/H2H两卡/底蕴/交锋/战绩/红彩4块/伤停/冷门/让球）按原序合成一条 `mid_fold`（用户截图指定的形态）；② `_sub_table(..., fold=True)` 用于 4.2~4.6，**4.1 常驻**；③ 第五节 h2 常驻、正文折叠。**所有前日回顾在装配层统一走 `_wrap_recap()` 折叠**（3 类渲染器 / 10 个块），嵌套在汇总表折叠内时用 `.fold-body details.fold.fold-recap` 去外框。
 - TOC 联动：点目录项自动展开所在 `details.fold`；`spy()` 跳过 `offsetParent===null` 的隐藏标题，避免高亮到折叠内项。
 - ⚠️ 折叠只减可见高度、不减文件体积（817KB→834KB，多 17KB 是折叠壳）；判据用「可见区是否还有回顾表格」而不是文件大小。

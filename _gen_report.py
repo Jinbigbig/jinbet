@@ -606,18 +606,9 @@ CSS += '''
   details.fold.fold-card { margin:0.55rem 0; }
   details.fold.fold-card > summary.fold-sum { padding:0.38rem 0.65rem; }
   .fold-body .sub-box { margin-bottom:0.5rem; }
-  .fold-bar { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;
-    margin:0.85rem 0 0.3rem; padding:0.55rem 0.75rem; border-radius:9px;
-    background:rgba(47,125,224,0.055); border:1px solid rgba(47,125,224,0.18); }
-  .fold-bar button { font:inherit; font-size:0.76rem; font-weight:600; cursor:pointer;
-    padding:0.32rem 0.85rem; border-radius:6px; border:1px solid rgba(47,125,224,0.4);
-    background:#fff; color:var(--accent,#2f7de0); }
-  .fold-bar button:hover { background:rgba(47,125,224,0.1); }
-  .fold-bar .fold-stat { font-size:0.73rem; color:var(--muted,#7a8ba0); margin-left:auto; }
   @media (max-width: 640px) {
     details.fold > summary.fold-sum { flex-wrap:wrap; padding:0.45rem 0.6rem; }
     .fold-hint { flex:1 1 100%; order:3; }
-    .fold-bar .fold-stat { flex:1 1 100%; margin-left:0; }
   }
   /* 前日回顾用中性灰与主折叠区分；嵌在汇总表折叠内时去掉第二道外框 */
   details.fold.fold-recap { margin:0.7rem 0; border-color:rgba(128,128,128,0.24);
@@ -626,8 +617,10 @@ CSS += '''
   .fold-body details.fold.fold-recap { margin:0.5rem 0; border:0; background:none; }
   .fold-body details.fold.fold-recap > summary.fold-sum {
     border:1px dashed rgba(47,125,224,0.3); background:rgba(47,125,224,0.04); }
+  /* 纯来源 / 图例 / 口径标注一律不展示，只保留数据与结论 */
+  .league-src, .inj-src, .std-legend, .parlay-note { display:none !important; }
   @media print {
-    .fold-bar, details.fold > summary.fold-sum .fold-cta { display:none; }
+    details.fold > summary.fold-sum .fold-cta { display:none; }
   }
 </style>'''
 # 第五节已改为按当日实际联赛动态生成（见 build_league_sec），不再回收旧报告静态段落
@@ -1248,9 +1241,6 @@ def build_league_sec(matches):
     for m in matches:
         grouped.setdefault(m.get('league') or '未知', []).append(m)
     out = ['<h2>五、当日赛事联赛与杯赛形势</h2>',
-           '<p style="font-size:0.85rem;color:var(--muted);margin:0 0 0.8rem;">'
-           '积分榜来源：<b>7M 体育数据库</b>（各国联赛）、<b>腾讯体育</b>（欧冠）、'
-           '<b>Fox Sports</b>（解放者杯、欧罗巴）、<b>UEFA 官方</b>（欧协联）。</p>',
            '<div class="league-overview-grid">']
     for lg, ms in grouped.items():
         out.append('  <div class="league-card">')
@@ -2752,7 +2742,7 @@ def rq_block(m):
     <b>最可能结果：</b><span class="tag {'tag-green' if b['prob'] >= 50 and rq['conf'] != '低' else ('tag-yellow' if b['prob'] >= 42 else 'tag-blue')}">{esc(b['pick'])} @{esc(b['odds'])}</span>
     校准概率 <strong>{b['prob']:.1f}%</strong>（EV {b['ev']:.2f}，仅参考不参与排序），
     模型−市场分歧 {rq['calibrated'][b['key']]-rq['market'][b['key']]:+.1f}pp。
-    <span style="color:var(--muted);">让球可信度分档：<b>校准概率≥50% 且置信≥中 可用</b>、<b>≥42% 慎用</b>、<b>其余别跟</b>；本场 <span class="tag {_gc}">{_gt}</span>。让球盘抽水约 13%，长期无正边际，只作方向参考。</span>{warn_html}
+    本场让球 <span class="tag {_gc}">{_gt}</span>。{warn_html}
   </p>
 '''
 
@@ -3370,13 +3360,9 @@ for m in MATCHES:
                    + '</td>')
         else:
             _c2 = '<td style="text-align:center;color:var(--muted);">—</td>'
-        _mode_h = (f'<td style="text-align:center;white-space:nowrap;"><b>{sp["home_mode"]}</b> 球'
-                   f' {_conf_tag(sp["home_mode_p"], 0)}</td>')
-        _mode_a = (f'<td style="text-align:center;white-space:nowrap;"><b>{sp["away_mode"]}</b> 球'
-                   f' {_conf_tag(sp["away_mode_p"], 0)}</td>')
         rowsC += (f'<tr>{num_cell}{pair}'
                   f'<td style="font-family:monospace;white-space:nowrap;">{sp["lam_h"]:.2f} / {sp["lam_a"]:.2f}</td>'
-                  f'{_mode_h}{_mode_a}{_c1}{_c2}'
+                  f'{_c1}{_c2}'
                   f'<td>{_conf_tag(sp["cover1"], 0)}</td>'
                   f'<td>{_conf_tag(sp["top3"], 0)}</td>'
                   f'<td><span class="tag {_bcc}">{_bct}</span></td></tr>')
@@ -3405,8 +3391,7 @@ _RECAP_MARK = {
 
 
 def _sub_table(title, note, head, body, fold=False, hint=''):
-    inner = (f'<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">{note}</p>\n'
-             f'<div class="card"><div class="table-wrap"><table>\n'
+    inner = (f'<div class="card"><div class="table-wrap"><table>\n'
              f'  <thead><tr>{head}</tr></thead>\n  <tbody>{body}</tbody>\n'
              f'</table></div></div>\n'
              f'{_RECAP_MARK.get(title, "")}')
@@ -3417,14 +3402,10 @@ def _sub_table(title, note, head, body, fold=False, hint=''):
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
-<p style="font-size:0.85rem;color:var(--muted);">三块口径各自独立计算，互不引用：<b>4.1 胜负</b>（方向三率 + 让球盘）、
-<b>4.2 比分</b>（双方进球数联合分布，给出两队各进几球与前两个可能比分）、<b>4.3 进球总量</b>（λ 泊松累加）。<b>比分预测</b> = 综合比分盘定价与模型分布选出的首选比分（与逐场卡片一致；该比分与 4.1 的方向倾向可能不同象限，卡片会单独标注）；<b>比分双档</b> = 除首选外概率最高的两个比分（两者可能不同象限）。
-单比分是 31 格划分里的一个单点，长期命中率约 <b>15%</b>，不同场次差别很大 —— 要容错就看 <b>±1球覆盖</b>；
-只想跟方向，就只看 4.1 的倾向与方向可信度。</p>
 {_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>备选方向</b> = 三率第二高者，方向可信度未达「可用」（最高率 &lt;50%）时并列给出 —— 这类场次首选与次选合看明显高于只看首选。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>校准概率≥50% 且置信度≥中 可用</b>、<b>≥42% 慎用</b>、<b>其余别跟</b>（小字为最可能结果、概率与置信度）。',
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>备选方向</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
-{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
-'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC, fold=True) if rowsC else ''}
+{_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
+'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC, fold=True) if rowsC else ''}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，半场 λ 按全场 45% 折算，列出概率最高的组合与次选。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th>', rowsB, fold=True)}
 {market_dev_section(MATCHES)}
@@ -3731,13 +3712,6 @@ for _ti, _tier in enumerate(_pk_tier_list, 1):
 picks_sec = f'''
 <h2>🎯 今日比分精选</h2>
 <div class="card">
-  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
-    下表列出今日最值得跟的比分：先按模型把握度分档，<b>每档内按比赛编号排列</b>。<b>第一档 {TIER_PK} 场（准确率优先）</b>，
-    当日比赛越多则按倍数增档（今日 {len(MATCHES)} 场 → {len(_pk_t)} 档、共 {len(_picks)} 场）。
-    单比分全场次平均命中约 <b>15%</b>、双档约 <b>20%</b>、±1 球覆盖约 <b>67%</b>；
-    把握度高的场次命中率明显更高，因此跟单场比分只看这几场，其余场次请看方向与总进球倾向。
-    本榜与下方「🔥 大胆档」各自独立成榜、同一场次不会重复出现。
-  </p>
   <div class="table-wrap">
     <table class="pick-tbl">
       <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
@@ -3745,11 +3719,6 @@ picks_sec = f'''
       <tbody>{_rows_pk}</tbody>
     </table>
   </div>
-  <p style="font-size:0.76rem;color:var(--muted);margin-top:0.55rem;">
-    入榜依据 = 模型给「命中比分」的概率；λ总 = 该场总进球期望；档内按比赛编号排列。
-    可信度越高 = 该场按同档 λ 的历史实测命中率越高，越值得跟。
-    {_cold_note}
-  </p>
 <!--RECAP_PICKS-->
 </div>
 '''
@@ -3798,15 +3767,6 @@ for _ti, _tier in enumerate(_bd_tier_list, 1):
 bold_sec = f'''
 <h2>🔥 大胆档</h2>
 <div class="card">
-  <p style="font-size:0.86rem;color:var(--muted);margin-bottom:0.7rem;">
-    头条比分是分布里的单个最高格，进球数必然偏小。下表是<b>独立于比分精选的另一块榜单</b>
-    （两榜不重复同一场比赛，已进入比分精选的场次不再出现在这里），
-    挑出模型给出<b>高置信进攻结果</b>的场次（<b>第一档 {TIER_BD} 场</b>，
-    当日比赛越多则按倍数增档，今日 {len(MATCHES)} 场 → {len(_bd_t)} 档、共 {len(_bold)} 场），
-    另给两档进攻型参考：<b>量级档</b>（该场按进攻量级最可能的比分）、
-    <b>极限档</b>（同倾向下总进球再上一档）。这两档赔率明显更高、命中率低于头条——
-    想搏赔率看这里，跟单仍以稳档为准。档内按比赛编号排列。
-  </p>
   <div class="table-wrap">
     <table class="pick-tbl bold-tbl">
       <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>稳档（头条）</th>
@@ -4001,7 +3961,7 @@ def _build_recap():
         f'<th>双档（概率）</th><th>实际</th><th>结果</th></tr></thead>\n'
         f'<tbody>{rows_pk}</tbody></table></div>\n'
         f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{_summ_pk}。'
-        f'命中 = 实际比分等于预测「命中比分」；双档命中也算命中，概率为上次预测值。</p>'
+        f'</p>'
         if rows_pk else
         f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">📅 前日回顾：{y} 无比分精选场次。</p>')
     _bold = (
@@ -4012,7 +3972,7 @@ def _build_recap():
         f'<th>极限档（概率）</th><th>实际</th><th>结果</th></tr></thead>\n'
         f'<tbody>{rows_bd}</tbody></table></div>\n'
         f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{_summ_bd}。'
-        f'命中 = 实际比分等于「量级档」或「极限档」，概率为上次预测值。</p>'
+        f'</p>'
         if rows_bd else
         f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">📅 前日回顾：{y} 无大胆档场次。</p>')
     return _picks, _bold
@@ -4064,7 +4024,7 @@ def _recap_block(y, label, head, rows, summary, note):
             f'📅 前日回顾（{y} {label}落地）</p>\n'
             f'<div class="table-wrap"><table>\n'
             f'<thead><tr>{head}</tr></thead>\n<tbody>{rows}</tbody></table></div>\n'
-            f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{summary}。{note}</p>')
+            f'<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">{summary}。</p>')
 
 
 def _mtag(m):
@@ -4811,6 +4771,21 @@ TOC_BLOCK = '''
     display: flex; align-items: center; justify-content: center;
   }
   .toc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 59; }
+  /* 返回顶部：与目录按钮同侧堆叠，避开已被 toc-toggle 占用的 bottom:22px */
+  .back-top {
+    position: fixed; right: 14px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid currentColor; background: #fff; color: var(--accent, #e63946);
+    cursor: pointer; z-index: 62; box-shadow: 0 4px 14px rgba(0,0,0,0.16);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    opacity: 0; visibility: hidden; transform: translateY(8px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  }
+  .back-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .back-top:hover { background: rgba(230,57,70,0.08); }
+  .bt-ico { font-size: 1.02rem; font-weight: 700; line-height: 1; }
+  .bt-txt { font-size: 0.56rem; line-height: 1; letter-spacing: 0.04em; }
+  @media (max-width: 1399px) { .back-top { bottom: 78px; } }
+  @media print { .back-top { display: none !important; } }
   @media (min-width: 1400px) { .toc-toggle { display: none; } }
   @media (max-width: 1399px) {
     .toc-nav {
@@ -4826,6 +4801,7 @@ TOC_BLOCK = '''
   <ul class="toc-list" id="tocList"></ul>
 </nav>
 <button id="tocToggle" class="toc-toggle" type="button" aria-label="打开章节目录" aria-expanded="false">&#9776;</button>
+<button id="backTop" class="back-top" type="button" aria-label="返回顶部" title="返回顶部"><span class="bt-ico">&#8593;</span><span class="bt-txt">顶部</span></button>
 <script>
 (function () {
   var nav = document.getElementById('tocNav');
@@ -4918,19 +4894,32 @@ TOC_BLOCK = '''
 FOLD_JS = '''<script>
 (function () {
   var ds = [].slice.call(document.querySelectorAll('details.fold[data-fold]'));
-  function sync() {
-    var n = ds.filter(function (d) { return d.open; }).length;
-    var s = document.getElementById('foldStat');
-    if (s) s.textContent = '可折叠区块 ' + ds.length + ' 个 · 已展开 ' + n + ' 个';
+  // 打印前展开所有折叠，避免纸面缺内容
+  window.addEventListener('beforeprint', function () {
+    ds.forEach(function (d) { d.open = true; });
+  });
+})();
+(function () {
+  var b = document.getElementById('backTop');
+  if (!b) return;
+  var queued = false;
+  function upd() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    b.classList.toggle('show', y > 400);
+    queued = false;
   }
-  function setAll(v) { ds.forEach(function (d) { d.open = v; }); sync(); }
-  var a = document.getElementById('foldAll'), b = document.getElementById('foldNone');
-  if (a) a.addEventListener('click', function () { setAll(true); });
-  if (b) b.addEventListener('click', function () { setAll(false); });
-  ds.forEach(function (d) { d.addEventListener('toggle', sync); });
-  // 打印前全部展开，避免纸面缺内容
-  window.addEventListener('beforeprint', function () { setAll(true); });
-  sync();
+  window.addEventListener('scroll', function () {
+    if (queued) return;
+    queued = true;
+    if (window.requestAnimationFrame) window.requestAnimationFrame(upd);
+    else upd();
+  }, { passive: true });
+  b.addEventListener('click', function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); }
+    catch (e) { window.scrollTo(0, 0); }
+  });
+  upd();
 })();
 </script>'''
 
@@ -4958,12 +4947,6 @@ page = f'''<!DOCTYPE html>
 </div>
 
 <div class="container">
-
-<div class="fold-bar">
-  <button type="button" id="foldAll">全部展开</button>
-  <button type="button" id="foldNone">全部收起</button>
-  <span class="fold-stat" id="foldStat"></span>
-</div>
 
 {picks_sec}
 {bold_sec}
