@@ -129,6 +129,10 @@ TEAM_CITY = {
     '克里斯蒂': 'Kristiansund', '福图纳': 'Sittard', '代格福什': 'Degerfors',
     '阿尔维卡': 'Alverca do Ribatejo', '米竞技': 'Belo Horizonte',
     '盐湖城': 'Salt Lake City',
+    # 2026-11-08 补充：澳超/韩K/芬超/挪超/意甲/瑞超/法甲/德甲缺失映射
+    '阿德莱德': 'Adelaide', '江原FC': 'Chuncheon', '库奥皮奥': 'Kuopio',
+    '特罗姆瑟': 'Tromso', '蒙扎': 'Monza', '索尔纳': 'Solna',
+    '勒芒': 'Le Mans', '弗赖堡': 'Freiburg', '国际米兰': 'Milan',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
