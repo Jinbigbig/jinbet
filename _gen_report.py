@@ -580,6 +580,55 @@ CSS += '''
     .h2h-col { padding:0.45rem 0.6rem; }
     tr.h2h-grp td { font-size:0.68rem; }
   }
+  /* ---------- 折叠区：原生 details，禁用 JS 也能正常展开 ---------- */
+  details.fold { margin:0.8rem 0; border:1px solid rgba(47,125,224,0.24); border-radius:10px;
+    background:rgba(47,125,224,0.035); }
+  details.fold > summary.fold-sum { display:flex; align-items:center; gap:0.5rem;
+    cursor:pointer; list-style:none; user-select:none; padding:0.55rem 0.8rem;
+    font-size:0.84rem; color:var(--ink,#1a1a2e); border-radius:10px; }
+  details.fold > summary.fold-sum::-webkit-details-marker { display:none; }
+  details.fold > summary.fold-sum:hover { background:rgba(47,125,224,0.09); }
+  details.fold > summary.fold-sum h3 { margin:0; font-size:0.94rem; font-weight:700;
+    color:var(--accent,#2f7de0); }
+  details.fold > summary.fold-sum b { font-size:0.82rem; }
+  .fold-ico { flex:0 0 auto; color:var(--accent,#2f7de0); font-size:0.78rem;
+    transition:transform .15s ease; }
+  details.fold[open] > summary.fold-sum .fold-ico { transform:rotate(90deg); }
+  .fold-hint { flex:1 1 auto; min-width:0; font-size:0.73rem; font-weight:400;
+    color:var(--muted,#7a8ba0); }
+  .fold-cta { flex:0 0 auto; font-size:0; background:var(--accent,#2f7de0); color:#fff;
+    padding:0.18rem 0.62rem; border-radius:999px; }
+  .fold-cta::after { content:'展开'; font-size:0.72rem; font-weight:600; }
+  details.fold[open] > summary.fold-sum .fold-cta { background:var(--muted,#7a8ba0); }
+  details.fold[open] > summary.fold-sum .fold-cta::after { content:'收起'; }
+  .fold-body { padding:0.35rem 0.8rem 0.8rem; border-top:1px solid rgba(47,125,224,0.16); }
+  .fold-body > p:first-child { margin-top:0.5rem; }
+  details.fold.fold-card { margin:0.55rem 0; }
+  details.fold.fold-card > summary.fold-sum { padding:0.38rem 0.65rem; }
+  .fold-body .sub-box { margin-bottom:0.5rem; }
+  .fold-bar { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;
+    margin:0.85rem 0 0.3rem; padding:0.55rem 0.75rem; border-radius:9px;
+    background:rgba(47,125,224,0.055); border:1px solid rgba(47,125,224,0.18); }
+  .fold-bar button { font:inherit; font-size:0.76rem; font-weight:600; cursor:pointer;
+    padding:0.32rem 0.85rem; border-radius:6px; border:1px solid rgba(47,125,224,0.4);
+    background:#fff; color:var(--accent,#2f7de0); }
+  .fold-bar button:hover { background:rgba(47,125,224,0.1); }
+  .fold-bar .fold-stat { font-size:0.73rem; color:var(--muted,#7a8ba0); margin-left:auto; }
+  @media (max-width: 640px) {
+    details.fold > summary.fold-sum { flex-wrap:wrap; padding:0.45rem 0.6rem; }
+    .fold-hint { flex:1 1 100%; order:3; }
+    .fold-bar .fold-stat { flex:1 1 100%; margin-left:0; }
+  }
+  /* 前日回顾用中性灰与主折叠区分；嵌在汇总表折叠内时去掉第二道外框 */
+  details.fold.fold-recap { margin:0.7rem 0; border-color:rgba(128,128,128,0.24);
+    background:rgba(128,128,128,0.04); }
+  details.fold.fold-recap > summary.fold-sum b { color:var(--accent,#2f7de0); }
+  .fold-body details.fold.fold-recap { margin:0.5rem 0; border:0; background:none; }
+  .fold-body details.fold.fold-recap > summary.fold-sum {
+    border:1px dashed rgba(47,125,224,0.3); background:rgba(47,125,224,0.04); }
+  @media print {
+    .fold-bar, details.fold > summary.fold-sum .fold-cta { display:none; }
+  }
 </style>'''
 # 第五节已改为按当日实际联赛动态生成（见 build_league_sec），不再回收旧报告静态段落
 
@@ -2761,7 +2810,7 @@ def upset_table():
         '实测各档方向命中 <b>37.5% / 49.5% / 50.4% / 60.4% / 74.4%</b>（★ 越多越确定）。'
         '两者互补：上表<b>预测</b>风险，星级直接<b>读</b>方向确定性。',
         '<th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th>'
-        '<th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th>', body)
+        '<th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th>', body, fold=True)
 
 
 BIG_CLS = {'高': 'tag-red', '中': 'tag-yellow', '低': 'tag-blue'}
@@ -2808,7 +2857,7 @@ def big_goals_table():
         '<b>所以本表只用于「哪场最像」，不构成投注建议</b>；要参与请只当小注娱乐。',
         '<th>编号</th><th>主队</th><th>客队</th><th>市场隐含P(6+)</th><th>校准P(6+)</th>'
         '<th>校准P(7+)</th><th>其中正好6球</th><th>6档赔率</th><th>7+档赔率</th>'
-        '<th>校准EV(7+)</th><th>等级</th>', body)
+        '<th>校准EV(7+)</th><th>等级</th>', body, fold=True)
 
 
 def market_dev_section(matches):
@@ -2852,7 +2901,7 @@ def market_dev_section(matches):
         '<th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>最可能结果</th><th>赔率</th>'
         '<th>市场</th><th>纯模型</th><th>联合校准</th><th>EV(参考)</th><th>最大分歧</th>'
         '<th>让球可信度</th><th>冷门风险</th>',
-        body)
+        body, fold=True)
 
 def h2h_mean(m):
     hh = H2H.get(m['matchNumStr']) or []
@@ -3117,6 +3166,22 @@ def _sub(html):
     return f'<div class="sub-box">{txt}</div>' if txt else ''
 
 
+def _fold(label, hint, body, cls='', head_tag='h3'):
+    """统一折叠区：原生 <details>，禁用 JS 也能展开；空内容不落块。
+
+    标题放进 summary 且保留 h3 语义，目录脚本扫描得到它；点目录项时会自动
+    展开所在的 details，因此折叠不会让右侧目录失效。
+    """
+    if not (body or '').strip():
+        return ''
+    tt = f'<h3>{label}</h3>' if head_tag == 'h3' else f'<b>{label}</b>'
+    return (f'<details class="fold {cls}" data-fold>'
+            f'<summary class="fold-sum"><span class="fold-ico">▸</span>{tt}'
+            f'<span class="fold-hint">{esc(hint)}</span>'
+            f'<span class="fold-cta"></span></summary>'
+            f'<div class="fold-body">{body}</div></details>')
+
+
 def match_card(m):
     hh = H2H.get(m['matchNumStr']) or []
     olabel, okey, dscore, dprob, oprob = direction_pick(m)
@@ -3187,6 +3252,22 @@ def match_card(m):
     hc_goal = hc_goal_block(m)
     hc_ref = hc_ref_block(m)
     hc_dish = hc_dish_block(m)
+    # 卡片默认只留「卡头+队名+赔率」与「比分与方向预测」两块，
+    # 中间所有分析按原有顺序整体打包成一条折叠，顺序与内容都不变。
+    _insight = (f'<div class="insight-grid">'
+                f'<div class="insight-card"><div class="insight-label">H2H场均进球</div>'
+                f'<div class="insight-value">{hm_str}</div></div>'
+                f'<div class="insight-card"><div class="insight-label">H2H调整因子</div>'
+                f'<div class="insight-value">{esc(factor_str)}</div></div></div>')
+    _mid_parts = ([_sub(rank_html), _insight]
+                  + [_sub(pedigree_block(m)), _sub(hist_html), _sub(form_html),
+                     _sub(hc_stats), _sub(hc_goal), _sub(hc_ref), _sub(hc_dish),
+                     _sub('<h4>伤停与缺阵</h4>' + inj_html)]
+                  + [sig_html, upset_block(m), rq_block(m)])
+    _n_mid = sum(1 for x in _mid_parts if (x or '').strip())
+    mid_fold = _fold('展开本场完整分析',
+                     f'{_n_mid} 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号',
+                     ''.join(_mid_parts), cls='fold-card', head_tag='b')
     return f'''
 <div class="card" id="match-{esc(m["matchNumStr"])}">
   <div class="card-header">
@@ -3207,24 +3288,8 @@ def match_card(m):
     <div class="odds-item"><div class="label">客胜</div><div class="value loss">{esc(o.get("负","-"))}</div></div>
   </div>
 
-{_sub(rank_html)}
-  <div class="insight-grid">
-    <div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">{hm_str}</div></div>
-    <div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">{esc(factor_str)}</div></div>
-  </div>
+{mid_fold}
 
-  {_sub(pedigree_block(m))}
-  {_sub(hist_html)}
-  {_sub(form_html)}
-  {_sub(hc_stats)}
-  {_sub(hc_goal)}
-  {_sub(hc_ref)}
-  {_sub(hc_dish)}
-  {_sub('<h4>伤停与缺阵</h4>' + inj_html)}
-
-  {sig_html}
-  {upset_block(m)}
-  {rq_block(m)}
   <div class="prediction">
     <div class="pred-title">🎯 比分与方向预测
       <span class="pred-dir">{olabel}倾向</span>
@@ -3339,13 +3404,16 @@ _RECAP_MARK = {
 }
 
 
-def _sub_table(title, note, head, body):
+def _sub_table(title, note, head, body, fold=False, hint=''):
+    inner = (f'<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">{note}</p>\n'
+             f'<div class="card"><div class="table-wrap"><table>\n'
+             f'  <thead><tr>{head}</tr></thead>\n  <tbody>{body}</tbody>\n'
+             f'</table></div></div>\n'
+             f'{_RECAP_MARK.get(title, "")}')
+    if fold:
+        return _fold(title, hint or f'{body.count("<tr")} 场明细 · 含前日回顾', inner)
     return (f'<h3 style="margin:1.4rem 0 0.5rem;color:var(--accent);">{title}</h3>\n'
-            f'<p style="font-size:0.82rem;color:var(--muted);margin:0 0 0.6rem;">{note}</p>\n'
-            f'<div class="card"><div class="table-wrap"><table>\n'
-            f'  <thead><tr>{head}</tr></thead>\n  <tbody>{body}</tbody>\n'
-            f'</table></div></div>\n'
-            f'{_RECAP_MARK.get(title, "")}')
+            + inner)
 
 summary4_sec = f'''
 <h2>四、预测汇总</h2>
@@ -3356,9 +3424,9 @@ summary4_sec = f'''
 {_sub_table('4.1 胜负预测', '胜/平/负三率经校准；<b>倾向</b> = 三者中概率最高者。<b>方向可信度</b> = 只看方向能不能跟：三率中最高者 <b>≥50% 可用</b>、<b>40%~50% 慎用</b>（三者接近，方向缺乏区分度）、<b>&lt;40% 别跟</b>。<b>备选方向</b> = 三率第二高者，方向可信度未达「可用」（最高率 &lt;50%）时并列给出 —— 这类场次首选与次选合看明显高于只看首选。<b>让球盘</b> = 官方让球盘口（正数为主队受让）；<b>让球可信度</b> = 这个让球盘能不能跟，同样分 <b>可用 / 慎用 / 别跟</b>：<b>校准概率≥50% 且置信度≥中 可用</b>、<b>≥42% 慎用</b>、<b>其余别跟</b>（小字为最可能结果、概率与置信度）。',
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>备选方向</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>可能进球</b> = 主队/客队各自最可能的进球数及其概率；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
-'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC) if rowsC else ''}
+'<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>可能进球(主)</th><th>可能进球(客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC, fold=True) if rowsC else ''}
 {_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，半场 λ 按全场 45% 折算，列出概率最高的组合与次选。',
-            '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th>', rowsB)}
+            '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th>', rowsB, fold=True)}
 {market_dev_section(MATCHES)}
 {upset_table()}
 {big_goals_table()}
@@ -3572,6 +3640,13 @@ calib_sec = f'''
 
 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 league_sec = build_league_sec(MATCHES)
+# 第五节 h2 常驻（目录锚点），正文整体收起：表格仍完整渲染，只是默认不占版面。
+_lg_cut = league_sec.find('</h2>')
+if _lg_cut >= 0:
+    league_sec = (league_sec[:_lg_cut + 5]
+                  + _fold('完整积分榜与形势分析',
+                          f'{league_sec.count("<table")} 张榜单 · 关键线与赛事形势说明',
+                          league_sec[_lg_cut + 5:], head_tag='b'))
 
 # ---------- 🎯 今日比分精选（该押哪几场） ----------
 # 依据（_daily_top_probe.py，4036 场 / 241 个比赛日，生产口径 w=0.3）：
@@ -3966,6 +4041,17 @@ def _ysnap():
                 ym = []
     _YSNAP_CACHE['y'], _YSNAP_CACHE['ym'] = y, ym
     return y, ym
+
+
+def _wrap_recap(html, label='📅 前日回顾', hint='逐场命中明细与口径说明'):
+    """所有「前日回顾」统一折叠（含汇总表内、比分精选、大胆档、串关）。
+
+    在装配层统一包，避免三种回顾渲染器各写一套；空内容不落块。
+    """
+    t = (html or '').strip()
+    if not t:
+        return ''
+    return _fold(label, hint, t, cls='fold-recap', head_tag='b')
 
 
 def _recap_block(y, label, head, rows, summary, note):
@@ -4666,18 +4752,21 @@ def _build_parlay_recap():
 
 
 recap_picks, recap_bold = _build_recap()
-picks_sec = picks_sec.replace('<!--RECAP_PICKS-->', recap_picks)
-bold_sec = bold_sec.replace('<!--RECAP_BOLD-->', recap_bold)
-strategy_sec = strategy_sec.replace('<!--RECAP_PARLAY-->', _build_parlay_recap())
-# 预测汇总六个子板块：各自表格下方挂前日回顾（与比分精选回顾同款）
+picks_sec = picks_sec.replace('<!--RECAP_PICKS-->',
+                              _wrap_recap(recap_picks, '📅 前日回顾 · 比分精选'))
+bold_sec = bold_sec.replace('<!--RECAP_BOLD-->',
+                            _wrap_recap(recap_bold, '📅 前日回顾 · 大胆档'))
+strategy_sec = strategy_sec.replace('<!--RECAP_PARLAY-->',
+                                    _wrap_recap(_build_parlay_recap(), '📅 前日回顾 · 串关'))
+# 预测汇总六个子板块：各自表格下方挂前日回顾，与比分精选同款，全部折叠
 summary4_sec = (summary4_sec
-                .replace('<!--RECAP_DIR-->', _recap_dir())
-                .replace('<!--RECAP_SCORE-->', _recap_score())
-                .replace('<!--RECAP_GOALS-->', _recap_goals())
-                .replace('<!--RECAP_HTFT-->', _recap_htft())
-                .replace('<!--RECAP_RQ-->', _recap_rq())
-                .replace('<!--RECAP_UPSET-->', _recap_upset())
-                .replace('<!--RECAP_BIG-->', _recap_big()))
+                .replace('<!--RECAP_DIR-->', _wrap_recap(_recap_dir(), '📅 前日回顾 · 方向预测'))
+                .replace('<!--RECAP_SCORE-->', _wrap_recap(_recap_score(), '📅 前日回顾 · 比分预测'))
+                .replace('<!--RECAP_GOALS-->', _wrap_recap(_recap_goals(), '📅 前日回顾 · 进球数'))
+                .replace('<!--RECAP_HTFT-->', _wrap_recap(_recap_htft(), '📅 前日回顾 · 半全场'))
+                .replace('<!--RECAP_RQ-->', _wrap_recap(_recap_rq(), '📅 前日回顾 · 让球盘'))
+                .replace('<!--RECAP_UPSET-->', _wrap_recap(_recap_upset(), '📅 前日回顾 · 冷门风险'))
+                .replace('<!--RECAP_BIG-->', _wrap_recap(_recap_big(), '📅 前日回顾 · 大比分观察')))
 # ── 浮动章节导航（右侧目录 + 滚动高亮，窄屏自动折叠为悬浮按钮）────────────
 # 自包含：自动扫描页面内所有 h2/h3，按需分配锚点 id 并生成目录项，
 # 因此板块增减时无需同步维护列表；历史报告回填也复用同一段代码。
@@ -4758,7 +4847,12 @@ TOC_BLOCK = '''
     a.textContent = txt;
     a.title = txt;
     if (h.tagName.toLowerCase() === 'h3') a.className = 'lv3';
-    a.addEventListener('click', closeNav);
+    a.addEventListener('click', function () {
+      // 目标标题藏在折叠区里时先展开，否则目录跳转会落到不可见位置
+      var d = h.closest('details.fold');
+      if (d && !d.open) d.open = true;
+      closeNav();
+    });
     var li = document.createElement('li');
     li.appendChild(a);
     list.appendChild(li);
@@ -4788,9 +4882,13 @@ TOC_BLOCK = '''
     var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
     var pick = heads[0];
     if (atBottom) {
-      pick = heads[heads.length - 1];
+      for (var k = heads.length - 1; k >= 0; k--) {
+        if (heads[k].offsetParent !== null) { pick = heads[k]; break; }
+      }
     } else {
       for (var i = 0; i < heads.length; i++) {
+        // 未展开的折叠区里标题不可见，跳过，避免目录高亮到隐藏项
+        if (heads[i].offsetParent === null) continue;
         if (heads[i].getBoundingClientRect().top <= 140) pick = heads[i];
       }
     }
@@ -4814,6 +4912,25 @@ TOC_BLOCK = '''
   }, { passive: true });
   window.addEventListener('resize', spy, { passive: true });
   spy();
+})();
+</script>'''
+
+FOLD_JS = '''<script>
+(function () {
+  var ds = [].slice.call(document.querySelectorAll('details.fold[data-fold]'));
+  function sync() {
+    var n = ds.filter(function (d) { return d.open; }).length;
+    var s = document.getElementById('foldStat');
+    if (s) s.textContent = '可折叠区块 ' + ds.length + ' 个 · 已展开 ' + n + ' 个';
+  }
+  function setAll(v) { ds.forEach(function (d) { d.open = v; }); sync(); }
+  var a = document.getElementById('foldAll'), b = document.getElementById('foldNone');
+  if (a) a.addEventListener('click', function () { setAll(true); });
+  if (b) b.addEventListener('click', function () { setAll(false); });
+  ds.forEach(function (d) { d.addEventListener('toggle', sync); });
+  // 打印前全部展开，避免纸面缺内容
+  window.addEventListener('beforeprint', function () { setAll(true); });
+  sync();
 })();
 </script>'''
 
@@ -4842,6 +4959,12 @@ page = f'''<!DOCTYPE html>
 
 <div class="container">
 
+<div class="fold-bar">
+  <button type="button" id="foldAll">全部展开</button>
+  <button type="button" id="foldNone">全部收起</button>
+  <span class="fold-stat" id="foldStat"></span>
+</div>
+
 {picks_sec}
 {bold_sec}
 {overview_sec}
@@ -4862,6 +4985,7 @@ page = f'''<!DOCTYPE html>
   </div>
 </div>
 {TOC_BLOCK}
+{FOLD_JS}
 </body>
 </html>'''
 
