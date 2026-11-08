@@ -231,3 +231,26 @@
   - **有损风险复查**：仅 `data/days/2026-11-06.json` + `data/history.json` 变动；11-06 场次 14 不变，injuries 14→14 保留，result 0→13 回填；weather/form_net/mood 两侧均 0 → **未触发字段清空**。
   - build --strict：1388 文件 / 0 违规 / 13.01s。
   - publish：main 数据提交 `3c04f053b`，产物 `d4939f488`（`0d9a00d35..d4939f488`）。
+
+## 2026-11-08 08:06 自动执行（失败，退出码 1）→ matlas 按规则跳过
+
+**结果：抓取完成但脚本安全拒绝推送，未产生提交；根因=11-07 自动同步把 `update_odds_net.py` 覆盖成旧版**
+
+- **对齐**：`[0/3]` 快进到远端 `1df58591`（补落后 2 个提交），无挡路文件。
+- **抓取**：网易 128 场唯一 → 97 场已完赛 → 库内写入 3795 条。
+- **失败行**：`❌ 未能在输出里找到 [变更判定]，无法确认是否有新赛果，为安全起见不推送`，退出码 1，**未 commit、未 push**（HEAD 仍是 `1df58591`）。
+- **根因（只读诊断）**：`75649d91 chore: 同步根脚本与强度库（11-07 午间）` 用旧版覆盖 `update_odds_net.py`（+22 −98 行），同时抹掉了两个已上线修复：
+  1. `59041d4c` 的 `[变更判定] 新增赛果/更新赛果` 输出 → `_sync_results.py` 正则匹配不到，走 fail-safe 不推送。
+  2. `26e5ba8e` 的「合并基准改用 `results_data.json`」→ 现回到从 index.html 内联 `const RESULTS` 反解（15 字段），**10-23 的字段退化 bug 复活**。
+- **退化实测（仅工作区，未提交）**：HEAD 3786 条（26 字段 361 / 15 字段 3242 / 12 字段 183）→ 工作区 3795 条（26 字段 **97** / 15 字段 3505 / 12 字段 193），**273 条字段变少，0 条消失**。
+### 11:09 人工修复（用户「解决一下」）→ 已全绿
+
+- **关键发现**：master 正本（`2c52030f`）的 `update_odds_net.py`（3410 行）与本地好版 `26e5ba8e` **字节级完全一致**，即 11-07 那次「同步根脚本」取的是**过期的 `origin/master` 引用**（记忆里「本地 origin/* 恒滞后，只信 `git ls-remote`」的坑，这次踩在同步脚本上）。
+- **恢复**：`cp` master 版覆盖 → 校验 4 项修复齐备（变更判定 3 处 / results_data 基准 1 处 / 队名归一 5 条 / matchDate+matchTime）、py_compile 通过；坏版备份 `_bak_update_odds_net_20261108_bad.py`。
+- **清脏**：`git checkout HEAD -- index.html results_data.json odds_data.json odds_ticks.json results_history odds_history` 抹掉失败轮写下的退化数据。
+- **重跑**：基线已最新 → 网易 128 场/98 场完赛 → **新增 10 条 / 更新 0 条** → 推送 `6fc62a2c`，退出码 0。
+- **核验**：results_data 3796 条，字段分布 12:183 / 15:3242 / 26:**371**（比失败前 361 多 10，退化已消除）；归档 3793 条 / 唯一 3793 / 跨日重复 **0**。
+- **固化**：脚本修复单独提交 `3146c612` 并推 gh-pages（否则仍是脏文件，下次对齐可能再被还原成旧版）。
+- **matlas**：fixtures **364 场 / 竞彩 30**（7 天）；import 59 交易日 / 862 场 / 赛果 856；build --strict **1422 文件 / 0 违规**；publish 产物 `0899929fa`（`c1231c3eb..0899929fa`），main 数据提交 `9340ed56e`。
+  - ⚠️ **新坑（已绕过）**：publish.sh 护栏判据是 `git status | grep -v '^.. data/'`，而 import 会新下载队徽 png 到 `assets/logo/teams/`（本次 37 个）→ 未跟踪即被判「源码改动」拒发布。处置：`git add assets/logo/teams` + 单独 commit（`92719a1ec`，仅资源、非源码，历史有「补录 20 支缺队徽的球队」先例）→ 发布通过。
+  - main 现有 2 个本地提交未推（`92719a1ec`、`9340ed56e`）：publish.sh 只推 gh-pages、从不推 main，需人工决定是否推。

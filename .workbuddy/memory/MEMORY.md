@@ -13,6 +13,8 @@
 - ⚠️ 未跟踪文件挡 ff：只删不够（可能已跟踪，删后是 ` D`）→ `git checkout <远端SHA> -- <路径>` 恢复基线。
 - ⚠️ results_history 净删几万行≠回滚（远端每日自动提交会重写膨胀归档）；判据只用「唯一 matchId 是否下降」。归档结构=dict（键 `日期_主队_客队`，值 26 字段），按 list 解析得 0 条。
 - ⚠️ 同步 master 时 `git -c core.autocrlf=false diff` 会让全树显示变更（LF/CRLF 噪声）。
+- ⚠️ **「同步根脚本」必须用 `git ls-remote` 拿到的最新 SHA，不能用本地 `origin/master`**：11-07 16:34 的 `75649d91` 用陈旧 ref 把 `update_odds_net.py` 回退 4 个提交（+22/−98），同时抹掉 `[变更判定]`、results_data 合并基准、5 条队名归一、matchDate/matchTime → 次日补录 `❌ 未能在输出里找到 [变更判定]` 退出 1。修法：`git show $(git ls-remote origin master|cut -f1):update_odds_net.py > update_odds_net.py`（master 版本 3410 行、与好版 `26e5ba8e` 字节一致），修完立刻单独提交，否则脏文件会被下次对齐还原成旧版。症状自查：`grep -c 变更判定 update_odds_net.py` 应为 3。
+- ⚠️ **matlas `publish.sh` 护栏判据**：原为 `git status | grep -v '^.. data/'`，而 import 新下载的队徽 png 落在 `assets/logo/teams/`（未跟踪）→ 被判「源码改动」拒发布。**11-08 已修**（matlas main `f6bb4f35d`）：白名单改 `grep -Ev '^.. (data|assets/logo)/'`、提交改 `git add -A data assets/logo`（含删除），队徽与徽章随数据自动提交，其余路径仍拦。另：publish.sh 原**只推 gh-pages、从不推 main**，导致数据/资源提交在本地无限堆积（main 上已有 45 个「定时任务导入快照」）。**11-08 已修**（`bb9737c3b`）：尾部加 `[4.5/4] 同步 main`，用 `git log refs/remotes/origin/main..HEAD` 判断有无待推、`git push origin HEAD:refs/heads/main` 推送，**被拒只打警告不阻断发布**，不强推不自动 rebase。已实测：一致→静默跳过、领先→推送成功、远端前进→A/C/E 走完退出码 0。
 
 ## 云端正本布局
 - master `tools/prediction/`=脚本正本（去 `_` 前缀，LF）+ 根 update_odds_net.py/platt_params.json/league_profile.json。⚠️ `tools/prediction/gen_report.py` 已落后（无 CUP_EXTRA 杯赛卡）→ 勿用 master 覆盖本地 `_gen_report.py`。
