@@ -4003,12 +4003,24 @@ def _ysnap():
     return y, ym
 
 
-def _wrap_recap(html, label='📅 前日回顾', hint='逐场命中明细与口径说明'):
+def _wrap_recap(html, label='📅 前日回顾', hint=''):
     """所有「前日回顾」统一折叠（含汇总表内、比分精选、大胆档、串关）。
 
     在装配层统一包，避免三种回顾渲染器各写一套；空内容不落块。
+    各渲染器内容自带的那行「📅 前日回顾（日期 …落地）」在此统一剥离，
+    日期上移到折叠头，保证展开后整块只出现一个标题。
     """
+    import re as _re
     t = (html or '').strip()
+    if not t:
+        return ''
+    d = _re.search(r'\d{4}-\d{2}-\d{2}', html)
+    if d:
+        label = f'{label}（{d.group(0)}）'
+    t = _re.sub(r'<p[^>]*>\s*📅\s*前日回顾（[^）]*）\s*</p>', '', t, count=1)
+    t = _re.sub(r'<h3[^>]*>\s*📅\s*前日回顾\s*</h3>', '', t, count=1)
+    t = t.replace('📅 前日回顾：', '')
+    t = t.strip()
     if not t:
         return ''
     return _fold(label, hint, t, cls='fold-recap', head_tag='b')
@@ -4809,13 +4821,19 @@ TOC_BLOCK = '''
   var btn = document.getElementById('tocToggle');
   if (!nav || !list) return;
   var scope = document.querySelector('body > .container') || document.body;
+  // 目录只收主章节：前日回顾 · 明细折叠与动态校准 · 附录均不进目录；
+  // 滚动高亮仍按全量标题计算，命中被排除标题时回退到前一个已入目录标题。
+  var SKIP_TOC = /前日回顾|动态校准/;
   var heads = [].filter.call(scope.querySelectorAll('h2, h3'), function (h) {
     return (h.textContent || '').trim().length > 0;
   });
-  if (!heads.length) { nav.style.display = 'none'; if (btn) btn.style.display = 'none'; return; }
+  var tocHeads = heads.filter(function (h) {
+    return !SKIP_TOC.test((h.textContent || '').trim());
+  });
+  if (!tocHeads.length) { nav.style.display = 'none'; if (btn) btn.style.display = 'none'; return; }
 
   var seq = 0;
-  heads.forEach(function (h) {
+  tocHeads.forEach(function (h) {
     var txt = (h.textContent || '').trim().replace(/\\s+/g, ' ');
     if (!h.id) h.id = 'sec-' + (++seq);
     var a = document.createElement('a');
@@ -4853,10 +4871,10 @@ TOC_BLOCK = '''
     } else if (mask) { mask.remove(); mask = null; }
   });
 
-  var current = heads[0];
+  var current = tocHeads[0];
   function spy() {
     var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
-    var pick = heads[0];
+    var pick = tocHeads[0];
     if (atBottom) {
       for (var k = heads.length - 1; k >= 0; k--) {
         if (heads[k].offsetParent !== null) { pick = heads[k]; break; }
@@ -4866,6 +4884,12 @@ TOC_BLOCK = '''
         // 未展开的折叠区里标题不可见，跳过，避免目录高亮到隐藏项
         if (heads[i].offsetParent === null) continue;
         if (heads[i].getBoundingClientRect().top <= 140) pick = heads[i];
+      }
+    }
+    // 目录未收录的标题 → 高亮回退到它之前最近的一个已收录标题
+    if (SKIP_TOC.test((pick.textContent || '').trim())) {
+      for (var j = heads.indexOf(pick) - 1; j >= 0; j--) {
+        if (!SKIP_TOC.test((heads[j].textContent || '').trim())) { pick = heads[j]; break; }
       }
     }
     if (pick === current) return;
