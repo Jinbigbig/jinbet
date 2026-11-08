@@ -122,6 +122,21 @@ def parse_standing(txt):
             'note_zh': _t2s(memo[i]) if i < len(memo) else '',
             'note_type': memo_type[i] if i < len(memo_type) else 0,
         })
+    # 部分联赛（芬超：12 队先打 22 轮常规赛、再分冠军/保级组）7M 会把
+    # 「当前总榜（25 轮）」与「常规赛榜（22 轮）」两段拼进同一组数组，
+    # 同一队出现两次、名次一路排到 24。按队 id 去重，保留已赛场次最多的那行
+    # （更接近当前），并按保留顺序重排名次。
+    if teams:
+        _best = {}
+        for t in teams:
+            k = t['tid'] or t['name']
+            cur = _best.get(k)
+            if cur is None or (t['p'] or 0) > (cur['p'] or 0):
+                _best[k] = t
+        if len(_best) < len(teams):
+            teams = [t for t in teams if _best[t['tid'] or t['name']] is t]
+            for i, t in enumerate(teams):
+                t['rank'] = i + 1
     # 联赛汇总（平均进球等），用于形势描述
     def _num(var, default=0):
         a = _parse_array(txt, var)
