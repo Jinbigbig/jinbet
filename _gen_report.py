@@ -748,8 +748,12 @@ def _qq_team(name, teams):
 
     顺序：完全一致 → 别名表 → 双向子串 → 相似度。双向子串是必要的：
     竞彩常写「LASK林茨」而榜上是「林茨」，只判断单向会漏。
+    榜名已在 _std_teams 归一为大陆简称，这里把报告名也过同一张表，
+    保证「埃因霍温/PSV燕豪芬」这类跨译名也能同名命中。
     """
     import difflib
+    from standings_alias import cn
+    name = cn(name)
     names = [t['name'] for t in teams if t.get('name')]
     if not name or not names:
         return None
@@ -778,11 +782,24 @@ def _std_teams(teams):
 
     Fox 榜为英文原名 + zh 对照表，取值顺序 name_zh → zh → name；
     腾讯榜无进失球，gf/ga/gd 保持 None，渲染时自动省略这几列。
+    7M 榜全用港澳台译名 → standings_alias.cn() 归一成大陆常用简称（幂等）。
     """
+    from standings_alias import cn, _has_cjk
     out = []
     for t in teams:
+        # 7M 行 name 是中文（繁体港译）才是权威；name_zh 是简体港译，优先取它会漏掉常用名。
+        # 腾讯/Fox 行 name 是英文原名，中文在 name_zh/zh。
+        cand = [t.get('name'), t.get('name_zh'), t.get('zh')]
+        tname = ''
+        for _x in cand:
+            if _x and _has_cjk(_x) and cn(_x) != _x:
+                tname = cn(_x)
+                break
+        if not tname:
+            zh = [x for x in cand if x and _has_cjk(x)]
+            tname = cn(zh[0]) if zh else (cand[0] or '')
         d = {'rank': int(t.get('rank') or 0),
-             'name': t.get('name_zh') or t.get('zh') or t.get('name') or '',
+             'name': tname,
              'p': int(t.get('p') or 0), 'w': int(t.get('w') or 0),
              'd': int(t.get('d') or 0), 'l': int(t.get('l') or 0),
              'pts': int(t.get('pts') or 0)}
