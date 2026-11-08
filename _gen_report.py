@@ -3623,13 +3623,56 @@ calib_sec = f'''
 
 now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 league_sec = build_league_sec(MATCHES)
-# 第五节 h2 常驻（目录锚点），正文整体收起：表格仍完整渲染，只是默认不占版面。
-_lg_cut = league_sec.find('</h2>')
-if _lg_cut >= 0:
-    league_sec = (league_sec[:_lg_cut + 5]
-                  + _fold('完整积分榜与形势分析',
-                          f'{league_sec.count("<table")} 张榜单 · 关键线与赛事形势说明',
-                          league_sec[_lg_cut + 5:], head_tag='b'))
+
+
+def _fold_league_cards(sec):
+    """第五节：h2 常驻，正文按联赛/杯赛逐个折叠（不再整节一个大折叠）。
+
+    用 div 栈切出每张 <div class="league-card"> 的完整内容，卡片内首个
+    <h4>（联赛名 + 赛季/轮次）上移为折叠头并删掉，避免展开后重复标题。
+    榜单渲染器完全不动，表格数据原样保留。
+    """
+    import re as _re
+    cut = sec.find('</h2>')
+    if cut < 0:
+        return sec
+    head, body = sec[:cut + 5], sec[cut + 5:]
+    tag = '<div class="league-card">'
+    out, pos, last = [head], 0, 0
+    while True:
+        a = body.find(tag, pos)
+        if a < 0:
+            break
+        out.append(body[last:a])
+        b = a + len(tag)
+        depth, end = 1, None
+        for m in _re.finditer(r'<div\b|</div>', body[b:]):
+            depth += 1 if m.group(0).startswith('<div') else -1
+            if depth == 0:
+                end = b + m.start()
+                break
+        if end is None:
+            return sec          # 结构异常则原样返回，不冒险截断页面
+        inner = body[b:end]
+        h4a = inner.find('<h4')
+        label = ''
+        if h4a >= 0:
+            h4b = inner.find('</h4>', h4a)
+            if h4b > 0:
+                label = inner[inner.find('>', h4a) + 1:h4b].strip()
+                inner = inner[:h4a] + inner[h4b + 5:]
+        if label:
+            out.append(_fold(label, '', inner.strip(),
+                             cls='fold-league league-card', head_tag='b'))
+        else:
+            out.append(f'{tag}{inner}</div>')
+        last = end + len('</div>')
+        pos = last
+    out.append(body[last:])
+    return '\n'.join(out)
+
+
+league_sec = _fold_league_cards(league_sec)
 
 # ---------- 🎯 今日比分精选（该押哪几场） ----------
 # 依据（_daily_top_probe.py，4036 场 / 241 个比赛日，生产口径 w=0.3）：
