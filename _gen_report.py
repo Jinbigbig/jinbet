@@ -3580,9 +3580,15 @@ try:
 except Exception:
     pass
 
+if not parlay_dir_rows.strip():
+    parlay_dir_rows = ('<tr><td colspan="5" style="color:var(--muted);font-size:0.8rem;'
+                       'padding:0.6rem 0.5rem;">当日可串场次不足，未生成方向串关组合。</td></tr>')
+if not parlay_rows.strip():
+    parlay_rows = ('<tr><td colspan="5" style="color:var(--muted);font-size:0.8rem;'
+                   'padding:0.6rem 0.5rem;">当日可串场次不足，未生成比分串关组合。</td></tr>')
+
 strategy_sec = f'''
 <h2>六、串关推荐</h2>
-
 <div class="parlay-section">
   <h3>方向串关推荐</h3>
   <table class="parlay-table">
@@ -3824,6 +3830,10 @@ for _ti, _tier in enumerate(_bd_tier_list, 1):
             f'<td style="font-family:monospace;font-weight:700;color:var(--accent);">{dash(_x) if _x else "—"}'
             f'{_xp_txt}</td>'
             f'<td style="font-family:monospace;">{_lt:.2f}</td></tr>')
+
+if not _rows_bd.strip():
+    _rows_bd = ('<tr><td colspan="6" style="color:var(--muted);font-size:0.8rem;'
+                'padding:0.6rem 0.5rem;">当日无可选进攻型参考场次（场次偏少或均属冷启动）。</td></tr>')
 
 bold_sec = f'''
 <h2>🔥 大胆档</h2>
