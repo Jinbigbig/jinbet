@@ -27,6 +27,8 @@ OUT = 'weather.json'
 
 # 球队中文简称（竞彩官方简称）→ 主场所在城市（英文，供 Geocoding 使用）
 TEAM_CITY = {
+    # 2026-11-10 补充：英锦标赛缺失映射（伯顿=Burton upon Trent 斯塔福德郡；布罗姆利=伦敦东南Bromley）
+    '伯顿': 'Burton upon Trent', '布罗姆利': 'Bromley',
     # 2026-11-05 补充：欧罗巴缺失映射（布斯巴达=布拉格Sparta，勿与斯拉维亚混；奈梅亨荷兰；特拉布宗土耳其）
     '布斯巴达': 'Prague', '奈梅亨': 'Nijmegen', '特拉布宗': 'Trabzon',
     # 2026-11-04 补充：亚冠精英/欧战缺失映射
