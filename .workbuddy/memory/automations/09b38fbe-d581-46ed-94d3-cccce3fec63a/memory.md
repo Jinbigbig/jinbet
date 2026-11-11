@@ -1,5 +1,15 @@
 # 午间补充刷新（15:00）执行记录
 
+## 2026-11-11
+- 12:00 流水线正常（predictions/2026-11-11/index.html 12:03）→ 本次为补充刷新，非补跑。今日 6 场：日联赛杯 4（001-004）+ 英锦标赛 2（005 谢周三/阿克宁顿、006 巴恩斯利/奥德汉姆）。
+- 正本：ls-remote master=6ed09258 → `git show 6ed09258:update_odds_net.py`（3410 行/变更判定=3）→ `--no-push` 再 `--no-push --results-only`。[DEDUP-ALIGN] 235/293 文件，备份 `_hist_backup_2026-11-11`；ODDS 更新 3645 条；赛果 3828 条、[变更判定] 0/0（当日未开赛，未产生数据提交）。
+- 覆盖：天气 6/6、开赛时间 6/6（001-003 18:00、004 18:30、005/006 次日 03:00）、红彩 6/6 错配 0、盘口时序 6/6 各 7 点（末点 15:02，新增 11 点、赔率变动 5 场）；**赔率 5/6**（周三005 主赔率表空，但时序缓存有 1.35/4.40/5.85，属源站不一致，未手工注入）；阵容/结构化伤停/军情 0（日联杯+英锦标赛不在 lineupstoday / injuries(德甲+荷甲) / 7M 映射内）；联赛积分 0（两联赛无 7M id）。
+- 顺序沿用 11-08 改进：odds_ticks / injuries_extra / match_times 全部提到 `_gen_report.py` 之前。
+- 红彩复跑只改 `updated`（15:01→15:03）→ `git checkout -- hongcai.json` 回退。
+- 推送：gh-pages 7cbbb7ad → f2e99e5f（439f1d21 `data: 11-11 赔率/赛果/红彩补充`、f2e99e5f `report:`），ls-remote 核验；node-id=0 不 checkout 根 index.html；红线 grep 0；线上 200/137219 含 6 场 kickoff。
+- matlas：导入 900 场 / 赛果 888；restore_extras 缺失 10（2026-11-03 odds_ticks）→ `--apply` → 复核 0；build --strict 0 违规；发布 0839ecb76（gh-pages b06f6695d→0839ecb76，main c168ada42→0ec03e699）。**本轮只发布一次。**
+- 新教训：matlas `_ticks_for()` 双向包含仍会漏「谢周三 ↔ 谢菲尔德星期三」这类简称↔全称（非包含关系），当日 005 的 7 点时序未进 matlas 日页（jinbet 侧 `odds_ticks.json` 有）；该类缺口只能靠 `standings_alias` 式映射，勿在 matlas 源码里临时加。另：`_calc_result.json` 的 `matches` 本次是 **list**（不是 dict），需按 list 遍历。
+
 ## 2026-11-10
 - 12:00 完整流水线正常（index.html 12:08），本任务为补充刷新（非补跑）。今日仅 2 场英锦标赛（周二001 伯顿/诺茨郡、周二002 布罗姆利/米尔顿）。
 - 脚本正本取法：`git ls-remote origin master` 得 44968b1e → `git show 44968b1e:update_odds_net.py`（3410 行 / `grep -c 变更判定`=3）→ 先 `--no-push` 再 `--no-push --results-only`。[DEDUP-ALIGN] 受影响 235/292 文件，备份 `_hist_backup_2026-11-10`；ODDS 回填更新 3643 条；赛果 3826 条、[变更判定] 0/0 故未推数据提交。
