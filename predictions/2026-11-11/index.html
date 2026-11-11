@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026-11-11 竞彩足球深度分析报告</title>
+<style>
+:root {
+  --bg: #f0f2f5; --bg2: #ffffff; --ink: #1a1a2e; --muted: #6c757d;
+  --rule: #dee2e6; --accent: #e63946; --accent2: #2a9d8f; --accent3: #f4a261;
+  --win: #2a9d8f; --draw: #f4a261; --loss: #e63946;
+  --home: #457b9d; --away: #e76f51; --text-muted: #6c757d;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg); color: var(--ink); line-height: 1.7; min-height: 100vh;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+.hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff; padding: 3rem 0 2.5rem; text-align: center; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top:0;left:0;right:0;bottom:0;
+  background: radial-gradient(circle at 20% 50%, rgba(230,57,70,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 80% 50%, rgba(42,157,143,0.15) 0%, transparent 50%);
+}
+.hero .container { position: relative; z-index: 1; }
+.hero h1 { font-weight: 700; font-size: 2.2rem; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.hero .subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.7); margin-bottom: 0.25rem; }
+.hero .disclaimer { font-size: 0.8rem; color: rgba(255,255,255,0.45); margin-top: 1rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; display: inline-block; }
+h2 { font-weight: 700; font-size: 1.5rem; margin: 2.5rem 0 1.25rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: inline-block; }
+h3 { font-weight: 700; font-size: 1.15rem; margin: 1.5rem 0 0.75rem; color: var(--ink); }
+h4 { font-size: 0.9rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin: 1rem 0 0.5rem; }
+.rank-tag { font-size: 0.55em; color: var(--text-muted); vertical-align: sub; margin-left: 2px; opacity: 0.7; }
+.card { background: var(--bg2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04); border: 1px solid var(--rule); }
+.card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--rule); }
+.card-header .match-id { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.8rem; color: var(--muted); background: var(--bg); padding: 0.2rem 0.6rem; border-radius: 4px; }
+.card-header .match-league { font-size: 0.8rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
+.card-header .match-time { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.85rem; color: var(--muted); }
+.match-teams { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin: 1rem 0; font-size: 1.4rem; font-weight: 700; }
+.match-teams .vs { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 0.9rem; color: var(--muted); background: var(--bg); padding: 0.3rem 0.8rem; border-radius: 20px; }
+.match-teams .home { color: var(--home); }
+.match-teams .away { color: var(--away); }
+.odds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
+.odds-item { text-align: center; padding: 0.75rem 0.5rem; background: var(--bg); border-radius: 8px; }
+.odds-item .label { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
+.odds-item .value { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.3rem; font-weight: 700; }
+.odds-item .value.win { color: var(--win); } .odds-item .value.draw { color: var(--draw); } .odds-item .value.loss { color: var(--loss); }
+.insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+.insight-card { background: var(--bg); padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid var(--accent); }
+.insight-card .insight-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+.insight-card .insight-value { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+.prediction { background: linear-gradient(135deg, rgba(42,157,143,0.08), rgba(42,157,143,0.02)); border: 1px solid rgba(42,157,143,0.2); border-radius: 10px; padding: 1rem 1.25rem; margin-top: 1rem; }
+.prediction .pred-title { font-size: 0.8rem; font-weight: 600; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.prediction .pred-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 0.3rem 0; }
+.prediction .pred-label { font-size: 0.8rem; color: var(--muted); }
+.prediction .pred-value { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.1rem; font-weight: 700; color: var(--accent2); }
+.prediction .pred-score { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.3rem; font-weight: 700; color: var(--accent); background: rgba(230,57,70,0.08); padding: 0.2rem 0.8rem; border-radius: 6px; border: 1px solid rgba(230,57,70,0.2); }
+.warning { background: rgba(244,162,97,0.1); border: 1px solid rgba(244,162,97,0.3); border-radius: 8px; padding: 0.75rem 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: #d35400; }
+.warning strong { color: #e67e22; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--rule); }
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+thead th { background: var(--bg); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 0.6rem 0.75rem; text-align: left; border-bottom: 2px solid var(--rule); position: sticky; top: 0; z-index: 1; }
+tbody td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--rule); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(0,0,0,0.02); }
+td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-green { background: rgba(42,157,143,0.12); color: var(--win); }
+.tag-red { background: rgba(230,57,70,0.1); color: var(--loss); }
+.tag-yellow { background: rgba(244,162,97,0.12); color: var(--draw); }
+.tag-blue { background: rgba(69,123,157,0.1); color: var(--home); }
+.history-table { font-size: 0.82rem; }
+.history-table td { padding: 0.4rem 0.6rem; }
+.form-row { display: flex; gap: 0.35rem; align-items: center; }
+.form-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #fff; }
+.form-dot.w { background: var(--win); } .form-dot.d { background: var(--draw); } .form-dot.l { background: var(--loss); }
+.conf-bar { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+.bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent2), var(--accent3)); border-radius: 4px; }
+.bar-label { font-size: 0.8rem; color: var(--muted); min-width: 60px; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.summary-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 10px; padding: 1.25rem; }
+.summary-card .s-match { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+.league-overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.league-card { background: var(--bg2); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; }
+.calibration-box { background: var(--bg2); border-radius: 10px; padding: 1.25rem; border: 1px solid var(--rule); margin: 1rem 0; }
+.cal-item { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px solid var(--rule); font-size: 0.85rem; }
+.cal-item:last-child { border-bottom: none; }
+.parlay-section { margin: 1rem 0; }
+.parlay-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.parlay-table th { background: var(--bg); padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; }
+.parlay-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--rule); }
+.parlay-table tr.parlay-confident { background: rgba(46,204,113,0.1); }
+.parlay-table tr.parlay-upset { background: rgba(230,126,34,0.1); }
+.parlay-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.75rem; padding: 0.5rem; background: var(--bg); border-radius: 6px; }
+.footer { background: var(--bg2); border-top: 1px solid var(--rule); padding: 2rem 0; margin-top: 3rem; text-align: center; font-size: 0.8rem; color: var(--muted); }
+.chart-container { width: 100%; height: 400px; margin: 1rem 0; }
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.5rem; }
+  .match-teams { font-size: 1.1rem; gap: 0.75rem; }
+  .odds-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+  .container { padding: 0 1rem; }
+}
+</style>
+<style>
+  .match-teams .team-rank { display: block; font-size: 0.62rem; font-weight: 400; line-height: 1.1;
+    color: var(--muted, #7a8ba0); margin-top: 0.18rem; text-align: right; opacity: 0.9; bottom: auto; }
+  /* 开赛时间：紧跟在日期之后，弱化处理，不与日期争夺视觉权重 */
+  .card-header .kickoff, .match-time .kickoff {
+    display: inline-block; margin-left: 0.32rem; padding: 0.02rem 0.34rem; border-radius: 0.28rem;
+    background: rgba(47,125,224,0.14); color: var(--accent, #2f7de0); font-weight: 600;
+    font-size: 0.72rem; line-height: 1.5; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .league-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; margin-top:0.35rem; }
+  .league-tbl th, .league-tbl td { border-bottom:1px solid rgba(128,128,128,0.22); padding:0.3rem 0.45rem; text-align:left; white-space:nowrap; }
+  .league-tbl th { color:var(--muted,#7a8ba0); font-weight:600; font-size:0.72rem; }
+  .league-note { font-size:0.76rem; color:var(--muted,#7a8ba0); margin:0.45rem 0 0; line-height:1.55; }
+  .league-tbl.standings { display:block; overflow-x:auto; }
+  .league-tbl.standings td:nth-child(2) { white-space:nowrap; }
+  .league-tbl.standings tr.zone-eu td { background:rgba(46,160,67,0.13); }
+  .league-tbl.standings tr.zone-rel td { background:rgba(220,60,60,0.12); }
+  .league-tbl.standings td.pts { font-weight:700; }
+  .league-impact { margin-top:0; }
+  .league-impact .impact-title { font-size:0.74rem; font-weight:700; color:var(--muted,#7a8ba0); margin-bottom:0.3rem; }
+  .league-impact .impact-row { font-size:0.8rem; line-height:1.75; }
+  .league-impact .impact-row b { color:var(--accent,#2f7de0); }
+  .league-src { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-bottom:0.4rem; }
+  .h4-sub { font-weight:400; font-size:0.78rem; color:var(--muted,#7a8ba0); }
+  /* ---------- 表格对齐统一：列名与数据一律水平居中 ----------
+     基线 CSS 里 thead th 是 text-align:left，数字列只有零星 inline 居中，
+     左对齐会在窄列右侧留下大块空白、各表观感不一致。
+     下面三条同选择器覆盖 + 类选择器提权，压过 .league-tbl / .parlay-table 的 left。
+     唯一的例外是长文本列（说明/理由/逐腿明细），居中会把一句话拆成居中碎行，
+     用 .cell-left 显式保持左对齐。 */
+  table th, table td { text-align: center; }
+  /* 表头不折行：只给窄列的串关表与积分榜，其余表（如 4.2 十一列）
+     保留可折行，否则整表会被表头撑宽、桌面端出现横向滚动条 */
+  .parlay-table th, .league-tbl th { white-space: nowrap; }
+  .league-tbl th, .league-tbl td { text-align: center; }
+  .parlay-table th, .parlay-table td { text-align: center; }
+  table th.cell-left, table td.cell-left { text-align: left; }
+  table td.num, table th.num { font-family:monospace; font-variant-numeric:tabular-nums; }
+  /* 概率数值统一渲染：同一字形/字号/内边距，仅按可信度分色（高/中/弱） */
+  .pct { display:inline-block; padding:0.06rem 0.32rem; border-radius:3px;
+    font-family:monospace; font-size:0.72rem; font-weight:600; line-height:1.35;
+    white-space:nowrap; letter-spacing:0; }
+  .pct-hi  { background:rgba(42,157,143,0.14); color:var(--win,#2a9d8f); }
+  .pct-mid { background:rgba(244,162,97,0.16); color:var(--draw,#e76f51); }
+  .pct-lo  { background:rgba(128,128,128,0.10); color:var(--muted,#7a8ba0); }
+  /* 今日两榜：列宽按内容分配，与「前日回顾」表的疏密保持一致（编号列不吞富余宽度）；
+     窄屏交回自动布局，避免百分比列把文字压成竖排 */
+  @media (min-width: 760px) {
+    .pick-tbl th:nth-child(1) { width:15%; }
+    .pick-tbl th:nth-child(2) { width:21%; }
+    .pick-tbl th:nth-child(3) { width:10%; }
+    .pick-tbl th:nth-child(4) { width:19%; }
+    .pick-tbl th:nth-child(5) { width:9%; }
+    .pick-tbl th:nth-child(6) { width:10%; }
+    .pick-tbl th:nth-child(7) { width:7%; }
+    .pick-tbl th:nth-child(8) { width:9%; }
+    .pick-tbl.bold-tbl th:nth-child(3) { width:17%; }
+    .pick-tbl.bold-tbl th:nth-child(4) { width:19%; }
+    .pick-tbl.bold-tbl th:nth-child(5) { width:19%; }
+    .pick-tbl.bold-tbl th:nth-child(6) { width:7%; }
+  }
+  /* 无交锋记录时的替代块：两队各自在本赛事的近期战绩，桌面双栏 / 窄屏单栏 */
+  .form-note { font-size:0.8rem; color:var(--muted,#7a8ba0); margin:0.2rem 0 0.4rem; line-height:1.6; }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; margin-top:0.3rem; }
+  .form-block { min-width:0; }
+  .form-title { font-size:0.8rem; font-weight:700; color:var(--accent,#2f7de0); margin-bottom:0.25rem; }
+  .form-tbl { width:100%; font-size:0.78rem; }
+  .form-tbl td, .form-tbl th { padding:0.26rem 0.3rem; }
+  .form-empty { font-size:0.78rem; color:var(--muted,#7a8ba0); margin:0.2rem 0 0; }
+  @media (max-width: 640px) {
+    /* 1fr 的 min-content 下限会让 4 列战绩表把卡片撑破 */
+    .form-grid { grid-template-columns: minmax(0, 1fr); }
+    .form-block { overflow-x: auto; }
+    .form-tbl th, .form-tbl td { padding: 0.2rem 0.2rem; font-size: 0.72rem; }
+    /* 移动端表格宽度按内容（max-content）而定，不再被容器压成逐字竖排；
+       4~5 列的表仍撑满容器不滚动，列多的表才出现横滑；min-width:100% 让窄表不缩成一条 */
+    .table-wrap > table { width: max-content; min-width: 100%; white-space: nowrap; }
+    .table-wrap > table th, .table-wrap > table td {
+      padding: 0.18rem 0.3rem; font-size: 0.72rem; }
+    .table-wrap td.cell-left, .table-wrap th.cell-left { white-space: normal; }
+    /* 跨列的分组标题行（「第2档（其余高置信场次）」）必须能折行，否则被 nowrap 裁掉半句 */
+    .table-wrap > table td[colspan], .table-wrap > table th[colspan] { white-space: normal; }
+    /* 串关表不在 .table-wrap 内，5 列 + 长组合文本在 360px 下会顶出 8px */
+    .parlay-section { overflow-x: auto; }
+    .parlay-table { font-size: 0.76rem; }
+    .parlay-table th, .parlay-table td { padding: 0.4rem 0.42rem; }
+  }
+  /* 形势分析：本场三种结果对积分榜的影响 */
+  .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
+    border-left:2px solid rgba(52,122,252,0.35); }
+  .sit-row { font-size:0.76rem; line-height:1.65; }
+  .sit-team { font-weight:700; color:var(--accent,#2f7de0); margin-right:0.3rem; }
+  .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
+  .sit-item { display:inline-block; margin-right:0.6rem; }
+  .sit-item b { color:var(--accent3,#e07a2f); }
+  /* 比赛时段天气（Open-Meteo）：适宜淡绿、需留意橙、恶劣红 */
+  .wx-chip { display:inline-block; margin-left:0.45rem; padding:0.06rem 0.42rem;
+    border:1px solid rgba(0,0,0,0.1); border-radius:999px; background:rgba(0,0,0,0.03);
+    font-size:0.72rem; line-height:1.5; color:var(--muted,#7a8ba0); white-space:nowrap; }
+  .wx-chip.wx-ok { color:#1f7a4d; border-color:rgba(46,160,90,0.32); background:rgba(46,160,90,0.13); }
+  .wx-chip.wx-warn { color:#8a5a00; border-color:rgba(200,140,0,0.35); background:rgba(255,193,7,0.13); }
+  .wx-chip.wx-bad { color:#a3252f; border-color:rgba(200,50,60,0.35); background:rgba(220,53,69,0.11); }
+  /* 数据对比：六项核心指标的双向条（左主右客），只留势能差异 */
+  .cmp-list { margin:0.15rem 0 0.35rem; display:grid; gap:0.34rem; }
+  .cmp-item { display:grid; grid-template-columns:3.2rem 1fr 3.2rem; align-items:center;
+    gap:0.45rem; }
+  .cmp-k { grid-column:2; grid-row:1; text-align:center; font-size:0.72rem;
+    color:var(--muted,#7a8ba0); letter-spacing:0.02em; }
+  .cmp-v { font-size:0.8rem; font-variant-numeric:tabular-nums; color:var(--muted,#7a8ba0); }
+  .cmp-v.h { text-align:right; }
+  .cmp-v.a { text-align:left; }
+  .cmp-v.on { font-weight:700; }
+  .cmp-v.h.on { color:var(--home,#457b9d); }
+  .cmp-v.a.on { color:var(--away,#e76f51); }
+  .cmp-track { grid-column:1 / -1; grid-row:2; display:flex; height:7px; border-radius:4px;
+    overflow:hidden; background:rgba(0,0,0,0.05); }
+  .cmp-track i { display:block; height:100%; }
+  .cmp-track .l { background:var(--home,#457b9d); margin-left:auto; }
+  .cmp-track .r { background:var(--away,#e76f51); }
+  .cmp-note { font-size:0.8rem; line-height:1.7; color:var(--ink,#1a1a2e); margin:0.15rem 0 0.35rem; }
+  /* 进球时段：六段热力条，深浅表示占比 */
+  .gd-list { margin:0.15rem 0 0.3rem; display:grid; gap:0.26rem; }
+  .gd-row { display:grid; grid-template-columns:4.6rem 1fr; align-items:center; gap:0.5rem; }
+  .gd-team { font-size:0.76rem; color:var(--muted,#7a8ba0); text-align:right;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .gd-cells { display:grid; grid-template-columns:repeat(6,1fr); gap:2px; }
+  .gd-cell { border-radius:4px; text-align:center; font-size:0.68rem; line-height:1.5;
+    padding:0.14rem 0; font-variant-numeric:tabular-nums; color:var(--ink,#1a1a2e);
+    font-weight:600; }
+  .gd-cell.h { background:rgba(69,123,157,var(--a)); }
+  .gd-cell.a { background:rgba(231,111,81,var(--a)); }
+  .gd-axis { display:grid; grid-template-columns:repeat(6,1fr); gap:2px;
+    font-size:0.66rem; color:var(--muted,#7a8ba0); text-align:center; }
+  .gd-axis span:first-child { text-align:left; }
+  .gd-axis span:last-child { text-align:right; }
+  /* 盘路走势：两队各一条赢盘率，够看出倾向 */
+  .dish-list { margin:0.15rem 0 0.3rem; display:grid; gap:0.3rem; }
+  .dish-row { display:grid; grid-template-columns:6.6rem 1fr; align-items:center; gap:0.5rem; }
+  .dish-team { font-size:0.78rem; color:var(--ink,#1a1a2e); white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; }
+  .dish-track { display:flex; gap:0.5rem; align-items:center; }
+  .dish-bar { flex:1; height:7px; border-radius:4px; background:rgba(0,0,0,0.05);
+    overflow:hidden; }
+  .dish-bar i { display:block; height:100%; background:var(--home,#457b9d); }
+  .dish-row.away .dish-bar i { background:var(--away,#e76f51); }
+  .dish-v { font-size:0.74rem; color:var(--muted,#7a8ba0); font-variant-numeric:tabular-nums;
+    white-space:nowrap; }
+  /* 子板块：标题与内容同框，避免各段挤在一起看不出分组 */
+  .sub-box { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
+    border-radius: 10px; padding: 0.85rem 1rem 0.75rem; margin: 0.9rem 0; }
+  .sub-box > h4 { margin: 0 0 0.6rem; padding-left: 0.5rem;
+    border-left: 3px solid var(--home, #457b9d); }
+  .sub-box > h4 + * { margin-top: 0; }
+  .sub-box > *:last-child { margin-bottom: 0; }
+  /* 窄屏兜底：没有 overflow 的 .table-wrap 会让多列表格把中文压成竖排单字，
+     行高随之暴涨（2026-11-07 实测单卡片 4300px、整页 18 万 px） */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .sub-box .table-wrap { margin-bottom: 0; }
+  /* 比分与方向预测：两行内收完 */
+  .prediction { background: var(--bg2, #fff); border: 1px solid var(--rule, #dee2e6);
+    border-radius: 10px; padding: 0.8rem 1rem 0.85rem; margin: 0.9rem 0; }
+  .prediction .pred-title { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.55rem; }
+  .prediction .pred-dir { font-size: 0.74rem; font-weight: 600; color: var(--home, #457b9d);
+    background: rgba(69,123,157,0.12); border-radius: 999px; padding: 0.05rem 0.5rem;
+    letter-spacing: 0; text-transform: none; }
+  .prediction .pred-main { display: flex; align-items: center; flex-wrap: wrap;
+    gap: 0.4rem 0.55rem; margin-top: 0.55rem; }
+  .prediction .pred-item { display: inline-flex; align-items: center; gap: 0.4rem;
+    background: var(--bg, #f0f2f5); border-radius: 8px; padding: 0.28rem 0.6rem; }
+  .prediction .pred-k { font-size: 0.72rem; color: var(--muted, #6c757d); }
+  .prediction .pred-score { font-family: 'SFMono-Regular', Consolas, monospace; font-size: 1.05rem;
+    font-weight: 700; color: var(--ink, #1a1a2e); background: none; border: none;
+    padding: 0; border-radius: 0; }
+  .prediction .pred-score.sm { font-size: 0.9rem; }
+  .prediction .pred-v { font-size: 0.86rem; font-weight: 700; color: var(--ink, #1a1a2e); }
+  .prediction .pred-note { margin-top: 0.45rem; font-size: 0.74rem; color: var(--muted, #6c757d); }
+  .prediction .pred-row { margin: 0.45rem 0 0; }
+  .prediction .pred-value { font-family: inherit; font-size: 0.8rem; font-weight: 600;
+    color: var(--ink, #1a1a2e); }
+  .prediction .pred-label { font-size: 0.74rem; }
+  .prediction .tag { font-size: 0.72rem; }
+  /* 结构化伤停名单：主客各一行，队名左对齐 */
+  .inj-block { margin:0 0 0.5rem; }
+  .inj-row { display:flex; gap:0.5rem; font-size:0.84rem; line-height:1.62; padding:0.12rem 0; }
+  .inj-team { flex:0 0 auto; font-weight:700; color:var(--ink,#1a1a2e); }
+  .inj-list { color:var(--muted,#7a8ba0); min-width:0; }
+  .inj-list b { color:#a3252f; font-weight:700; }
+  .inj-fm { font-style:normal; font-weight:600; font-size:0.72rem; color:var(--accent,#2f7de0);
+    background:rgba(47,125,224,0.09); border-radius:4px; padding:0.02rem 0.28rem;
+    margin-left:0.28rem; vertical-align:1px; }
+  .inj-xi { margin:0.1rem 0 0.18rem; }
+  .inj-xi > summary { cursor:pointer; font-size:0.74rem; color:var(--accent,#2f7de0);
+    list-style:none; padding:0.05rem 0; }
+  .inj-xi > summary::-webkit-details-marker { display:none; }
+  .inj-xi > summary::before { content:'▸ '; }
+  .inj-xi[open] > summary::before { content:'▾ '; }
+  .inj-xi-in { font-size:0.76rem; color:var(--muted,#7a8ba0); line-height:1.7;
+    padding:0.1rem 0 0.15rem 0.6rem; }
+  .inj-src { font-size:0.72rem; color:var(--muted,#7a8ba0); opacity:0.85; margin-top:0.15rem; }
+  @media (max-width: 640px) {
+    .inj-row { display:block; } .inj-team { display:block; }
+    /* 六段轴标签在窄屏会互相压住，缩字并收紧间距 */
+    .gd-axis { font-size:0.54rem; gap:0; }
+    .gd-cell { font-size:0.62rem; padding:0.12rem 0; }
+    .gd-team { font-size:0.7rem; }
+    .gd-row { grid-template-columns:3.6rem 1fr; gap:0.35rem; }
+    .cmp-item { grid-template-columns:2.9rem 1fr 2.9rem; gap:0.3rem; }
+    .dish-row { grid-template-columns:4.6rem 1fr; gap:0.35rem; }
+    .dish-v { font-size:0.7rem; }
+    /* 窄屏天气 chip 独占一行，避免 nowrap 把卡片撑破 */
+    .wx-chip { flex:1 0 100%; margin-left:0; white-space:normal; }
+    /* 1fr 的 min-content 下限会让三格赔率在 420px 撑破卡片，改用 minmax(0,1fr) */
+    .odds-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .insight-grid { grid-template-columns: 1fr; }
+  }
+  .sit-line, .sit-near { font-size:0.74rem; color:var(--muted,#7a8ba0);
+    line-height:1.6; margin-top:0.05rem; }
+  .sit-zone { font-size:0.74rem; color:var(--muted,#7a8ba0); line-height:1.6;
+    margin-bottom:0.35rem; padding-bottom:0.25rem;
+    border-bottom:1px dashed rgba(128,128,128,0.3); }
+  .sit-zone b { color:var(--accent3,#e07a2f); }
+  .sit-note { font-size:0.74rem; color:var(--muted,#7a8ba0); line-height:1.6;
+    margin-bottom:0.35rem; }
+  /* 积分榜板块：卡片占满宽度，内部左右分栏（左=完整积分榜表格，右=形势分析）。
+     榜单仍是完整表格（名次/队名/赛/胜平负/进失/积分全部直读），
+     页面高度靠「并排」而不是「折叠/压缩」来控制。 */
+  /* grid 项默认 min-width:auto，会被内部 520px 保底的积分榜表撑到 556px，撑破窄屏 */
+  .league-overview-grid { grid-template-columns: minmax(0, 1fr); }
+  .league-card { min-width: 0; }
+  .lg-split { display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap:0.5rem 1.2rem; align-items:start; margin-top:0.5rem; }
+  .lg-col { min-width:0; }
+  .col-h { font-size:0.72rem; font-weight:700; letter-spacing:0.05em;
+    color:var(--accent,#2f7de0); padding-bottom:0.2rem; margin-bottom:0.3rem;
+    border-bottom:1px solid rgba(52,122,252,0.3); }
+  .std-scroll { overflow-x:auto; }
+  table.std-main { display:table !important; width:100%; margin-top:0; font-size:0.73rem;
+    white-space:nowrap; line-height:1.25; }
+  table.std-main th, table.std-main td { padding:0.11rem 0.3rem; }
+  table.std-main th { font-size:0.68rem; }
+  table.std-main tr.z1 td { background:rgba(46,160,67,0.13); }
+  table.std-main tr.z2 td { background:rgba(224,122,47,0.13); }
+  table.std-main tr.z3 td { opacity:0.62; }
+  table.std-main tr.hi td { background:rgba(52,122,252,0.15); color:var(--accent,#2f7de0);
+    font-weight:700; opacity:1; }
+  table.std-main td.pts { font-weight:700; }
+  .std-legend { font-size:0.7rem; color:var(--muted,#7a8ba0); margin-top:0.3rem; line-height:1.6; }
+  .std-grp { display:grid; grid-template-columns:1fr; gap:0.5rem; }
+  .std-grp-block { min-width:0; }
+  .std-grp-block .gname { font-size:0.7rem; font-weight:700; color:var(--muted,#7a8ba0);
+    letter-spacing:0.04em; margin:0.1rem 0 0.05rem; }
+  details.std-full { margin-top:0.45rem; }
+  details.std-full > summary { cursor:pointer; font-size:0.74rem; color:var(--accent,#2f7de0); }
+  details.std-full[open] > summary { margin-bottom:0.3rem; }
+  @media (max-width: 900px) { .lg-split { grid-template-columns:1fr; } }
+  @media (max-width: 560px) {
+    table.std-main { font-size:0.66rem; }
+    table.std-main th, table.std-main td { padding:0.08rem 0.12rem; }
+  }
+  /* 历史交锋：汇总行 + 逐场表（对齐网易交锋战绩版式） */
+  .h2h-cols { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:0.6rem; margin:0 0 0.6rem; }
+  .h2h-col { background:var(--bg,#f0f2f5); border-radius:8px; padding:0.55rem 0.7rem; }
+  .h2h-col-h { display:flex; align-items:baseline; justify-content:space-between; gap:0.4rem;
+    font-size:0.78rem; font-weight:700; color:var(--ink,#111); }
+  .h2h-col-h span { font-size:0.7rem; font-weight:400; color:var(--muted,#7a8ba0); white-space:nowrap; }
+  .h2h-wdl { font-size:0.78rem; color:var(--muted,#7a8ba0); margin-top:0.12rem; }
+  .h2h-wdl b { font-size:1.05rem; font-variant-numeric:tabular-nums; margin:0 0.08rem; }
+  .h2h-wdl b.w { color:var(--win,#2a9d8f); }
+  .h2h-wdl b.d { color:var(--draw,#f4a261); }
+  .h2h-wdl b.l { color:var(--loss,#e63946); }
+  .h2h-col-sub { font-size:0.72rem; color:var(--muted,#7a8ba0); margin-top:0.1rem; }
+  tr.h2h-grp td { background:rgba(128,128,128,0.10); font-size:0.72rem; font-weight:700;
+    color:var(--muted,#7a8ba0); text-align:left !important; padding:0.25rem 0.45rem !important; }
+  table.h2h-t th, table.h2h-t td { text-align:center; }
+  table.h2h-t th { white-space:nowrap; }
+  table.h2h-t th.lg, table.h2h-t td.lg { text-align:left; }
+  table.h2h-t td:nth-child(2) { color:var(--muted,#7a8ba0); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  table.h2h-t th:nth-child(3) { width:46%; }
+  table.h2h-t .vs { display:inline-flex; align-items:center; gap:0.45rem; width:100%; }
+  table.h2h-t .vs .th, table.h2h-t .vs .ta {
+    flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  table.h2h-t .vs .th { text-align:right; }
+  table.h2h-t .vs .ta { text-align:left; }
+  table.h2h-t .vs .sc { flex:0 0 3.4em; text-align:center; font-weight:700;
+    color:var(--ink,#111); font-variant-numeric:tabular-nums; }
+  @media (max-width: 560px) {
+    table.h2h-t { font-size:0.7rem; }
+    table.h2h-t th.lg, table.h2h-t td.lg { display:none; }
+    table.h2h-t th:nth-child(3) { width:auto; }
+    table.h2h-t .vs { gap:0.22rem; }
+    table.h2h-t .vs .th, table.h2h-t .vs .ta { overflow:visible; text-overflow:clip; }
+    table.h2h-t .vs .sc { flex:0 0 2.7em; }
+    .h2h-cols { grid-template-columns:1fr; gap:0.4rem; }
+    .h2h-col { padding:0.45rem 0.6rem; }
+    tr.h2h-grp td { font-size:0.68rem; }
+  }
+  /* ---------- 折叠区：原生 details，禁用 JS 也能正常展开 ---------- */
+  details.fold { margin:0.8rem 0; border:1px solid rgba(47,125,224,0.24); border-radius:10px;
+    background:rgba(47,125,224,0.035); }
+  details.fold > summary.fold-sum { display:flex; align-items:center; gap:0.5rem;
+    cursor:pointer; list-style:none; user-select:none; padding:0.55rem 0.8rem;
+    font-size:0.84rem; color:var(--ink,#1a1a2e); border-radius:10px; }
+  details.fold > summary.fold-sum::-webkit-details-marker { display:none; }
+  details.fold > summary.fold-sum:hover { background:rgba(47,125,224,0.09); }
+  details.fold > summary.fold-sum h3 { margin:0; font-size:0.94rem; font-weight:700;
+    color:var(--accent,#2f7de0); }
+  details.fold > summary.fold-sum b { font-size:0.82rem; }
+  .fold-ico { flex:0 0 auto; color:var(--accent,#2f7de0); font-size:0.78rem;
+    transition:transform .15s ease; }
+  details.fold[open] > summary.fold-sum .fold-ico { transform:rotate(90deg); }
+  .fold-hint { flex:1 1 auto; min-width:0; font-size:0.73rem; font-weight:400;
+    color:var(--muted,#7a8ba0); }
+  .fold-cta { flex:0 0 auto; font-size:0; background:var(--accent,#2f7de0); color:#fff;
+    padding:0.18rem 0.62rem; border-radius:999px; }
+  .fold-cta::after { content:'展开'; font-size:0.72rem; font-weight:600; }
+  details.fold[open] > summary.fold-sum .fold-cta { background:var(--muted,#7a8ba0); }
+  details.fold[open] > summary.fold-sum .fold-cta::after { content:'收起'; }
+  .fold-body { padding:0.35rem 0.8rem 0.8rem; border-top:1px solid rgba(47,125,224,0.16); }
+  .fold-body > p:first-child { margin-top:0.5rem; }
+  details.fold.fold-card { margin:0.55rem 0; }
+  details.fold.fold-card > summary.fold-sum { padding:0.38rem 0.65rem; }
+  .fold-body .sub-box { margin-bottom:0.5rem; }
+  @media (max-width: 640px) {
+    details.fold > summary.fold-sum { flex-wrap:wrap; padding:0.45rem 0.6rem; }
+    .fold-hint { flex:1 1 100%; order:3; }
+  }
+  /* 前日回顾用中性灰与主折叠区分；嵌在汇总表折叠内时去掉第二道外框 */
+  details.fold.fold-recap { margin:0.7rem 0; border-color:rgba(128,128,128,0.24);
+    background:rgba(128,128,128,0.04); }
+  details.fold.fold-recap > summary.fold-sum b { color:var(--accent,#2f7de0); }
+  .fold-body details.fold.fold-recap { margin:0.5rem 0; border:0; background:none; }
+  .fold-body details.fold.fold-recap > summary.fold-sum {
+    border:1px dashed rgba(47,125,224,0.3); background:rgba(47,125,224,0.04); }
+  /* 第五节联赛折叠与 4.x 折叠条同层同宽，避免被内部宽表格撑出额外宽度 */
+  details.fold.fold-league { width:100%; box-sizing:border-box; min-width:0; }
+  /* 纯来源 / 图例 / 口径标注一律不展示，只保留数据与结论 */
+  .league-src, .inj-src, .std-legend, .parlay-note { display:none !important; }
+  @media print {
+    details.fold > summary.fold-sum .fold-cta { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero区域 -->
+<div class="hero">
+  <div class="container">
+    <h1>2026-11-11 竞彩足球深度分析报告</h1>
+    <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 6场比赛全面覆盖</div>
+    <div class="subtitle">数据更新时间: 2026-11-11 12:03 (北京时间)</div>
+    <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
+  </div>
+</div>
+
+<div class="container">
+
+
+<h2>🎯 今日比分精选</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table class="pick-tbl">
+      <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>双档</th>
+      <th>±1球</th><th>模型概率</th><th>λ总</th><th>可信度</th></tr></thead>
+      <tbody><tr><td><span class="tag tag-blue">周三001</span> 日联赛杯</td><td>横滨水手 vs 鹿岛鹿角</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-2 + 2-2</td><td style="font-family:monospace;">56%</td><td style="font-family:monospace;">11.7%</td><td style="font-family:monospace;">3.46</td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三002</span> 日联赛杯</td><td>神户胜利 vs 町田泽维</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td style="font-family:monospace;font-size:0.8rem;">1-0 + 0-0</td><td style="font-family:monospace;">76%</td><td style="font-family:monospace;">14.1%</td><td style="font-family:monospace;">2.46</td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周三003</span> 日联赛杯</td><td>川崎前锋 vs 柏太阳神</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 2-2</td><td style="font-family:monospace;">58%</td><td style="font-family:monospace;">10.0%</td><td style="font-family:monospace;">3.38</td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三004</span> 日联赛杯</td><td>浦和红钻 vs 大阪樱花</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2-1</td><td style="font-family:monospace;font-size:0.8rem;">1-1 + 1-0</td><td style="font-family:monospace;">61%</td><td style="font-family:monospace;">9.7%</td><td style="font-family:monospace;">3.12</td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
+    </table>
+  </div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 比分精选（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>命中比分</th><th>上次概率</th><th>双档（概率）</th><th>实际</th><th>结果</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td><span class="pct pct-lo">12.6%</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0 <span class="pct pct-lo">13.0%</span> + 0-1 <span class="pct pct-lo">11.1%</span></td><td style="font-family:monospace;">0-3</td><td><span class="tag tag-red">❌ 未中</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）比分精选：已出 1 场 · 命中/双档 0 · 未中 1 · 命中比分概率均值 12.6%。</p></div></details>
+</div>
+
+
+<h2>🔥 大胆档</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table class="pick-tbl bold-tbl">
+      <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>稳档（头条）</th>
+      <th>量级档</th><th>极限档</th><th>λ总</th></tr></thead>
+      <tbody><tr><td colspan="6" style="color:var(--muted);font-size:0.8rem;padding:0.6rem 0.5rem;">当日无可选进攻型参考场次（场次偏少或均属冷启动）。</td></tr></tbody>
+    </table>
+  </div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 大胆档（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><p style="font-size:0.78rem;color:var(--muted);margin-top:0.6rem;">2026-11-10 无大胆档场次。</p></div></details>
+</div>
+
+
+<h2>一、比赛总览</h2>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>编号</th><th>联赛</th><th>主队</th><th>VS</th><th>客队</th><th>胜赔</th><th>平赔</th><th>负赔</th><th>市场倾向</th><th>总进球倾向</th></tr></thead>
+      <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>日联赛杯</td><td>横滨水手</td><td style="text-align:center;color:var(--muted);">VS</td><td>鹿岛鹿角</td><td style="font-family:monospace;">3.01</td><td style="font-family:monospace;">3.25</td><td style="font-family:monospace;">2</td><td><span class="tag tag-red">客胜</span></td><td><span class="tag tag-red" title="λ总分3.46，≥3球67%">大球倾向 67%</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>日联赛杯</td><td>神户胜利</td><td style="text-align:center;color:var(--muted);">VS</td><td>町田泽维</td><td style="font-family:monospace;">2.2</td><td style="font-family:monospace;">2.95</td><td style="font-family:monospace;">2.89</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.46，≥3球45%">均势总量 45%</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>日联赛杯</td><td>川崎前锋</td><td style="text-align:center;color:var(--muted);">VS</td><td>柏太阳神</td><td style="font-family:monospace;">2.62</td><td style="font-family:monospace;">3.55</td><td style="font-family:monospace;">2.1</td><td><span class="tag tag-red">客胜</span></td><td><span class="tag tag-red" title="λ总分3.38，≥3球66%">大球倾向 66%</span></td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>日联赛杯</td><td>浦和红钻</td><td style="text-align:center;color:var(--muted);">VS</td><td>大阪樱花</td><td style="font-family:monospace;">1.82</td><td style="font-family:monospace;">3.48</td><td style="font-family:monospace;">3.3</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-red" title="λ总分3.12，≥3球60%">大球倾向 60%</span></td></tr><tr><td><span class="tag tag-blue">周三005</span></td><td>英锦标赛</td><td>谢周三</td><td style="text-align:center;color:var(--muted);">VS</td><td>阿克宁顿</td><td style="font-family:monospace;"></td><td style="font-family:monospace;"></td><td style="font-family:monospace;"></td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.72，≥3球51%">均势总量 51%</span></td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>英锦标赛</td><td>巴恩斯利</td><td style="text-align:center;color:var(--muted);">VS</td><td>奥德汉姆</td><td style="font-family:monospace;">1.71</td><td style="font-family:monospace;">3.78</td><td style="font-family:monospace;">3.45</td><td><span class="tag tag-green">主胜</span></td><td><span class="tag tag-yellow" title="λ总分2.66，≥3球50%">均势总量 50%</span></td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+
+<h2>二、市场信心指数对比</h2>
+<div class="card">
+  <div id="confidenceChart" class="chart-container"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+var chart = echarts.init(document.getElementById('confidenceChart'));
+var matchLabels = ["周三001", "周三002", "周三003", "周三004", "周三005", "周三006"];
+var homeWinProbs = [23.0, 39.9, 24.5, 46.4, 44.0, 61.3];
+var drawProbs = [27.2, 29.7, 28.0, 28.7, 31.9, 27.1];
+var awayWinProbs = [49.8, 30.4, 47.6, 25.0, 24.1, 11.5];
+chart.setOption({
+    title: { text: '模型V3.3胜平负概率分布', left: 'center', textStyle: { fontSize: 14 } },
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { data: ['主胜概率', '平局概率', '客胜概率'], bottom: 0 },
+  grid: { left: '3%', right: '4%', bottom: '12%', containLabel: true },
+  xAxis: { type: 'category', data: matchLabels, axisLabel: { rotate: 45, fontSize: 10 } },
+  yAxis: { type: 'value', name: '概率(%)', max: 80 },
+  series: [
+    { name: '主胜概率', type: 'bar', stack: 'total', data: homeWinProbs, itemStyle: { color: '#2a9d8f' } },
+    { name: '平局概率', type: 'bar', stack: 'total', data: drawProbs, itemStyle: { color: '#f4a261' } },
+    { name: '客胜概率', type: 'bar', stack: 'total', data: awayWinProbs, itemStyle: { color: '#e63946' } }
+  ]
+});
+window.addEventListener('resize', function() { chart.resize(); });
+</script>
+
+<h2>三、逐场深度分析</h2>
+
+<div class="card" id="match-周三001">
+  <div class="card-header">
+    <span class="match-id">周三001</span>
+    <span class="match-league">日联赛杯</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">18:00</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 横滨 12~13℃ · 降雨 0% · 风 3km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">横滨水手</span>
+    <span class="vs">VS</span>
+    <span class="away">鹿岛鹿角</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">3.01</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.25</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2</div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">5 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">7.00 球</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>近期战绩 · 日联赛杯</h4><div class="form-grid"><div class="form-block"><div class="form-title">横滨水手</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">10-28</td><td class="cell-left"><b>横滨水手</b> vs 广岛三箭</td><td style="font-family:monospace;">4-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">10-14</td><td class="cell-left"><b>横滨水手</b> vs 清水鼓动</td><td style="font-family:monospace;">2-1</td><td style="color:var(--win);font-weight:700;">胜</td></tr><tr><td style="font-family:monospace;color:var(--muted);">09-29</td><td class="cell-left">山形山神 vs <b>横滨水手</b></td><td style="font-family:monospace;">1-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">鹿岛鹿角</div><p class="form-empty">暂无记录</p></div></div></div><div class="sub-box"><h4>伤停与缺阵</h4></div><div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 56.7%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 43.9%（历史同档翻车率均值 47.8%）；模型−市场分歧 -5.7pp、|让球|1、λ和 3.34、市场熵 1.074。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  <h4>让球盘偏差（主队受让1 +1 · |让球|=1 · 最大分歧 7pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.6</td><td>54.9%</td><td>61.8%</td><td><strong>56.6%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.91</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.55</td><td>24.7%</td><td>18.9%</td><td><strong>22.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.81</td></tr><tr><td>让球负</td><td style="font-family:monospace;">4.3</td><td>20.4%</td><td>19.2%</td><td><strong>20.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.89</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>最可能结果：</b><span class="tag tag-green">让球胜 @1.6</span>
+    校准概率 <strong>56.6%</strong>（EV 0.91，仅参考不参与排序），
+    模型−市场分歧 +1.7pp。
+    本场让球 <span class="tag tag-green">可用</span>。
+  </p>
+</div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">客胜倾向</span>
+      <span class="tag tag-yellow">可信度 慎用</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 57%（高）</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">1-1</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">1-2 / 2-1</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">67.2%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">大球倾向 · 最可能 3 球</span></span>
+    </div>
+    <div class="pred-note">首选比分不在客胜方向内，双档已覆盖两者</div>
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>客/客</b> <span class="pct pct-mid">28.1%</span> · 主/主 <span class="pct pct-lo">19.4%</span> · 平/客 <span class="pct pct-lo">13.8%</span> · 半场倾向 客 <span class="pct pct-mid">36%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<div class="card" id="match-周三002">
+  <div class="card-header">
+    <span class="match-id">周三002</span>
+    <span class="match-league">日联赛杯</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">18:00</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 神户 14~14℃ · 降雨 0% · 风 6km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">神户胜利</span>
+    <span class="vs">VS</span>
+    <span class="away">町田泽维</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">2.2</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">2.95</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.89</div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">4 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>伤停与缺阵</h4></div><div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 65.7%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 39.9%（历史同档翻车率均值 47.8%）；模型−市场分歧 -13.9pp、|让球|1、λ和 2.37、市场熵 1.089。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 16pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">4.95</td><td>17.7%</td><td>9.2%</td><td><strong>14.3%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.71</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.7</td><td>23.7%</td><td>16.7%</td><td><strong>21.3%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.79</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.5</td><td>58.5%</td><td>74.0%</td><td><strong>64.4%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.97</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>最可能结果：</b><span class="tag tag-green">让球负 @1.5</span>
+    校准概率 <strong>64.4%</strong>（EV 0.97，仅参考不参与排序），
+    模型−市场分歧 +5.9pp。
+    本场让球 <span class="tag tag-green">可用</span>。
+  </p>
+</div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">主胜倾向</span>
+      <span class="tag tag-green">可信度 可用</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 66%（高）</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">1-1</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">1-0 / 0-1</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">80.5%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★☆☆☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">均势总量 · 最可能 2 球</span></span>
+    </div>
+    <div class="pred-note">首选比分不在主胜方向内，双档已覆盖两者</div>
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>主/主</b> <span class="pct pct-lo">23.0%</span> · 客/客 <span class="pct pct-lo">19.2%</span> · 平/平 <span class="pct pct-lo">17.1%</span> · 半场倾向 平 <span class="pct pct-hi">44%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<div class="card" id="match-周三003">
+  <div class="card-header">
+    <span class="match-id">周三003</span>
+    <span class="match-league">日联赛杯</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">18:00</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 川崎 13~13℃ · 降雨 0% · 风 4km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">川崎前锋</span>
+    <span class="vs">VS</span>
+    <span class="away">柏太阳神</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">2.62</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.55</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">2.1</div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">4 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">2.00 球</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>伤停与缺阵</h4></div><div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 51.8%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「客胜」隐含 41.8%（历史同档翻车率均值 47.8%）；模型−市场分歧 +12.6pp、|让球|1、λ和 3.26、市场熵 1.076。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  <h4>让球盘偏差（主队受让1 +1 · |让球|=1 · 最大分歧 12pp · 置信度高）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">1.52</td><td>57.7%</td><td>45.6%</td><td><strong>51.4%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.78</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.97</td><td>22.1%</td><td>22.4%</td><td><strong>23.0%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.91</td></tr><tr><td>让球负</td><td style="font-family:monospace;">4.35</td><td>20.2%</td><td>32.0%</td><td><strong>25.6%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">1.11</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>最可能结果：</b><span class="tag tag-green">让球胜 @1.52</span>
+    校准概率 <strong>51.4%</strong>（EV 0.78，仅参考不参与排序），
+    模型−市场分歧 -6.3pp。
+    本场让球 <span class="tag tag-green">可用</span>。
+  </p>
+</div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">客胜倾向</span>
+      <span class="tag tag-yellow">可信度 慎用</span> <span class="tag tag-yellow" style="margin-left:0.6rem;">冷门风险 52%（中）</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">1-2</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">1-1 / 2-1</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">62.4%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">大球倾向 · 最可能 3 球</span></span>
+    </div>
+    
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>客/客</b> <span class="pct pct-mid">27.3%</span> · 主/主 <span class="pct pct-lo">19.7%</span> · 平/客 <span class="pct pct-lo">13.8%</span> · 半场倾向 平 <span class="pct pct-mid">36%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<div class="card" id="match-周三004">
+  <div class="card-header">
+    <span class="match-id">周三004</span>
+    <span class="match-league">日联赛杯</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">18:30</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 埼玉 9~12℃ · 降雨 0% · 风 5km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">浦和红钻</span>
+    <span class="vs">VS</span>
+    <span class="away">大阪樱花</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.82</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.48</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.3</div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">5 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>近期战绩 · 日联赛杯</h4><div class="form-grid"><div class="form-block"><div class="form-title">浦和红钻</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">09-29</td><td class="cell-left">富山胜利 vs <b>浦和红钻</b></td><td style="font-family:monospace;">2-3</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div><div class="form-block"><div class="form-title">大阪樱花</div><table class="history-table form-tbl"><thead><tr><th>日期</th><th>对阵</th><th>比分</th><th>结果</th></tr></thead><tbody><tr><td style="font-family:monospace;color:var(--muted);">09-29</td><td class="cell-left">藤枝MYFC vs <b>大阪樱花</b></td><td style="font-family:monospace;">1-2</td><td style="color:var(--win);font-weight:700;">胜</td></tr></tbody></table></div></div></div><div class="sub-box"><h4>伤停与缺阵</h4></div><div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 60.7%</b> <span class="tag tag-red">高风险</span> <strong style="color:var(--accent3);">→ 不进入信心串关，仅可小注博冷</strong><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 48.2%（历史同档翻车率均值 47.8%）；模型−市场分歧 -24.9pp、|让球|1、λ和 3.01、市场熵 1.051。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 26pp · 置信度中）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">3.48</td><td>25.2%</td><td>9.0%</td><td><strong>17.4%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.61</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.56</td><td>24.6%</td><td>14.3%</td><td><strong>20.5%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">0.73</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.75</td><td>50.1%</td><td>76.7%</td><td><strong>62.0%</strong></td><td style="font-family:monospace;color:var(--accent2);font-weight:700;">1.09</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>最可能结果：</b><span class="tag tag-green">让球负 @1.75</span>
+    校准概率 <strong>62.0%</strong>（EV 1.09，仅参考不参与排序），
+    模型−市场分歧 +11.9pp。
+    本场让球 <span class="tag tag-green">可用</span>。<br><span style="color:var(--accent3);">⚠️ 模型−市场分歧 27pp 超阈值（跨联赛实力差为已知缺陷） —— 低置信，仅观察</span>
+  </p>
+</div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">主胜倾向</span>
+      <span class="tag tag-yellow">可信度 慎用</span> <span class="tag tag-red" style="margin-left:0.6rem;">冷门风险 61%（高）</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">2-1</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">1-1 / 1-0</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">68.2%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">大球倾向 · 最可能 3 球</span></span>
+    </div>
+    
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>主/主</b> <span class="pct pct-mid">28.3%</span> · 客/客 <span class="pct pct-lo">17.8%</span> · 平/主 <span class="pct pct-lo">14.7%</span> · 半场倾向 平 <span class="pct pct-mid">38%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<div class="card" id="match-周三005">
+  <div class="card-header">
+    <span class="match-id">周三005</span>
+    <span class="match-league">英锦标赛</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">次日 03:00</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 谢菲尔德 6~8℃ · 降雨 0% · 风 8km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">谢周三</span>
+    <span class="vs">VS</span>
+    <span class="away">阿克宁顿</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win"></div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw"></div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss"></div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">6 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>历史交锋</h4><div class="h2h-cols"><div class="h2h-col"><div class="h2h-col-h">最近交锋<span>近 5 场 · 不限赛事</span></div><div class="h2h-wdl"><b class="w">3</b>胜<b class="d">2</b>平<b class="l">0</b>负</div><div class="h2h-col-sub">进 8 失 3 · 赢盘 60% · 大球 20%</div></div></div></div><div class="sub-box"><h4>数据对比</h4><div class="cmp-list"><div class="cmp-item"><span class="cmp-v h">49%</span><span class="cmp-k">控球</span><span class="cmp-v a on">51%</span><div class="cmp-track"><i class="l" style="width:49.0%"></i><i class="r" style="width:51.0%"></i></div></div><div class="cmp-item"><span class="cmp-v h">10.5</span><span class="cmp-k">射门</span><span class="cmp-v a on">19</span><div class="cmp-track"><i class="l" style="width:35.6%"></i><i class="r" style="width:64.4%"></i></div></div><div class="cmp-item"><span class="cmp-v h">11</span><span class="cmp-k">被射门</span><span class="cmp-v a on">10.5</span><div class="cmp-track"><i class="l" style="width:51.2%"></i><i class="r" style="width:48.8%"></i></div></div><div class="cmp-item"><span class="cmp-v h">2.5</span><span class="cmp-k">角球</span><span class="cmp-v a on">7</span><div class="cmp-track"><i class="l" style="width:26.3%"></i><i class="r" style="width:73.7%"></i></div></div><div class="cmp-item"><span class="cmp-v h">5.25</span><span class="cmp-k">进攻效率</span><span class="cmp-v a on">9.5</span><div class="cmp-track"><i class="l" style="width:35.6%"></i><i class="r" style="width:64.4%"></i></div></div><div class="cmp-item"><span class="cmp-v h">22</span><span class="cmp-k">防守效率</span><span class="cmp-v a on">5.25</span><div class="cmp-track"><i class="l" style="width:80.7%"></i><i class="r" style="width:19.3%"></i></div></div></div><p class="cmp-note">阿克宁顿控球、射门、角球占优，防守端更好（被射门、防守效率）。</p></div><div class="sub-box"><h4>进球时段</h4><div class="gd-list"><div class="gd-row"><span class="gd-team">谢周三</span><div class="gd-cells"><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.55">25%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.55">25%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.82">50%</span></div></div><div class="gd-row"><span class="gd-team">阿克宁顿</span><div class="gd-cells"><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.55">25%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.55">25%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.82">50%</span></div></div><div class="gd-row"><span></span><div class="gd-axis"><span>1-15′</span><span>16-30′</span><span>31-45′</span><span>46-60′</span><span>61-75′</span><span>76-90′</span></div></div></div><p class="cmp-note">进球时段：谢周三集中在 76-90′（50%），阿克宁顿集中在 76-90′（50%）。</p></div><div class="sub-box"><h4>盘路走势</h4><div class="dish-list"><div class="dish-row "><span class="dish-team">谢周三</span><div class="dish-track"><div class="dish-bar"><i style="width:50%"></i></div><span class="dish-v">赢盘 近12 50% · 近6 17%</span></div></div><div class="dish-row away"><span class="dish-team">阿克宁顿</span><div class="dish-track"><div class="dish-bar"><i style="width:58%"></i></div><span class="dish-v">赢盘 近12 58% · 近6 67%</span></div></div></div><p class="cmp-note">两队赢盘率接近，盘口上无明显偏向。</p></div><div class="sub-box"><h4>伤停与缺阵</h4><div class="inj-block"><div class="inj-row"><span class="inj-team">谢周三</span><span class="inj-list">缺阵 <b>4</b> 人：布朗（前锋·轮休）、麦基（后卫·肩部受伤）、奥尼安戈（中场·腿筋受伤）、巴里（前锋·踝关节受伤）；停赛：拉姆利（守门员·无法出战）、L.库珀（后卫·无法出战）</span></div><div class="inj-row"><span class="inj-team">阿克宁顿</span><span class="inj-list">缺阵 <b>1</b> 人：穆尼（前锋·轮休）；停赛：卡顿（前锋·无法出战）、科伊尔（中场·无法出战）、辛克莱（中场·无法出战）等</span></div><div class="inj-src">伤停与阵容：网易红彩赛前名单</div></div></div></div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">主胜倾向</span>
+      <span class="tag tag-red">可信度 数据不足</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">1-1</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">2-1 / 1-0</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">73.2%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">均势总量 · 最可能 2 球</span></span>
+    </div>
+    <div class="pred-note">首选比分不在主胜方向内，双档已覆盖两者</div>
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>主/主</b> <span class="pct pct-mid">26.6%</span> · 客/客 <span class="pct pct-lo">17.4%</span> · 平/平 <span class="pct pct-lo">15.1%</span> · 半场倾向 平 <span class="pct pct-hi">41%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<div class="card" id="match-周三006">
+  <div class="card-header">
+    <span class="match-id">周三006</span>
+    <span class="match-league">英锦标赛</span>
+    <span class="match-time">2026-11-11</span> <span class="kickoff">次日 03:00</span><span class="wx-chip wx-ok" title="当地 18:00-23:00 逐时预报（Open-Meteo，更新 2026-11-11 12:03）">🌦 Barnsley 5~7℃ · 降雨 0% · 风 7km/h</span>
+  </div>
+
+  <div class="match-teams">
+    <span class="home">巴恩斯利</span>
+    <span class="vs">VS</span>
+    <span class="away">奥德汉姆</span>
+  </div>
+
+  <div class="odds-grid">
+    <div class="odds-item"><div class="label">主胜</div><div class="value win">1.71</div></div>
+    <div class="odds-item"><div class="label">平局</div><div class="value draw">3.78</div></div>
+    <div class="odds-item"><div class="label">客胜</div><div class="value loss">3.45</div></div>
+  </div>
+
+<details class="fold fold-card" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>展开本场完整分析</b><span class="fold-hint">9 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="insight-grid"><div class="insight-card"><div class="insight-label">H2H场均进球</div><div class="insight-value">数据不足</div></div><div class="insight-card"><div class="insight-label">H2H调整因子</div><div class="insight-value">1.00</div></div></div><div class="sub-box"><h4>历史交锋</h4><div class="h2h-cols"><div class="h2h-col"><div class="h2h-col-h">最近交锋<span>近 1 场 · 不限赛事</span></div><div class="h2h-wdl"><b class="w">1</b>胜<b class="d">0</b>平<b class="l">0</b>负</div><div class="h2h-col-sub">进 2 失 1 · 赢盘 100% · 大球 100%</div></div><div class="h2h-col"><div class="h2h-col-h">同联赛交锋<span>近 1 场 · 英锦标赛</span></div><div class="h2h-wdl"><b class="w">1</b>胜<b class="d">0</b>平<b class="l">0</b>负</div><div class="h2h-col-sub">进 2 失 1 · 赢盘 100% · 大球 100%</div></div></div></div><div class="sub-box"><h4>数据对比</h4><div class="cmp-list"><div class="cmp-item"><span class="cmp-v h">42%</span><span class="cmp-k">控球</span><span class="cmp-v a on">50%</span><div class="cmp-track"><i class="l" style="width:45.7%"></i><i class="r" style="width:54.3%"></i></div></div><div class="cmp-item"><span class="cmp-v h on">15.5</span><span class="cmp-k">射门</span><span class="cmp-v a">12.5</span><div class="cmp-track"><i class="l" style="width:55.4%"></i><i class="r" style="width:44.6%"></i></div></div><div class="cmp-item"><span class="cmp-v h">11</span><span class="cmp-k">被射门</span><span class="cmp-v a on">6.5</span><div class="cmp-track"><i class="l" style="width:62.9%"></i><i class="r" style="width:37.1%"></i></div></div><div class="cmp-item"><span class="cmp-v h on">10</span><span class="cmp-k">角球</span><span class="cmp-v a">4</span><div class="cmp-track"><i class="l" style="width:71.4%"></i><i class="r" style="width:28.6%"></i></div></div><div class="cmp-item"><span class="cmp-v h on">7.75</span><span class="cmp-k">进攻效率</span><span class="cmp-v a">5</span><div class="cmp-track"><i class="l" style="width:60.8%"></i><i class="r" style="width:39.2%"></i></div></div><div class="cmp-item"><span class="cmp-v h on">2.75</span><span class="cmp-k">防守效率</span><span class="cmp-v a">6.5</span><div class="cmp-track"><i class="l" style="width:29.7%"></i><i class="r" style="width:70.3%"></i></div></div></div><p class="cmp-note">巴恩斯利射门、角球、进攻效率占优，防守端更好（防守效率）；奥德汉姆控球占优，防守端更好（被射门）。</p></div><div class="sub-box"><h4>进球时段</h4><div class="gd-list"><div class="gd-row"><span class="gd-team">巴恩斯利</span><div class="gd-cells"><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.22">0%</span><span class="gd-cell h" style="--a:0.82">100%</span></div></div><div class="gd-row"><span class="gd-team">奥德汉姆</span><div class="gd-cells"><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.49">20%</span><span class="gd-cell a" style="--a:0.22">0%</span><span class="gd-cell a" style="--a:0.75">40%</span><span class="gd-cell a" style="--a:0.75">40%</span><span class="gd-cell a" style="--a:0.22">0%</span></div></div><div class="gd-row"><span></span><div class="gd-axis"><span>1-15′</span><span>16-30′</span><span>31-45′</span><span>46-60′</span><span>61-75′</span><span>76-90′</span></div></div></div><p class="cmp-note">进球时段：巴恩斯利集中在 76-90′（100%），奥德汉姆集中在 46-60′（40%）。</p></div><div class="sub-box"><h4>盘路走势</h4><div class="dish-list"><div class="dish-row "><span class="dish-team">巴恩斯利</span><div class="dish-track"><div class="dish-bar"><i style="width:25%"></i></div><span class="dish-v">赢盘 近12 25% · 近6 33%</span></div></div><div class="dish-row away"><span class="dish-team">奥德汉姆</span><div class="dish-track"><div class="dish-bar"><i style="width:50%"></i></div><span class="dish-v">赢盘 近12 50% · 近6 67%</span></div></div></div><p class="cmp-note">奥德汉姆近期赢盘更稳（25 个百分点）。</p></div><div class="sub-box"><h4>伤停与缺阵</h4><div class="inj-block"><div class="inj-row"><span class="inj-team">巴恩斯利</span><span class="inj-list">缺阵 <b>1</b> 人：根特（后卫·跟腱受伤）；停赛：哈洛（前锋·无法出战）、图雷（前锋·无法出战）</span></div><div class="inj-row"><span class="inj-team">奥德汉姆</span><span class="inj-list">停赛：德拉蒙德（前锋·红牌停赛）、佩恩（中场·红牌停赛）、德莱尼（后卫·无法出战）等</span></div><div class="inj-src">伤停与阵容：网易红彩赛前名单</div></div></div><div class="warning">⚠️ 冷门信号：<strong>凯利指数1.05&gt;1.0(主胜有价值)</strong>；</div><div class="warning" style="border-left-color:var(--accent3);">🎲 <b>冷门风险 48.1%</b> <span class="tag tag-yellow">中风险</span><br><span style="font-size:0.8rem;">市场首选「主胜」隐含 51.3%（历史同档翻车率均值 47.8%）；模型−市场分歧 +6.5pp、|让球|1、λ和 2.56、市场熵 1.030。时间外低风险 1/3 翻车 ≈25% / 高风险 ≈44%。</span></div>
+  <h4>让球盘偏差（主队让1 -1 · |让球|=1 · 最大分歧 5pp · 置信度中）</h4>
+  <div class="table-wrap">
+    <table class="history-table">
+      <thead><tr><th>让球盘</th><th>赔率</th><th>市场去水</th><th>纯模型</th><th>联合校准</th><th>EV</th></tr></thead>
+      <tbody><tr><td>让球胜</td><td style="font-family:monospace;">3.15</td><td>27.9%</td><td>32.4%</td><td><strong>30.1%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.95</td></tr><tr><td>让球平</td><td style="font-family:monospace;">3.52</td><td>24.9%</td><td>25.5%</td><td><strong>25.7%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.90</td></tr><tr><td>让球负</td><td style="font-family:monospace;">1.86</td><td>47.2%</td><td>42.1%</td><td><strong>44.2%</strong></td><td style="font-family:monospace;color:var(--muted);font-weight:700;">0.82</td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:0.78rem;margin:0.3rem 0 0.7rem;">
+    <b>最可能结果：</b><span class="tag tag-yellow">让球负 @1.86</span>
+    校准概率 <strong>44.2%</strong>（EV 0.82，仅参考不参与排序），
+    模型−市场分歧 -3.0pp。
+    本场让球 <span class="tag tag-yellow">慎用</span>。
+  </p>
+</div></details>
+
+  <div class="prediction">
+    <div class="pred-title">🎯 比分与方向预测
+      <span class="pred-dir">主胜倾向</span>
+      <span class="tag tag-red">可信度 数据不足</span> <span class="tag tag-yellow" style="margin-left:0.6rem;">冷门风险 48%（中）</span>
+    </div>
+    <div class="pred-main">
+      <span class="pred-item"><span class="pred-k">比分预测</span>
+        <span class="pred-score">2-1</span></span>
+      <span class="pred-item"><span class="pred-k">比分双档</span>
+        <span class="pred-score sm">1-1 / 3-1</span></span>
+      <span class="pred-item"><span class="pred-k">±1球覆盖</span>
+        <span class="pred-v">67.2%</span></span>
+      <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★☆☆</span></span>
+      <span class="pred-item"><span class="pred-k">总进球</span>
+        <span class="pred-v">均势总量 · 最可能 2 球</span></span>
+    </div>
+    
+    <div class="pred-row">
+      <span class="pred-label">半全场:</span>
+      <span class="pred-value"><b>主/主</b> <span class="pct pct-mid">32.1%</span> · 平/主 <span class="pct pct-lo">17.3%</span> · 平/平 <span class="pct pct-lo">15.0%</span> · 半场倾向 平 <span class="pct pct-hi">41%</span></span>
+    </div>
+    
+  </div>
+</div>
+
+
+<h2>四、预测汇总</h2>
+<details class="fold " data-fold open><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.1 胜负预测</h3><span class="fold-hint">6 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>备选方向</th><th>让球盘</th><th>让球可信度</th><th>冷门</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td><span class="tag tag-red">客胜 49.8%</span></td><td><span class="tag tag-yellow">慎用</span></td><td><span class="tag tag-yellow">平局 27.2%</span></td><td style="text-align:center;white-space:nowrap;">受让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（+1）</span></td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span> <span style="color:var(--muted);font-size:0.76rem;">让球胜 · 概率 57% · 置信高</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">57%</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td><span class="tag tag-green">主胜 39.9%</span></td><td><span class="tag tag-red">别跟</span></td><td><span class="tag tag-red">客胜 30.4%</span></td><td style="text-align:center;white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span> <span style="color:var(--muted);font-size:0.76rem;">让球负 · 概率 64% · 置信高</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">66%</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td><span class="tag tag-red">客胜 47.6%</span></td><td><span class="tag tag-yellow">慎用</span></td><td><span class="tag tag-yellow">平局 28.0%</span></td><td style="text-align:center;white-space:nowrap;">受让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（+1）</span></td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span> <span style="color:var(--muted);font-size:0.76rem;">让球胜 · 概率 51% · 置信高</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">52%</span></td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td><span class="tag tag-green">主胜 46.4%</span></td><td><span class="tag tag-yellow">慎用</span></td><td><span class="tag tag-yellow">平局 28.7%</span></td><td style="text-align:center;white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span> <span style="color:var(--muted);font-size:0.76rem;">让球负 · 概率 62% · 置信中</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-red">61%</span></td></tr><tr><td><span class="tag tag-blue">周三005</span></td><td>谢周三</td><td>阿克宁顿</td><td><span class="tag tag-green">主胜 44.0%</span></td><td><span class="tag tag-yellow">慎用</span></td><td><span class="tag tag-yellow">平局 31.9%</span></td><td style="text-align:center;color:var(--muted);">—</td><td style="color:var(--muted);">无让球盘</td><td style="text-align:center;white-space:nowrap;">-</td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td><span class="tag tag-green">主胜 61.3%</span></td><td><span class="tag tag-green">可用</span></td><td style="text-align:center;color:var(--muted);">—</td><td style="text-align:center;white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-yellow">慎用</span> <span style="color:var(--muted);font-size:0.76rem;">让球负 · 概率 44% · 置信中</span></td><td style="text-align:center;white-space:nowrap;"><span class="tag tag-yellow">48%</span></td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 方向预测（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>倾向</th><th>上次方向可信度</th><th>让球盘</th><th>让球可信度</th><th>实际比分</th><th>实际结果</th><th>判定</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="font-weight:700;color:var(--accent);">主胜</td><td style="white-space:nowrap;"><span class="tag tag-red" title="当时倾向概率 38.2% · 当时 ★">别跟</span></td><td style="white-space:nowrap;">让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（-1）</span></td><td style="white-space:nowrap;"><span class="tag tag-green" title="让球负 · 当时概率 67.4% · 置信高 · 赔率 1.45">可用</span></td><td style="font-family:monospace;">0-3</td><td>客胜</td><td><span class="tag tag-red">❌ 未中</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td style="font-weight:700;color:var(--accent);">客胜</td><td style="white-space:nowrap;"><span class="tag tag-green" title="当时倾向概率 69.4% · 当时 ★★★★">可用</span></td><td style="white-space:nowrap;">受让 1<span style="color:var(--muted);font-weight:400;font-size:0.76rem;">（+1）</span></td><td style="white-space:nowrap;"><span class="tag tag-yellow" title="让球胜 · 当时概率 42.9% · 置信高 · 赔率 2.07">慎用</span></td><td style="font-family:monospace;">1-2</td><td>客胜</td><td><span class="tag tag-green">✅ 命中</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）胜负：已出 2 场 · 命中 1（50%） · 未中 1 · 方向可信度均值 53.8%｜方向可信度分档 可用≥50% 1/1（100%） · 别跟<40% 0/1（0%）。</p></div></details></div></details>
+<details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.2 比分预测</h3><span class="fold-hint">6 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td style="font-family:monospace;white-space:nowrap;">1.53 / 1.99</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:1</b> <span class="pct pct-lo">11.5%</span></td><td style="font-family:monospace;white-space:nowrap;">1:2 <span class="pct pct-lo">11.5%</span> + 2:1 <span class="pct pct-lo">8.4%</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-lo">31%</span></td><td><span class="tag tag-red">别跟</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td style="font-family:monospace;white-space:nowrap;">1.19 / 1.02</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:1</b> <span class="pct pct-lo">14.6%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span class="pct pct-lo">12.2%</span> + 0:1 <span class="pct pct-lo">10.0%</span></td><td><span class="pct pct-hi">80%</span></td><td><span class="pct pct-lo">37%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td style="font-family:monospace;white-space:nowrap;">1.58 / 1.82</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:2</b> <span class="pct pct-lo">10.4%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">10.6%</span> + 2:1 <span class="pct pct-lo">9.4%</span></td><td><span class="pct pct-hi">62%</span></td><td><span class="pct pct-lo">30%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td style="font-family:monospace;white-space:nowrap;">1.81 / 1.35</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:1</b> <span class="pct pct-lo">12.2%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">11.9%</span> + 1:0 <span class="pct pct-lo">8.7%</span></td><td><span class="pct pct-hi">68%</span></td><td><span class="pct pct-lo">33%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三005</span></td><td>谢周三</td><td>阿克宁顿</td><td style="font-family:monospace;white-space:nowrap;">1.61 / 1.30</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:1</b> <span class="pct pct-lo">13.5%</span></td><td style="font-family:monospace;white-space:nowrap;">2:1 <span class="pct pct-lo">10.2%</span> + 1:0 <span class="pct pct-lo">10.1%</span></td><td><span class="pct pct-hi">73%</span></td><td><span class="pct pct-lo">34%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td style="font-family:monospace;white-space:nowrap;">1.85 / 1.25</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:1</b> <span class="pct pct-lo">12.3%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">11.0%</span> + 3:1 <span class="pct pct-lo">7.4%</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-lo">31%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 比分预测（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>比分预测</th><th>上次概率</th><th>双档（概率）</th><th>实际</th><th>判定</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-1</td><td><span class="pct pct-lo">13.5%</span></td><td style="font-family:monospace;font-size:0.8rem;">1-0 <span class="pct pct-lo">11.2%</span> + 0-1 <span class="pct pct-lo">11.0%</span></td><td style="font-family:monospace;">0-3</td><td><span class="tag tag-red">❌ 未中</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td style="font-family:monospace;font-weight:700;color:var(--accent);">1-2</td><td><span class="pct pct-lo">12.6%</span></td><td style="font-family:monospace;font-size:0.8rem;">0-2 <span class="pct pct-lo">13.5%</span> + 1-1 <span class="pct pct-lo">12.9%</span></td><td style="font-family:monospace;">1-2</td><td><span class="tag tag-green">✅ 单点</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）比分：已出 2 场 · 单点 1 · 双档 0 · 未中 1 · 首选概率均值 13.1% · 双档单格均值 12.2%。</p></div></details></div></details>
+<details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.3 进球数预测</h3><span class="fold-hint">6 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td><span class="tag tag-red" title="λ总分3.46">大球倾向</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-mid">46%</span></td><td>3 球</td><td style="font-family:monospace;">3.46</td><td style="white-space:nowrap;"><b>客/客</b> <span class="pct pct-mid">28.1%</span> <span style="color:var(--muted);">次选 主/主 <span class="pct pct-lo">19.4%</span></span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td><span class="tag tag-yellow" title="λ总分2.46">均势总量</span></td><td><span class="pct pct-lo">45%</span></td><td><span class="pct pct-lo">23%</span></td><td>2 球</td><td style="font-family:monospace;">2.46</td><td style="white-space:nowrap;"><b>主/主</b> <span class="pct pct-lo">23.0%</span> <span style="color:var(--muted);">次选 客/客 <span class="pct pct-lo">19.2%</span></span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td><span class="tag tag-red" title="λ总分3.38">大球倾向</span></td><td><span class="pct pct-hi">66%</span></td><td><span class="pct pct-lo">44%</span></td><td>3 球</td><td style="font-family:monospace;">3.38</td><td style="white-space:nowrap;"><b>客/客</b> <span class="pct pct-mid">27.3%</span> <span style="color:var(--muted);">次选 主/主 <span class="pct pct-lo">19.7%</span></span></td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td><span class="tag tag-red" title="λ总分3.12">大球倾向</span></td><td><span class="pct pct-hi">60%</span></td><td><span class="pct pct-lo">38%</span></td><td>3 球</td><td style="font-family:monospace;">3.12</td><td style="white-space:nowrap;"><b>主/主</b> <span class="pct pct-mid">28.3%</span> <span style="color:var(--muted);">次选 客/客 <span class="pct pct-lo">17.8%</span></span></td></tr><tr><td><span class="tag tag-blue">周三005</span></td><td>谢周三</td><td>阿克宁顿</td><td><span class="tag tag-yellow" title="λ总分2.72">均势总量</span></td><td><span class="pct pct-mid">51%</span></td><td><span class="pct pct-lo">29%</span></td><td>2 球</td><td style="font-family:monospace;">2.72</td><td style="white-space:nowrap;"><b>主/主</b> <span class="pct pct-mid">26.6%</span> <span style="color:var(--muted);">次选 客/客 <span class="pct pct-lo">17.4%</span></span></td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td><span class="tag tag-yellow" title="λ总分2.66">均势总量</span></td><td><span class="pct pct-mid">50%</span></td><td><span class="pct pct-lo">28%</span></td><td>2 球</td><td style="font-family:monospace;">2.66</td><td style="white-space:nowrap;"><b>主/主</b> <span class="pct pct-mid">32.1%</span> <span style="color:var(--muted);">次选 平/主 <span class="pct pct-lo">17.3%</span></span></td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 进球数（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>总进球倾向</th><th>P(≥3 球)</th><th>最可能总进球</th><th>该档概率</th><th>实际</th><th>判定</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td>小球倾向</td><td><span class="pct pct-lo">39.9%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2 球</td><td><span class="pct pct-lo">26.6%</span></td><td style="font-family:monospace;">3 球</td><td><span class="tag tag-red">❌ 未中</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td>均势总量</td><td><span class="pct pct-mid">47.4%</span></td><td style="font-family:monospace;font-weight:700;color:var(--accent);">2 球</td><td><span class="pct pct-lo">25.3%</span></td><td style="font-family:monospace;">3 球</td><td><span class="tag tag-red">❌ 未中</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）进球数：已出 2 场 · 众数命中 0 · 大/小球方向 0/1 · P(≥3) 均值 43.6% · 众数档均值 25.9%。</p></div></details><details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 半全场（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>首选</th><th>概率</th><th>次选 · 三选</th><th>实际（半场 → 全场）</th><th>判定</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="white-space:nowrap;font-weight:700;color:var(--accent);">客/客</td><td><span class="pct pct-lo">22.5%</span></td><td style="white-space:nowrap;font-size:0.8rem;">平/平 <span class="pct pct-lo">18.7%</span> · 主/主 <span class="pct pct-lo">18.5%</span></td><td style="font-family:monospace;white-space:nowrap;">0-1 → 0-3 <span style="color:var(--muted);">客/客</span></td><td><span class="tag tag-green">✅ 首选</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td style="white-space:nowrap;font-weight:700;color:var(--accent);">客/客</td><td><span class="pct pct-mid">35.7%</span></td><td style="white-space:nowrap;font-size:0.8rem;">平/客 <span class="pct pct-lo">18.9%</span> · 平/平 <span class="pct pct-lo">15.2%</span></td><td style="font-family:monospace;white-space:nowrap;">1-1 → 1-2 <span style="color:var(--muted);">平/客</span></td><td><span class="tag tag-green">🟡 前二</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）半全场：已出 2 场 · 首选 1 · 前二 1 · 前三 0 · 未中 0 · 首选概率均值 29.1%。</p></div></details></div></details>
+<details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.4 让球盘偏差清单</h3><span class="fold-hint">5 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>让球</th><th>最可能结果</th><th>赔率</th><th>市场</th><th>纯模型</th><th>联合校准</th><th>EV(参考)</th><th>最大分歧</th><th>让球可信度</th><th>冷门风险</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td>-1</td><td><span class="tag tag-green">让球负</span></td><td style="font-family:monospace;">1.5</td><td>58.5%</td><td>74.0%</td><td><strong>64.4%</strong></td><td style="font-family:monospace;">0.97</td><td>16pp</td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span></td><td>66%</td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td>-1</td><td><span class="tag tag-green">让球负</span></td><td style="font-family:monospace;">1.75</td><td>50.1%</td><td>76.7%</td><td><strong>62.0%</strong></td><td style="font-family:monospace;">1.09</td><td>26pp</td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span></td><td>61%</td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td>+1</td><td><span class="tag tag-green">让球胜</span></td><td style="font-family:monospace;">1.6</td><td>54.9%</td><td>61.8%</td><td><strong>56.6%</strong></td><td style="font-family:monospace;">0.91</td><td>7pp</td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span></td><td>57%</td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td>+1</td><td><span class="tag tag-green">让球胜</span></td><td style="font-family:monospace;">1.52</td><td>57.7%</td><td>45.6%</td><td><strong>51.4%</strong></td><td style="font-family:monospace;">0.78</td><td>12pp</td><td style="white-space:nowrap;"><span class="tag tag-green">可用</span></td><td>52%</td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td>-1</td><td><span class="tag tag-yellow">让球负</span></td><td style="font-family:monospace;">1.86</td><td>47.2%</td><td>42.1%</td><td><strong>44.2%</strong></td><td style="font-family:monospace;">0.82</td><td>5pp</td><td style="white-space:nowrap;"><span class="tag tag-yellow">慎用</span></td><td>48%</td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 让球盘（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>让球盘</th><th>预测</th><th>上次让球可信度</th><th>上次概率</th><th>当时赔率</th><th>实际比分</th><th>实际让球</th><th>判定</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="font-family:monospace;">-1</td><td style="font-weight:700;color:var(--accent3);">让球负</td><td style="white-space:nowrap;"><span class="tag tag-green" title="让球负 · 当时概率 67.4% · 置信高 · 赔率 1.45">可用</span></td><td><span class="pct pct-hi">67.4%</span></td><td style="font-family:monospace;color:var(--muted);">1.45</td><td style="font-family:monospace;">0-3</td><td style="font-family:monospace;">让球负</td><td><span class="tag tag-green">✅ 命中</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td style="font-family:monospace;">+1</td><td style="font-weight:700;color:var(--accent3);">让球胜</td><td style="white-space:nowrap;"><span class="tag tag-yellow" title="让球胜 · 当时概率 42.9% · 置信高 · 赔率 2.07">慎用</span></td><td><span class="pct pct-lo">42.9%</span></td><td style="font-family:monospace;color:var(--muted);">2.07</td><td style="font-family:monospace;">1-2</td><td style="font-family:monospace;">让球平</td><td><span class="tag tag-red">❌ 未中</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）让球：已出 2 场 · 命中 1（50%） · 未中 1 · 概率均值 55.1%｜让球可信度分档 可用≥50% 1/1（100%） · 慎用42~50% 0/1（0%）。</p></div></details></div></details>
+<details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.5 冷门风险明细</h3><span class="fold-hint">5 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>风险</th><th>冷门概率</th><th>市场首选</th><th>模型−市场</th><th>|让球|</th><th>λ和</th><th>市场熵</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">65.7%</td><td>主胜 39.9%</td><td>-13.9pp</td><td>1</td><td>2.37</td><td>1.089</td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">60.7%</td><td>主胜 48.2%</td><td>-24.9pp</td><td>1</td><td>3.01</td><td>1.051</td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;font-weight:700;">56.7%</td><td>客胜 43.9%</td><td>-5.7pp</td><td>1</td><td>3.34</td><td>1.074</td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td><span class="tag tag-yellow">中</span></td><td style="font-family:monospace;font-weight:700;">51.8%</td><td>客胜 41.8%</td><td>+12.6pp</td><td>1</td><td>3.26</td><td>1.076</td></tr><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td><span class="tag tag-yellow">中</span></td><td style="font-family:monospace;font-weight:700;">48.1%</td><td>主胜 51.3%</td><td>+6.5pp</td><td>1</td><td>2.56</td><td>1.030</td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 冷门风险（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>风险</th><th>冷门概率</th><th>市场首选</th><th>首选概率</th><th>实际结果</th><th>是否爆冷</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td><span class="tag tag-red">高</span></td><td style="font-family:monospace;">72.8%</td><td>主胜</td><td><span class="pct pct-lo">38.2%</span></td><td>客胜</td><td><span class="tag tag-red">🔴 爆冷</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td><span class="tag tag-yellow">中</span></td><td style="font-family:monospace;">41.4%</td><td>客胜</td><td><span class="pct pct-mid">56.6%</span></td><td>客胜</td><td><span class="tag tag-green">✅ 未爆</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）冷门：已出 2 场 · 实际爆冷 1 · 冷门概率均值 57.1%｜高风险 1/1（100%） · 中风险 0/1（0%）。</p></div></details></div></details>
+<details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.6 大比分观察</h3><span class="fold-hint">5 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
+  <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>市场隐含P(6+)</th><th>校准P(6+)</th><th>校准P(7+)</th><th>其中正好6球</th><th>6档赔率</th><th>7+档赔率</th><th>校准EV(7+)</th><th>等级</th></tr></thead>
+  <tbody><tr><td><span class="tag tag-blue">周三006</span></td><td>巴恩斯利</td><td>奥德汉姆</td><td>14.9%</td><td><strong>12.2%</strong></td><td>5.5%</td><td>6.7%</td><td style="font-family:monospace;">10</td><td style="font-family:monospace;">11.5</td><td style="font-family:monospace;">0.63</td><td><span class="tag tag-yellow">中</span></td></tr><tr><td><span class="tag tag-blue">周三003</span></td><td>川崎前锋</td><td>柏太阳神</td><td>14.1%</td><td><strong>11.4%</strong></td><td>4.7%</td><td>6.7%</td><td style="font-family:monospace;">10</td><td style="font-family:monospace;">13</td><td style="font-family:monospace;">0.61</td><td><span class="tag tag-yellow">中</span></td></tr><tr><td><span class="tag tag-blue">周三004</span></td><td>浦和红钻</td><td>大阪樱花</td><td>11.6%</td><td><strong>9.2%</strong></td><td>3.6%</td><td>5.6%</td><td style="font-family:monospace;">12</td><td style="font-family:monospace;">16</td><td style="font-family:monospace;">0.57</td><td><span class="tag tag-blue">低</span></td></tr><tr><td><span class="tag tag-blue">周三001</span></td><td>横滨水手</td><td>鹿岛鹿角</td><td>8.8%</td><td><strong>6.6%</strong></td><td>2.2%</td><td>4.4%</td><td style="font-family:monospace;">15</td><td style="font-family:monospace;">23</td><td style="font-family:monospace;">0.52</td><td><span class="tag tag-blue">低</span></td></tr><tr><td><span class="tag tag-blue">周三002</span></td><td>神户胜利</td><td>町田泽维</td><td>6.8%</td><td><strong>5.0%</strong></td><td>1.8%</td><td>3.2%</td><td style="font-family:monospace;">20</td><td style="font-family:monospace;">28</td><td style="font-family:monospace;">0.49</td><td><span class="tag tag-blue">低</span></td></tr></tbody>
+</table></div></div>
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 大比分观察（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
+<thead><tr><th>编号 · 联赛</th><th>对阵</th><th>λ 总分</th><th>P(6+)</th><th>实际总进球</th><th>是否 6+</th></tr></thead>
+<tbody><tr><td><span class="tag tag-blue">周二001</span> 英锦标赛</td><td>伯顿 vs 诺茨郡</td><td style="font-family:monospace;color:var(--muted);">2.28</td><td><span class="pct pct-lo">2.9%</span></td><td style="font-family:monospace;">3 球</td><td><span class="tag tag-green">✅ 未出</span></td></tr><tr><td><span class="tag tag-blue">周二002</span> 英锦标赛</td><td>布罗姆利 vs 米尔顿</td><td style="font-family:monospace;color:var(--muted);">2.57</td><td><span class="pct pct-lo">4.7%</span></td><td style="font-family:monospace;">3 球</td><td><span class="tag tag-green">✅ 未出</span></td></tr></tbody></table></div>
+<p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-10）大比分：已出 2 场 · 实际 6+ 0 场 · 模型期望 0.08 场 · P(6+) 均值 3.8%。</p></div></details></div></details>
+
+<h2>五、当日赛事联赛与杯赛形势</h2>
+
+
+  
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>日联赛杯 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 2026/27 J 联赛 YBC 卢万杯 · 第二轮</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">赛制与对阵：J.LEAGUE 官方 / 懂球帝 / 7M 体育资料库 ｜ 赛程与赔率：网易彩票</div>
+    <ul style="margin:0.35rem 0 0.7rem;padding-left:1.15rem;font-size:0.82rem;line-height:1.8;"><li>卢万杯（YBC Levain Cup）为 J1/J2/J3 三级俱乐部混编参加的单场淘汰杯赛，2026/27 赛季共约 60 队参赛，赛制为三轮淘汰后进入半准决赛及以后阶段。</li><li>首轮 22 场比赛已于 9 月 7-9 日结束（跨级别爆冷：鸟取飞翔 3-1 淘汰 J2 榜首 RB 大宫松鼠、FC 大阪 3-0 甲府风林、金泽塞甘、岐阜 FC、北九州向日葵、熊本深红等晋级）。</li><li>第二轮 16 场于本日（9 月 29 日）一天内进行，浦和红钻、广岛三箭、川崎前锋、横滨水手等 J1 球队自此轮起首次亮相；第二轮为单场决胜，90 分钟战平直接点球决胜。</li><li>第二轮 16 场胜者晋级 10 月 14 日进行的第三轮；本日竞彩仅投放其中 4 场（藤枝 MYFC vs 大阪樱花、枥木城 vs 广岛三箭、富山胜利 vs 浦和红钻、山形山神 vs 横滨水手），均为 J 联赛低级别主队对阵 J1 客队。</li></ul>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 晋级形势</div>
+      <div class="impact-row"><span class="tag tag-blue">周三001</span> 横滨水手 vs 鹿岛鹿角 · 单场淘汰制：90 分钟战平直接进入点球决胜，胜者晋级 10 月 14 日第三轮；J1 客队普遍存在轮换与「尽快解决战斗」倾向，平局后点球是小比分走势的主要来源。</div>
+      <div class="impact-row"><span class="tag tag-blue">周三002</span> 神户胜利 vs 町田泽维 · 单场淘汰制：90 分钟战平直接进入点球决胜，胜者晋级 10 月 14 日第三轮；J1 客队普遍存在轮换与「尽快解决战斗」倾向，平局后点球是小比分走势的主要来源。</div>
+      <div class="impact-row"><span class="tag tag-blue">周三003</span> 川崎前锋 vs 柏太阳神 · 单场淘汰制：90 分钟战平直接进入点球决胜，胜者晋级 10 月 14 日第三轮；J1 客队普遍存在轮换与「尽快解决战斗」倾向，平局后点球是小比分走势的主要来源。</div>
+      <div class="impact-row"><span class="tag tag-blue">周三004</span> 浦和红钻 vs 大阪樱花 · 单场淘汰制：90 分钟战平直接进入点球决胜，胜者晋级 10 月 14 日第三轮；J1 客队普遍存在轮换与「尽快解决战斗」倾向，平局后点球是小比分走势的主要来源。</div>
+    </div>
+    <div class="league-impact">
+      <div class="impact-title">本日 4 场对阵背景</div>
+      <div class="impact-row">藤枝 MYFC vs 大阪樱花（19:00）：大阪樱花为 J1 球队、本轮首次亮相，阵容深度与个人能力占优；藤枝 MYFC 经首轮晋级、主场作战，主要依靠紧凑防守与快速反击争取爆冷。</div>
+      <div class="impact-row">枥木城 vs 广岛三箭（19:00，CITY FOOTBALL STATION）：广岛三箭为 J1 强队且本轮首次亮相，竞彩客胜低至 1.12、让两球，市场给出当日最大实力差；枥木城依靠主场氛围与单场淘汰的不确定性搏冷。</div>
+      <div class="impact-row">富山胜利 vs 浦和红钻（19:00）：浦和红钻为 J1 传统豪门、亚冠冠军球队，本轮首次亮相；富山胜利主场迎战，让球盘仅为客队让一球，是三场「低级别主队 vs J1 客队」中让球最浅的一场。</div>
+      <div class="impact-row">山形山神 vs 横滨水手（19:00，NDsoft 山形体育场）：横滨水手为 J1 进攻型球队，客场让一球；山形山神主场以整体防守和定位球见长，若能在前 30 分钟不失球，比赛将进入其擅长的消耗节奏。</div>
+      <div class="impact-row">赛制提示：第二轮 16 场同日开打，J1 球队需兼顾联赛与后续杯赛，轮换幅度普遍较大，是判断比分时最重要的变量。</div>
+    </div>
+    <div class="league-impact">
+      <div class="impact-title">后续赛程（第二轮 16 场对阵 · 本日）</div>
+      <div class="table-wrap"><table class="history-table"><thead><tr><th>日期</th><th>对阵</th><th>分组</th></tr></thead><tbody><tr><td>2026-09-29</td><td>松本山雅 vs 新泻天鹅</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>金泽塞甘 vs 清水心跳</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>藤枝 MYFC vs 大阪樱花（竞彩）</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>枥木城 vs 广岛三箭（竞彩）</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>富山胜利 vs 浦和红钻（竞彩）</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>山形山神 vs 横滨水手（竞彩）</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>岐阜 FC vs 横滨 FC</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>北海道札幌 vs 冈山绿雉</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>北九州向日葵 vs 名古屋鲸鱼</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>熊本深红 vs 川崎前锋</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>磐田喜悦 vs 千叶市原</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>FC 大阪 vs 福冈黄蜂</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>鸟栖砂岩 vs 东京绿茵</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>鸟取飞翔 vs 长崎成功丸</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>爱媛 FC vs FC 东京</td><td>第二轮</td></tr><tr><td>2026-09-29</td><td>福岛联 vs 水户蜀葵</td><td>第二轮</td></tr><tr><td>2026-10-14</td><td>第三轮（16 场胜者参加）</td><td>第三轮</td></tr><tr><td>待官方公布</td><td>半准决赛及以后阶段</td><td>淘汰赛</td></tr></tbody></table></div>
+      <p class="league-note">第二轮 16 场于 2026 年 9 月 29 日进行（90 分钟战平直接点球决胜），胜者晋级 10 月 14 日第三轮；半准决赛及以后阶段的日期与参赛队以 J.LEAGUE 官方公布为准。</p>
+    </div></div></details>
+
+  
+<details class="fold fold-league" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>英锦标赛 <span style="font-weight:400;font-size:0.78rem;color:var(--muted);">· 英锦标赛（Jersey Mike&#x27;s Trophy）2026-27</span></b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="league-src">小组数据来源：7M 体育数据库 / BBC Sport / ESPN ｜ 赛制来源：新浪体育</div>
+    <ul style="margin:0.35rem 0 0.7rem;padding-left:1.15rem;font-size:0.82rem;line-height:1.8;"><li>参赛 64 队：英甲 24 队 + 英乙 24 队 + 16 支英超一级学院(U21)队；分南北两区、每区 8 组、每组 4 队。</li><li>小组赛单循环（每队 3 场），每组前 2 名晋级 32 强淘汰赛；小组第一为种子，32 强主场对阵他组第二。</li><li>计分：胜 3 分、平 1 分、负 0 分；小组赛战平直接点球决胜，点球取胜方额外得 1 分（平局双方共得 2 分）。</li><li>淘汰赛自 32 强起单场决胜，90 分钟战平直接点球；决赛 2027-04-11 于温布利球场举行。</li></ul>
+    <div style="margin-top:0.55rem;"><div class="impact-title">北部 B 组 积分榜</div>
+      <table class="league-tbl standings">
+        <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+        <tr class="zone-eu"><td>1</td><td>维冈竞技</td><td>1</td><td>1</td><td>0</td><td>0</td><td>3</td><td>2</td><td>+1</td><td class="pts">3</td></tr>
+        <tr class="zone-eu"><td>2</td><td>布莱克浦</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>3</td><td>克鲁</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>4</td><td>阿斯顿维拉 U21</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td><td>3</td><td>-1</td><td class="pts">0</td></tr>
+      </table>
+      <p class="league-note">维冈竞技已完成小组首战（3-2 胜阿斯顿维拉 U21），本场为布莱克浦的小组首秀；克鲁与阿斯顿维拉 U21 同轮相遇。</p>
+    </div>
+    <div style="margin-top:0.55rem;"><div class="impact-title">北部 F 组 积分榜</div>
+      <table class="league-tbl standings">
+        <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+        <tr class="zone-eu"><td>1</td><td>格林斯比</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class="zone-eu"><td>2</td><td>诺茨郡</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>3</td><td>伯顿艾尔宾</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>4</td><td>诺丁汉森林 U21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </table>
+      <p class="league-note">本组尚无球队出场，本轮两场同时开打：诺茨郡 vs 格林斯比、伯顿艾尔宾 vs 诺丁汉森林 U21。</p>
+    </div>
+    <div style="margin-top:0.55rem;"><div class="impact-title">南部 H 组 积分榜</div>
+      <table class="league-tbl standings">
+        <tr><th>#</th><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>
+        <tr class="zone-eu"><td>1</td><td>布伦特福德 U21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class="zone-eu"><td>2</td><td>布罗姆利</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>3</td><td>克劳利镇</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr class=""><td>4</td><td>米尔顿凯恩斯</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </table>
+      <p class="league-note">本组尚无球队出场，本轮两场同时开打：米尔顿凯恩斯 vs 克劳利镇、布罗姆利 vs 布伦特福德 U21。</p>
+    </div>
+    <div class="league-impact">
+      <div class="impact-title">本日对阵 · 出线影响</div>
+      <div class="impact-row"><span class="tag tag-blue">周三005</span> 谢周三 vs 阿克宁顿 · 小组赛阶段：胜者 3 分领跑小组，战平则直接点球决胜（点球胜方额外 1 分）。</div>
+      <div class="impact-row"><span class="tag tag-blue">周三006</span> 巴恩斯利 vs 奥德汉姆 · 小组赛阶段：胜者 3 分领跑小组，战平则直接点球决胜（点球胜方额外 1 分）。</div>
+    </div>
+    <div class="league-impact">
+      <div class="impact-title">参赛队联赛处境</div>
+      <div class="impact-row">米尔顿凯恩斯：英甲第 22 位（7 战 0 胜 6 平 1 负，8:10，6 分），仍在降级区边缘，英甲仅有的两支未赢球球队之一。</div>
+      <div class="impact-row">维冈竞技：英甲第 24 位（7 战 1 胜 1 平 5 负，5:12，4 分），积分榜垫底。</div>
+      <div class="impact-row">克劳利镇：英乙积分榜末位（7 轮 4 分），联赛三连败，防守端 7 轮丢 13 球。</div>
+      <div class="impact-row">诺茨郡：英甲下游（近 10 场各项赛事仅 1 胜）；格林斯比：英乙中上游（近 10 场 4 胜 4 平 2 负）。</div>
+    </div>
+    <div class="league-impact">
+      <div class="impact-title">后续赛程（小组赛下一批）</div>
+      <div class="table-wrap"><table class="history-table"><thead><tr><th>日期</th><th>对阵</th><th>分组</th></tr></thead><tbody><tr><td>2026-10-07</td><td>布莱克浦 vs 克鲁</td><td>北部 B 组</td></tr><tr><td>2026-10-07</td><td>米尔顿凯恩斯 vs 布伦特福德 U21</td><td>南部 H 组</td></tr><tr><td>2026-10-07</td><td>伯顿艾尔宾 vs 格林斯比</td><td>北部 F 组</td></tr></tbody></table></div>
+      <p class="league-note">小组赛第三轮预计于 2026 年 11 月国际比赛日后进行，具体赛程以官方公布为准。</p>
+    </div></div></details>
+
+
+
+<h2>六、串关推荐</h2>
+<div class="parlay-section">
+  <h3>方向串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    <tr><td colspan="5" style="color:var(--muted);font-size:0.8rem;padding:0.6rem 0.5rem;">当日可串场次不足，未生成方向串关组合。</td></tr>
+  </table>
+  <div class="parlay-note">注：以「倾向」（胜/平/负）为串关腿，不押具体比分。长期回测单腿方向命中约 54%、3 腿全中约 25%，是唯一接近盈亏平衡的串关口径（比分串关全中率不到 1%，仅供博高赔）。</div>
+</div>
+
+<div class="parlay-section">
+  <h3>比分串关推荐</h3>
+  <table class="parlay-table">
+    <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
+    <tr><td colspan="5" style="color:var(--muted);font-size:0.8rem;padding:0.6rem 0.5rem;">当日可串场次不足，未生成比分串关组合。</td></tr>
+  </table>
+  <div class="parlay-note">注：综合概率为各场比分腿概率连乘。<b>比分串关 3 腿全中率不到 1%</b>，组合概率常低至 0.1%~0.4%——请当买彩票而非投资建议，切勿重注。想提高命中率请看上表 <b>Top3 覆盖 / ±1球覆盖</b>，而非串关。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）；组数与腿数随当日场次数量调整。</div>
+</div>
+
+<details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 串关（2026-11-10）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="parlay-section">
+  
+  <div class="parlay-note">前一日（2026-11-10）报告无串关表格，无可回顾内容。</div>
+</div></div></details>
+
+
+<h2>📊 动态校准与历史命中率</h2>
+<div class="calibration-box">
+  <div class="cal-item">
+    <span>近5期预测总进球均值</span>
+    <span><strong>2.96球</strong> | 实际均值: <strong>3.07球</strong></span>
+  </div>
+  <div class="cal-item">
+    <span>系统偏差比</span>
+    <span><strong style="color:var(--accent3);">0.94</strong> → 模型系统性低估 → λ×<strong>1.04</strong> 已应用</span>
+  </div>
+  <div class="cal-item">
+    <span>H2H 方向性再分配</span>
+    <span><strong style="color:var(--accent2);">0</strong> 场应用总量守恒再分配，胜负记录直接参与λ分配</span>
+  </div>
+  <div class="cal-item">
+    <span>零封修正效果</span>
+    <span>零封频率≤15%→P(0)×0.6，16-25%→×0.8，26-40%→×1.0，&gt;40%→×1.2，逐场已应用</span>
+  </div>
+  <div class="cal-item"><span>2026-11-10（2场）</span><span>预测均值 <strong>2.42</strong> | 实际均值 <strong>3.00</strong> | 偏差比 <strong>1.24</strong></span></div><div class="cal-item"><span>2026-11-08（30场）</span><span>预测均值 <strong>3.04</strong> | 实际均值 <strong>2.97</strong> | 偏差比 <strong>0.98</strong></span></div><div class="cal-item"><span>2026-11-07（29场）</span><span>预测均值 <strong>2.93</strong> | 实际均值 <strong>2.52</strong> | 偏差比 <strong>0.86</strong></span></div><div class="cal-item"><span>2026-11-06（14场）</span><span>预测均值 <strong>2.86</strong> | 实际均值 <strong>3.00</strong> | 偏差比 <strong>1.05</strong></span></div><div class="cal-item"><span>2026-11-05（13场）</span><span>预测均值 <strong>3.19</strong> | 实际均值 <strong>2.92</strong> | 偏差比 <strong>0.92</strong></span></div><div class="cal-item"><span>2026-11-04（12场）</span><span>预测均值 <strong>3.29</strong> | 实际均值 <strong>4.00</strong> | 偏差比 <strong>1.22</strong></span></div>
+</div>
+
+
+</div>
+
+<div class="footer">
+  <div class="container">
+    <p><strong>数据来源：</strong>P0级（官方赔率数据，网易彩票） | P1级（联赛积分榜、H2H 历史数据，积分榜与赛程来源 7m.com.cn / data.7m.com.cn） | P2级（伤停与赛前名单：Lineups Today / 香港赛马会赛前简报 / 德甲与荷甲官方）</p>
+    <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · 动态校准 · 零封修正</p>
+    <p style="margin-top:0.5rem;">报告生成时间: 2026-11-11 | 仅供数据分析参考，不构成投注建议</p>
+  </div>
+</div>
+
+<style>
+  h2, h3 { scroll-margin-top: 1.2rem; }
+  .toc-nav {
+    /* 容器 1080px 居中 ⇒ 内容右缘距视口右 = (100vw-1080)/2。
+       定位须满足 right + width ≤ 该间距 - 16px，否则会压住正文。 */
+    --toc-w: 140px;
+    position: fixed; top: 50%;
+    right: clamp(8px, calc((100vw - 1080px) / 2 - var(--toc-w) - 16px), 32px);
+    transform: translateY(-50%); width: var(--toc-w); max-height: 76vh; overflow-y: auto;
+    background: rgba(255,255,255,0.96); border: 1px solid rgba(0,0,0,0.09);
+    border-radius: 10px; padding: 0.7rem 0.5rem; z-index: 60;
+    box-shadow: 0 4px 22px rgba(0,0,0,0.09); font-size: 0.78rem;
+    scrollbar-width: thin;
+  }
+  @media (min-width: 1600px) { .toc-nav { --toc-w: 168px; font-size: 0.8rem; } }
+  .toc-nav::-webkit-scrollbar { width: 4px; }
+  .toc-nav::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.16); border-radius: 2px; }
+  .toc-head {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted, #6c757d);
+    padding: 0 0.55rem 0.45rem; border-bottom: 1px solid rgba(0,0,0,0.08); margin-bottom: 0.35rem;
+  }
+  .toc-list { list-style: none; margin: 0; padding: 0; }
+  .toc-nav a {
+    display: block; padding: 0.32rem 0.55rem; color: var(--muted, #6c757d); text-decoration: none;
+    border-left: 2px solid transparent; border-radius: 0 4px 4px 0; line-height: 1.42;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: none;
+  }
+  .toc-nav a:hover { color: var(--ink, #1a1a2e); background: rgba(0,0,0,0.045); }
+  .toc-nav a.lv3 { padding-left: 1.05rem; font-size: 0.72rem; opacity: 0.9; }
+  .toc-nav a.active {
+    color: var(--accent, #e63946); border-left-color: var(--accent, #e63946);
+    background: rgba(230,57,70,0.08); font-weight: 600;
+  }
+  .toc-toggle {
+    position: fixed; right: 14px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: none; background: var(--accent, #e63946); color: #fff; font-size: 1.15rem;
+    cursor: pointer; z-index: 61; box-shadow: 0 4px 14px rgba(230,57,70,0.36);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .toc-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.28); z-index: 59; }
+  /* 返回顶部：与目录按钮同侧堆叠，避开已被 toc-toggle 占用的 bottom:22px */
+  .back-top {
+    position: fixed; right: 14px; bottom: 22px; width: 46px; height: 46px; border-radius: 50%;
+    border: 1px solid currentColor; background: #fff; color: var(--accent, #e63946);
+    cursor: pointer; z-index: 62; box-shadow: 0 4px 14px rgba(0,0,0,0.16);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    opacity: 0; visibility: hidden; transform: translateY(8px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+  }
+  .back-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .back-top:hover { background: rgba(230,57,70,0.08); }
+  .bt-ico { font-size: 1.02rem; font-weight: 700; line-height: 1; }
+  .bt-txt { font-size: 0.56rem; line-height: 1; letter-spacing: 0.04em; }
+  @media (max-width: 1399px) { .back-top { bottom: 78px; } }
+  @media print { .back-top { display: none !important; } }
+  @media (min-width: 1400px) { .toc-toggle { display: none; } }
+  @media (max-width: 1399px) {
+    .toc-nav {
+      --toc-w: 210px; right: 12px;
+      transform: translateY(-50%) translateX(calc(100% + 26px));
+      transition: transform 0.24s ease; max-height: 70vh; font-size: 0.82rem;
+    }
+    .toc-nav.open { transform: translateY(-50%) translateX(0); }
+  }
+</style>
+<nav id="tocNav" class="toc-nav" aria-label="章节导航">
+  <div class="toc-head">目录</div>
+  <ul class="toc-list" id="tocList"></ul>
+</nav>
+<button id="tocToggle" class="toc-toggle" type="button" aria-label="打开章节目录" aria-expanded="false">&#9776;</button>
+<button id="backTop" class="back-top" type="button" aria-label="返回顶部" title="返回顶部"><span class="bt-ico">&#8593;</span><span class="bt-txt">顶部</span></button>
+<script>
+(function () {
+  var nav = document.getElementById('tocNav');
+  var list = document.getElementById('tocList');
+  var btn = document.getElementById('tocToggle');
+  if (!nav || !list) return;
+  var scope = document.querySelector('body > .container') || document.body;
+  // 目录只收主章节：前日回顾 · 明细折叠、动态校准 · 附录、串关表内两个子标题均不进目录
+  // （第六节只留「六、串关推荐」一项）；滚动高亮仍按全量标题计算，
+  // 命中被排除标题时回退到前一个已入目录标题。
+  var SKIP_TOC = /前日回顾|动态校准|^(方向|比分)串关推荐$/;
+  var heads = [].filter.call(scope.querySelectorAll('h2, h3'), function (h) {
+    return (h.textContent || '').trim().length > 0;
+  });
+  var tocHeads = heads.filter(function (h) {
+    return !SKIP_TOC.test((h.textContent || '').trim());
+  });
+  if (!tocHeads.length) { nav.style.display = 'none'; if (btn) btn.style.display = 'none'; return; }
+
+  var seq = 0;
+  tocHeads.forEach(function (h) {
+    var txt = (h.textContent || '').trim().replace(/\s+/g, ' ');
+    if (!h.id) h.id = 'sec-' + (++seq);
+    var a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = txt;
+    a.title = txt;
+    if (h.tagName.toLowerCase() === 'h3') a.className = 'lv3';
+    a.addEventListener('click', function () {
+      // 目标标题藏在折叠区里时先展开，否则目录跳转会落到不可见位置
+      var d = h.closest('details.fold');
+      if (d && !d.open) d.open = true;
+      closeNav();
+    });
+    var li = document.createElement('li');
+    li.appendChild(a);
+    list.appendChild(li);
+  });
+
+  var links = [].slice.call(list.querySelectorAll('a'));
+  var mask = null;
+
+  function closeNav() {
+    nav.classList.remove('open');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (mask) { mask.remove(); mask = null; }
+  }
+  if (btn) btn.addEventListener('click', function () {
+    var open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) {
+      mask = document.createElement('div');
+      mask.className = 'toc-mask';
+      mask.addEventListener('click', closeNav);
+      document.body.appendChild(mask);
+    } else if (mask) { mask.remove(); mask = null; }
+  });
+
+  var current = tocHeads[0];
+  function spy() {
+    var atBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 4);
+    var pick = tocHeads[0];
+    if (atBottom) {
+      for (var k = heads.length - 1; k >= 0; k--) {
+        if (heads[k].offsetParent !== null) { pick = heads[k]; break; }
+      }
+    } else {
+      for (var i = 0; i < heads.length; i++) {
+        // 未展开的折叠区里标题不可见，跳过，避免目录高亮到隐藏项
+        if (heads[i].offsetParent === null) continue;
+        if (heads[i].getBoundingClientRect().top <= 140) pick = heads[i];
+      }
+    }
+    // 目录未收录的标题 → 高亮回退到它之前最近的一个已收录标题
+    if (SKIP_TOC.test((pick.textContent || '').trim())) {
+      for (var j = heads.indexOf(pick) - 1; j >= 0; j--) {
+        if (!SKIP_TOC.test((heads[j].textContent || '').trim())) { pick = heads[j]; break; }
+      }
+    }
+    if (pick === current) return;
+    current = pick;
+    var activeId = '#' + pick.id;
+    links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === activeId); });
+    var act = list.querySelector('a.active');
+    if (act && nav.classList.contains('open') === false) {
+      var nr = nav.getBoundingClientRect(), ar = act.getBoundingClientRect();
+      if (ar.top < nr.top + 30 || ar.bottom > nr.bottom - 8) {
+        nav.scrollTop += (ar.top - nr.top) - (nav.clientHeight / 2) + (ar.height / 2);
+      }
+    }
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function () {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { spy(); ticking = false; });
+  }, { passive: true });
+  window.addEventListener('resize', spy, { passive: true });
+  spy();
+})();
+</script>
+<script>
+(function () {
+  var ds = [].slice.call(document.querySelectorAll('details.fold[data-fold]'));
+  // 打印前展开所有折叠，避免纸面缺内容
+  window.addEventListener('beforeprint', function () {
+    ds.forEach(function (d) { d.open = true; });
+  });
+})();
+(function () {
+  var b = document.getElementById('backTop');
+  if (!b) return;
+  var queued = false;
+  function upd() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    b.classList.toggle('show', y > 400);
+    queued = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (queued) return;
+    queued = true;
+    if (window.requestAnimationFrame) window.requestAnimationFrame(upd);
+    else upd();
+  }, { passive: true });
+  b.addEventListener('click', function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    try { window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); }
+    catch (e) { window.scrollTo(0, 0); }
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

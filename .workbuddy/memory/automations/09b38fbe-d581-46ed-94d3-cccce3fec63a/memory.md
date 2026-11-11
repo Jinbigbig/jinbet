@@ -1,5 +1,16 @@
 # 午间补充刷新（15:00）执行记录
 
+## 2026-11-10
+- 12:00 完整流水线正常（index.html 12:08），本任务为补充刷新（非补跑）。今日仅 2 场英锦标赛（周二001 伯顿/诺茨郡、周二002 布罗姆利/米尔顿）。
+- 脚本正本取法：`git ls-remote origin master` 得 44968b1e → `git show 44968b1e:update_odds_net.py`（3410 行 / `grep -c 变更判定`=3）→ 先 `--no-push` 再 `--no-push --results-only`。[DEDUP-ALIGN] 受影响 235/292 文件，备份 `_hist_backup_2026-11-10`；ODDS 回填更新 3643 条；赛果 3826 条、[变更判定] 0/0 故未推数据提交。
+- 覆盖：赔率 2/2、红彩 2/2（错配 0）、天气 2/2（002 恶劣）、开赛时间 2/2（次日 03:00/03:30）；**阵容 0/2、结构化伤停 0/2、军情 0 场、联赛积分 0** —— 英锦标赛不被 lineupstoday / injuries(德甲+荷甲) / 7M id 映射覆盖，属源站缺覆盖而非失败，报告靠红彩自带伤停（001 1+4、002 2+3）兜底。
+- 顺序沿用 11-08 改进：match_times / injuries_extra / odds_ticks 全部提到 `_gen_report.py` 之前，报告直接带上开赛时间（线上页已核实含 03:00/03:30）。
+- 盘口时序：15:02 新增 8 点，两场各 3 点（11:11/12:05/15:02），赔率变动 2 场（001 2.18→2.30，002 4.05→4.15）。
+- 红彩复跑仅 `updated` 时间戳变化（15:01→15:03），内容零增量 → `git checkout -- hongcai.json` 回退，避免抖动。
+- 推送：gh-pages 06bab2e4 → 737e2d61（两个提交：`data: 11-10 赔率/赛果/红彩补充` 31188c6e、`report: 生成11-10 报告午间补充刷新` 737e2d61），ls-remote 核验；根 index.html `data-page-node-id`=0 不 checkout；红线 grep 0 命中；线上 200 且含开赛时间。
+- matlas：导入 894 场 / 赛果 886；restore_extras 缺失 0（无需 --apply）；build --strict 0 违规；发布 5ddafb5b6（gh-pages 0c5ce193c→5ddafb5b6，main d55b6c3e2→a382c1baf）。**本轮只发布一次。**
+- 新增教训：`odds_ticks.json` 的 key 用竞彩原始全称（`布罗姆利_米尔顿凯恩斯`），matlas 由 `_ticks_for()` 的双向包含兜底命中；**matlas day json 的时序在 `match.extras.odds_ticks`，不在顶层**，别在 match 顶层查而误判为 0。
+
 ## 2026-11-08
 - 12:00 完整流水线正常（index.html 12:07），本任务为补充刷新（非补跑）。
 - ⚠️ **裸 `git show master:update_odds_net.py` 会拿到旧脚本**：本地 `master` 分支是分叉死引用（`897636ae`，3334 行、`grep -c 变更判定`=0）；而 `origin/master`=`fae03fec` 是 3410 行/3 匹配的正确版。本次先误读本地 master，发现行数不对后改取 `HEAD:` 才跑通。**正确姿势：fetch 后用 `git show origin/master:update_odds_net.py`（或 ls-remote 给的 SHA），校验 3410 行 + 变更判定=3。** `git fetch origin master:master` 因 non-ff 被拒，无法快进本地 master。

@@ -37,53 +37,53 @@
  },
  "hedge": {
   "weights": {
-   "model": 0.3049,
-   "market": 0.6951
+   "model": 0.2978,
+   "market": 0.7022
   },
   "losses": {
-   "model": 1.06954,
-   "market": 0.93223,
-   "blend": 0.93896,
+   "model": 1.06992,
+   "market": 0.92697,
+   "blend": 0.93437,
    "n": 500
   },
-  "w": 0.7,
+  "w": 0.7022,
   "eta": 6.0,
   "applied": false,
   "fixed_w": 0.88
  },
  "kalman": {
-  "n_teams": 654,
+  "n_teams": 655,
   "applied": true,
-  "mods_non_neutral": 0
+  "mods_non_neutral": 4
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3825,
+  "n_samples": 3837,
   "drift_detected": true,
   "flags": [
    "league_baselines"
   ],
   "detail": {
    "global_goals": {
-    "psi": 0.0018,
-    "ks": 0.0113,
+    "psi": 0.002,
+    "ks": 0.0119,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0328,
-    "ks": 0.0756,
+    "psi": 0.033,
+    "ks": 0.0754,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "league_baselines": {
-    "mean_delta_pct": 7.6,
-    "std_delta_pct": 17.45,
+    "mean_delta_pct": 7.64,
+    "std_delta_pct": 17.58,
     "top3_changed": [
      [
       "亚冠精英",
-      103.93
+      105.25
      ],
      [
       "日联赛杯",
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-11-10",
+ "date": "2026-11-11",
  "history": [
   {
    "date": "2026-09-14",
@@ -613,6 +613,16 @@
   },
   {
    "date": "2026-11-10",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-11-11",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
