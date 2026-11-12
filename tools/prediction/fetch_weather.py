@@ -27,6 +27,9 @@ OUT = 'weather.json'
 
 # 球队中文简称（竞彩官方简称）→ 主场所在城市（英文，供 Geocoding 使用）
 TEAM_CITY = {
+    # 2026-11-12 补充：欧国联国家队主场（取常用主场/首都：土耳其=伊斯坦布尔；英格兰=伦敦温布利；其余首都）
+    '土耳其': 'Istanbul', '亚美尼亚': 'Yerevan', '阿尔巴尼': 'Tirana',
+    '黑山': 'Podgorica', '英格兰': 'London', '捷克': 'Prague',
     # 2026-11-11 补充：英锦标赛缺失映射（谢周三=谢菲尔德；巴恩斯利=南约克郡Barnsley）
     '谢周三': 'Sheffield', '巴恩斯利': 'Barnsley',
     # 2026-11-10 补充：英锦标赛缺失映射（伯顿=Burton upon Trent 斯塔福德郡；布罗姆利=伦敦东南Bromley）
