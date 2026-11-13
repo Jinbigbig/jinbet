@@ -28,7 +28,7 @@ canonical=官方简称；缺映射补 `RESULT_TEAM_NAME_MAP`，别手工删。�
 
 ## 比分 / 两档 / 三引擎口径
 - 首选唯一实现 `score_engine.headline_reorder`：带 `mkt` → argmax[log p_比分盘+0.3·log p_模型]，不要求同象限；无 mkt 退回 gap 规则。`head_day_cap=4`。⚠️ 禁重排 `top_scores`（恒纯概率降序）；首选另存 `headline`；跨象限渲染 `hm_mark`。落位 `_apply_headline_plan(out,TODAY,raw)`→`_headline_cells`；双档=除首选外概率最高两个。单日 15 场单点期望 2.3 场是天花板。
-- 两档唯一入口 `SA.split_boards`，只调 `rank_pk/rank_bold`、`pk_result/bd_result`。TIER_PK=6/TIER_BD=4；档数=非冷启动 10 场 1 档、每+8 场+1（N_TIER_BASE=10/STEP=8/MAX=5）。生产值 bd_min_total=3、bd_gap=1、bd_exclusive=1、bd_lean_src='engine'；`bd_tuple` 必须 2 元组。护栏：改善≥0.3pp、天数<5 保留默认。⚠️ 严禁在 `_gen_report.py`/`_optimize_selection.py` 另写排序或命中判定（曾分叉 31.8% vs 11.4%）。
+- 两档唯一入口 `SA.split_boards`，只调 `rank_pk/rank_bold`、`pk_result/bd_result`。TIER_PK=6/TIER_BD=4；档数=非冷启动 10 场 1 档、每+8 场+1（N_TIER_BASE=10/STEP=8/MAX=5）。生产值 bd_min_total=2（11-12 起采纳）、bd_gap=1、bd_exclusive=1、bd_lean_src='engine'；`bd_tuple` 必须 2 元组。护栏：改善≥0.3pp、天数<5 保留默认。⚠️ 严禁在 `_gen_report.py`/`_optimize_selection.py` 另写排序或命中判定（曾分叉 31.8% vs 11.4%）。
 - A=`_calc_engine`（4.1/4.4/4.5）；B=`score_engine`（4.2，prob_temp=1.20、market_mix=0.70 勿降）；C=`selection_algo`；另 4.3 进球/4.6 大比分。
 - 半全场 `htft_analysis`（半场 λ=全场×HALF_SHARE 0.45，独立泊松 9 格）；每场 `htft` 入 `_calc_result`+快照；卡片「进球倾向」下 +4.3 末列；复盘 `_recap_htft()`。渲染 `HTFT_HI=40/HTFT_MID=26`（默认 60/45 会全灰）。
 - 词表 可用/慎用/别跟；让球分级唯一 `rq_grade(prob,conf)`；快照无置信度用 `_rq_conf_of(hc)`。概率唯一渲染器 `_conf_tag(p,nd=1,hi=60,mid=45)`；`_conf_tag/_conf_bucket/_conf_split/_star_txt` 必须在 `build_league_sec` 前定义。
@@ -59,7 +59,7 @@ canonical=官方简称；缺映射补 `RESULT_TEAM_NAME_MAP`，别手工删。�
 
 ## 复盘/诊断
 - 六指标 方向/方向双选/比分单点/比分双档/半全场首选/总进球众数/λ偏差。连续多日方向<50% 或 λ偏差>0.2 → 重拟合。`daily_diag.py --days 10` 或 `gen_review.py --kpi`。
-- 累计 599 场（since 09-08）：方向 57.8%/双选 81.0%/单点 10.2%/双档 21.2%/半全 34.9%/总进球 20.7%。⚠️「单点约15%」是 4036 场旧口径，近期 10~11%；杯赛不降权（61.3%>联赛 56.3%）；<300 场不调参；球小策 62% 是双选口径，同口径六项赢五。
+- 长期基准（daily_diag 长期口径，约 2478 场有赔率快照）：方向 51.2%（市场去水 51.9%，已贴天花板）/单点 15.1%/双档 24.0%/比分精选前三档累计 39.1%/大胆档第一档约 22%/头条±1 球 68.2%。⚠️ 旧「599 场」口径（方向 57.8%/双选 81.0%）样本已过期，勿再引用；<300 场不调参。
 
 ## 赛果补录（每日 08:00 automation）
 - `_sync_results.py`（master `tools/prediction/sync_results.py`）：对齐远端→`--no-push --results-only`→`[变更判定]`→0/0 不推→`commit -- pathspec`→push。
