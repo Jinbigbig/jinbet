@@ -145,6 +145,11 @@ TEAM_CITY = {
     '阿德莱德': 'Adelaide', '江原FC': 'Chuncheon', '库奥皮奥': 'Kuopio',
     '特罗姆瑟': 'Tromso', '蒙扎': 'Monza', '索尔纳': 'Solna',
     '勒芒': 'Le Mans', '弗赖堡': 'Freiburg', '国际米兰': 'Milan',
+    # 2026-11-14 补充：日乙/荷乙/巴甲/国际赛+欧国联国家队主场（国家队取首都/常用主场）
+    '湘南海洋': 'Hiratsuka', '罗达JC': 'Kerkrade', '瓦尔韦克': 'Waalwijk',
+    '阿尔梅勒': 'Almere', '米拉索尔': 'Mirassol', '沙佩科恩斯': 'Chapeco',
+    '日本': 'Tokyo', '中国': 'Beijing', '格鲁吉亚': 'Tbilisi', '挪威': 'Oslo',
+    '奥地利': 'Vienna', '瑞典': 'Stockholm', '罗马尼亚': 'Bucharest', '葡萄牙': 'Lisbon',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
