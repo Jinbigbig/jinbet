@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15 12:12",
+ "updated": "2026-11-15 15:02",
  "date": "2026-11-15",
  "source": "网易红彩",
  "count": 10,
@@ -69,9 +69,9 @@
    "referee": null,
    "weather": {
     "name": "多云有雨",
-    "temperature": 14,
-    "humidity": 82,
-    "wind": 5,
+    "temperature": 11,
+    "humidity": 94,
+    "wind": 3,
     "by_home": {
      "n": 6,
      "w": 1,
@@ -469,7 +469,7 @@
        "to": 75
       },
       {
-       "n": 1,
+       "n": 2,
        "pct": 100,
        "from": 76,
        "to": 90
@@ -507,8 +507,8 @@
        "to": 75
       },
       {
-       "n": 0,
-       "pct": 0,
+       "n": 1,
+       "pct": 100,
        "from": 76,
        "to": 90
       }
@@ -547,8 +547,8 @@
        "to": 75
       },
       {
-       "n": 0,
-       "pct": 0,
+       "n": 1,
+       "pct": 100,
        "from": 76,
        "to": 90
       }
@@ -585,7 +585,7 @@
        "to": 75
       },
       {
-       "n": 1,
+       "n": 2,
        "pct": 100,
        "from": 76,
        "to": 90
@@ -695,9 +695,9 @@
    "referee": null,
    "weather": {
     "name": "多云有雨",
-    "temperature": 15,
-    "humidity": 92,
-    "wind": 5,
+    "temperature": 17,
+    "humidity": 94,
+    "wind": 6,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -1151,8 +1151,8 @@
      ],
      "conceded": [
       {
-       "n": 0,
-       "pct": 0,
+       "n": 1,
+       "pct": 11,
        "from": 1,
        "to": 15
       },
@@ -1170,19 +1170,19 @@
       },
       {
        "n": 1,
-       "pct": 12,
+       "pct": 11,
        "from": 46,
        "to": 60
       },
       {
        "n": 4,
-       "pct": 50,
+       "pct": 44,
        "from": 61,
        "to": 75
       },
       {
        "n": 3,
-       "pct": 37,
+       "pct": 33,
        "from": 76,
        "to": 90
       }
@@ -1191,8 +1191,8 @@
     "home": {
      "scored": [
       {
-       "n": 0,
-       "pct": 0,
+       "n": 1,
+       "pct": 25,
        "from": 1,
        "to": 15
       },
@@ -1210,19 +1210,19 @@
       },
       {
        "n": 1,
-       "pct": 33,
+       "pct": 25,
        "from": 46,
        "to": 60
       },
       {
        "n": 1,
-       "pct": 33,
+       "pct": 25,
        "from": 61,
        "to": 75
       },
       {
        "n": 1,
-       "pct": 33,
+       "pct": 25,
        "from": 76,
        "to": 90
       }
@@ -1373,9 +1373,9 @@
    "referee": null,
    "weather": {
     "name": "多云有雨",
-    "temperature": 18,
-    "humidity": 92,
-    "wind": 7,
+    "temperature": 15,
+    "humidity": 100,
+    "wind": 5,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -2058,9 +2058,9 @@
    "referee": null,
    "weather": {
     "name": "多云有雨",
-    "temperature": 13,
-    "humidity": 95,
-    "wind": 10,
+    "temperature": 12,
+    "humidity": 97,
+    "wind": 7,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -2705,12 +2705,6 @@
       "position": "后卫",
       "status": "out",
       "state": "小腿受伤"
-     },
-     {
-      "name": "凯克",
-      "position": "前锋",
-      "status": "out",
-      "state": "腿筋受伤"
      }
     ]
    }
@@ -3654,11 +3648,6 @@
   }
  },
  "missing": [
-  {
-   "num": "周日011",
-   "home": "比利时",
-   "away": "意大利",
-   "reason": "matchId 错配：红彩返回 利丁奥 vs 安斯基德"
-  }
+  "周日011 比利时vs意大利: 源站返回旧场次 利丁奥vs安斯基德（2021-06-24 瑞典乙），已剔除"
  ]
 }
