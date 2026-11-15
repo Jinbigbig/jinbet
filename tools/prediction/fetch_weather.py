@@ -150,6 +150,9 @@ TEAM_CITY = {
     '阿尔梅勒': 'Almere', '米拉索尔': 'Mirassol', '沙佩科恩斯': 'Chapeco',
     '日本': 'Tokyo', '中国': 'Beijing', '格鲁吉亚': 'Tbilisi', '挪威': 'Oslo',
     '奥地利': 'Vienna', '瑞典': 'Stockholm', '罗马尼亚': 'Bucharest', '葡萄牙': 'Lisbon',
+    # 2026-11-15 补充：荷乙/欧国联其余国家队主场
+    '马斯特里': 'Maastricht', '拉脱维亚': 'Riga', '塞浦路斯': 'Nicosia',
+    '芬兰': 'Helsinki', '克罗地亚': 'Zagreb', '西班牙': 'Madrid', '比利时': 'Brussels',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -165,6 +168,8 @@ CITY_ZH = {
     'Burnley': '伯恩利', 'Leeds': '利兹', 'Sunderland': '桑德兰',
     'Leicester': '莱斯特', 'Southampton': '南安普敦',
     'Madrid': '马德里', 'Barcelona': '巴塞罗那', 'Seville': '塞维利亚',
+    'Maastricht': '马斯特里赫特', 'Riga': '里加', 'Nicosia': '尼科西亚',
+    'Helsinki': '赫尔辛基', 'Zagreb': '萨格勒布', 'Brussels': '布鲁塞尔',
     'Valencia': '瓦伦西亚', 'Bilbao': '毕尔巴鄂', 'Villarreal': '比利亚雷亚尔',
     'San Sebastian': '圣塞瓦斯蒂安', 'Vigo': '维戈', 'Pamplona': '潘普洛纳',
     'Palma': '帕尔马', 'Vitoria-Gasteiz': '维多利亚', 'Girona': '赫罗纳',
