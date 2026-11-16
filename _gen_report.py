@@ -741,7 +741,19 @@ def _conf_split(rec, labs=None):
     return ' · '.join(out)
 
 
-# ---------- 腾讯体育积分榜（7M 未收录赛事：欧冠等） ----------
+# ---------- 中国体育彩票积分榜（主源，2026-11-16 起；覆盖全部联赛，大陆简体队名） ----------
+# 数据：sporttery_standings.json（_fetch_sporttery_standings.py 抓体彩 getTablesV2.qry）
+try:
+    SPORT_STD = json.load(open('sporttery_standings.json', encoding='utf-8')).get('leagues') or {}
+    SPORT_STD_AT = json.load(open('sporttery_standings.json', encoding='utf-8')).get('fetched_at') or ''
+except Exception:
+    SPORT_STD, SPORT_STD_AT = {}, ''
+
+# 这些赛事虽在 CUP_EXTRA 有手写榜，但体彩官方榜数据更全更新（已人工核对队名/轮次），
+# 改用体彩主源；其余 CUP_EXTRA 保留人工核查的手写榜。
+SPORT_OVERRIDE_CUP = {'欧国联'}
+
+# ---------- 腾讯体育积分榜（体彩未收录赛事兜底：欧冠等） ----------
 # 数据：qq_standings.json（_fetch_qq_standings.py 抓 sports.qq.com 同源接口）
 try:
     QQ_STD = json.load(open('qq_standings.json', encoding='utf-8')).get('leagues') or {}
@@ -851,11 +863,14 @@ def _std_teams(teams):
         for k in ('gf', 'ga', 'gd'):
             v = t.get(k)
             d[k] = int(v) if isinstance(v, (int, float)) else None
+        # 体彩等源只给进/失球、无净胜球字段：有 gf/ga 时补齐 gd，避免整行「—」。
+        if d['gd'] is None and d['gf'] is not None and d['ga'] is not None:
+            d['gd'] = d['gf'] - d['ga']
         out.append(d)
     return out
 
 
-# ---------- 逐场卡片用的榜位索引（7M → 腾讯 → Fox → UEFA 依次兜底）----------
+# ---------- 逐场卡片用的榜位索引（体彩 → 7M → 腾讯 → Fox → UEFA 依次兜底）----------
 _STD_ROWS = {}
 
 
@@ -864,6 +879,15 @@ def std_rows(league):
     if league in _STD_ROWS:
         return _STD_ROWS[league]
     rows = []
+    # 主源：体彩（全量联赛，大陆简体队名）；分组赛拍平并带组名
+    if SPORT_STD.get(league) and (SPORT_STD[league].get('groups') or []):
+        for g in SPORT_STD[league]['groups']:
+            for t in _std_teams(g.get('teams') or []):
+                t['grp'] = g.get('name') or ''
+                rows.append(t)
+    if rows:
+        _STD_ROWS[league] = rows
+        return rows
     try:
         _ld = json.load(open('league_data.json', encoding='utf-8')).get('leagues', {})
     except Exception:
@@ -1037,6 +1061,16 @@ STD_ZONES = {
     '欧罗巴': [(1, 8, 'z1'), (9, 24, 'z2'), (25, 999, 'z3')],
     '欧协联': [(1, 8, 'z1'), (9, 24, 'z2'), (25, 999, 'z3')],
     '解放者杯': [(1, 2, 'z1'), (3, 3, 'z2'), (4, 999, 'z3')],   # 组内名次
+}
+# 体彩主源下的赛制说明（单组联赛阶段榜 / 多组小组赛榜）
+STD_LEAGUE_NOTE = {
+    '欧冠': '欧冠联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。',
+    '欧罗巴': '欧罗巴联赛阶段 36 队单循环 8 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。',
+    '欧协联': '欧协联联赛阶段 36 队单循环 6 轮：前 8 直接进 16 强，第 9-24 名进附加赛，第 25-36 名直接淘汰。',
+}
+STD_GROUP_NOTE = {
+    '解放者杯': '解放者杯赛制：32 队分 8 组、每组单循环 6 轮，组内前 2 名晋级 16 强，第 3 名转南美杯，第 4 名出局。',
+    '欧国联': '欧洲国家联赛共 54 队分 A/B/C/D 四级，A/B/C 级各 4 组、D 级 2 组，组内主客双循环；A 级各组前两名进 8 强淘汰赛，B/C 级各组头名升级。',
 }
 STD_LEGEND = {
     '欧冠': '绿＝前 8 直接进 16 强 ｜ 橙＝9-24 打附加赛 ｜ 灰＝25-36 淘汰',
@@ -1248,7 +1282,26 @@ def build_league_sec(matches):
     for lg, ms in grouped.items():
         out.append('  <div class="league-card">')
         parsed = league_data.get(lg)
-        # 腾讯榜补充：7M 未收录的赛事（欧冠等）优先用真实榜单，而不是写「无数据源」
+        # 主源：中国体育彩票积分榜（2026-11-16 起）。覆盖全量联赛、大陆简体队名。
+        # 单组榜 → std_league_card；分组赛 → std_group_card；杯赛特例 CUP_EXTRA 仍走原逻辑，
+        # 例外：SPORT_OVERRIDE_CUP 列出的赛事（人工核查过体彩数据更全更新）改用体彩榜。
+        if SPORT_STD.get(lg) and (lg not in CUP_EXTRA or lg in SPORT_OVERRIDE_CUP):
+            _cfg = SPORT_STD[lg]
+            _gs = [{'name': g.get('name') or '', 'teams': _std_teams(g.get('teams') or [])}
+                   for g in (_cfg.get('groups') or []) if g.get('teams')]
+            _sat = SPORT_STD_AT[:16].replace('T', ' ')
+            if _gs:
+                if len(_gs) > 1:
+                    out.extend(std_group_card(
+                        lg, ms, _gs, '来源 中国体育彩票（sporttery.cn）', _sat,
+                        note=STD_GROUP_NOTE.get(lg, '')))
+                else:
+                    out.extend(std_league_card(
+                        lg, ms, _gs[0]['teams'], '来源 中国体育彩票（sporttery.cn）',
+                        _sat, STD_ZONES.get(lg), STD_LEAGUE_NOTE.get(lg, '')))
+                out.append('  </div>')
+                continue
+        # 腾讯榜补充：体彩/7M 未收录的赛事（欧冠等）用真实榜单，而不是写「无数据源」
         if not (parsed and parsed.get('teams')) and QQ_STD.get(lg) and lg not in CUP_EXTRA:
             _t = _std_teams(QQ_STD[lg].get('teams') or [])
             nq = ''
@@ -1309,7 +1362,7 @@ def build_league_sec(matches):
             continue
         if not parsed or not parsed.get('teams'):
             out.append(f'    <h4>{esc(lg)}</h4>')
-            out.append('    <p class="league-note">7M、腾讯体育、Fox Sports、UEFA 官方四个来源都未收录该赛事积分榜，'
+            out.append('    <p class="league-note">体彩、7M、腾讯体育、Fox Sports、UEFA 官方五个来源都未收录该赛事积分榜，'
                        '本节跳过排名与形势分析。</p>')
             out.append('  </div>')
             continue
@@ -5058,7 +5111,7 @@ page = f'''<!DOCTYPE html>
 
 <div class="footer">
   <div class="container">
-    <p><strong>数据来源：</strong>P0级（官方赔率数据，网易彩票） | P1级（联赛积分榜、H2H 历史数据，积分榜与赛程来源 7m.com.cn / data.7m.com.cn） | P2级（伤停与赛前名单：Lineups Today / 香港赛马会赛前简报 / 德甲与荷甲官方）</p>
+    <p><strong>数据来源：</strong>P0级（官方赔率数据，网易彩票） | P1级（联赛积分榜来源 中国体育彩票 sporttery.cn；H2H 与赛程来源 7m.com.cn / data.7m.com.cn） | P2级（伤停与赛前名单：Lineups Today / 香港赛马会赛前简报 / 德甲与荷甲官方）</p>
     <p style="margin-top:0.5rem;">AI泊松模型V3.3 · 指数衰减加权 · 主客场分拆λ · xG融合 · H2H总量因子+方向性再分配 · 市场概率混合(80%,总量守恒) · Platt校准 · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · 动态校准 · 零封修正</p>
     <p style="margin-top:0.5rem;">报告生成时间: {TODAY} | 仅供数据分析参考，不构成投注建议</p>
   </div>
