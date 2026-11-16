@@ -547,9 +547,9 @@ CSS += '''
     color:var(--accent,#2f7de0); padding-bottom:0.2rem; margin-bottom:0.3rem;
     border-bottom:1px solid rgba(52,122,252,0.3); }
   .std-scroll { overflow-x:auto; }
-  table.std-main { display:table !important; width:100%; margin-top:0; font-size:0.73rem;
-    white-space:nowrap; line-height:1.25; }
-  table.std-main th, table.std-main td { padding:0.11rem 0.3rem; }
+  table.std-main { display:table !important; width:100%; margin-top:0; font-size:0.74rem;
+    white-space:nowrap; line-height:1.4; }
+  table.std-main th, table.std-main td { padding:0.2rem 0.38rem; }
   table.std-main th { font-size:0.68rem; }
   table.std-main tr.z1 td { background:rgba(46,160,67,0.13); }
   table.std-main tr.z2 td { background:rgba(224,122,47,0.13); }
@@ -558,8 +558,8 @@ CSS += '''
     font-weight:700; opacity:1; }
   table.std-main td.pts { font-weight:700; }
   .std-legend { font-size:0.7rem; color:var(--muted,#7a8ba0); margin-top:0.3rem; line-height:1.6; }
-  .std-grp { display:grid; grid-template-columns:1fr; gap:0.55rem; }
-  .std-grp-block { min-width:0; padding:0.35rem 0.45rem 0.45rem;
+  .std-grp { display:grid; grid-template-columns:1fr; gap:0.6rem; }
+  .std-grp-block { min-width:0; padding:0.45rem 0.5rem 0.5rem;
     border:1px solid rgba(128,128,128,0.16); border-radius:7px;
     background:rgba(255,255,255,0.32); }
   .std-grp-block .gname { font-size:0.72rem; font-weight:700; color:var(--ink,#1a1a2e);
@@ -571,8 +571,8 @@ CSS += '''
   details.std-full[open] > summary { margin-bottom:0.3rem; }
   @media (max-width: 900px) { .lg-split { grid-template-columns:1fr; } }
   @media (max-width: 560px) {
-    table.std-main { font-size:0.66rem; }
-    table.std-main th, table.std-main td { padding:0.08rem 0.12rem; }
+    table.std-main { font-size:0.68rem; }
+    table.std-main th, table.std-main td { padding:0.14rem 0.18rem; }
   }
   /* 历史交锋：汇总行 + 逐场表（对齐网易交锋战绩版式） */
   .h2h-cols { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
