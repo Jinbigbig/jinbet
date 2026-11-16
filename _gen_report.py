@@ -558,10 +558,14 @@ CSS += '''
     font-weight:700; opacity:1; }
   table.std-main td.pts { font-weight:700; }
   .std-legend { font-size:0.7rem; color:var(--muted,#7a8ba0); margin-top:0.3rem; line-height:1.6; }
-  .std-grp { display:grid; grid-template-columns:1fr; gap:0.5rem; }
-  .std-grp-block { min-width:0; }
-  .std-grp-block .gname { font-size:0.7rem; font-weight:700; color:var(--muted,#7a8ba0);
-    letter-spacing:0.04em; margin:0.1rem 0 0.05rem; }
+  .std-grp { display:grid; grid-template-columns:1fr; gap:0.55rem; }
+  .std-grp-block { min-width:0; padding:0.35rem 0.45rem 0.45rem;
+    border:1px solid rgba(128,128,128,0.16); border-radius:7px;
+    background:rgba(255,255,255,0.32); }
+  .std-grp-block .gname { font-size:0.72rem; font-weight:700; color:var(--ink,#1a1a2e);
+    letter-spacing:0.02em; margin:0.04rem 0 0.3rem; padding-left:0.36rem;
+    border-left:3px solid var(--accent,#e63946); line-height:1.45; }
+  table.std-main tr:first-child th { background:rgba(128,128,128,0.07); }
   details.std-full { margin-top:0.45rem; }
   details.std-full > summary { cursor:pointer; font-size:0.74rem; color:var(--accent,#2f7de0); }
   details.std-full[open] > summary { margin-bottom:0.3rem; }
@@ -1224,6 +1228,25 @@ def std_league_card(lg, ms, teams, src, at, zones=None, note='', has_goals=True)
     return _split_card(lg, '积分榜', src, at, left, right)
 
 
+def _grp_name(raw):
+    """小组名规范化：体彩英文组名翻成中文，已含「组」或已是中文描述则不重复拼。"""
+    import re
+    s = (raw or '').strip()
+    if not s:
+        return '小组'
+    m = re.match(r'^League\s+([A-Za-z0-9]+)\s+Group\s+(\d+)\s*$', s, re.I)
+    if m:
+        return f'{m.group(1).upper()} 级 · 第 {m.group(2)} 组'
+    m = re.match(r'^Group\s+([A-Za-z0-9]+)\s*$', s, re.I)
+    if m:
+        return f'{m.group(1).upper()} 组'
+    if re.match(r'^[A-Za-z0-9]{1,3}$', s):
+        return f'{s.upper()} 组'
+    if '组' in s or re.search(r'[\u4e00-\u9fff]', s):
+        return s
+    return f'{s} 组'
+
+
 def std_group_card(lg, ms, groups, src, at, note=''):
     """分组赛榜（解放者杯等）：左栏展开本日参赛队所在小组的完整表格，其余小组折叠。
 
@@ -1245,17 +1268,17 @@ def std_group_card(lg, ms, groups, src, at, note=''):
     left = ['        <div class="std-grp">']
     for g in shown:
         left.append('          <div class="std-grp-block">')
-        left.append(f'            <div class="gname">{esc(g["name"])} 组</div>')
+        left.append(f'            <div class="gname">{esc(_grp_name(g["name"]))}</div>')
         left.extend(std_table(g['teams'], hi, STD_ZONES.get(lg), True, indent='            '))
         left.append('          </div>')
     left.append('        </div>')
     left.append(_legend_line(lg, hi))
     if rest:
         left.append(f'        <details class="std-full"><summary>其余 {len(rest)} 个小组'
-                    f'（{"、".join(g["name"] + " 组" for g in rest)}）</summary>')
+                    f'（{"、".join(_grp_name(g["name"]) for g in rest)}）</summary>')
         for g in rest:
             left.append('          <div class="std-grp-block">')
-            left.append(f'            <div class="gname">{esc(g["name"])} 组</div>')
+            left.append(f'            <div class="gname">{esc(_grp_name(g["name"]))}</div>')
             left.extend(std_table(g['teams'], (), STD_ZONES.get(lg), True, indent='            '))
             left.append('          </div>')
         left.append('        </details>')
@@ -3216,7 +3239,7 @@ def rank_table(m):
         if not t:
             return '<td style="color:var(--muted);">-</td>'
         g = t.get('grp') or ''
-        return f'<td><b>第 {t["rank"]}</b>' + (f'（{esc(g)} 组）' if g else '') + '</td>'
+        return f'<td><b>第 {t["rank"]}</b>' + (f'（{esc(_grp_name(g))}）' if g else '') + '</td>'
 
     def num(t, k, suf=''):
         if not t or t.get(k) is None:
