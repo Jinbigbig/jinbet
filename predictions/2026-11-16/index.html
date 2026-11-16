@@ -194,14 +194,41 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
     .parlay-table { font-size: 0.76rem; }
     .parlay-table th, .parlay-table td { padding: 0.4rem 0.42rem; }
   }
-  /* 形势分析：本场三种结果对积分榜的影响 */
-  .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
+  /* 形势分析：三种结果改为对齐的三列小卡，避免半宽栏里内联折行错落 */
+  .sit-block { margin:0.15rem 0 0.45rem; padding:0.1rem 0 0.15rem 0.5rem;
     border-left:2px solid rgba(52,122,252,0.35); }
   .sit-row { font-size:0.76rem; line-height:1.65; }
-  .sit-team { font-weight:700; color:var(--accent,#2f7de0); margin-right:0.3rem; }
-  .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
+  .sit-side { margin-bottom:0.42rem; }
+  .sit-side:last-of-type { margin-bottom:0.18rem; }
+  .sit-side-h { display:flex; align-items:baseline; flex-wrap:wrap; gap:0.2rem 0.45rem;
+    font-size:0.76rem; line-height:1.5; }
+  .sit-team { font-weight:700; color:var(--accent,#2f7de0); }
+  .sit-now { color:var(--muted,#7a8ba0); }
+  .sit-row .sit-team { margin-right:0.3rem; }
+  .sit-row .sit-now { margin-right:0.4rem; }
+  .sit-gap { font-size:0.66rem; padding:0.02rem 0.3rem; border-radius:999px;
+    background:rgba(128,128,128,0.09); color:var(--muted,#7a8ba0); white-space:nowrap;
+    font-variant-numeric:tabular-nums; }
+  .sit-gap.up { color:#1f7a4d; background:rgba(46,160,90,0.13); }
+  .sit-gap.down { color:#a3252f; background:rgba(220,53,69,0.11); }
+  .sit-results { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:0.3rem; margin-top:0.25rem; }
+  .sit-r { min-width:0; display:flex; flex-direction:column; gap:0.01rem;
+    padding:0.2rem 0.32rem; border:1px solid rgba(128,128,128,0.18);
+    border-radius:5px; background:rgba(52,122,252,0.035); }
+  .sit-rl { font-size:0.66rem; color:var(--muted,#7a8ba0); letter-spacing:0.05em; }
+  .sit-rp { font-size:0.78rem; font-weight:700; color:var(--accent3,#e07a2f);
+    font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .sit-rr { font-size:0.72rem; line-height:1.3; }
+  .sit-rw { font-size:0.65rem; color:var(--muted,#7a8ba0); line-height:1.25; }
   .sit-item { display:inline-block; margin-right:0.6rem; }
   .sit-item b { color:var(--accent3,#e07a2f); }
+  @media (max-width: 640px) {
+    .sit-results { gap:0.2rem; }
+    .sit-r { padding:0.16rem 0.2rem; }
+    .sit-rp { font-size:0.72rem; }
+    .sit-rr { font-size:0.68rem; }
+  }
   /* 比赛时段天气（Open-Meteo）：适宜淡绿、需留意橙、恶劣红 */
   .wx-chip { display:inline-block; margin-left:0.45rem; padding:0.06rem 0.42rem;
     border:1px solid rgba(0,0,0,0.1); border-radius:999px; background:rgba(0,0,0,0.03);
@@ -457,7 +484,7 @@ td .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; fo
   <div class="container">
     <h1>2026-11-16 竞彩足球深度分析报告</h1>
     <div class="subtitle">AI泊松模型V3.3 · 市场概率混合(总量守恒) · 比分矩阵对齐发布三率 · 让球盘联合校准 · 冷门风险分层 · 大比分(6+/7+)观察 · H2H方向性再分配 · 主客场分拆λ · 8场比赛全面覆盖</div>
-    <div class="subtitle">数据更新时间: 2026-11-16 19:32 (北京时间)</div>
+    <div class="subtitle">数据更新时间: 2026-11-16 20:08 (北京时间)</div>
     <div class="disclaimer">⚠️ 本报告仅供数据分析参考，不构成投注建议。理性购彩，量力而行。</div>
   </div>
 </div>
@@ -646,7 +673,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">0-2 / 0-1</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">72.0%</span></span>
+        <span class="pred-v">71.5%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">大球倾向 · 最可能 4 球</span></span>
@@ -708,7 +735,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">1-1 / 2-1</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">67.1%</span></span>
+        <span class="pred-v">67.5%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★☆☆☆</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">小球倾向 · 最可能 1 球</span></span>
@@ -770,7 +797,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">1-0 / 3-0</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">69.0%</span></span>
+        <span class="pred-v">69.4%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">均势总量 · 最可能 2 球</span></span>
@@ -832,7 +859,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">1-0 / 2-1</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">63.5%</span></span>
+        <span class="pred-v">64.7%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">均势总量 · 最可能 2 球</span></span>
@@ -894,7 +921,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">1-1 / 2-2</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">67.4%</span></span>
+        <span class="pred-v">66.8%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">大球倾向 · 最可能 4 球</span></span>
@@ -956,7 +983,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">0-2 / 1-2</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">64.8%</span></span>
+        <span class="pred-v">65.6%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">均势总量 · 最可能 2 球</span></span>
@@ -1018,7 +1045,7 @@ window.addEventListener('resize', function() { chart.resize(); });
       <span class="pred-item"><span class="pred-k">比分双档</span>
         <span class="pred-score sm">2-1 / 1-0</span></span>
       <span class="pred-item"><span class="pred-k">±1球覆盖</span>
-        <span class="pred-v">63.1%</span></span>
+        <span class="pred-v">63.3%</span></span>
       <span class="pred-item"><span class="pred-k">信心</span><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></span>
       <span class="pred-item"><span class="pred-k">总进球</span>
         <span class="pred-v">均势总量 · 最可能 2 球</span></span>
@@ -1044,7 +1071,7 @@ window.addEventListener('resize', function() { chart.resize(); });
 <p style="font-size:0.78rem;color:var(--muted);margin-top:0.45rem;">前日（2026-11-15）胜负：已出 11 场 · 命中 6（55%） · 未中 5 · 方向可信度均值 57.0%｜方向可信度分档 可用≥50% 4/5（80%） · 慎用40~50% 2/5（40%） · 别跟<40% 0/1（0%）。</p></div></details></div></details>
 <details class="fold " data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><h3>4.2 比分预测</h3><span class="fold-hint">8 场明细 · 含前日回顾</span><span class="fold-cta"></span></summary><div class="fold-body"><div class="card"><div class="table-wrap"><table>
   <thead><tr><th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th></tr></thead>
-  <tbody><tr><td><span class="tag tag-blue">周一001</span></td><td>法罗群岛</td><td>摩尔多瓦</td><td style="font-family:monospace;white-space:nowrap;">1.64 / 0.89</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:0</b> <span class="pct pct-lo">15.7%</span></td><td style="font-family:monospace;white-space:nowrap;">2:0 <span class="pct pct-lo">12.4%</span> + 1:1 <span class="pct pct-lo">11.7%</span></td><td><span class="pct pct-hi">66%</span></td><td><span class="pct pct-lo">40%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一002</span></td><td>哈萨克</td><td>斯洛伐克</td><td style="font-family:monospace;white-space:nowrap;">1.05 / 1.92</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:2</b> <span class="pct pct-lo">12.1%</span></td><td style="font-family:monospace;white-space:nowrap;">0:2 <span class="pct pct-lo">11.5%</span> + 0:1 <span class="pct pct-lo">11.5%</span></td><td><span class="pct pct-hi">72%</span></td><td><span class="pct pct-lo">35%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一003</span></td><td>爱沙尼亚</td><td>保加利亚</td><td style="font-family:monospace;white-space:nowrap;">1.35 / 0.92</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:0</b> <span class="pct pct-lo">14.9%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">13.3%</span> + 2:1 <span class="pct pct-lo">10.6%</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-lo">39%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一004</span></td><td>冰岛</td><td>卢森堡</td><td style="font-family:monospace;white-space:nowrap;">2.32 / 0.42</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">18.7%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span class="pct pct-lo">14.9%</span> + 3:0 <span class="pct pct-lo">13.0%</span></td><td><span class="pct pct-hi">69%</span></td><td><span class="pct pct-mid">46%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一005</span></td><td>瑞士</td><td>苏格兰</td><td style="font-family:monospace;white-space:nowrap;">1.73 / 0.76</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">13.3%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span class="pct pct-lo">13.9%</span> + 2:1 <span class="pct pct-lo">11.7%</span></td><td><span class="pct pct-hi">64%</span></td><td><span class="pct pct-lo">39%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一006</span></td><td>德国</td><td>荷兰</td><td style="font-family:monospace;white-space:nowrap;">1.81 / 1.22</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:1</b> <span class="pct pct-lo">12.1%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">10.3%</span> + 2:2 <span class="pct pct-lo">7.5%</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-lo">30%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一007</span></td><td>北马其顿</td><td>斯洛文尼</td><td style="font-family:monospace;white-space:nowrap;">0.73 / 1.96</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">0:1</b> <span class="pct pct-lo">15.8%</span></td><td style="font-family:monospace;white-space:nowrap;">0:2 <span class="pct pct-lo">14.8%</span> + 1:2 <span class="pct pct-lo">10.9%</span></td><td><span class="pct pct-hi">65%</span></td><td><span class="pct pct-lo">42%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一008</span></td><td>希腊</td><td>塞尔维亚</td><td style="font-family:monospace;white-space:nowrap;">2.19 / 0.71</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">13.6%</span></td><td style="font-family:monospace;white-space:nowrap;">2:1 <span class="pct pct-lo">11.9%</span> + 1:0 <span class="pct pct-lo">11.3%</span></td><td><span class="pct pct-hi">63%</span></td><td><span class="pct pct-lo">37%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
+  <tbody><tr><td><span class="tag tag-blue">周一001</span></td><td>法罗群岛</td><td>摩尔多瓦</td><td style="font-family:monospace;white-space:nowrap;">1.64 / 0.89</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:0</b> <span class="pct pct-lo">15.8%</span></td><td style="font-family:monospace;white-space:nowrap;">2:0 <span class="pct pct-lo">12.4%</span> + 1:1 <span class="pct pct-lo">11.7%</span></td><td><span class="pct pct-hi">66%</span></td><td><span class="pct pct-lo">40%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一002</span></td><td>哈萨克</td><td>斯洛伐克</td><td style="font-family:monospace;white-space:nowrap;">1.12 / 2.02</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:2</b> <span class="pct pct-lo">12.1%</span></td><td style="font-family:monospace;white-space:nowrap;">0:2 <span class="pct pct-lo">11.2%</span> + 0:1 <span class="pct pct-lo">11.0%</span></td><td><span class="pct pct-hi">72%</span></td><td><span class="pct pct-lo">34%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一003</span></td><td>爱沙尼亚</td><td>保加利亚</td><td style="font-family:monospace;white-space:nowrap;">1.33 / 0.89</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">1:0</b> <span class="pct pct-lo">15.1%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">13.3%</span> + 2:1 <span class="pct pct-lo">10.5%</span></td><td><span class="pct pct-hi">68%</span></td><td><span class="pct pct-lo">39%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一004</span></td><td>冰岛</td><td>卢森堡</td><td style="font-family:monospace;white-space:nowrap;">2.26 / 0.39</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">19.0%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span class="pct pct-lo">15.3%</span> + 3:0 <span class="pct pct-lo">13.0%</span></td><td><span class="pct pct-hi">69%</span></td><td><span class="pct pct-mid">47%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一005</span></td><td>瑞士</td><td>苏格兰</td><td style="font-family:monospace;white-space:nowrap;">1.65 / 0.68</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">13.5%</span></td><td style="font-family:monospace;white-space:nowrap;">1:0 <span class="pct pct-lo">14.5%</span> + 2:1 <span class="pct pct-lo">11.5%</span></td><td><span class="pct pct-hi">65%</span></td><td><span class="pct pct-lo">40%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一006</span></td><td>德国</td><td>荷兰</td><td style="font-family:monospace;white-space:nowrap;">1.89 / 1.30</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:1</b> <span class="pct pct-lo">12.0%</span></td><td style="font-family:monospace;white-space:nowrap;">1:1 <span class="pct pct-lo">10.0%</span> + 2:2 <span class="pct pct-lo">7.7%</span></td><td><span class="pct pct-hi">67%</span></td><td><span class="pct pct-lo">30%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr><tr><td><span class="tag tag-blue">周一007</span></td><td>北马其顿</td><td>斯洛文尼</td><td style="font-family:monospace;white-space:nowrap;">0.69 / 1.91</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">0:1</b> <span class="pct pct-lo">16.1%</span></td><td style="font-family:monospace;white-space:nowrap;">0:2 <span class="pct pct-lo">15.0%</span> + 1:2 <span class="pct pct-lo">10.8%</span></td><td><span class="pct pct-hi">66%</span></td><td><span class="pct pct-lo">42%</span></td><td><span class="tag tag-green">可用</span></td></tr><tr><td><span class="tag tag-blue">周一008</span></td><td>希腊</td><td>塞尔维亚</td><td style="font-family:monospace;white-space:nowrap;">2.16 / 0.69</td><td style="font-family:monospace;white-space:nowrap;"><b style="color:var(--accent);">2:0</b> <span class="pct pct-lo">13.7%</span></td><td style="font-family:monospace;white-space:nowrap;">2:1 <span class="pct pct-lo">11.9%</span> + 1:0 <span class="pct pct-lo">11.5%</span></td><td><span class="pct pct-hi">63%</span></td><td><span class="pct pct-lo">37%</span></td><td><span class="tag tag-yellow">慎用</span></td></tr></tbody>
 </table></div></div>
 <details class="fold fold-recap" data-fold><summary class="fold-sum"><span class="fold-ico">▸</span><b>📅 前日回顾 · 比分预测（2026-11-15）</b><span class="fold-hint"></span><span class="fold-cta"></span></summary><div class="fold-body"><div class="table-wrap"><table>
 <thead><tr><th>编号 · 联赛</th><th>对阵</th><th>比分预测</th><th>上次概率</th><th>双档（概率）</th><th>实际</th><th>判定</th></tr></thead>
@@ -1243,66 +1270,56 @@ window.addEventListener('resize', function() { chart.resize(); });
         <div class="league-impact">
           <div class="impact-row"><span class="tag tag-blue">周一001</span> 法罗群岛 vs 摩尔多瓦</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">法罗群岛</span><span class="sit-now">现 #3 · 5 分（5 场）</span><span class="sit-item">赢 <b>8 分</b> → 第 2 名（最差 3）</span><span class="sit-item">平 <b>6 分</b> → 第 3 名</span><span class="sit-item">负 <b>5 分</b> → 第 3 名（最差 4）</span></div>
-<div class="sit-row"><span class="sit-team">摩尔多瓦</span><span class="sit-now">现 #2 · 7 分（5 场）</span><span class="sit-item">赢 <b>10 分</b> → 第 2 名</span><span class="sit-item">平 <b>8 分</b> → 第 2 名（最差 3）</span><span class="sit-item">负 <b>7 分</b> → 第 2 名（最差 3）</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">法罗群岛</span><span class="sit-now">现 #3 · 5 分（5 场）</span><span class="sit-gap down">距2 -2</span><span class="sit-gap up">距3 +0</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">6 分</span><span class="sit-rr">第 3 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">5 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">摩尔多瓦</span><span class="sit-now">现 #2 · 7 分（5 场）</span><span class="sit-gap up">距2 +0</span><span class="sit-gap up">距3 +2</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">10 分</span><span class="sit-rr">第 2 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">7 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 7 分（组内前 2 晋级） ｜ 第 3 名 5 分（第 3 转南美杯）</div>
-<div class="sit-line">法罗群岛 5 分（距第2名 -2、距第3名 +0） · 摩尔多瓦 7 分（距第2名 +0、距第3名 +2）</div>
 <div class="sit-near">名次相邻：斯洛伐克 #1 11分、哈萨克 #4 2分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一002</span> 哈萨克 vs 斯洛伐克</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">哈萨克</span><span class="sit-now">现 #4 · 2 分（5 场）</span><span class="sit-item">赢 <b>5 分</b> → 第 3 名（最差 4）</span><span class="sit-item">平 <b>3 分</b> → 第 4 名</span><span class="sit-item">负 <b>2 分</b> → 第 4 名</span></div>
-<div class="sit-row"><span class="sit-team">斯洛伐克</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-item">赢 <b>14 分</b> → 第 1 名</span><span class="sit-item">平 <b>12 分</b> → 第 1 名</span><span class="sit-item">负 <b>11 分</b> → 第 1 名</span></div>
-<div class="sit-line">关键线：第 2 名 7 分（组内前 2 晋级） ｜ 第 3 名 5 分（第 3 转南美杯）</div>
-<div class="sit-line">哈萨克 2 分（距第2名 -5、距第3名 -3） · 斯洛伐克 11 分（距第2名 +4、距第3名 +6）</div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">哈萨克</span><span class="sit-now">现 #4 · 2 分（5 场）</span><span class="sit-gap down">距2 -5</span><span class="sit-gap down">距3 -3</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">5 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">3 分</span><span class="sit-rr">第 4 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">2 分</span><span class="sit-rr">第 4 名</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">斯洛伐克</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-gap up">距2 +4</span><span class="sit-gap up">距3 +6</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">14 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">12 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">11 分</span><span class="sit-rr">第 1 名</span></div></div></div>
 <div class="sit-near">名次相邻：摩尔多瓦 #2 7分、法罗群岛 #3 5分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一003</span> 爱沙尼亚 vs 保加利亚</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">爱沙尼亚</span><span class="sit-now">现 #2 · 9 分（5 场）</span><span class="sit-item">赢 <b>12 分</b> → 第 1 名（最差 2）</span><span class="sit-item">平 <b>10 分</b> → 第 2 名</span><span class="sit-item">负 <b>9 分</b> → 第 2 名</span></div>
-<div class="sit-row"><span class="sit-team">保加利亚</span><span class="sit-now">现 #3 · 4 分（5 场）</span><span class="sit-item">赢 <b>7 分</b> → 第 3 名</span><span class="sit-item">平 <b>5 分</b> → 第 3 名（最差 4）</span><span class="sit-item">负 <b>4 分</b> → 第 3 名（最差 4）</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">爱沙尼亚</span><span class="sit-now">现 #2 · 9 分（5 场）</span><span class="sit-gap up">距2 +0</span><span class="sit-gap up">距3 +5</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">12 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 2</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">10 分</span><span class="sit-rr">第 2 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">9 分</span><span class="sit-rr">第 2 名</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">保加利亚</span><span class="sit-now">现 #3 · 4 分（5 场）</span><span class="sit-gap down">距2 -5</span><span class="sit-gap up">距3 +0</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">7 分</span><span class="sit-rr">第 3 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">5 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">4 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 9 分（组内前 2 晋级） ｜ 第 3 名 4 分（第 3 转南美杯）</div>
-<div class="sit-line">爱沙尼亚 9 分（距第2名 +0、距第3名 +5） · 保加利亚 4 分（距第2名 -5、距第3名 +0）</div>
 <div class="sit-near">名次相邻：冰岛 #1 11分、卢森堡 #4 3分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一004</span> 冰岛 vs 卢森堡</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">冰岛</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-item">赢 <b>14 分</b> → 第 1 名</span><span class="sit-item">平 <b>12 分</b> → 第 1 名（最差 2）</span><span class="sit-item">负 <b>11 分</b> → 第 1 名（最差 2）</span></div>
-<div class="sit-row"><span class="sit-team">卢森堡</span><span class="sit-now">现 #4 · 3 分（5 场）</span><span class="sit-item">赢 <b>6 分</b> → 第 3 名（最差 4）</span><span class="sit-item">平 <b>4 分</b> → 第 3 名（最差 4）</span><span class="sit-item">负 <b>3 分</b> → 第 4 名</span></div>
-<div class="sit-line">关键线：第 2 名 9 分（组内前 2 晋级） ｜ 第 3 名 4 分（第 3 转南美杯）</div>
-<div class="sit-line">冰岛 11 分（距第2名 +2、距第3名 +7） · 卢森堡 3 分（距第2名 -6、距第3名 -1）</div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">冰岛</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-gap up">距2 +2</span><span class="sit-gap up">距3 +7</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">14 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">12 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 2</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">11 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 2</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">卢森堡</span><span class="sit-now">现 #4 · 3 分（5 场）</span><span class="sit-gap down">距2 -6</span><span class="sit-gap down">距3 -1</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">6 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">4 分</span><span class="sit-rr">第 3 名</span><span class="sit-rw">最差 4</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">3 分</span><span class="sit-rr">第 4 名</span></div></div></div>
 <div class="sit-near">名次相邻：爱沙尼亚 #2 9分、保加利亚 #3 4分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一005</span> 瑞士 vs 苏格兰</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">瑞士</span><span class="sit-now">现 #1 · 13 分（5 场）</span><span class="sit-item">赢 <b>16 分</b> → 第 1 名</span><span class="sit-item">平 <b>14 分</b> → 第 1 名</span><span class="sit-item">负 <b>13 分</b> → 第 1 名</span></div>
-<div class="sit-row"><span class="sit-team">苏格兰</span><span class="sit-now">现 #3 · 7 分（5 场）</span><span class="sit-item">赢 <b>10 分</b> → 第 2 名（最差 3）</span><span class="sit-item">平 <b>8 分</b> → 第 2 名（最差 3）</span><span class="sit-item">负 <b>7 分</b> → 第 3 名</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">瑞士</span><span class="sit-now">现 #1 · 13 分（5 场）</span><span class="sit-gap up">距2 +5</span><span class="sit-gap up">距3 +6</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">16 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">14 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">13 分</span><span class="sit-rr">第 1 名</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">苏格兰</span><span class="sit-now">现 #3 · 7 分（5 场）</span><span class="sit-gap down">距2 -1</span><span class="sit-gap up">距3 +0</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">10 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">7 分</span><span class="sit-rr">第 3 名</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 8 分（组内前 2 晋级） ｜ 第 3 名 7 分（第 3 转南美杯）</div>
-<div class="sit-line">瑞士 13 分（距第2名 +5、距第3名 +6） · 苏格兰 7 分（距第2名 -1、距第3名 +0）</div>
 <div class="sit-near">名次相邻：斯洛文尼 #2 8分、北马其顿 #4 0分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一006</span> 德国 vs 荷兰</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">德国</span><span class="sit-now">现 #3 · 8 分（5 场）</span><span class="sit-item">赢 <b>11 分</b> → 第 1 名（最差 3）</span><span class="sit-item">平 <b>9 分</b> → 第 2 名（最差 3）</span><span class="sit-item">负 <b>8 分</b> → 第 2 名（最差 3）</span></div>
-<div class="sit-row"><span class="sit-team">荷兰</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-item">赢 <b>14 分</b> → 第 1 名</span><span class="sit-item">平 <b>12 分</b> → 第 1 名</span><span class="sit-item">负 <b>11 分</b> → 第 1 名（最差 3）</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">德国</span><span class="sit-now">现 #3 · 8 分（5 场）</span><span class="sit-gap up">距2 +0</span><span class="sit-gap up">距3 +0</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">11 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">9 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">荷兰</span><span class="sit-now">现 #1 · 11 分（5 场）</span><span class="sit-gap up">距2 +3</span><span class="sit-gap up">距3 +3</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">14 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">12 分</span><span class="sit-rr">第 1 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">11 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 3</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 8 分（组内前 2 晋级） ｜ 第 3 名 8 分（第 3 转南美杯）</div>
-<div class="sit-line">德国 8 分（距第2名 +0、距第3名 +0） · 荷兰 11 分（距第2名 +3、距第3名 +3）</div>
 <div class="sit-near">名次相邻：希腊 #2 8分、塞尔维亚 #4 0分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一007</span> 北马其顿 vs 斯洛文尼</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">北马其顿</span><span class="sit-now">现 #4 · 0 分（5 场）</span><span class="sit-item">赢 <b>3 分</b> → 第 4 名</span><span class="sit-item">平 <b>1 分</b> → 第 4 名</span><span class="sit-item">负 <b>0 分</b> → 第 4 名</span></div>
-<div class="sit-row"><span class="sit-team">斯洛文尼</span><span class="sit-now">现 #2 · 8 分（5 场）</span><span class="sit-item">赢 <b>11 分</b> → 第 2 名</span><span class="sit-item">平 <b>9 分</b> → 第 2 名（最差 3）</span><span class="sit-item">负 <b>8 分</b> → 第 2 名（最差 3）</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">北马其顿</span><span class="sit-now">现 #4 · 0 分（5 场）</span><span class="sit-gap down">距2 -8</span><span class="sit-gap down">距3 -7</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">3 分</span><span class="sit-rr">第 4 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">1 分</span><span class="sit-rr">第 4 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">0 分</span><span class="sit-rr">第 4 名</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">斯洛文尼</span><span class="sit-now">现 #2 · 8 分（5 场）</span><span class="sit-gap up">距2 +0</span><span class="sit-gap up">距3 +1</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">11 分</span><span class="sit-rr">第 2 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">9 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 8 分（组内前 2 晋级） ｜ 第 3 名 7 分（第 3 转南美杯）</div>
-<div class="sit-line">北马其顿 0 分（距第2名 -8、距第3名 -7） · 斯洛文尼 8 分（距第2名 +0、距第3名 +1）</div>
 <div class="sit-near">名次相邻：瑞士 #1 13分、苏格兰 #3 7分</div>
 </div>
           <div class="impact-row"><span class="tag tag-blue">周一008</span> 希腊 vs 塞尔维亚</div>
 <div class="sit-block">
-<div class="sit-row"><span class="sit-team">希腊</span><span class="sit-now">现 #2 · 8 分（5 场）</span><span class="sit-item">赢 <b>11 分</b> → 第 1 名（最差 3）</span><span class="sit-item">平 <b>9 分</b> → 第 2 名（最差 3）</span><span class="sit-item">负 <b>8 分</b> → 第 2 名（最差 3）</span></div>
-<div class="sit-row"><span class="sit-team">塞尔维亚</span><span class="sit-now">现 #4 · 0 分（5 场）</span><span class="sit-item">赢 <b>3 分</b> → 第 4 名</span><span class="sit-item">平 <b>1 分</b> → 第 4 名</span><span class="sit-item">负 <b>0 分</b> → 第 4 名</span></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">希腊</span><span class="sit-now">现 #2 · 8 分（5 场）</span><span class="sit-gap up">距2 +0</span><span class="sit-gap up">距3 +0</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">11 分</span><span class="sit-rr">第 1 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">9 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">8 分</span><span class="sit-rr">第 2 名</span><span class="sit-rw">最差 3</span></div></div></div>
+<div class="sit-side"><div class="sit-side-h"><span class="sit-team">塞尔维亚</span><span class="sit-now">现 #4 · 0 分（5 场）</span><span class="sit-gap down">距2 -8</span><span class="sit-gap down">距3 -8</span></div><div class="sit-results"><div class="sit-r"><span class="sit-rl">赢</span><span class="sit-rp">3 分</span><span class="sit-rr">第 4 名</span></div><div class="sit-r"><span class="sit-rl">平</span><span class="sit-rp">1 分</span><span class="sit-rr">第 4 名</span></div><div class="sit-r"><span class="sit-rl">负</span><span class="sit-rp">0 分</span><span class="sit-rr">第 4 名</span></div></div></div>
 <div class="sit-line">关键线：第 2 名 8 分（组内前 2 晋级） ｜ 第 3 名 8 分（第 3 转南美杯）</div>
-<div class="sit-line">希腊 8 分（距第2名 +0、距第3名 +0） · 塞尔维亚 0 分（距第2名 -8、距第3名 -8）</div>
 <div class="sit-near">名次相邻：荷兰 #1 11分、德国 #3 8分</div>
 </div>
         </div>
@@ -1326,7 +1343,7 @@ window.addEventListener('resize', function() { chart.resize(); });
   <h3>比分串关推荐</h3>
   <table class="parlay-table">
     <tr><th>类型</th><th>组合</th><th>组合赔率</th><th>综合概率</th><th>信心评级</th></tr>
-    <tr class="parlay-confident"><td class="cell-left"><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，比分腿用模型首选比分；已剔除高冷门风险场次</span></td><td class="cell-left">[周一004]冰岛vs卢森堡 2-0 × [周一008]希腊vs塞尔维亚 2-0</td><td style="font-family:monospace;font-weight:700;">30.88</td><td>2.54%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td class="cell-left"><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，比分腿用模型首选比分；已剔除高冷门风险场次</span></td><td class="cell-left">[周一007]北马其顿vs斯洛文尼 0-1 × [周一005]瑞士vs苏格兰 2-0</td><td style="font-family:monospace;font-weight:700;">32.81</td><td>2.10%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td class="cell-left"><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td class="cell-left">[周一007]北马其顿vs斯洛文尼 0-1 × [周一005]瑞士vs苏格兰 2-0</td><td style="font-family:monospace;font-weight:700;">32.81</td><td>2.10%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td class="cell-left"><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td class="cell-left">[周一001]法罗群岛vs摩尔多瓦 1-0 × [周一002]哈萨克vs斯洛伐克 1-2</td><td style="font-family:monospace;font-weight:700;">34.12</td><td>1.90%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr>
+    <tr class="parlay-confident"><td class="cell-left"><strong>信心串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，比分腿用模型首选比分；已剔除高冷门风险场次</span></td><td class="cell-left">[周一004]冰岛vs卢森堡 2-0 × [周一008]希腊vs塞尔维亚 2-0</td><td style="font-family:monospace;font-weight:700;">30.88</td><td>2.60%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★★</span></td></tr><tr class="parlay-confident"><td class="cell-left"><strong>信心串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：取评级最高（4-5★优先）的2场，比分腿用模型首选比分；已剔除高冷门风险场次</span></td><td class="cell-left">[周一007]北马其顿vs斯洛文尼 0-1 × [周一005]瑞士vs苏格兰 2-0</td><td style="font-family:monospace;font-weight:700;">32.81</td><td>2.17%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td class="cell-left"><strong>冷门串关 A</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td class="cell-left">[周一007]北马其顿vs斯洛文尼 0-1 × [周一005]瑞士vs苏格兰 2-0</td><td style="font-family:monospace;font-weight:700;">32.81</td><td>2.17%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr><tr class="parlay-upset"><td class="cell-left"><strong>冷门串关 B</strong><br><span style="font-size:0.72rem;color:var(--muted);">2串1：凯利异常/排名背离/德比双平等博平博冷方向，小注博高赔</span></td><td class="cell-left">[周一001]法罗群岛vs摩尔多瓦 1-0 × [周一002]哈萨克vs斯洛伐克 1-2</td><td style="font-family:monospace;font-weight:700;">34.12</td><td>1.91%</td><td><span style="color:var(--accent3);font-size:1.05rem;">★★★★☆</span></td></tr>
   </table>
   <div class="parlay-note">注：综合概率为各场比分腿概率连乘。<b>比分串关 3 腿全中率不到 1%</b>，组合概率常低至 0.1%~0.4%——请当买彩票而非投资建议，切勿重注。想提高命中率请看上表 <b>Top3 覆盖 / ±1球覆盖</b>，而非串关。信心串关绿色背景，冷门串关橙色背景（博平/博冷高赔方向）；组数与腿数随当日场次数量调整。</div>
 </div>

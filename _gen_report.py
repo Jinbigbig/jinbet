@@ -371,14 +371,41 @@ CSS += '''
     .parlay-table { font-size: 0.76rem; }
     .parlay-table th, .parlay-table td { padding: 0.4rem 0.42rem; }
   }
-  /* 形势分析：本场三种结果对积分榜的影响 */
-  .sit-block { margin:0.15rem 0 0.35rem; padding:0.05rem 0 0.05rem 0.5rem;
+  /* 形势分析：三种结果改为对齐的三列小卡，避免半宽栏里内联折行错落 */
+  .sit-block { margin:0.15rem 0 0.45rem; padding:0.1rem 0 0.15rem 0.5rem;
     border-left:2px solid rgba(52,122,252,0.35); }
   .sit-row { font-size:0.76rem; line-height:1.65; }
-  .sit-team { font-weight:700; color:var(--accent,#2f7de0); margin-right:0.3rem; }
-  .sit-now { color:var(--muted,#7a8ba0); margin-right:0.4rem; }
+  .sit-side { margin-bottom:0.42rem; }
+  .sit-side:last-of-type { margin-bottom:0.18rem; }
+  .sit-side-h { display:flex; align-items:baseline; flex-wrap:wrap; gap:0.2rem 0.45rem;
+    font-size:0.76rem; line-height:1.5; }
+  .sit-team { font-weight:700; color:var(--accent,#2f7de0); }
+  .sit-now { color:var(--muted,#7a8ba0); }
+  .sit-row .sit-team { margin-right:0.3rem; }
+  .sit-row .sit-now { margin-right:0.4rem; }
+  .sit-gap { font-size:0.66rem; padding:0.02rem 0.3rem; border-radius:999px;
+    background:rgba(128,128,128,0.09); color:var(--muted,#7a8ba0); white-space:nowrap;
+    font-variant-numeric:tabular-nums; }
+  .sit-gap.up { color:#1f7a4d; background:rgba(46,160,90,0.13); }
+  .sit-gap.down { color:#a3252f; background:rgba(220,53,69,0.11); }
+  .sit-results { display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:0.3rem; margin-top:0.25rem; }
+  .sit-r { min-width:0; display:flex; flex-direction:column; gap:0.01rem;
+    padding:0.2rem 0.32rem; border:1px solid rgba(128,128,128,0.18);
+    border-radius:5px; background:rgba(52,122,252,0.035); }
+  .sit-rl { font-size:0.66rem; color:var(--muted,#7a8ba0); letter-spacing:0.05em; }
+  .sit-rp { font-size:0.78rem; font-weight:700; color:var(--accent3,#e07a2f);
+    font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .sit-rr { font-size:0.72rem; line-height:1.3; }
+  .sit-rw { font-size:0.65rem; color:var(--muted,#7a8ba0); line-height:1.25; }
   .sit-item { display:inline-block; margin-right:0.6rem; }
   .sit-item b { color:var(--accent3,#e07a2f); }
+  @media (max-width: 640px) {
+    .sit-results { gap:0.2rem; }
+    .sit-r { padding:0.16rem 0.2rem; }
+    .sit-rp { font-size:0.72rem; }
+    .sit-rr { font-size:0.68rem; }
+  }
   /* 比赛时段天气（Open-Meteo）：适宜淡绿、需留意橙、恶劣红 */
   .wx-chip { display:inline-block; margin-left:0.45rem; padding:0.06rem 0.42rem;
     border:1px solid rgba(0,0,0,0.1); border-radius:999px; background:rgba(0,0,0,0.03);
@@ -964,27 +991,24 @@ def _is_past_report():
         return False
 
 
-def _sit_tail(m, teams, H, A, zones):
-    """形势块尾部：关键线距离 + 名次相邻的卡位对手（赛前模拟/赛后实况共用）。"""
+def _zone_gaps(teams, zones):
+    """关键线的名次/积分/含义，供「距线」小签与赛前模拟共用。"""
+    out = []
+    for pos, meaning in zones or ():
+        line = next((t for t in teams if t['rank'] == pos), None)
+        if line:
+            out.append((pos, line['pts'], meaning))
+    return out
+
+
+def _sit_tail(m, teams, H, A, zones, key_line=True):
+    """形势块尾部：关键线（同组只出一次）+ 名次相邻的卡位对手。"""
     o = []
-    # 关键线：只给能确定的线（欧冠 前 8 / 第 24），一条汇总，不逐场重复解释
-    if zones:
-        segs, gaps = [], []
-        for pos, meaning in zones:
-            line = next((t for t in teams if t['rank'] == pos), None)
-            if not line:
-                continue
-            segs.append(f'第 {pos} 名 {line["pts"]} 分（{esc(meaning)}）')
-            gaps.append((pos, line['pts']))
+    if key_line:
+        segs = [f'第 {pos} 名 {pts} 分（{esc(meaning)}）'
+                for pos, pts, meaning in _zone_gaps(teams, zones)]
         if segs:
             o.append('<div class="sit-line">关键线：' + ' ｜ '.join(segs) + '</div>')
-            if gaps:
-                o.append('<div class="sit-line">'
-                         + ' · '.join(
-                             f'{esc(n)} {t["pts"]} 分（' + '、'.join(
-                                 f'距第{p}名 {t["pts"] - v:+d}' for p, v in gaps) + '）'
-                             for n, t in ((m['home'], H), (m['away'], A)))
-                         + '</div>')
     # 卡位对手：名次相邻（±3）的球队，本场结果会直接改写这些队的位置
     near = [t for t in teams if abs(t['rank'] - H['rank']) <= 3
             and t['name'] not in (H['name'], A['name'])]
@@ -1015,8 +1039,8 @@ def _past_note():
     return ('        <div class="sit-note">历史日期补跑，榜单为赛后状态，只列榜位与相邻对手。</div>')
 
 
-def situation_block(m, teams, zones=None):
-    """本场三种结果对积分榜的影响：双方名次区间 + 关键线距离 + 卡位对手。
+def situation_block(m, teams, zones=None, key_line=True):
+    """本场三种结果对积分榜的影响：双方名次区间 + 距关键线 + 卡位对手。
 
     名次区间：「最好」按其余球队本轮不再得分算，「最差」按落后 3 分以内的
     球队本轮全赢算（同分再比净胜球），所以给的是「第 X 名（最差 Y）」而不是单一数字。
@@ -1039,18 +1063,33 @@ def situation_block(m, teams, zones=None):
                 f'<span class="sit-team">{esc(m["away"])} #{A["rank"]}</span>'
                 f'<span class="sit-now">{A["pts"]} 分（{A["p"]} 场）</span>'
                 + (f'<span class="sit-now">{note}</span>' if note else '')
-                + '</div>' + _sit_tail(m, teams, H, A, zones) + '</div>')
+                + '</div>' + _sit_tail(m, teams, H, A, zones, key_line) + '</div>')
+    zg = _zone_gaps(teams, zones)
     o = ['<div class="sit-block">']
     for label, t in ((m['home'], H), (m['away'], A)):
-        parts = []
+        cards = []
         for lab, add in (('赢', 3), ('平', 1), ('负', 0)):
             np_ = t['pts'] + add
             b, w = _rank_range(teams, t['name'], np_)
-            parts.append(f'<span class="sit-item">{lab} <b>{np_} 分</b> → {_fmt_rr(b, w)}</span>')
-        o.append(f'<div class="sit-row"><span class="sit-team">{esc(label)}</span>'
+            cards.append('<div class="sit-r">'
+                         f'<span class="sit-rl">{lab}</span>'
+                         f'<span class="sit-rp">{np_} 分</span>'
+                         f'<span class="sit-rr">第 {b} 名</span>'
+                         + (f'<span class="sit-rw">最差 {w}</span>' if w > b else '')
+                         + '</div>')
+        gaps = ''
+        for pos, pts, _ in zg:
+            d = t['pts'] - pts
+            cls = 'up' if d >= 0 else 'down'
+            gaps += f'<span class="sit-gap {cls}">距{pos} {d:+d}</span>'
+        o.append('<div class="sit-side">'
+                 '<div class="sit-side-h">'
+                 f'<span class="sit-team">{esc(label)}</span>'
                  f'<span class="sit-now">现 #{t["rank"]} · {t["pts"]} 分（{t["p"]} 场）</span>'
-                 + ''.join(parts) + '</div>')
-    o.append(_sit_tail(m, teams, H, A, zones))
+                 + gaps + '</div>'
+                 '<div class="sit-results">' + ''.join(cards) + '</div>'
+                 '</div>')
+    o.append(_sit_tail(m, teams, H, A, zones, key_line))
     o.append('</div>')
     return '\n'.join(o)
 
@@ -1222,6 +1261,7 @@ def std_group_card(lg, ms, groups, src, at, note=''):
         left.append('        </details>')
 
     right = ['        <div class="league-impact">']
+    last_g = None
     for m in ms:
         right.append(f'          <div class="impact-row">'
                      f'<span class="tag tag-blue">{esc(m["matchNumStr"])}</span> '
@@ -1231,7 +1271,9 @@ def std_group_card(lg, ms, groups, src, at, note=''):
         else:
             g = next((g for g in groups if _qq_team(m['home'], g['teams'])), groups[0])
             right.append(situation_block(m, g['teams'],
-                                         [(2, '组内前 2 晋级'), (3, '第 3 转南美杯')]))
+                                         [(2, '组内前 2 晋级'), (3, '第 3 转南美杯')],
+                                         key_line=(g is not last_g)))
+            last_g = g
     right.append('        </div>')
     if note:
         right.append(f'        <p class="league-note">{note}</p>')
