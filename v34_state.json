@@ -52,9 +52,9 @@
   "fixed_w": 0.88
  },
  "kalman": {
-  "n_teams": 657,
+  "n_teams": 658,
   "applied": true,
-  "mods_non_neutral": 6
+  "mods_non_neutral": 2
  },
  "clv": null,
  "drift": {
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-11-15",
+ "date": "2026-11-16",
  "history": [
   {
    "date": "2026-09-14",
@@ -663,6 +663,16 @@
   },
   {
    "date": "2026-11-15",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-11-16",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
