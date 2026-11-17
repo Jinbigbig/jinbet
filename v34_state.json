@@ -1,49 +1,49 @@
 {
  "brier_opt": {
-  "date": "2026-11-10",
+  "date": "2026-11-17",
   "param": "MARKET_W",
   "old": 0.88,
   "best": 0.9,
-  "best_brier": 0.19541,
+  "best_brier": 0.19532,
   "default_brier": null,
   "improvement_pct": null,
   "scores": [
    [
     0.9,
-    0.19541
+    0.19532
    ],
    [
     0.85,
-    0.19542
+    0.19533
    ],
    [
     0.8,
-    0.19545
+    0.19537
    ],
    [
     0.7,
-    0.19559
+    0.19552
    ],
    [
     0.6,
-    0.19584
+    0.19577
    ],
    [
     0.5,
-    0.19618
+    0.19612
    ]
   ],
   "applied": false
  },
  "hedge": {
   "weights": {
-   "model": 0.3363,
-   "market": 0.6637
+   "model": 0.3355,
+   "market": 0.6645
   },
   "losses": {
-   "model": 1.07357,
-   "market": 0.96027,
-   "blend": 0.96388,
+   "model": 1.07433,
+   "market": 0.96046,
+   "blend": 0.96413,
    "n": 500
   },
   "w": 0.7,
@@ -54,12 +54,12 @@
  "kalman": {
   "n_teams": 658,
   "applied": true,
-  "mods_non_neutral": 2
+  "mods_non_neutral": 1
  },
  "clv": null,
  "drift": {
   "baseline": "2026-09-14T16:46:37.940980",
-  "n_samples": 3923,
+  "n_samples": 3925,
   "drift_detected": true,
   "flags": [
    "league_baselines"
@@ -67,13 +67,13 @@
   "detail": {
    "global_goals": {
     "psi": 0.0018,
-    "ks": 0.0121,
+    "ks": 0.0123,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
    "home_away_ratio": {
-    "psi": 0.0336,
-    "ks": 0.0758,
+    "psi": 0.0333,
+    "ks": 0.0754,
     "drift_detected": false,
     "level": "✅ 稳定"
    },
@@ -99,7 +99,7 @@
    }
   }
  },
- "date": "2026-11-16",
+ "date": "2026-11-17",
  "history": [
   {
    "date": "2026-09-14",
@@ -673,6 +673,16 @@
   },
   {
    "date": "2026-11-16",
+   "applied": {
+    "BRIER_OPT": true,
+    "HEDGE_ENSEMBLE": false,
+    "KALMAN_STRENGTH": true,
+    "CLV_TRACK": true,
+    "DRIFT_MONITOR": true
+   }
+  },
+  {
+   "date": "2026-11-17",
    "applied": {
     "BRIER_OPT": true,
     "HEDGE_ENSEMBLE": false,
