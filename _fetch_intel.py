@@ -50,7 +50,9 @@ INTEL_KW = ('首发', '伤', '缺', '停赛', '主帅', '告别', '轮换', '复
             '前瞻', '聚焦', '看点', '赛前', '出战', '恢复', '训练', '名单',
             '退出', '离队', '就任', '执教', '征召', '入选', '回归', '复出')
 # 标题噪音：青年队/女足等非本站赛事
-TITLE_BAD = ('U17', 'U21', 'U23', 'U20', '女足', '青年', '国奥', 'U19', 'U18')
+TITLE_BAD = ('U17', 'U21', 'U23', 'U20', '女足', '青年', '国奥', 'U19', 'U18',
+             '名人堂', '电竞', '篮球', '排球', '网球', ' NHL', 'NBA',
+             '库巴西', '比利亚雷亚尔', '黄潜')
 RE_LINK = re.compile(
     r'<span class="articleTitle"><a href="([^"]+)">([^<]+)</a></span>')
 
@@ -178,7 +180,23 @@ def main() -> int:
                     x in fclub for x in mine)
                 if (has_target or major) and not crosstalk and not club_bad:
                     weak.append((u, t))
-        picked = (strong + weak)[:MAX_ARTICLES]
+        # 伤停 > 首发/轮换 > 告别战/换帅 > 战意/走势 > 历史交锋：关键因素优先入选
+        TIERS = (
+            ('伤', '缺阵', '停赛', '存疑', '伤退', '受伤', '缺席', '无缘'),
+            ('首发', '轮换', '出战', '出场', '名单', '征召', '入选', '大名单'),
+            ('告别', '主帅', '执教', '离队', '退出', '换帅', '教鞭', '上任'),
+            ('复仇', '反弹', '战意', '力争', '冲击', '连败', '连胜', '保级', '争冠'),
+            ('历史', '交锋', '战绩', '往绩', '不败', '纪录', '交手'),
+        )
+        def _tier(t):
+            s = t
+            for i, ks in enumerate(TIERS):
+                if any(k in s for k in ks):
+                    return i
+            return len(TIERS)
+        pool = strong + weak
+        pool.sort(key=lambda ut: (_tier(ut[1]), 0 if ut in strong else 1))
+        picked = pool[:MAX_ARTICLES]
         print(f'[情报] {code} {m["home"]}vs{m["away"]}：强{len(strong)}弱{len(weak)} 取{len(picked)}')
         for u, t in picked:
             used_url.add(u)
