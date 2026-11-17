@@ -158,6 +158,9 @@ TEAM_CITY = {
     # 2026-11-15 补充：荷乙/欧国联其余国家队主场
     '马斯特里': 'Maastricht', '拉脱维亚': 'Riga', '塞浦路斯': 'Nicosia',
     '芬兰': 'Helsinki', '克罗地亚': 'Zagreb', '西班牙': 'Madrid', '比利时': 'Brussels',
+    # 2026-11-17 补充：国际赛/欧国联国家队主场（取首都或常用主场城市）
+    '波黑': 'Sarajevo', '波兰': 'Warsaw', '丹麦': 'Copenhagen', '威尔士': 'Cardiff',
+    '匈牙利': 'Budapest', '爱尔兰': 'Dublin', '智利': 'Santiago',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
