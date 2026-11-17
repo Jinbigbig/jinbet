@@ -116,6 +116,9 @@ def article_text(url: str) -> str:
         ends = [head.rfind(m) for m in ('。', '！', '？', '!', '?')]
         last = max(ends)
         txt = head[:last + 1] if last >= MAX_CHARS * 0.6 else head
+    # 剥掉新闻导语电头：「直播吧11月14日讯/消息」及紧随的「据XX报道/消息，」
+    txt = re.sub(r'^直播吧\d{1,2}月\d{1,2}日(?:讯|消息)', '', txt)
+    txt = re.sub(r'^据[^，,。？！]{0,30}?(?:报道|消息)(?:称)?[，,]?', '', txt)
     return txt.strip()
 
 
