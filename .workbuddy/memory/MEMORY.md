@@ -15,6 +15,7 @@
 
 ## 云端正本布局
 - master `tools/prediction/`=脚本正本（去 `_` 前缀，LF）+ 根 update_odds_net.py/platt_params.json/league_profile.json。⚠️ `tools/prediction/gen_report.py` 落后（无 CUP_EXTRA 杯赛卡、行数差 6671）→ 勿覆盖本地 `_gen_report.py`。
+- **工作脚本丢失的通用恢复法（11-17 实测）**：`git show origin/master:tools/prediction/<去下划线名>.py > _<名>.py`。已验可恢复 build_today_extras / fetch_league_data / fetch_injuries / fetch_lineups / flip_results_lib。⚠️ `_flip_results_lib.py` 缺失时 dedup 静默失败（`[DEDUP-ALIGN]` 不出现，只在 stderr 尾部报 FileNotFoundError）→ 每条流水线都要确认该行。⚠️ master 版 fetch_league_data `import league_match`（本地只有 `_league_match.py`）需加 try/except 兜底。
 - gh-pages=运行态：predictions/、odds_data/results_data、odds_history/、scripts/、各 json（_calc_result/v34_state/strength_db/selection_tuning/weather/injuries…）+ root 的 score_engine.py/selection_algo.py/score_pick_optimize.py/_fetch_weather.py（少数 `_` 被跟踪）。root 其余 `_` 脚本 + league_data/qq_standings/fox_standings 未跟踪。
 
 ## 队名归一（最贵的坑）
