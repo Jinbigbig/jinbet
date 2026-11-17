@@ -24,6 +24,10 @@ def _load_json_soft(path, default):
         return default
 
 
+# 赛前情报（直播吧赛前新闻，_fetch_intel.py 产出，按场次编号索引）
+INTEL = (_load_json_soft('intel.json', {}) or {}).get('matches') or {}
+INTEL_AT = ((_load_json_soft('intel.json', {}) or {}).get('updated') or '')[:16]
+
 INJ = (_load_json_soft('injuries.json', {}) or {}).get('teams') or {}
 _LIN = _load_json_soft('lineups.json', {}) or {}
 LIN = _LIN.get('matches') or {}
@@ -510,6 +514,15 @@ CSS += '''
   .inj-xi-in { font-size:0.76rem; color:var(--muted,#7a8ba0); line-height:1.7;
     padding:0.1rem 0 0.15rem 0.6rem; }
   .inj-src { font-size:0.72rem; color:var(--muted,#7a8ba0); opacity:0.85; margin-top:0.15rem; }
+  /* 赛前情报：公开新闻标题+来源+摘要 */
+  .intel-list { display:flex; flex-direction:column; gap:0.5rem; }
+  .intel-item { border-left:3px solid var(--accent,#2f7de0); padding:0.1rem 0 0.1rem 0.65rem; }
+  .intel-t { font-size:0.85rem; font-weight:600; line-height:1.55; }
+  .intel-t a { color:var(--ink,#1a1a2e); text-decoration:none; }
+  .intel-t a:hover { color:var(--accent,#2f7de0); }
+  .intel-src { font-size:0.7rem; font-weight:400; color:var(--muted,#7a8ba0);
+    margin-left:0.4rem; opacity:0.85; }
+  .intel-s { font-size:0.79rem; color:var(--muted,#7a8ba0); line-height:1.68; margin-top:0.18rem; }
   @media (max-width: 640px) {
     .inj-row { display:block; } .inj-team { display:block; }
     /* 六段轴标签在窄屏会互相压住，缩字并收紧间距 */
@@ -1982,6 +1995,45 @@ def news_html(m):
         f'<p style="font-size:0.9rem;line-height:1.8;margin:0 0 0.45rem;">{esc(p)}</p>' for p in paras)
 
 
+# 关键动态词：含这些的情报排前（战意/伤停/首发/换帅才是「关键因素」）
+_INTEL_PRIORITY = ('告别', '伤', '缺', '停赛', '首发', '主帅', '离队', '退出',
+                   '执教', '出战', '存疑', '恢复', '回归', '入选', '征召', '复仇')
+_INTEL_SUMMARY_CHARS = 190
+
+
+def intel_html(m):
+    """逐场卡片「赛前情报」：直播吧公开新闻，来源标题+正文摘要。"""
+    arts = list(INTEL.get(m['matchNumStr']) or [])
+    arts = [a for a in arts if a.get('text')]
+    if not arts:
+        return ''
+    # 关键动态优先，其次强匹配（标题含双方队名）
+    def rank(a):
+        t = a.get('title') or ''
+        return (sum(1 for k in _INTEL_PRIORITY if k in t), 1 if a.get('strong') else 0)
+    arts.sort(key=rank, reverse=True)
+
+    items = []
+    for a in arts:
+        title = a.get('title') or ''
+        url = a.get('url') or ''
+        src = a.get('source') or '直播吧'
+        text = a.get('text') or ''
+        # 摘要：正文前若干字，截到句号边界
+        summary = text[:_INTEL_SUMMARY_CHARS]
+        cut = max(summary.rfind(x) for x in ('。', '！', '？'))
+        if cut > 60:
+            summary = summary[:cut + 1]
+        link = (f'<a href="{esc(url)}" target="_blank" rel="noopener">'
+                f'{esc(title)}</a>') if url else esc(title)
+        items.append(
+            '<div class="intel-item">'
+            f'<div class="intel-t">{link}<span class="intel-src">{esc(src)}</span></div>'
+            f'<div class="intel-s">{esc(summary)}</div>'
+            '</div>')
+    return ('<h4>赛前情报</h4><div class="intel-list">' + ''.join(items) + '</div>')
+
+
 def esc(s): return html.escape(str(s if s is not None else ''))
 
 
@@ -3371,14 +3423,16 @@ def match_card(m):
                 f'<div class="insight-value">{hm_str}</div></div>'
                 f'<div class="insight-card"><div class="insight-label">H2H调整因子</div>'
                 f'<div class="insight-value">{esc(factor_str)}</div></div></div>')
+    intel_block = intel_html(m)
     _mid_parts = ([_sub(rank_html), _insight]
                   + [_sub(pedigree_block(m)), _sub(hist_html), _sub(form_html),
                      _sub(hc_stats), _sub(hc_goal), _sub(hc_ref), _sub(hc_dish),
                      _sub('<h4>伤停与缺阵</h4>' + inj_html)]
+                  + ([_sub(intel_block)] if intel_block else [])
                   + [sig_html, upset_block(m), rq_block(m)])
     _n_mid = sum(1 for x in _mid_parts if (x or '').strip())
     mid_fold = _fold('展开本场完整分析',
-                     f'{_n_mid} 项 · 积分排名 / 历史交锋 / 近期战绩 / 伤停 / 让球 / 冷门信号',
+                     f'{_n_mid} 项 · 积分排名 / 交锋 / 伤停 / 赛前情报 / 让球 / 冷门信号',
                      ''.join(_mid_parts), cls='fold-card', head_tag='b')
     return f'''
 <div class="card" id="match-{esc(m["matchNumStr"])}">
