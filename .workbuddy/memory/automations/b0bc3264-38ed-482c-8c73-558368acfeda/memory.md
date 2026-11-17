@@ -755,3 +755,17 @@
 - 其他：伤停 30 队（德甲16/荷甲14，今日无对应）；军情 0 队 0 条；盘口新增 8 点（57 场全 ≥2 点）；开赛时间当日 6/8；裁判 12 篇无当日对阵命中；联赛榜 0（欧国联无 7M 映射），QQ 六榜正常、Fox 欧罗巴 406 / 解放者杯正常。
 - matlas：import **67 日 / 952 场 / 赛果 938**；restore dry-run 32 格（11-08 odds_ticks 29 + odds_full 3）→ --apply 后复核 0；squads 新抓 6 / 跳过 20、enrich 注入（欧国联多队）；build --strict（1536 文件、红线 0、槽位 16=已接线 14）；publish gh-pages `d636060f5 → adaa5547a`、main `7c4980c96 → 77305409c`；当日页首次 404 → 约 45s 后 200。
 - 备注：仍每日先改 `_update_index.py` 的 DATE/WEEKDAY/MATCHES/LEAGUES 四元组（今日 2026-11-16/周一/8/欧国联8）。`bd_total_shift`/`bd_min_total` 连续两日反向抖动，若第三天再翻可考虑固定为长期较优值（2）避免报告口径日间跳变。
+
+## 2026-11-17（12:00 常规流水线 + matlas 同步）— 全链跑通，10 场（国际赛4/欧国联6）
+- 步骤0：先 `git fetch origin master` 再 `git show 0b683dd4:update_odds_net.py`（3410 行 / `变更判定`=3）；`[DEDUP-ALIGN]` **首跑缺失** → 根因 `_flip_results_lib.py` 丢失（dedup_results_history.py 第 73 行 import，报 FileNotFoundError），从 `origin/master:tools/prediction/flip_results_lib.py`（163 行，`flip_entry` 接口一致）恢复并 `--selftest` 通过后重跑 → 235/298 受影响、备份 `_hist_backup_2026-11-17`；赛果 3886 条 0 新增、ODDS 回填 0。master HEAD `0b683dd4`。
+- **新坑（重要）**：交付环境里 4 个 `_` 工作脚本同时消失 → `_build_today_extras.py` / `_fetch_league_data.py` / `_fetch_injuries.py` / `_fetch_lineups.py`，全部从 `origin/master:tools/prediction/<去下划线名>.py` 恢复；其中 fetch_league_data 的 `import league_match`（master 有无下划线正本、本地只有 `_league_match.py`）需加 try/except 兜底才能跑。opencc 未安装、走 league_match.to_simp 降级（每日如此，非故障）。
+- 10 场：001/002/003/010 国际赛 + 004–009 欧国联；赔率 10/10（001 无胜平负，由比分盘反推 69.58/44.45/1.04，归一后客 96%，内部自洽非 bug）、冷启动 0 → 1 档：精选 6=001/003/007/008/009/010，大胆 3=004/005/006；串关 方向A/B + 信心A/B + 冷门A/B 共 6 行（方向 A 组合赔率 1.39/72.7%）；红线 grep 0。
+- 链路：Platt n=3886、市场混合(95%概率混合)/比分矩阵对齐发布1X2/ON·生效/ON·观察 齐全；头条口径变更 7 场；DRIFT 命中 league_baselines（亚冠精英105%/日联赛杯79%/德乙50%，非今日赛事）。
+- 复盘 11-16（8 场）：方向 7/8=**88%**、单点 1/8=12%、双档 4/8=**50%**、半全 5/8=62%、总进球 1/8=12%、λ偏差 **-0.03**；前日 6 组串关命中 2 组（方向 A/B 全中）。近 10 日方向正常，不触发重拟合，λ 已回正（连续偏负观察项解除）。
+- 4.6：60 天 pk 58.42→59.08 / bd 24.42→33.58（holdout 19.25→28.25），**旋钮逐字未变**（仅 `_meta`）→ 保持现有参数；文件变更故重跑报告（输出 212497 字符逐字相同）并入库。
+- 发布 gh-pages `3b31b70a → a918a086`（报告+复盘+参数）→ `7529a86b`（红彩/军情/盘口时序/开赛时间/天气/体彩榜/赛果归档对齐）；master `0b683dd4 → 509ee8d0`（fetch_weather 补 7 支国家队主场映射 +3 行）。线上报告/复盘/matlas 当日页均 200。
+- 天气闭环：首跑 0/10（7 队无映射 + SSL handshake timeout）→ 补 波黑Sarajevo/波兰Warsaw/丹麦Copenhagen/威尔士Cardiff/匈牙利Budapest/爱尔兰Dublin/智利Santiago 后 8/10，**再重跑 1 次即 10/10**（001/003/005/007/008/010 恶劣）。
+- 红彩：10/10 采到但 **周二005 错配**（红彩「赫格纳斯 vs IK多特」≠「波兰 vs 瑞典」）→ 两次剔除（报告前 + matlas 前），最终 9/10，且 9 场统计/伤停/分析几乎全 0 项（国际赛/欧国联源覆盖空）。
+- 其他：伤停 30 队（德甲16/荷甲14，今日无对应）；军情 0 队 0 条；盘口新增 9 点（66 场全 ≥2 点）；开赛时间当日 9；裁判 7 篇均旧赛事无当日命中；联赛榜 7M 0（国际赛/欧国联无映射）、体彩 49 项（含 国际赛 16 队/4 组、欧国联）。
+- matlas：import **68 日 / 962 场 / 赛果 946**；restore dry-run 3 格 odds_full（11-11×2、11-14）→ --apply 后复核 0；squads 新抓 6 / 跳过 20、enrich 注入（欧国联多队）；build --strict（1548 文件、红线 0、槽位 16=已接线 14）；publish gh-pages `58e87fdc6 → 8a0625068`、main `0185f4729 → 84ec80768`；当日页首次 404 → 约 1 分钟后 200。
+- 备注：`_update_index.py` 硬编码仍每日先改（今日 2026-11-17/周二/10/国际赛4/欧国联6）。
