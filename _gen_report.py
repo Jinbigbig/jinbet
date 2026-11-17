@@ -515,14 +515,14 @@ CSS += '''
     padding:0.1rem 0 0.15rem 0.6rem; }
   .inj-src { font-size:0.72rem; color:var(--muted,#7a8ba0); opacity:0.85; margin-top:0.15rem; }
   /* 赛前情报：公开新闻标题+来源+摘要 */
-  .intel-list { display:flex; flex-direction:column; gap:0.5rem; }
-  .intel-item { border-left:3px solid var(--accent,#2f7de0); padding:0.1rem 0 0.1rem 0.65rem; }
-  .intel-t { font-size:0.85rem; font-weight:600; line-height:1.55; }
+  .intel-list { display:flex; flex-direction:column; gap:0.45rem; }
+  .intel-item { font-size:0.84rem; line-height:1.62; }
+  .intel-t { font-size:0.84rem; font-weight:700; line-height:1.6; }
   .intel-t a { color:var(--ink,#1a1a2e); text-decoration:none; }
-  .intel-t a:hover { color:var(--accent,#2f7de0); }
+  .intel-t a:hover { color:var(--accent,#2f7de0); text-decoration:underline; }
   .intel-src { font-size:0.7rem; font-weight:400; color:var(--muted,#7a8ba0);
-    margin-left:0.4rem; opacity:0.85; }
-  .intel-s { font-size:0.79rem; color:var(--muted,#7a8ba0); line-height:1.68; margin-top:0.18rem; }
+               margin-left:0.4rem; opacity:0.85; }
+  .intel-s { font-size:0.79rem; color:var(--muted,#7a8ba0); line-height:1.65; margin-top:0.1rem; }
   @media (max-width: 640px) {
     .inj-row { display:block; } .inj-team { display:block; }
     /* 六段轴标签在窄屏会互相压住，缩字并收紧间距 */
@@ -2007,11 +2007,7 @@ def intel_html(m):
     arts = [a for a in arts if a.get('text')]
     if not arts:
         return ''
-    # 关键动态优先，其次强匹配（标题含双方队名）
-    def rank(a):
-        t = a.get('title') or ''
-        return (sum(1 for k in _INTEL_PRIORITY if k in t), 1 if a.get('strong') else 0)
-    arts.sort(key=rank, reverse=True)
+    # 保序：抓取端已按「伤停>首发>告别战>战意>交锋」分层排好
 
     items = []
     for a in arts:
@@ -2019,10 +2015,10 @@ def intel_html(m):
         url = a.get('url') or ''
         src = a.get('source') or '直播吧'
         text = a.get('text') or ''
-        # 摘要：正文前若干字，截到句号边界
-        summary = text[:_INTEL_SUMMARY_CHARS]
+        # 摘要：1~2 句，按句末标点截断
+        summary = text[:110]
         cut = max(summary.rfind(x) for x in ('。', '！', '？'))
-        if cut > 60:
+        if cut > 55:
             summary = summary[:cut + 1]
         link = (f'<a href="{esc(url)}" target="_blank" rel="noopener">'
                 f'{esc(title)}</a>') if url else esc(title)
