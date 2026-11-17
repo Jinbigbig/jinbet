@@ -18,6 +18,7 @@
      {"title":..., "url":..., "source":..., "text":..., "strong":bool}]}}
 按 matchNumStr 索引，下游 14:00 报告按编号直接注入，无需队名再匹配。
 """
+import html as _html
 import json
 import re
 import sys
@@ -79,16 +80,41 @@ def article_text(url: str) -> str:
     i = h.find('class="content"')
     if i < 0:
         return ''
-    seg = h[i:i + MAX_CHARS * 4]
+    seg = h[i:i + MAX_CHARS * 6]
+    # 整块剔除 script/style/iframe/noscript（含块内代码）
+    seg = re.sub(r'<(script|style|iframe|noscript)\b[^>]*>.*?</\1\s*>', ' ',
+                 seg, flags=re.S | re.I)
+    # 去 HTML 注释（<!-- 推广位Id… --> 这类整段）
+    seg = re.sub(r'<!--.*?-->', ' ', seg, flags=re.S)
     txt = re.sub(r'<[^>]+>', '', seg)
+    txt = _html.unescape(txt)          # &nbsp; → 空格，&amp; → & 等
     txt = re.sub(r'\s+', '', txt)
     txt = txt.replace('class="content">', '', 1)
-    # 去掉尾部自媒体免责声明
-    for cut in ('特别声明', '免责声明', '返回搜狐', '责任编辑'):
+    # 尾部页脚/广告残片：命中即整段截断（含漏网的推广位、版权条、声明）
+    for cut in ('特别声明', '免责声明', '返回搜狐', '责任编辑', '版权保护指引',
+                '推广位', '扫码关注', '原文链接', '相关阅读', '相关推荐',
+                '本文由', '作者：', '来源：', '点击进入', '更多精彩',
+                '举报电话', '举报邮箱', '不良信息举报', '违法和不良信息',
+                'ICP备', '营业执照', '公网安备', '增值电信', '互联网新闻',
+                '卫生城市', '网文(', '网文（', '文明城市', '新闻网站',
+                '友情链接', '联系我们', '用户协议', '隐私政策', '报错反馈',
+                '投诉反馈', '有害信息举报专区', '巩固国家', '合作网站',
+                '网址导航', '不错过', 'Copyright', 'All Rights Reserved'):
         p = txt.find(cut)
         if p > 0:
             txt = txt[:p]
-    return txt[:MAX_CHARS].strip()
+    # 残留的JS/属性碎片兜底：仅在贴近末尾处出现才砍（阈值放宽到 90%，避免误伤正文域名）
+    for token in ('iframe_sdk', 'v12.cn', '.cn"', 'var ', 'window.', 'function('):
+        p = txt.rfind(token)
+        if p > MAX_CHARS * 0.9:
+            txt = txt[:p]
+    # 按完整句子截取：在 MAX_CHARS 内最后一个句末标点断开，避免半句
+    if len(txt) > MAX_CHARS:
+        head = txt[:MAX_CHARS]
+        ends = [head.rfind(m) for m in ('。', '！', '？', '!', '?')]
+        last = max(ends)
+        txt = head[:last + 1] if last >= MAX_CHARS * 0.6 else head
+    return txt.strip()
 
 
 def main() -> int:
