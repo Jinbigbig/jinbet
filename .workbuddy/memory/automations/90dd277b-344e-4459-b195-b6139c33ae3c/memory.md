@@ -111,3 +111,15 @@
   - publish.sh：data 自动提交 `b1ca6e6ff`（设计内、未触碰源码）→ 推送 gh-pages `dd3d08357..403bd8581`、main `3c4adea2f..b1ca6e6ff`。
   - **产物 commit `403bd8581`**（site: 构建产物 2026-11-16T19:01:41）。
 - **约束核对**：未改动 matlas 源码；未手工 commit/push main（data 自动提交与 main 同步系 publish.sh 设计内行为，源码零改动）。
+
+## 2026-11-17 19:00 执行（当日第三采集点：11:10 初盘 → 14:00 流水线 → 19:00 临场）
+
+**结果：成功**
+
+- **jinbet 采集** `_fetch_odds_ticks.py`：场次 **66** · 新增 **9** 点 · 赔率变动 **7** 场 · 同小时未变 0 点 · 已有 ≥2 点 **66** 场 → `odds_ticks.json`。无「源不可用/解析后无赔率」。
+- **matlas 发布链路**：
+  - `import_jinbet.py`：68 交易日 / 962 场 / 赛果 946；2026-11-17 当日 10 场（赛果 0，未开赛）。（crest 队徽源探测失败跳过，缺 393 张，不影响；与 11-16 一致）
+  - `build.py --strict`：通过，红线自检 0 违规，1548 文件。
+  - publish.sh：data + assets/logo 自动提交 `46cb7c63e6`（设计内、未触碰源码）→ 推送 gh-pages `009e2bae33..4faf8a575a`、main `b264ec44de..46cb7c63e6`。
+  - **产物 commit `4faf8a575a`**（site: 构建产物 2026-11-17T19:01:35）。
+- **约束核对**：未改动 matlas 源码；未手工 commit/push main（data 自动提交与 main 同步系 publish.sh 设计内行为，源码零改动）。

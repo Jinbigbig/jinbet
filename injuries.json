@@ -1,6 +1,36 @@
 {
- "updated": "2026-11-17 15:02",
+ "updated": "2026-11-18 12:03",
  "teams": {
+  "拜仁": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Davies",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Díaz",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Gnabry",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Ndiaye",
+     "reason": "appendix"
+    },
+    {
+     "name": "Neuer",
+     "reason": "足"
+    },
+    {
+     "name": "Saibari",
+     "reason": "脚踝"
+    }
+   ],
+   "doubtful": []
+  },
   "科隆": {
    "league": "德甲",
    "out": [
@@ -23,10 +53,6 @@
     {
      "name": "Berg",
      "reason": "肌肉"
-    },
-    {
-     "name": "Ache",
-     "reason": "肌肉"
     }
    ],
    "doubtful": []
@@ -34,14 +60,6 @@
   "勒沃库森": {
    "league": "德甲",
    "out": [
-    {
-     "name": "Diaby",
-     "reason": "腿筋"
-    },
-    {
-     "name": "Doué",
-     "reason": "小腿"
-    },
     {
      "name": "Eichhorn",
      "reason": "体能"
@@ -59,25 +77,61 @@
      "reason": "肌肉"
     }
    ],
-   "doubtful": []
+   "doubtful": [
+    {
+     "name": "Diaby",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Maza",
+     "reason": "脚踝"
+    }
+   ]
   },
-  "弗莱堡": {
+  "法兰克福": {
    "league": "德甲",
    "out": [
     {
-     "name": "Muslija",
-     "reason": "膝"
+     "name": "Baum",
+     "reason": "suspended"
     },
     {
-     "name": "Yilmaz",
-     "reason": "tooth"
-    },
-    {
-     "name": "Ogbus",
-     "reason": "肌肉"
+     "name": "Ngankam",
+     "reason": "adductor"
     }
    ],
    "doubtful": []
+  },
+  "霍芬海姆": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "De Cat",
+     "reason": "膝"
+    },
+    {
+     "name": "Gendrey",
+     "reason": "腿"
+    },
+    {
+     "name": "Hajdari",
+     "reason": "足"
+    },
+    {
+     "name": "Hranáč",
+     "reason": "膝"
+    },
+    {
+     "name": "Wimmer",
+     "reason": "腿筋"
+    }
+   ],
+   "doubtful": [
+    {
+     "name": "Conté",
+     "reason": "adductor"
+    }
+   ]
   },
   "柏林联合": {
    "league": "德甲",
@@ -93,88 +147,6 @@
     {
      "name": "Skov",
      "reason": "unconfirmed"
-    },
-    {
-     "name": "Uduokhai",
-     "reason": "suspended"
-    }
-   ],
-   "doubtful": []
-  },
-  "霍芬海姆": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "De Cat",
-     "reason": "膝"
-    },
-    {
-     "name": "Conté",
-     "reason": "adductor"
-    },
-    {
-     "name": "Gendrey",
-     "reason": "腿"
-    },
-    {
-     "name": "Hajdari",
-     "reason": "足"
-    },
-    {
-     "name": "Hranáč",
-     "reason": "膝"
-    },
-    {
-     "name": "Moerstedt",
-     "reason": "头部"
-    },
-    {
-     "name": "Wimmer",
-     "reason": "腿筋"
-    }
-   ],
-   "doubtful": []
-  },
-  "多特": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Can",
-     "reason": "膝"
-    },
-    {
-     "name": "Guirassy",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Konstantelias",
-     "reason": "膝"
-    },
-    {
-     "name": "Lerma",
-     "reason": "肌肉"
-    }
-   ],
-   "doubtful": []
-  },
-  "埃弗斯堡": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Darvich",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Gyamerah",
-     "reason": "腿筋"
-    },
-    {
-     "name": "Seifert",
-     "reason": "脚踝"
-    },
-    {
-     "name": "Zimmerschied",
-     "reason": "脚踝"
     }
    ],
    "doubtful": []
@@ -195,96 +167,90 @@
      "reason": "肩"
     }
    ],
-   "doubtful": []
-  },
-  "奥格斯堡": {
-   "league": "德甲",
-   "out": [
+   "doubtful": [
     {
-     "name": "Bah",
-     "reason": "suspended"
-    },
-    {
-     "name": "Banks",
-     "reason": "膝"
-    },
-    {
-     "name": "Brackelmann",
-     "reason": "头部"
-    },
-    {
-     "name": "Breithaupt",
-     "reason": "脚趾"
-    },
-    {
-     "name": "Mounié",
-     "reason": "体能"
-    },
-    {
-     "name": "Sakar",
-     "reason": "脚踝"
-    }
-   ],
-   "doubtful": []
-  },
-  "美因茨": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Kohr",
+     "name": "El Aynaoui",
      "reason": "脚踝"
     },
     {
-     "name": "Mwene",
-     "reason": "suspended"
-    },
-    {
-     "name": "Posch",
-     "reason": "suspended"
-    },
-    {
-     "name": "Silas",
-     "reason": "腿"
-    },
-    {
-     "name": "Ruoppi",
-     "reason": "膝"
+     "name": "Finkgräfe",
+     "reason": "腿筋"
     }
-   ],
-   "doubtful": []
+   ]
   },
-  "拜仁": {
+  "门兴": {
    "league": "德甲",
    "out": [
     {
-     "name": "Díaz",
+     "name": "Hashioka",
      "reason": "肌肉"
     },
     {
-     "name": "Gnabry",
-     "reason": "腿筋"
+     "name": "Itakura",
+     "reason": "suspended"
     },
     {
-     "name": "Musiala",
-     "reason": "体能"
+     "name": "Kleindienst",
+     "reason": "肌肉"
     },
     {
-     "name": "Ndiaye",
-     "reason": "appendix"
+     "name": "Leopold",
+     "reason": "膝"
     },
     {
-     "name": "Saibari",
+     "name": "Leszczyński",
+     "reason": "膝"
+    },
+    {
+     "name": "Ullrich",
+     "reason": "collarbone"
+    }
+   ],
+   "doubtful": []
+  },
+  "多特": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Can",
+     "reason": "膝"
+    },
+    {
+     "name": "Konstantelias",
+     "reason": "膝"
+    },
+    {
+     "name": "Lerma",
+     "reason": "肌肉"
+    }
+   ],
+   "doubtful": [
+    {
+     "name": "Chukwuemeka",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Guirassy",
+     "reason": "肌肉"
+    }
+   ]
+  },
+  "埃弗斯堡": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Seifert",
      "reason": "脚踝"
     }
    ],
    "doubtful": []
   },
-  "法兰克福": {
+  "弗莱堡": {
    "league": "德甲",
    "out": [
     {
-     "name": "Ngankam",
-     "reason": "腿筋"
+     "name": "Muslija",
+     "reason": "膝"
     }
    ],
    "doubtful": []
@@ -297,24 +263,46 @@
      "reason": "大腿"
     },
     {
-     "name": "Malanga",
-     "reason": "腹肌"
+     "name": "Jaquez",
+     "reason": "肋骨"
     },
     {
-     "name": "Sauer",
-     "reason": "肌肉"
-    },
+     "name": "Malanga",
+     "reason": "腹肌"
+    }
+   ],
+   "doubtful": [
     {
      "name": "Stiller",
      "reason": "adductor"
+    }
+   ]
+  },
+  "奥格斯堡": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Matsima",
+     "reason": "腿筋"
+    }
+   ],
+   "doubtful": [
+    {
+     "name": "Banks",
+     "reason": "膝"
     },
     {
-     "name": "Vagnoman",
-     "reason": "腿筋"
-    },
+     "name": "Ibrahimović",
+     "reason": "小腿"
+    }
+   ]
+  },
+  "美因茨": {
+   "league": "德甲",
+   "out": [
     {
-     "name": "Zagadou",
-     "reason": "腿筋"
+     "name": "Kohr",
+     "reason": "脚踝"
     }
    ],
    "doubtful": []
@@ -331,10 +319,6 @@
      "reason": "小腿"
     },
     {
-     "name": "Erevbenagie",
-     "reason": "脚踝"
-    },
-    {
      "name": "Musah",
      "reason": "腿筋"
     },
@@ -347,79 +331,47 @@
      "reason": "大腿"
     },
     {
-     "name": "Stark",
-     "reason": "肌肉"
-    },
-    {
      "name": "Topp",
      "reason": "膝"
-    },
+    }
+   ],
+   "doubtful": [
     {
      "name": "Weiser",
      "reason": "腿筋"
     }
-   ],
-   "doubtful": []
+   ]
   },
   "汉堡": {
    "league": "德甲",
    "out": [
     {
-     "name": "Bornauw",
-     "reason": "jaw"
-    },
-    {
-     "name": "Capaldo",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Dickes",
-     "reason": "肩"
-    },
-    {
      "name": "Nadir",
      "reason": "大腿"
+    },
+    {
+     "name": "Poulsen",
+     "reason": "小腿"
     },
     {
      "name": "Remberg",
      "reason": "膝"
     },
     {
+     "name": "Sambi Lokonga",
+     "reason": "小腿"
+    }
+   ],
+   "doubtful": [
+    {
+     "name": "Moffi",
+     "reason": "膝"
+    },
+    {
      "name": "Vieira",
      "reason": "腿筋"
     }
-   ],
-   "doubtful": []
-  },
-  "门兴": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Bolin",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Hashioka",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Kleindienst",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Leopold",
-     "reason": "膝"
-    },
-    {
-     "name": "Leszczyński",
-     "reason": "膝"
-    },
-    {
-     "name": "Nicolas",
-     "reason": "肌肉"
-    }
-   ],
-   "doubtful": []
+   ]
   },
   "阿贾克斯": {
    "league": "荷甲",

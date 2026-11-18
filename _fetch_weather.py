@@ -111,6 +111,7 @@ TEAM_CITY = {
     '达伽马': 'Rio de Janeiro', '克鲁塞罗': 'Belo Horizonte', '米内罗竞技': 'Belo Horizonte',
     '格雷米奥': 'Porto Alegre', '国际': 'Porto Alegre', '巴伊亚': 'Salvador',
     '福塔雷萨': 'Fortaleza', '桑托斯': 'Santos', '布拉干蒂诺': 'Braganca Paulista',
+    '科里蒂巴': 'Curitiba', '巴竞技': 'Curitiba', '巴拉纳竞技': 'Curitiba',
     # 2026-10-23 补充：今日竞彩主队缺失映射
     '布里斯班': 'Brisbane', '珀斯': 'Perth',
     '波鸿': 'Bochum',
