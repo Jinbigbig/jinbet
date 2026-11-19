@@ -162,6 +162,8 @@ TEAM_CITY = {
     # 2026-11-17 补充：国际赛/欧国联国家队主场（取首都或常用主场城市）
     '波黑': 'Sarajevo', '波兰': 'Warsaw', '丹麦': 'Copenhagen', '威尔士': 'Cardiff',
     '匈牙利': 'Budapest', '爱尔兰': 'Dublin', '智利': 'Santiago',
+    # 2026-11-19 补充：美职缺失映射（奥兰多=Exploria 球场；西雅图=Lumen Field）
+    '奥兰多': 'Orlando', '西雅图': 'Seattle',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -224,6 +226,7 @@ CITY_ZH = {
     'Tosu': '鸟栖', 'Gimcheon': '金泉', 'Portsmouth': '朴次茅斯', 'Malaga': '马拉加',
     'Paderborn': '帕德博恩', 'Kristiansund': '克里斯蒂安松', 'Sittard': '锡塔德',
     'Degerfors': '代格福什', 'Alverca do Ribatejo': '阿尔韦卡', 'Salt Lake City': '盐湖城',
+    'Orlando': '奥兰多', 'Seattle': '西雅图',
     # 2026-11-01 补充
     'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
     'Groningen': '格罗宁根', 'Getafe': '赫塔费', 'Frosinone': '弗洛西诺内',

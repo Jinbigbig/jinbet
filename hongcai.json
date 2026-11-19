@@ -1,101 +1,1727 @@
 {
- "updated": "2026-11-18 15:02",
- "date": "2026-11-18",
+ "updated": "2026-11-19 12:04",
+ "date": "2026-11-19",
  "source": "网易红彩",
- "count": 3,
+ "count": 4,
  "matches": {
-  "周三001": {
-   "hc_id": 2042838,
-   "jc_num": "周三001",
+  "周四001": {
+   "hc_id": 5549969,
+   "jc_num": "周四001",
    "league": "巴甲",
-   "kickoff": "",
-   "home": "科里蒂巴",
-   "away": "桑托斯",
+   "kickoff": "2026-11-20 06:30:00",
+   "home": "维多利亚",
+   "away": "布拉干RB",
    "stats": {
-    "home": {},
-    "away": {}
+    "home": {
+     "possession": 44,
+     "shots": 11.88,
+     "shots_against": 11.09,
+     "corners": 4.47,
+     "fouls": 12.94,
+     "freekicks": 14.62,
+     "yellow": 2.21,
+     "red": 0.12,
+     "attack_eff": 11.54,
+     "defense_eff": 7.39
+    },
+    "away": {
+     "possession": 49,
+     "shots": 16.97,
+     "shots_against": 10.24,
+     "corners": 6.15,
+     "fouls": 13.71,
+     "freekicks": 10.32,
+     "yellow": 2.41,
+     "red": 0.15,
+     "attack_eff": 13.11,
+     "defense_eff": 8.92
+    }
    },
    "style": {
-    "home": {},
-    "away": {}
+    "home": {
+     "attack": 10.03,
+     "defense": 44.12,
+     "possession": 28.17,
+     "duel": 49.48,
+     "discipline": 13.93,
+     "value": 17.56,
+     "overall": 27.07
+    },
+    "away": {
+     "attack": 36.87,
+     "defense": 74.93,
+     "possession": 61.68,
+     "duel": 88.84,
+     "discipline": 3.46,
+     "value": 30.87,
+     "overall": 53.07
+    }
    },
    "range": {
-    "home_total": {},
-    "away_total": {},
-    "home_home": {},
-    "home_guest": {},
-    "away_home": {},
-    "away_guest": {},
-    "home": {},
-    "away": {}
+    "home_total": {
+     "n": 34,
+     "w": 10,
+     "d": 8,
+     "l": 16,
+     "gf": 35,
+     "ga": 51,
+     "rank": 16,
+     "pts": 38,
+     "gd": -16
+    },
+    "away_total": {
+     "n": 34,
+     "w": 13,
+     "d": 8,
+     "l": 13,
+     "gf": 44,
+     "ga": 39,
+     "rank": 9,
+     "pts": 47,
+     "gd": 5
+    },
+    "home_home": {
+     "n": 17,
+     "w": 10,
+     "d": 2,
+     "l": 5,
+     "gf": 23,
+     "ga": 16,
+     "rank": 8,
+     "pts": 32,
+     "gd": 7
+    },
+    "home_guest": {
+     "n": 17,
+     "w": 0,
+     "d": 6,
+     "l": 11,
+     "gf": 12,
+     "ga": 35,
+     "rank": 20,
+     "pts": 6,
+     "gd": -23
+    },
+    "away_home": {
+     "n": 17,
+     "w": 9,
+     "d": 3,
+     "l": 5,
+     "gf": 29,
+     "ga": 18,
+     "rank": 10,
+     "pts": 30,
+     "gd": 11
+    },
+    "away_guest": {
+     "n": 17,
+     "w": 4,
+     "d": 5,
+     "l": 8,
+     "gf": 15,
+     "ga": 21,
+     "rank": 9,
+     "pts": 17,
+     "gd": -6
+    },
+    "home": {
+     "n": 17,
+     "w": 10,
+     "d": 2,
+     "l": 5,
+     "gf": 23,
+     "ga": 16,
+     "rank": 8,
+     "pts": 32,
+     "gd": 7
+    },
+    "away": {
+     "n": 17,
+     "w": 4,
+     "d": 5,
+     "l": 8,
+     "gf": 15,
+     "ga": 21,
+     "rank": 9,
+     "pts": 17,
+     "gd": -6
+    }
    },
-   "referee": null,
-   "weather": null,
-   "dish": {},
-   "meeting": {},
-   "goal_dist": {},
+   "referee": {
+    "name": "拉蒙·阿巴蒂",
+    "name_en": "Ramon Abatti",
+    "career": {
+     "n": 20,
+     "w": 3,
+     "d": 11,
+     "l": 6,
+     "yellow": 4.2,
+     "red": 0.2,
+     "pen": 0.15
+    },
+    "by_home": {
+     "n": 6,
+     "w": 1,
+     "d": 2,
+     "l": 3,
+     "yellow": 6.8,
+     "red": 0.67,
+     "pen": 0.17
+    },
+    "by_away": {
+     "n": 14,
+     "w": 5,
+     "d": 3,
+     "l": 6,
+     "yellow": 4.4,
+     "red": 0.29,
+     "pen": 0.36
+    }
+   },
+   "weather": {
+    "name": "阴",
+    "temperature": 27,
+    "humidity": 84,
+    "wind": 19,
+    "by_home": {
+     "n": 6,
+     "w": 1,
+     "d": 2,
+     "l": 3,
+     "win_rate": 17
+    },
+    "by_away": {
+     "n": 6,
+     "w": 2,
+     "d": 2,
+     "l": 2,
+     "win_rate": 33
+    }
+   },
+   "dish": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 2,
+      "d": 1,
+      "l": 3,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 50,
+      "gf": 7,
+      "ga": 9,
+      "seq": "LDWLWL"
+     },
+     "home12": {
+      "n": 12,
+      "w": 6,
+      "d": 1,
+      "l": 5,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 50,
+      "gf": 15,
+      "ga": 16,
+      "seq": "LDWLWLLWWLWW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 50,
+      "gf": 7,
+      "ga": 9,
+      "seq": "LLDDLW"
+     },
+     "all12": {
+      "n": 12,
+      "w": 2,
+      "d": 3,
+      "l": 7,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 50,
+      "gf": 12,
+      "ga": 19,
+      "seq": "LLDDLWLDWLLL"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 50,
+      "gf": 7,
+      "ga": 9,
+      "seq": "LLDDLW"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 3,
+      "d": 3,
+      "l": 6,
+      "win_rate": 25,
+      "plate_rate": 42,
+      "big_rate": 50,
+      "gf": 13,
+      "ga": 18,
+      "seq": "LLDDLWLDWLLW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 1,
+      "l": 3,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 50,
+      "gf": 7,
+      "ga": 9,
+      "seq": "LDWLWL"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 6,
+      "d": 2,
+      "l": 4,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 42,
+      "gf": 15,
+      "ga": 14,
+      "seq": "LDWLWLWLWWWD"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 0,
+      "d": 2,
+      "l": 4,
+      "win_rate": 0,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 4,
+      "ga": 9,
+      "seq": "LDLLDL"
+     },
+     "home12": {
+      "n": 12,
+      "w": 1,
+      "d": 7,
+      "l": 4,
+      "win_rate": 8,
+      "plate_rate": 58,
+      "big_rate": 33,
+      "gf": 12,
+      "ga": 14,
+      "seq": "LDLLDLDDDDWD"
+     },
+     "all6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 11,
+      "ga": 7,
+      "seq": "WWLDWD"
+     },
+     "all12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 42,
+      "gf": 17,
+      "ga": 16,
+      "seq": "WWLDWDLLDLLW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 11,
+      "ga": 7,
+      "seq": "WWLDWD"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 42,
+      "gf": 17,
+      "ga": 16,
+      "seq": "WWLDWDLLDLLW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 0,
+      "d": 2,
+      "l": 4,
+      "win_rate": 0,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 4,
+      "ga": 9,
+      "seq": "LDLLDL"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 2,
+      "d": 4,
+      "l": 6,
+      "win_rate": 17,
+      "plate_rate": 50,
+      "big_rate": 42,
+      "gf": 12,
+      "ga": 16,
+      "seq": "LDLLDLDDWLWL"
+     }
+    }
+   },
+   "meeting": {
+    "home": {
+     "home6": {
+      "n": 5,
+      "w": 4,
+      "d": 0,
+      "l": 1,
+      "win_rate": 80,
+      "plate_rate": 60,
+      "big_rate": 40,
+      "gf": 8,
+      "ga": 4,
+      "seq": "WWLWW"
+     },
+     "home12": {
+      "n": 5,
+      "w": 4,
+      "d": 0,
+      "l": 1,
+      "win_rate": 80,
+      "plate_rate": 60,
+      "big_rate": 40,
+      "gf": 8,
+      "ga": 4,
+      "seq": "WWLWW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 0,
+      "l": 4,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 3,
+      "ga": 10,
+      "seq": "LLWWLL"
+     },
+     "all12": {
+      "n": 10,
+      "w": 4,
+      "d": 0,
+      "l": 6,
+      "win_rate": 40,
+      "plate_rate": 30,
+      "big_rate": 40,
+      "gf": 9,
+      "ga": 15,
+      "seq": "LLWWLLLWLW"
+     },
+     "lg6": {
+      "n": 5,
+      "w": 2,
+      "d": 0,
+      "l": 3,
+      "win_rate": 40,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 3,
+      "ga": 8,
+      "seq": "LLWWL"
+     },
+     "lg12": {
+      "n": 5,
+      "w": 2,
+      "d": 0,
+      "l": 3,
+      "win_rate": 40,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 3,
+      "ga": 8,
+      "seq": "LLWWL"
+     },
+     "home_lg6": {
+      "n": 2,
+      "w": 2,
+      "d": 0,
+      "l": 0,
+      "win_rate": 100,
+      "plate_rate": 100,
+      "big_rate": 0,
+      "gf": 2,
+      "ga": 0,
+      "seq": "WW"
+     },
+     "home_lg12": {
+      "n": 2,
+      "w": 2,
+      "d": 0,
+      "l": 0,
+      "win_rate": 100,
+      "plate_rate": 100,
+      "big_rate": 0,
+      "gf": 2,
+      "ga": 0,
+      "seq": "WW"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 5,
+      "w": 1,
+      "d": 0,
+      "l": 4,
+      "win_rate": 20,
+      "plate_rate": 60,
+      "big_rate": 40,
+      "gf": 4,
+      "ga": 8,
+      "seq": "LLWLL"
+     },
+     "home12": {
+      "n": 5,
+      "w": 1,
+      "d": 0,
+      "l": 4,
+      "win_rate": 20,
+      "plate_rate": 60,
+      "big_rate": 40,
+      "gf": 4,
+      "ga": 8,
+      "seq": "LLWLL"
+     },
+     "all6": {
+      "n": 6,
+      "w": 4,
+      "d": 0,
+      "l": 2,
+      "win_rate": 67,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 10,
+      "ga": 3,
+      "seq": "WWLLWW"
+     },
+     "all12": {
+      "n": 10,
+      "w": 6,
+      "d": 0,
+      "l": 4,
+      "win_rate": 60,
+      "plate_rate": 30,
+      "big_rate": 40,
+      "gf": 15,
+      "ga": 9,
+      "seq": "WWLLWWWLWL"
+     },
+     "lg6": {
+      "n": 5,
+      "w": 3,
+      "d": 0,
+      "l": 2,
+      "win_rate": 60,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 8,
+      "ga": 3,
+      "seq": "WWLLW"
+     },
+     "lg12": {
+      "n": 5,
+      "w": 3,
+      "d": 0,
+      "l": 2,
+      "win_rate": 60,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 8,
+      "ga": 3,
+      "seq": "WWLLW"
+     },
+     "home_lg6": {
+      "n": 2,
+      "w": 0,
+      "d": 0,
+      "l": 2,
+      "win_rate": 0,
+      "plate_rate": 100,
+      "big_rate": 0,
+      "gf": 0,
+      "ga": 2,
+      "seq": "LL"
+     },
+     "home_lg12": {
+      "n": 2,
+      "w": 0,
+      "d": 0,
+      "l": 2,
+      "win_rate": 0,
+      "plate_rate": 100,
+      "big_rate": 0,
+      "gf": 0,
+      "ga": 2,
+      "seq": "LL"
+     }
+    }
+   },
+   "goal_dist": {
+    "home": {
+     "scored": [
+      {
+       "n": 3,
+       "pct": 8,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 8,
+       "pct": 22,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 3,
+       "pct": 8,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 7,
+       "pct": 20,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 25,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 5,
+       "pct": 14,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 3,
+       "pct": 5,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 7,
+       "pct": 13,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 8,
+       "pct": 15,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 12,
+       "pct": 23,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 17,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 12,
+       "pct": 23,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    },
+    "away": {
+     "scored": [
+      {
+       "n": 6,
+       "pct": 13,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 7,
+       "pct": 15,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 9,
+       "pct": 20,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 11,
+       "pct": 25,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 3,
+       "pct": 6,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 8,
+       "pct": 18,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 4,
+       "pct": 10,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 6,
+       "pct": 15,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 6,
+       "pct": 15,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 10,
+       "pct": 25,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 6,
+       "pct": 15,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 7,
+       "pct": 17,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    }
+   },
    "analyse": {
-    "home": [],
-    "guest": []
+    "home": [
+     "近期顺风能力不俗，近10场率先进球的比赛中，7场赢得最终比赛，胜率为70%",
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有0场赢得最终比赛，胜率为0%",
+     "近期连续5场丢球"
+    ],
+    "guest": [
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有1场赢得最终比赛，胜率为10%"
+    ]
    },
    "injuries": {
-    "home": [],
-    "guest": []
+    "home": [
+     {
+      "name": "门德斯",
+      "position": "后卫",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "埃杜",
+      "position": "后卫",
+      "status": "out",
+      "state": "跟腱受伤"
+     },
+     {
+      "name": "里切利",
+      "position": "后卫",
+      "status": "out",
+      "state": "小腿受伤"
+     },
+     {
+      "name": "杜杜",
+      "position": "中场",
+      "status": "out",
+      "state": "后背受伤"
+     },
+     {
+      "name": "卡穆坦加",
+      "position": "后卫",
+      "status": "out",
+      "state": "腿部骨折"
+     },
+     {
+      "name": "拉蒙",
+      "position": "后卫",
+      "status": "out",
+      "state": "腿部受伤"
+     },
+     {
+      "name": "法比亚诺",
+      "position": "后卫",
+      "status": "out",
+      "state": "膝关节损伤"
+     }
+    ],
+    "guest": [
+     {
+      "name": "戈梅斯",
+      "position": "前锋",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "罗德里格尼奥",
+      "position": "中场",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "赫尔塔多",
+      "position": "后卫",
+      "status": "out",
+      "state": "肌肉受伤"
+     },
+     {
+      "name": "卢卡斯",
+      "position": "前锋",
+      "status": "suspended",
+      "state": "累计黄牌停赛"
+     }
+    ]
    }
   },
-  "周三003": {
-   "hc_id": 2042840,
-   "jc_num": "周三003",
+  "周四002": {
+   "hc_id": 5549977,
+   "jc_num": "周四002",
    "league": "巴甲",
-   "kickoff": "",
-   "home": "科林蒂安",
-   "away": "博塔弗戈",
+   "kickoff": "2026-11-20 08:30:00",
+   "home": "圣保罗",
+   "away": "弗鲁米嫩",
    "stats": {
-    "home": {},
-    "away": {}
+    "home": {
+     "possession": 52,
+     "shots": 13.71,
+     "shots_against": 9.59,
+     "corners": 6.88,
+     "fouls": 14.44,
+     "freekicks": 12.97,
+     "yellow": 2.12,
+     "red": 0.06,
+     "attack_eff": 11.95,
+     "defense_eff": 8.36
+    },
+    "away": {
+     "possession": 58,
+     "shots": 14.68,
+     "shots_against": 9.32,
+     "corners": 5.41,
+     "fouls": 13.56,
+     "freekicks": 12.29,
+     "yellow": 2.35,
+     "red": 0.06,
+     "attack_eff": 9.07,
+     "defense_eff": 7.55
+    }
    },
    "style": {
-    "home": {},
-    "away": {}
+    "home": {
+     "attack": 27.25,
+     "defense": 72.81,
+     "possession": 67.38,
+     "duel": 49.48,
+     "discipline": 24.42,
+     "value": 25.66,
+     "overall": 46.94
+    },
+    "away": {
+     "attack": 83.14,
+     "defense": 63.53,
+     "possession": 83.16,
+     "duel": 88.84,
+     "discipline": 20.79,
+     "value": 37.72,
+     "overall": 69.39
+    }
    },
    "range": {
-    "home_total": {},
-    "away_total": {},
-    "home_home": {},
-    "home_guest": {},
-    "away_home": {},
-    "away_guest": {},
-    "home": {},
-    "away": {}
+    "home_total": {
+     "n": 34,
+     "w": 12,
+     "d": 8,
+     "l": 14,
+     "gf": 39,
+     "ga": 39,
+     "rank": 10,
+     "pts": 44,
+     "gd": 0
+    },
+    "away_total": {
+     "n": 34,
+     "w": 16,
+     "d": 9,
+     "l": 9,
+     "gf": 55,
+     "ga": 42,
+     "rank": 4,
+     "pts": 57,
+     "gd": 13
+    },
+    "home_home": {
+     "n": 17,
+     "w": 10,
+     "d": 4,
+     "l": 3,
+     "gf": 25,
+     "ga": 13,
+     "rank": 6,
+     "pts": 34,
+     "gd": 12
+    },
+    "home_guest": {
+     "n": 17,
+     "w": 2,
+     "d": 4,
+     "l": 11,
+     "gf": 14,
+     "ga": 26,
+     "rank": 16,
+     "pts": 10,
+     "gd": -12
+    },
+    "away_home": {
+     "n": 17,
+     "w": 12,
+     "d": 3,
+     "l": 2,
+     "gf": 31,
+     "ga": 17,
+     "rank": 3,
+     "pts": 39,
+     "gd": 14
+    },
+    "away_guest": {
+     "n": 17,
+     "w": 4,
+     "d": 6,
+     "l": 7,
+     "gf": 24,
+     "ga": 25,
+     "rank": 8,
+     "pts": 18,
+     "gd": -1
+    },
+    "home": {
+     "n": 17,
+     "w": 10,
+     "d": 4,
+     "l": 3,
+     "gf": 25,
+     "ga": 13,
+     "rank": 6,
+     "pts": 34,
+     "gd": 12
+    },
+    "away": {
+     "n": 17,
+     "w": 4,
+     "d": 6,
+     "l": 7,
+     "gf": 24,
+     "ga": 25,
+     "rank": 8,
+     "pts": 18,
+     "gd": -1
+    }
    },
-   "referee": null,
-   "weather": null,
-   "dish": {},
-   "meeting": {},
-   "goal_dist": {},
+   "referee": {
+    "name": "卢卡斯·卡萨格兰德",
+    "name_en": "Lucas Casagrande",
+    "career": {
+     "n": 20,
+     "w": 11,
+     "d": 4,
+     "l": 5,
+     "yellow": 4.1,
+     "red": 0.3,
+     "pen": 0.05
+    },
+    "by_home": {
+     "n": 6,
+     "w": 3,
+     "d": 3,
+     "l": 0,
+     "yellow": 4.3,
+     "red": 0,
+     "pen": 0
+    },
+    "by_away": {
+     "n": 2,
+     "w": 1,
+     "d": 1,
+     "l": 0,
+     "yellow": 4,
+     "red": 0,
+     "pen": 0
+    }
+   },
+   "weather": {
+    "name": "局部有云",
+    "temperature": 24,
+    "humidity": 83,
+    "wind": 8,
+    "by_home": {
+     "n": 6,
+     "w": 2,
+     "d": 2,
+     "l": 2,
+     "win_rate": 33
+    },
+    "by_away": {
+     "n": 6,
+     "w": 3,
+     "d": 1,
+     "l": 2,
+     "win_rate": 50
+    }
+   },
+   "dish": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 4,
+      "seq": "DWWLWD"
+     },
+     "home12": {
+      "n": 12,
+      "w": 7,
+      "d": 3,
+      "l": 2,
+      "win_rate": 58,
+      "plate_rate": 58,
+      "big_rate": 42,
+      "gf": 17,
+      "ga": 9,
+      "seq": "DWWLWDWWWDLW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 7,
+      "seq": "DLDWWL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 42,
+      "big_rate": 25,
+      "gf": 11,
+      "ga": 13,
+      "seq": "DLDWWLLWDLLW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 7,
+      "seq": "DLDWWL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 5,
+      "d": 2,
+      "l": 5,
+      "win_rate": 42,
+      "plate_rate": 50,
+      "big_rate": 33,
+      "gf": 12,
+      "ga": 13,
+      "seq": "DLDWWLLWLWWL"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 4,
+      "d": 1,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 33,
+      "gf": 7,
+      "ga": 3,
+      "seq": "DWWLWW"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 6,
+      "d": 4,
+      "l": 2,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 42,
+      "gf": 15,
+      "ga": 10,
+      "seq": "DWWLWWWDLDDW"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 3,
+      "d": 0,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 9,
+      "ga": 6,
+      "seq": "WLWLWL"
+     },
+     "home12": {
+      "n": 12,
+      "w": 3,
+      "d": 5,
+      "l": 4,
+      "win_rate": 25,
+      "plate_rate": 42,
+      "big_rate": 58,
+      "gf": 16,
+      "ga": 15,
+      "seq": "WLWLWLLDDDDD"
+     },
+     "all6": {
+      "n": 6,
+      "w": 3,
+      "d": 0,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 83,
+      "gf": 9,
+      "ga": 7,
+      "seq": "WWLWLL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 6,
+      "d": 0,
+      "l": 6,
+      "win_rate": 50,
+      "plate_rate": 58,
+      "big_rate": 75,
+      "gf": 20,
+      "ga": 14,
+      "seq": "WWLWLLLWWLLW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 0,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 67,
+      "big_rate": 83,
+      "gf": 11,
+      "ga": 6,
+      "seq": "WWLLLW"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 7,
+      "d": 1,
+      "l": 4,
+      "win_rate": 58,
+      "plate_rate": 67,
+      "big_rate": 83,
+      "gf": 24,
+      "ga": 16,
+      "seq": "WWLLLWWLWDWW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 1,
+      "l": 3,
+      "win_rate": 33,
+      "plate_rate": 67,
+      "big_rate": 83,
+      "gf": 11,
+      "ga": 10,
+      "seq": "WLLWLD"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 3,
+      "d": 4,
+      "l": 5,
+      "win_rate": 25,
+      "plate_rate": 50,
+      "big_rate": 50,
+      "gf": 17,
+      "ga": 18,
+      "seq": "WLLWLDDDDLLW"
+     }
+    }
+   },
+   "meeting": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 4,
+      "d": 2,
+      "l": 0,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 11,
+      "ga": 5,
+      "seq": "WWWDDW"
+     },
+     "home12": {
+      "n": 9,
+      "w": 4,
+      "d": 4,
+      "l": 1,
+      "win_rate": 44,
+      "plate_rate": 44,
+      "big_rate": 44,
+      "gf": 13,
+      "ga": 9,
+      "seq": "WWWDDWLDD"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 0,
+      "l": 4,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 6,
+      "ga": 13,
+      "seq": "LLWLWL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 4,
+      "d": 2,
+      "l": 6,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 13,
+      "ga": 21,
+      "seq": "LLWLWLWLDLDW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 0,
+      "l": 4,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 6,
+      "ga": 13,
+      "seq": "LLWLWL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 4,
+      "d": 2,
+      "l": 6,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 13,
+      "ga": 21,
+      "seq": "LLWLWLWLDLDW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 4,
+      "d": 2,
+      "l": 0,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 11,
+      "ga": 5,
+      "seq": "WWWDDW"
+     },
+     "home_lg12": {
+      "n": 9,
+      "w": 4,
+      "d": 4,
+      "l": 1,
+      "win_rate": 44,
+      "plate_rate": 44,
+      "big_rate": 44,
+      "gf": 13,
+      "ga": 9,
+      "seq": "WWWDDWLDD"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 0,
+      "d": 2,
+      "l": 4,
+      "win_rate": 0,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 5,
+      "ga": 11,
+      "seq": "LLLDDL"
+     },
+     "home12": {
+      "n": 9,
+      "w": 1,
+      "d": 4,
+      "l": 4,
+      "win_rate": 11,
+      "plate_rate": 44,
+      "big_rate": 44,
+      "gf": 9,
+      "ga": 13,
+      "seq": "LLLDDLWDD"
+     },
+     "all6": {
+      "n": 6,
+      "w": 4,
+      "d": 0,
+      "l": 2,
+      "win_rate": 67,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 13,
+      "ga": 6,
+      "seq": "WWLWLW"
+     },
+     "all12": {
+      "n": 12,
+      "w": 6,
+      "d": 2,
+      "l": 4,
+      "win_rate": 50,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 21,
+      "ga": 13,
+      "seq": "WWLWLWLWDWDL"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 4,
+      "d": 0,
+      "l": 2,
+      "win_rate": 67,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 13,
+      "ga": 6,
+      "seq": "WWLWLW"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 6,
+      "d": 2,
+      "l": 4,
+      "win_rate": 50,
+      "plate_rate": 33,
+      "big_rate": 67,
+      "gf": 21,
+      "ga": 13,
+      "seq": "WWLWLWLWDWDL"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 0,
+      "d": 2,
+      "l": 4,
+      "win_rate": 0,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 5,
+      "ga": 11,
+      "seq": "LLLDDL"
+     },
+     "home_lg12": {
+      "n": 9,
+      "w": 1,
+      "d": 4,
+      "l": 4,
+      "win_rate": 11,
+      "plate_rate": 44,
+      "big_rate": 44,
+      "gf": 9,
+      "ga": 13,
+      "seq": "LLLDDLWDD"
+     }
+    }
+   },
+   "goal_dist": {
+    "home": {
+     "scored": [
+      {
+       "n": 5,
+       "pct": 12,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 5,
+       "pct": 12,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 5,
+       "pct": 12,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 8,
+       "pct": 20,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 11,
+       "pct": 28,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 5,
+       "pct": 12,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 4,
+       "pct": 10,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 4,
+       "pct": 10,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 6,
+       "pct": 15,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 14,
+       "pct": 35,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 3,
+       "pct": 7,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 8,
+       "pct": 20,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    },
+    "away": {
+     "scored": [
+      {
+       "n": 4,
+       "pct": 7,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 9,
+       "pct": 16,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 8,
+       "pct": 14,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 9,
+       "pct": 16,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 6,
+       "pct": 10,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 19,
+       "pct": 34,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 7,
+       "pct": 16,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 1,
+       "pct": 2,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 5,
+       "pct": 11,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 10,
+       "pct": 23,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 21,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 10,
+       "pct": 23,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    }
+   },
    "analyse": {
-    "home": [],
-    "guest": []
+    "home": [
+     "近10场主场赢球6场，胜率60%，主场胜率较高",
+     "近期顺风能力不俗，近10场率先进球的比赛中，6场赢得最终比赛，胜率为60%",
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有0场赢得最终比赛，胜率为0%",
+     "圣保罗在近10场主场比赛中有6场赢盘，赢盘率60%"
+    ],
+    "guest": [
+     "近期战力佳，10场赢球5场，胜率50%，目前联盟第4",
+     "近期顺风能力不俗，近10场率先进球的比赛中，7场赢得最终比赛，胜率为70%",
+     "近10场75分钟之后打入8球，占近10场总进球的47%，绝杀属性较高",
+     "近10场有6场比赛赢盘，赢盘率60%"
+    ]
    },
    "injuries": {
-    "home": [],
-    "guest": []
+    "home": [
+     {
+      "name": "博沙特",
+      "position": "后卫",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "布塔",
+      "position": "后卫",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "杜阿尔特",
+      "position": "后卫",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "安东尼奥",
+      "position": "中场",
+      "status": "out",
+      "state": "踝关节受伤"
+     },
+     {
+      "name": "A.费雷拉",
+      "position": "前锋",
+      "status": "suspended",
+      "state": "累计黄牌停赛"
+     },
+     {
+      "name": "卢西亚诺",
+      "position": "前锋",
+      "status": "suspended",
+      "state": "累计黄牌停赛"
+     },
+     {
+      "name": "牛顿",
+      "position": "中场",
+      "status": "suspended",
+      "state": "累计黄牌停赛"
+     }
+    ],
+    "guest": [
+     {
+      "name": "雷斯",
+      "position": "前锋",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "肯尼迪",
+      "position": "前锋",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "卡斯特洛",
+      "position": "中场",
+      "status": "out",
+      "state": "髋关节损伤"
+     },
+     {
+      "name": "米兰",
+      "position": "后卫",
+      "status": "suspended",
+      "state": "无法出战"
+     }
+    ]
    }
   },
-  "周三004": {
-   "hc_id": 2042841,
-   "jc_num": "周三004",
-   "league": "巴甲",
-   "kickoff": "",
-   "home": "格雷米奥",
-   "away": "巴伊亚",
+  "周四003": {
+   "hc_id": 5566275,
+   "jc_num": "周四003",
+   "league": "美职",
+   "kickoff": "2026-11-20 08:30:00",
+   "home": "奥兰多",
+   "away": "辛辛那提",
    "stats": {
-    "home": {},
-    "away": {}
+    "home": {
+     "possession": 49,
+     "shots": 12.5,
+     "shots_against": 12.47,
+     "corners": 4,
+     "fouls": 10.79,
+     "freekicks": 11.97,
+     "yellow": 2.21,
+     "red": 0.06,
+     "attack_eff": 6.75,
+     "defense_eff": 5.44
+    },
+    "away": {
+     "possession": 50,
+     "shots": 14.56,
+     "shots_against": 10.5,
+     "corners": 5.03,
+     "fouls": 11.15,
+     "freekicks": 10.29,
+     "yellow": 2.09,
+     "red": 0.21,
+     "attack_eff": 7.39,
+     "defense_eff": 4.76
+    }
    },
    "style": {
-    "home": {},
-    "away": {}
+    "home": {
+     "attack": 84.09,
+     "defense": 3.89,
+     "possession": 63.21,
+     "duel": 88.84,
+     "discipline": 57.16,
+     "value": 19.53,
+     "overall": 52.86
+    },
+    "away": {
+     "attack": 97.06,
+     "defense": 6.86,
+     "possession": 68.03,
+     "duel": 88.84,
+     "discipline": 38.17,
+     "value": 22.35,
+     "overall": 56.99
+    }
    },
    "range": {
     "home_total": {},
@@ -108,26 +1734,1340 @@
     "away": {}
    },
    "referee": null,
-   "weather": null,
-   "dish": {},
-   "meeting": {},
-   "goal_dist": {},
+   "weather": {
+    "name": "阴有雨",
+    "temperature": 22,
+    "humidity": 92,
+    "wind": 18,
+    "by_home": {
+     "n": 2,
+     "w": 0,
+     "d": 1,
+     "l": 1,
+     "win_rate": 0
+    },
+    "by_away": {
+     "n": 2,
+     "w": 1,
+     "d": 1,
+     "l": 0,
+     "win_rate": 50
+    }
+   },
+   "dish": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 5,
+      "d": 1,
+      "l": 0,
+      "win_rate": 83,
+      "plate_rate": 83,
+      "big_rate": 50,
+      "gf": 14,
+      "ga": 5,
+      "seq": "WDWWWW"
+     },
+     "home12": {
+      "n": 12,
+      "w": 7,
+      "d": 3,
+      "l": 2,
+      "win_rate": 58,
+      "plate_rate": 58,
+      "big_rate": 33,
+      "gf": 22,
+      "ga": 13,
+      "seq": "WDWWWWWLDDLW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 3,
+      "l": 1,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 83,
+      "gf": 12,
+      "ga": 12,
+      "seq": "WLDDWD"
+     },
+     "all12": {
+      "n": 12,
+      "w": 5,
+      "d": 3,
+      "l": 4,
+      "win_rate": 42,
+      "plate_rate": 50,
+      "big_rate": 75,
+      "gf": 26,
+      "ga": 26,
+      "seq": "WLDDWDWLLLWW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 3,
+      "l": 1,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 83,
+      "gf": 12,
+      "ga": 12,
+      "seq": "WLDDWD"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 6,
+      "d": 3,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 58,
+      "big_rate": 75,
+      "gf": 26,
+      "ga": 24,
+      "seq": "WLDDWDWLLWWW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 5,
+      "d": 1,
+      "l": 0,
+      "win_rate": 83,
+      "plate_rate": 83,
+      "big_rate": 50,
+      "gf": 14,
+      "ga": 5,
+      "seq": "WDWWWW"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 8,
+      "d": 3,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 33,
+      "gf": 24,
+      "ga": 13,
+      "seq": "WDWWWWWLDWDW"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 10,
+      "ga": 13,
+      "seq": "DWWLDL"
+     },
+     "home12": {
+      "n": 12,
+      "w": 3,
+      "d": 5,
+      "l": 4,
+      "win_rate": 25,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 20,
+      "ga": 27,
+      "seq": "DWWLDLLDLDDW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 3,
+      "d": 1,
+      "l": 2,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 0,
+      "gf": 7,
+      "ga": 7,
+      "seq": "LWDWWL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 42,
+      "big_rate": 50,
+      "gf": 18,
+      "ga": 24,
+      "seq": "LWDWWLLWLDDL"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 1,
+      "l": 2,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 0,
+      "gf": 7,
+      "ga": 7,
+      "seq": "LWDWWL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 42,
+      "big_rate": 50,
+      "gf": 18,
+      "ga": 24,
+      "seq": "LWDWWLLWLDDL"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 10,
+      "ga": 13,
+      "seq": "DWWLDL"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 3,
+      "d": 5,
+      "l": 4,
+      "win_rate": 25,
+      "plate_rate": 67,
+      "big_rate": 67,
+      "gf": 20,
+      "ga": 27,
+      "seq": "DWWLDLLDLDDW"
+     }
+    }
+   },
+   "meeting": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 0,
+      "big_rate": 20,
+      "gf": 6,
+      "ga": 8,
+      "seq": "DWLLDL"
+     },
+     "home12": {
+      "n": 8,
+      "w": 3,
+      "d": 2,
+      "l": 3,
+      "win_rate": 38,
+      "plate_rate": 29,
+      "big_rate": 43,
+      "gf": 14,
+      "ga": 9,
+      "seq": "DWLLDLWW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 11,
+      "ga": 13,
+      "seq": "DLWDLW"
+     },
+     "all12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 36,
+      "big_rate": 27,
+      "gf": 14,
+      "ga": 17,
+      "seq": "DLWDLWLWDLLW"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 8,
+      "ga": 12,
+      "seq": "DLDLWL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 3,
+      "d": 4,
+      "l": 5,
+      "win_rate": 25,
+      "plate_rate": 33,
+      "big_rate": 25,
+      "gf": 12,
+      "ga": 16,
+      "seq": "DLDLWLWDLLWD"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 17,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 6,
+      "seq": "DLLDLW"
+     },
+     "home_lg12": {
+      "n": 7,
+      "w": 2,
+      "d": 2,
+      "l": 3,
+      "win_rate": 29,
+      "plate_rate": 29,
+      "big_rate": 43,
+      "gf": 11,
+      "ga": 7,
+      "seq": "DLLDLWW"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 0,
+      "big_rate": 20,
+      "gf": 8,
+      "ga": 6,
+      "seq": "DLWWDW"
+     },
+     "home12": {
+      "n": 8,
+      "w": 3,
+      "d": 2,
+      "l": 3,
+      "win_rate": 38,
+      "plate_rate": 29,
+      "big_rate": 43,
+      "gf": 9,
+      "ga": 14,
+      "seq": "DLWWDWLL"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 2,
+      "l": 2,
+      "win_rate": 33,
+      "plate_rate": 40,
+      "big_rate": 40,
+      "gf": 13,
+      "ga": 11,
+      "seq": "DWLDWL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 5,
+      "d": 3,
+      "l": 4,
+      "win_rate": 42,
+      "plate_rate": 36,
+      "big_rate": 27,
+      "gf": 17,
+      "ga": 14,
+      "seq": "DWLDWLWLDWWL"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 12,
+      "ga": 8,
+      "seq": "DWDWLW"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 5,
+      "d": 4,
+      "l": 3,
+      "win_rate": 42,
+      "plate_rate": 33,
+      "big_rate": 25,
+      "gf": 16,
+      "ga": 12,
+      "seq": "DWDWLWLDWWLD"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 17,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 6,
+      "seq": "DWWDWL"
+     },
+     "home_lg12": {
+      "n": 7,
+      "w": 3,
+      "d": 2,
+      "l": 2,
+      "win_rate": 43,
+      "plate_rate": 29,
+      "big_rate": 43,
+      "gf": 7,
+      "ga": 11,
+      "seq": "DWWDWLL"
+     }
+    }
+   },
+   "goal_dist": {
+    "home": {
+     "scored": [
+      {
+       "n": 5,
+       "pct": 7,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 14,
+       "pct": 22,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 6,
+       "pct": 9,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 12,
+       "pct": 19,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 14,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 17,
+       "pct": 26,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 10,
+       "pct": 12,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 13,
+       "pct": 16,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 8,
+       "pct": 10,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 19,
+       "pct": 24,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 11,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 19,
+       "pct": 24,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    },
+    "away": {
+     "scored": [
+      {
+       "n": 7,
+       "pct": 10,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 6,
+       "pct": 8,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 12,
+       "pct": 17,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 12,
+       "pct": 17,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 7,
+       "pct": 10,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 23,
+       "pct": 34,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 4,
+       "pct": 5,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 14,
+       "pct": 18,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 10,
+       "pct": 13,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 21,
+       "pct": 28,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 10,
+       "pct": 13,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 16,
+       "pct": 21,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    }
+   },
    "analyse": {
-    "home": [],
-    "guest": []
+    "home": [
+     "近10场主场赢球6场，胜率60%，主场胜率较高",
+     "近期顺风能力不俗，近10场率先进球的比赛中，6场赢得最终比赛，胜率为60%",
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有2场赢得最终比赛，胜率为20%",
+     "奥兰多在近10场主场比赛中有6场赢盘，赢盘率60%"
+    ],
+    "guest": [
+     "辛辛那提在近10场客场比赛中有6场赢盘，赢盘率60%"
+    ]
    },
    "injuries": {
-    "home": [],
-    "guest": []
+    "home": [
+     {
+      "name": "扬森",
+      "position": "后卫",
+      "status": "out",
+      "state": "足部受伤"
+     },
+     {
+      "name": "斯派塞",
+      "position": "中场",
+      "status": "out",
+      "state": "足部受伤"
+     },
+     {
+      "name": "卡塔赫纳",
+      "position": "中场",
+      "status": "out",
+      "state": "受伤"
+     },
+     {
+      "name": "B.奥赫达",
+      "position": "中场",
+      "status": "out",
+      "state": "受伤"
+     }
+    ],
+    "guest": [
+     {
+      "name": "哈德贝",
+      "position": "后卫",
+      "status": "out",
+      "state": "腿部受伤"
+     },
+     {
+      "name": "阿南加",
+      "position": "中场",
+      "status": "out",
+      "state": "腿部受伤"
+     }
+    ]
+   }
+  },
+  "周四004": {
+   "hc_id": 5566376,
+   "jc_num": "周四004",
+   "league": "美职",
+   "kickoff": "2026-11-20 11:00:00",
+   "home": "西雅图",
+   "away": "盐湖城",
+   "stats": {
+    "home": {
+     "possession": 50,
+     "shots": 13.65,
+     "shots_against": 10.41,
+     "corners": 5.44,
+     "fouls": 10.74,
+     "freekicks": 9.29,
+     "yellow": 1.62,
+     "red": 0.03,
+     "attack_eff": 10.55,
+     "defense_eff": 7.7
+    },
+    "away": {
+     "possession": 49,
+     "shots": 14.53,
+     "shots_against": 9.29,
+     "corners": 4.94,
+     "fouls": 12.21,
+     "freekicks": 10.88,
+     "yellow": 2.29,
+     "red": 0.03,
+     "attack_eff": 9.32,
+     "defense_eff": 6.08
+    }
+   },
+   "style": {
+    "home": {
+     "attack": 40.88,
+     "defense": 51.22,
+     "possession": 68.56,
+     "duel": 1.46,
+     "discipline": 92.22,
+     "value": 17.92,
+     "overall": 44.7
+    },
+    "away": {
+     "attack": 77.44,
+     "defense": 29.15,
+     "possession": 62.25,
+     "duel": 49.48,
+     "discipline": 32.73,
+     "value": 18.52,
+     "overall": 50.27
+    }
+   },
+   "range": {
+    "home_total": {},
+    "away_total": {},
+    "home_home": {},
+    "home_guest": {},
+    "away_home": {},
+    "away_guest": {},
+    "home": {},
+    "away": {}
+   },
+   "referee": null,
+   "weather": {
+    "name": "晴",
+    "temperature": 7,
+    "humidity": 80,
+    "wind": 3,
+    "by_home": {
+     "n": 6,
+     "w": 1,
+     "d": 5,
+     "l": 0,
+     "win_rate": 17
+    },
+    "by_away": {
+     "n": 6,
+     "w": 2,
+     "d": 2,
+     "l": 2,
+     "win_rate": 33
+    }
+   },
+   "dish": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 4,
+      "d": 1,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 10,
+      "ga": 5,
+      "seq": "WLDWWW"
+     },
+     "home12": {
+      "n": 12,
+      "w": 5,
+      "d": 3,
+      "l": 4,
+      "win_rate": 42,
+      "plate_rate": 33,
+      "big_rate": 25,
+      "gf": 17,
+      "ga": 13,
+      "seq": "WLDWWWDDLLLW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 11,
+      "seq": "WLLDDL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 5,
+      "d": 4,
+      "l": 3,
+      "win_rate": 42,
+      "plate_rate": 58,
+      "big_rate": 33,
+      "gf": 20,
+      "ga": 17,
+      "seq": "WLLDDLWWWWDD"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 33,
+      "gf": 6,
+      "ga": 11,
+      "seq": "WLLDDL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 5,
+      "d": 4,
+      "l": 3,
+      "win_rate": 42,
+      "plate_rate": 58,
+      "big_rate": 33,
+      "gf": 20,
+      "ga": 17,
+      "seq": "WLLDDLWWWWDD"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 4,
+      "d": 1,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 10,
+      "ga": 5,
+      "seq": "WLDWWW"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 4,
+      "d": 3,
+      "l": 5,
+      "win_rate": 33,
+      "plate_rate": 25,
+      "big_rate": 25,
+      "gf": 14,
+      "ga": 18,
+      "seq": "WLDWWWDDLLLL"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 2,
+      "d": 0,
+      "l": 4,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 8,
+      "ga": 10,
+      "seq": "LWWLLL"
+     },
+     "home12": {
+      "n": 12,
+      "w": 2,
+      "d": 2,
+      "l": 8,
+      "win_rate": 17,
+      "plate_rate": 33,
+      "big_rate": 8,
+      "gf": 12,
+      "ga": 20,
+      "seq": "LWWLLLLLLDDL"
+     },
+     "all6": {
+      "n": 6,
+      "w": 4,
+      "d": 1,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 17,
+      "gf": 12,
+      "ga": 6,
+      "seq": "WLWWWD"
+     },
+     "all12": {
+      "n": 12,
+      "w": 5,
+      "d": 1,
+      "l": 6,
+      "win_rate": 42,
+      "plate_rate": 50,
+      "big_rate": 8,
+      "gf": 17,
+      "ga": 17,
+      "seq": "WLWWWDLWLLLL"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 4,
+      "d": 1,
+      "l": 1,
+      "win_rate": 67,
+      "plate_rate": 67,
+      "big_rate": 17,
+      "gf": 12,
+      "ga": 6,
+      "seq": "WLWWWD"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 5,
+      "d": 1,
+      "l": 6,
+      "win_rate": 42,
+      "plate_rate": 50,
+      "big_rate": 8,
+      "gf": 17,
+      "ga": 17,
+      "seq": "WLWWWDLWLLLL"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 0,
+      "l": 4,
+      "win_rate": 33,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 8,
+      "ga": 10,
+      "seq": "LWWLLL"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 2,
+      "d": 2,
+      "l": 8,
+      "win_rate": 17,
+      "plate_rate": 42,
+      "big_rate": 17,
+      "gf": 13,
+      "ga": 20,
+      "seq": "LWWLLLLLDLLD"
+     }
+    }
+   },
+   "meeting": {
+    "home": {
+     "home6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 7,
+      "ga": 3,
+      "seq": "WWDWLD"
+     },
+     "home12": {
+      "n": 12,
+      "w": 8,
+      "d": 2,
+      "l": 2,
+      "win_rate": 67,
+      "plate_rate": 50,
+      "big_rate": 25,
+      "gf": 15,
+      "ga": 6,
+      "seq": "WWDWLDWWWWLW"
+     },
+     "all6": {
+      "n": 6,
+      "w": 2,
+      "d": 1,
+      "l": 3,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 17,
+      "gf": 5,
+      "ga": 7,
+      "seq": "WLWLDL"
+     },
+     "all12": {
+      "n": 12,
+      "w": 3,
+      "d": 3,
+      "l": 6,
+      "win_rate": 25,
+      "plate_rate": 25,
+      "big_rate": 25,
+      "gf": 8,
+      "ga": 13,
+      "seq": "WLWLDLLDWLLD"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 2,
+      "d": 1,
+      "l": 3,
+      "win_rate": 33,
+      "plate_rate": 33,
+      "big_rate": 17,
+      "gf": 5,
+      "ga": 7,
+      "seq": "WLWLDL"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 3,
+      "d": 3,
+      "l": 6,
+      "win_rate": 25,
+      "plate_rate": 25,
+      "big_rate": 17,
+      "gf": 8,
+      "ga": 11,
+      "seq": "WLWLDLDWLLDL"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 2,
+      "l": 1,
+      "win_rate": 50,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 7,
+      "ga": 3,
+      "seq": "WWDWLD"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 8,
+      "d": 2,
+      "l": 2,
+      "win_rate": 67,
+      "plate_rate": 50,
+      "big_rate": 25,
+      "gf": 15,
+      "ga": 6,
+      "seq": "WWDWLDWWWWLW"
+     }
+    },
+    "away": {
+     "home6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 3,
+      "ga": 7,
+      "seq": "LLDLWD"
+     },
+     "home12": {
+      "n": 12,
+      "w": 2,
+      "d": 2,
+      "l": 8,
+      "win_rate": 17,
+      "plate_rate": 50,
+      "big_rate": 25,
+      "gf": 6,
+      "ga": 15,
+      "seq": "LLDLWDLLLLWL"
+     },
+     "all6": {
+      "n": 6,
+      "w": 3,
+      "d": 1,
+      "l": 2,
+      "win_rate": 50,
+      "plate_rate": 33,
+      "big_rate": 17,
+      "gf": 7,
+      "ga": 5,
+      "seq": "LWLWDW"
+     },
+     "all12": {
+      "n": 12,
+      "w": 6,
+      "d": 3,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 25,
+      "big_rate": 25,
+      "gf": 13,
+      "ga": 8,
+      "seq": "LWLWDWWDLWWD"
+     },
+     "lg6": {
+      "n": 6,
+      "w": 3,
+      "d": 1,
+      "l": 2,
+      "win_rate": 50,
+      "plate_rate": 33,
+      "big_rate": 17,
+      "gf": 7,
+      "ga": 5,
+      "seq": "LWLWDW"
+     },
+     "lg12": {
+      "n": 12,
+      "w": 6,
+      "d": 3,
+      "l": 3,
+      "win_rate": 50,
+      "plate_rate": 25,
+      "big_rate": 17,
+      "gf": 11,
+      "ga": 8,
+      "seq": "LWLWDWDLWWDW"
+     },
+     "home_lg6": {
+      "n": 6,
+      "w": 1,
+      "d": 2,
+      "l": 3,
+      "win_rate": 17,
+      "plate_rate": 50,
+      "big_rate": 17,
+      "gf": 3,
+      "ga": 7,
+      "seq": "LLDLWD"
+     },
+     "home_lg12": {
+      "n": 12,
+      "w": 2,
+      "d": 2,
+      "l": 8,
+      "win_rate": 17,
+      "plate_rate": 50,
+      "big_rate": 25,
+      "gf": 6,
+      "ga": 15,
+      "seq": "LLDLWDLLLLWL"
+     }
+    }
+   },
+   "goal_dist": {
+    "home": {
+     "scored": [
+      {
+       "n": 6,
+       "pct": 13,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 6,
+       "pct": 13,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 4,
+       "pct": 9,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 9,
+       "pct": 20,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 6,
+       "pct": 13,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 13,
+       "pct": 29,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 5,
+       "pct": 10,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 8,
+       "pct": 17,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 7,
+       "pct": 15,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 7,
+       "pct": 15,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 5,
+       "pct": 10,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 14,
+       "pct": 30,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    },
+    "away": {
+     "scored": [
+      {
+       "n": 9,
+       "pct": 16,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 10,
+       "pct": 18,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 7,
+       "pct": 13,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 10,
+       "pct": 18,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 7,
+       "pct": 13,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 10,
+       "pct": 18,
+       "from": 76,
+       "to": 90
+      }
+     ],
+     "conceded": [
+      {
+       "n": 7,
+       "pct": 13,
+       "from": 1,
+       "to": 15
+      },
+      {
+       "n": 9,
+       "pct": 17,
+       "from": 16,
+       "to": 30
+      },
+      {
+       "n": 7,
+       "pct": 13,
+       "from": 31,
+       "to": 45
+      },
+      {
+       "n": 9,
+       "pct": 17,
+       "from": 46,
+       "to": 60
+      },
+      {
+       "n": 9,
+       "pct": 17,
+       "from": 61,
+       "to": 75
+      },
+      {
+       "n": 11,
+       "pct": 21,
+       "from": 76,
+       "to": 90
+      }
+     ]
+    }
+   },
+   "analyse": {
+    "home": [
+     "近期战力佳，10场赢球5场，胜率50%",
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有1场赢得最终比赛，胜率为10%",
+     "近期连续6场丢球"
+    ],
+    "guest": [
+     "近期战力佳，10场赢球5场，胜率50%",
+     "近期顺风能力不俗，近10场率先进球的比赛中，6场赢得最终比赛，胜率为60%",
+     "近期逆风能力极差，近10场在对方先进球的比赛中，只有1场赢得最终比赛，胜率为10%",
+     "近10场有6场比赛赢盘，赢盘率60%"
+    ]
+   },
+   "injuries": {
+    "home": [
+     {
+      "name": "彼得科维奇",
+      "position": "中场",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "维加",
+      "position": "前锋",
+      "status": "out",
+      "state": "肌肉受伤"
+     },
+     {
+      "name": "穆索夫斯基",
+      "position": "前锋",
+      "status": "out",
+      "state": "头部受伤"
+     },
+     {
+      "name": "莫里斯",
+      "position": "前锋",
+      "status": "out",
+      "state": "肌肉受伤"
+     },
+     {
+      "name": "拉根",
+      "position": "后卫",
+      "status": "suspended",
+      "state": "停赛"
+     }
+    ],
+    "guest": [
+     {
+      "name": "阿里亚斯",
+      "position": "后卫",
+      "status": "out",
+      "state": "腿筋受伤"
+     },
+     {
+      "name": "卢纳",
+      "position": "中场",
+      "status": "out",
+      "state": "膝关节损伤"
+     },
+     {
+      "name": "埃内利",
+      "position": "中场",
+      "status": "out",
+      "state": "膝关节损伤"
+     }
+    ]
    }
   }
  },
- "missing": [
-  {
-   "num": "周三002",
-   "reason": "赛程错配",
-   "got": "斯德哥尔摩国际俱乐部 vs 安雪平",
-   "expect": "弗拉门戈 vs 巴竞技"
-  }
- ]
+ "missing": []
 }
