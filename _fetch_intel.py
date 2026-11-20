@@ -122,6 +122,124 @@ def article_text(url: str) -> str:
     return txt.strip()
 
 
+# ── 懂球帝赛前情报源（补充直播吧对小联赛的覆盖空缺）─────────────────
+DQD_LIST = 'https://m.dongqiudi.com/jingcai/'
+DQD_MATCH = 'https://m.dongqiudi.com/jingcai/{mid}'
+DQD_NEWS = 'https://m.dongqiudi.com{xid}'
+DQD_UA = ('Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) '
+          'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 '
+          'Mobile/15E148 Safari/604.1')
+DQD_TITLE_BAD = ('战报', '复盘', '集锦', '视频', '进球大战', '全场', '赛后',
+                 '专家方案', ' predicts', '预测：', '进球数预测', '比分预测')
+
+
+def dqd_fetch(url: str) -> str:
+    req = urllib.request.Request(url, headers={
+        'User-Agent': DQD_UA, 'Referer': 'https://m.dongqiudi.com/'})
+    return urllib.request.urlopen(req, timeout=25).read().decode('utf-8', 'ignore')
+
+
+def dqd_article_text(h: str) -> str:
+    """懂球帝 /xinwen/ 正文：zbm-body 容器 → 去标签、解实体、按句截断。"""
+    m = re.search(r'<div class="zbm-body"[^>]*>(.*?)</div>\s*</div>', h, re.S)
+    seg = m.group(1) if m else ''
+    seg = re.sub(r'<(script|style)\b[^>]*>.*?</\1\s*>', ' ', seg,
+                 flags=re.S | re.I)
+    txt = _html.unescape(re.sub(r'<[^>]+>', '', seg))
+    txt = re.sub(r'\s+', '', txt)
+    for cut in ('本文根据', '查看原文', '点击查看完整内容', '懂球帝App里',
+                '广告', '相关阅读', '版权声明'):
+        p = txt.find(cut)
+        if p > 20:
+            txt = txt[:p]
+    if len(txt) > MAX_CHARS:
+        head = txt[:MAX_CHARS]
+        last = max(head.rfind(m) for m in ('。', '！', '？', '!', '?'))
+        txt = head[:last + 1] if last >= MAX_CHARS * 0.6 else head
+    return txt.strip()
+
+
+def dqd_scan(matches: list) -> dict:
+    """从懂球帝竞彩页发现当日比赛 → 按竞彩编号/队名匹配 → 抓各场赛前文章。
+
+    返回 {code: [{'title','url','source','strong'}, ...]}，与直播吧结构一致。
+    懂球帝文章是客观赛前数据（积分/近况/交锋/伤停/首发），作为主源。
+    """
+    assigned: dict[str, list] = {}
+    try:
+        h = dqd_fetch(DQD_LIST)
+    except Exception as e:
+        print(f'[懂球帝] 赛程页失败 {type(e).__name__} {e}')
+        return assigned
+    # 比赛条目：href=/jingcai/<id> + 文案含「周五001」等竞彩编号和队名
+    games = {}
+    for m in re.finditer(r'href="/jingcai/(\d+)"[^>]*>(.*?)</a>', h, re.S):
+        mid = m.group(1)
+        label = html_unescape_text(re.sub(r'<[^>]+>', '', m.group(2)))
+        if mid not in games:
+            games[mid] = label
+    print(f'[懂球帝] 赛程页发现 {len(games)} 场')
+    if not games:
+        return assigned
+
+    # 每场我们的比赛 → 找懂球帝比赛 id（先按竞彩编号，再按双方队名）
+    for mm in matches:
+        code, home, away = mm['matchNumStr'], mm['home'], mm['away']
+        hit_id = ''
+        for mid, label in games.items():
+            if code and code in label:
+                hit_id = mid
+                break
+        if not hit_id:
+            ha, aa = aliases(home), aliases(away)
+            for mid, label in games.items():
+                if any(x in label for x in ha) and any(x in label for x in aa):
+                    hit_id = mid
+                    break
+        if not hit_id:
+            print(f'[懂球帝] {code} {home}vs{away}：未找到比赛页')
+            continue
+        try:
+            gh = dqd_fetch(DQD_MATCH.format(mid=hit_id))
+        except Exception as e:
+            print(f'[懂球帝] {code} 比赛页失败 {type(e).__name__}')
+            continue
+        arts, seen = [], set()
+        for m in re.finditer(r'href="(/xinwen/\d+)"[^>]*>(.*?)</a>', gh, re.S):
+            xid, raw = m.group(1), m.group(2)
+            # 来源/时间包在 <i> 里（「懂球帝数据 · 11-20 16:31」），整块剔除
+            raw = re.sub(r'<i\b[^>]*>.*?</i\s*>', '', raw, flags=re.S | re.I)
+            title = html_unescape_text(re.sub(r'<[^>]+>', '', raw)).strip()
+            if not title or len(title) < 6 or xid in seen:
+                continue
+            seen.add(xid)
+            if any(b in title for b in DQD_TITLE_BAD):
+                continue
+            arts.append({'title': title, 'url': DQD_NEWS.format(xid=xid),
+                         'source': '懂球帝', 'strong': True})
+        # 关键因素分层排序后取前 N（懂球帝文章多为客观赛前数据，默认 strong）
+        TIERS = (
+            ('伤', '缺阵', '停赛', '存疑', '伤退', '受伤', '缺席', '无缘'),
+            ('首发', '轮换', '出战', '出场', '名单', '征召', '入选', '大名单'),
+            ('告别', '主帅', '执教', '离队', '退出', '换帅', '上任'),
+            ('前瞻', '数据', '近况', '交锋', '战绩', '往绩', '不败', '交手'),
+        )
+        def _tier(a):
+            for i, ks in enumerate(TIERS):
+                if any(k in a['title'] for k in ks):
+                    return i
+            return len(TIERS)
+        arts.sort(key=_tier)
+        picked = arts[:MAX_ARTICLES]
+        assigned[code] = picked
+        print(f'[懂球帝] {code} {home}vs{away}：{len(arts)}篇 取{len(picked)}')
+    return assigned
+
+
+def html_unescape_text(s: str) -> str:
+    return _html.unescape(s)
+
+
 def main() -> int:
     today = date.today()
     days = [str(today), str(today + timedelta(days=1))]
@@ -143,12 +261,13 @@ def main() -> int:
         print(f'[情报] {d} 列表累计 {len(links)} 篇')
     print(f'[情报] 列表合计 {len(links)} 篇候选')
 
-    # 2) 按场次匹配（强/弱分级）
-    assigned: dict[str, list[dict]] = {m['matchNumStr']: [] for m in matches}
-    used_url = set()
+    # 2) 懂球帝为主源（客观赛前数据，覆盖小联赛），直播吧补充
+    assigned = dqd_scan(matches)
+    used_url = {a['url'] for arts in assigned.values() for a in arts}
     all_alias = [a for m in matches for x in (m['home'], m['away']) for a in aliases(x)]
     for m in matches:
         code = m['matchNumStr']
+        assigned.setdefault(code, [])
         ha, aa = aliases(m['home']), aliases(m['away'])
         mine = set(ha + aa)
         other_alias = set(all_alias) - mine
@@ -199,19 +318,29 @@ def main() -> int:
             return len(TIERS)
         pool = strong + weak
         pool.sort(key=lambda ut: (_tier(ut[1]), 0 if ut in strong else 1))
-        picked = pool[:MAX_ARTICLES]
-        print(f'[情报] {code} {m["home"]}vs{m["away"]}：强{len(strong)}弱{len(weak)} 取{len(picked)}')
+        room = max(0, MAX_ARTICLES - len(assigned[code]))
+        picked = pool[:room]
+        print(f'[情报] {code} {m["home"]}vs{m["away"]}：强{len(strong)}弱{len(weak)} '
+              f'懂球帝已{MAX_ARTICLES - room} 直播吧补{len(picked)}')
         for u, t in picked:
             used_url.add(u)
             assigned[code].append({'title': t, 'url': u, 'source': source_of(t),
                                    'strong': (u, t) in strong})
 
-    # 3) 抓正文
+    # 3) 抓正文（懂球帝与直播吧页面结构不同，分流处理）
     for code, arts in assigned.items():
         for a in arts:
-            a['text'] = article_text(a['url'])
+            if '/xinwen/' in a['url']:
+                try:
+                    a['text'] = dqd_article_text(dqd_fetch(a['url']))
+                except Exception as e:
+                    print(f'    [懂球帝正文失败] {type(e).__name__} {a["url"]}')
+                    a['text'] = ''
+            else:
+                a['text'] = article_text(a['url'])
             if a['text']:
-                print(f'    ✅ {code} {a["title"][:40]} → {len(a["text"])}字')
+                print(f'    ✅ {code} [{a["source"] or "直播吧"}] '
+                      f'{a["title"][:36]} → {len(a["text"])}字')
 
     result = {'updated': time.strftime('%Y-%m-%d %H:%M'), 'matches': assigned}
     json.dump(result, open(OUT, 'w', encoding='utf-8'),
