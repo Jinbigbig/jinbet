@@ -164,6 +164,9 @@ TEAM_CITY = {
     '匈牙利': 'Budapest', '爱尔兰': 'Dublin', '智利': 'Santiago',
     # 2026-11-19 补充：美职缺失映射（奥兰多=Exploria 球场；西雅图=Lumen Field）
     '奥兰多': 'Orlando', '西雅图': 'Seattle',
+    # 2026-11-20 补充：澳超/德乙/荷乙/法甲缺失映射
+    '西悉尼': 'Sydney', '比勒费': 'Bielefeld', '登博思': "'s-Hertogenbosch",
+    '特鲁瓦': 'Troyes',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -199,6 +202,7 @@ CITY_ZH = {
     'Lincoln': '林肯', 'Gelsenkirchen': '盖尔森基兴', 'Coventry': '考文垂',
     'Hull': '赫尔', 'Fredrikstad': '腓特烈斯塔',
     'Heidenheim': '海登海姆',
+    'Bielefeld': '比勒费尔德', "'s-Hertogenbosch": '登博思', 'Troyes': '特鲁瓦',
     'Lille': '里尔', 'Lens': '朗斯', 'Paris': '巴黎', 'Marseille': '马赛',
     'Turku': '图尔库', 'Gothenburg': '哥德堡', 'A Coruna': '拉科鲁尼亚',
     'Monaco': '摩纳哥', 'Lyon': '里昂', 'Nice': '尼斯', 'Rennes': '雷恩',
