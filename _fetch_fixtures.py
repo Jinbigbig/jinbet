@@ -28,11 +28,13 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import difflib
 import json
 import re
 import sys
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
@@ -49,6 +51,15 @@ UA = {"User-Agent": "Mozilla/5.0", "Referer": LIST_URL,
       "Accept": "*/*", "Origin": WP}
 POST_HEADERS = {"Content-Type": "application/x-www-form-urlencoded",
                 "X-Requested-With": "XMLHttpRequest"}
+
+# 竞彩官方联赛资料（zqlszl）：赛程赛果按联赛 + 日期区间取，补未开售场次
+ZQL_LEAGUES = ('https://webapi.sporttery.cn/gateway/uniform/football/league/'
+               'getLeagueListV1.qry')
+ZQL_MATCHES = ('https://webapi.sporttery.cn/gateway/uniform/football/league/'
+               'getMatchResultV1.qry?{qs}')
+ZQL_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+               'Referer': 'https://www.sporttery.cn/',
+               'Accept': 'application/json, text/plain, */*'}
 
 sys.path.insert(0, str(BASE))
 from update_odds_net import canonical_team_name, fetch_odds_from_lottery  # noqa: E402
@@ -181,6 +192,108 @@ def fetch_full() -> dict[str, list[dict]]:
     return out
 
 
+# ---------------- C. 竞彩官方联赛资料（zqlszl 赛程赛果） ----------------
+
+def zql_get(url: str, timeout: int = 25) -> dict:
+    with urllib.request.urlopen(
+            urllib.request.Request(url, headers=ZQL_HEADERS), timeout=timeout) as r:
+        return json.loads(r.read().decode('utf-8', 'ignore'))
+
+
+def zql_leagues() -> list[dict]:
+    """联赛清单：按 ID 去重，各取最新赛季。"""
+    d = zql_get(ZQL_LEAGUES)
+    if str(d.get('errorCode')) != '0':
+        raise RuntimeError(f'联赛清单 errorCode={d.get("errorCode")}')
+    value = d.get('value') or {}
+    out: list[dict] = []
+    seen: set[int] = set()
+    for grp in ('hot', 'normal', 'other'):
+        for x in value.get(grp) or []:
+            if grp == 'normal':
+                leagues = [lg for c in x.get('countryList') or []
+                           for lg in c.get('leagueList') or []]
+            else:
+                leagues = [x]
+            for lg in leagues:
+                lid = lg.get('uniformLeagueId')
+                seasons = lg.get('seasonList') or []
+                if not lid or not seasons:
+                    continue
+                key = int(lid)
+                if key in seen:
+                    continue
+                seen.add(key)
+                season = max(seasons, key=lambda s: int(s.get('seasonId') or 0))
+                name = str(lg.get('leagueAbbCnName')
+                           or lg.get('leagueAllCnName') or '').strip()
+                if name:
+                    out.append({'name': name, 'lid': key,
+                                'sid': int(season.get('seasonId') or 0)})
+    return out
+
+
+def zql_status(v) -> str:
+    s = str(v or '').strip() or '未开赛'
+    if '未开始' in s or '待开赛' in s:
+        return '未开赛'
+    if '已完成' in s or '已结束' in s:
+        return '已完赛'
+    return s
+
+
+def zql_rows(league: dict, dates: set[str]) -> dict[str, list[dict]]:
+    qs = urllib.parse.urlencode({
+        'seasonId': league['sid'], 'uniformLeagueId': league['lid'],
+        'startDate': min(dates), 'endDate': max(dates),
+    })
+    d = zql_get(ZQL_MATCHES.format(qs=qs))
+    if str(d.get('errorCode')) != '0':
+        return {}
+    out: dict[str, list[dict]] = {}
+    for g in (d.get('value') or {}).get('matchList') or []:
+        date = str(g.get('matchDate') or '')
+        if date not in dates:
+            continue
+        rows = []
+        for m in g.get('subMatchList') or []:
+            home = canonical_team_name(str(m.get('homeAbbCnName') or '').strip())
+            away = canonical_team_name(str(m.get('awayAbbCnName') or '').strip())
+            if not home or not away:
+                continue
+            rows.append({
+                'code': '',
+                'time': (str(m.get('matchTime') or ''))[:5] or '—',
+                'league': league['name'],
+                'home': home,
+                'away': away,
+                'jc': 0,
+                'fid': None,
+                'zid': m.get('uniformMatchId'),
+                'st': zql_status(m.get('wbsjMatchScDesc')),
+            })
+        if rows:
+            out[date] = rows
+    return out
+
+
+def fetch_zql(dates: set[str]) -> dict[str, list[dict]]:
+    leagues = zql_leagues()
+    out: dict[str, list[dict]] = {}
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = {pool.submit(zql_rows, lg, dates): lg for lg in leagues}
+        for fu, lg in futures.items():
+            try:
+                part = fu.result()
+            except Exception as e:
+                print(f"[fixtures] 竞彩资料 {lg['name']} 异常 "
+                      f"{type(e).__name__}: {e}，跳过")
+                continue
+            for d, rows in part.items():
+                out.setdefault(d, []).extend(rows)
+    return out
+
+
 # ---------------- 合并 ----------------
 
 def norm(s: str) -> str:
@@ -194,14 +307,43 @@ def same(a: str, b: str) -> bool:
                                         and (a in b or b in a))))
 
 
-def merge(jc: dict[str, list[dict]], full: dict[str, list[dict]]) -> dict[str, list[dict]]:
+def alike(a: str, b: str) -> float:
+    return difflib.SequenceMatcher(None, norm(a), norm(b)).ratio()
+
+
+def likely_same(r: dict, z: dict) -> bool:
+    """竞彩官方简称与全量库全称对同一场的兜底：同开赛时间 + 双方队名相似。"""
+    if same(r.get("home") or "", z.get("home") or "") \
+            and same(r.get("away") or "", z.get("away") or ""):
+        return True
+    if (r.get("time") or "") != (z.get("time") or ""):
+        return False
+    hr = alike(r.get("home") or "", z.get("home") or "")
+    ar = alike(r.get("away") or "", z.get("away") or "")
+    lr = alike(r.get("league") or "", z.get("league") or "")
+    return min(hr, ar) >= 0.33 and hr + ar >= 1.0 and lr >= 0.33
+
+
+def merge(jc: dict[str, list[dict]], full: dict[str, list[dict]],
+          zql: dict[str, list[dict]] | None = None) -> dict[str, list[dict]]:
     days: dict[str, list[dict]] = {}
-    for d in sorted({*jc, *full}):
+    zql = zql or {}
+    for d in sorted({*jc, *full, *zql}):
         jc_rows = jc.get(d) or []
         rows = [dict(r) for r in (full.get(d) or [])]
+        for z in zql.get(d) or []:
+            hit = next((r for r in rows if likely_same(r, z)), None)
+            if hit:
+                hit["zid"] = z.get("zid")
+                if not hit.get("st") or hit["st"] == "未开赛":
+                    hit["st"] = z.get("st") or hit.get("st")
+                if not hit.get("time") or hit["time"] == "—":
+                    hit["time"] = z.get("time") or hit.get("time")
+            else:
+                rows.append(dict(z))
         for r in rows:
             for j in jc_rows:
-                if same(r["home"], j["home"]) and same(r["away"], j["away"]):
+                if same(r.get("home") or "", j["home"]) and same(r.get("away") or "", j["away"]):
                     r.update(code=j["code"], mid=j.get("mid"),
                              status=j.get("status"), jc=1)
                     break
@@ -240,6 +382,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="只打印不写盘")
     ap.add_argument("--jc-only", action="store_true", help="跳过全量赛程，应急降级")
+    ap.add_argument("--no-zq", action="store_true", help="跳过竞彩官方联赛资料")
     args = ap.parse_args(argv)
 
     text = fetch_odds_from_lottery()
@@ -253,21 +396,30 @@ def main(argv: list[str] | None = None) -> int:
     today = dt.date.today()
     keep = {(today + dt.timedelta(days=i)).isoformat() for i in range(JC_KEEP_DAYS)}
     jc = {d: rows for d, rows in jc.items() if d in keep}
+    future = {(today + dt.timedelta(days=i)).isoformat()
+              for i in range(FUTURE_DAYS)}
 
     full: dict[str, list[dict]] = {}
-    source = "jc+full"
+    zql: dict[str, list[dict]] = {}
+    source = "jc+full+zq"
     if not args.jc_only:
         try:
             full = fetch_full()
         except Exception as e:
-            print(f"[fixtures] 全量赛程不可用（{type(e).__name__}: {e}），降级为纯竞彩")
+            print(f"[fixtures] 全量赛程不可用（{type(e).__name__}: {e}），降级为竞彩源")
         if not full:
-            source = "jc"
-            print("[fixtures] 全量赛程为空，降级为纯竞彩")
+            print("[fixtures] 全量赛程为空，降级为竞彩源")
     else:
         source = "jc"
+    if not args.no_zq and not args.jc_only:
+        try:
+            zql = fetch_zql(future)
+        except Exception as e:
+            print(f"[fixtures] 竞彩联赛资料不可用（{type(e).__name__}: {e}），跳过")
+    if not full and not zql:
+        source = "jc"
 
-    days = merge(jc, full)
+    days = merge(jc, full, zql)
     if not days:
         print("[fixtures] 合并结果为空，保留上一份文件不动")
         return 1
