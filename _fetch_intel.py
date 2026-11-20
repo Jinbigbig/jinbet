@@ -130,7 +130,8 @@ DQD_UA = ('Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) '
           'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 '
           'Mobile/15E148 Safari/604.1')
 DQD_TITLE_BAD = ('战报', '复盘', '集锦', '视频', '进球大战', '全场', '赛后',
-                 '专家方案', ' predicts', '预测：', '进球数预测', '比分预测')
+                 '专家方案', ' predicts', '预测：', '进球数预测', '比分预测',
+                 '内幕', '为何', ' analy', ' galactico')
 
 
 def dqd_fetch(url: str) -> str:
@@ -147,6 +148,8 @@ def dqd_article_text(h: str) -> str:
                  flags=re.S | re.I)
     txt = _html.unescape(re.sub(r'<[^>]+>', '', seg))
     txt = re.sub(r'\s+', '', txt)
+    # 日文异体字归一（球员名等）：塚→冢，避免下游繁体红线误拦
+    txt = txt.translate(str.maketrans({'塚': '冢'}))
     for cut in ('本文根据', '查看原文', '点击查看完整内容', '懂球帝App里',
                 '广告', '相关阅读', '版权声明'):
         p = txt.find(cut)
