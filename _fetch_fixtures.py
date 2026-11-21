@@ -157,6 +157,10 @@ def parse_cards(frag: str) -> list[dict]:
         if not home or not away or home in tbd or away in tbd:
             continue
         hid, aid = team_logo_ids(c)
+        # 进行中/已结束卡片带实时比分 ms-score-main（如「1 - 0」），
+        # 只取全场比分，跳过 ms-score-sub 里的角球等其它比分。
+        sc = re.search(r'class="ms-score-main[^"]*">\s*(\d+)\s*-\s*(\d+)\s*<', c)
+        score = f"{sc.group(1)}-{sc.group(2)}" if sc else ""
         out.append({
             "code": "",
             "time": (t.group(1).strip() if t else "")[:5] or "—",
@@ -168,6 +172,7 @@ def parse_cards(frag: str) -> list[dict]:
             "jc": 0,
             "fid": int(fid.group(1)) if fid else None,
             "st": (st.group(1).strip() if st else "") or "未开赛",
+            "score": score,
         })
     return out
 
