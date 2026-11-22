@@ -170,6 +170,8 @@ TEAM_CITY = {
     # 2026-11-20 补充：澳超/德乙/荷乙/法甲缺失映射
     '西悉尼': 'Sydney', '比勒费': 'Bielefeld', '登博思': "'s-Hertogenbosch",
     '特鲁瓦': 'Troyes',
+    # 2026-11-22 补充：荷甲/西甲/挪超缺失映射
+    '鹿斯巴达': 'Rotterdam', '桑坦德': 'Santander', '萨尔普斯堡': 'Sarpsborg',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -213,6 +215,7 @@ CITY_ZH = {
     'Montpellier': '蒙彼利埃', 'Brest': '布雷斯特', 'Reims': '兰斯',
     'Auxerre': '欧塞尔', 'Le Havre': '勒阿弗尔', 'Angers': '昂热',
     'Metz': '梅斯', 'Lorient': '洛里昂',
+    'Santander': '桑坦德', 'Sarpsborg': '萨尔普斯堡',
     'Rotterdam': '鹿特丹', 'Amsterdam': '阿姆斯特丹', 'Eindhoven': '埃因霍温',
     'Enschede': '恩斯赫德', 'Utrecht': '乌得勒支', 'Alkmaar': '阿尔克马尔',
     'Lisbon': '里斯本', 'Porto': '波尔图', 'Braga': '布拉加',
