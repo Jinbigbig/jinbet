@@ -23,7 +23,7 @@ canonical=官方简称；缺映射补 `RESULT_TEAM_NAME_MAP`。同编号双行�
 ## 引擎 V3.4（勿回退）
 - λ=期望值；联赛收缩 w=0.25；score_mix.w=0.3；`league_market_w` 0.65~0.95；改市场混合必重拟合 platt_params.json。保险丝 MAX_TOTAL4.2/MIN_TOTAL1.6/MAX_SINGLE3.2/MIN_SINGLE0.18/ZF1.0/EB_K40。SCORE_ALIGN 勿回退；冷启动不进比分精选。星级阈值 0.44/0.50/0.57/0.66。
 - 五模块：BRIER_OPT/KALMAN ON·生效；HEDGE ON·观察（apply=False 故意）；CLV/DRIFT 只监控。
-- 已否决勿再启用（均验证无增益）：比分盘/总进球盘入网格、λ线性混合、偏差查表+收缩、联合校准1X2、大球导向、象限守恒、Dixon-Coles τ、isotonic/温度缩放、赛事专属战绩、VENUE_H2H、BTTS、REST_DAYS、市场权重>0.85、平局权重缩放、λ缩放、非平局优先、爆冷过滤。单点/方向已贴天花板。
+- 已否决勿再启用（均验证无增益）：比分盘/总进球盘入网格、λ线性混合、偏差查表+收缩、联合校准1X2、大球导向、象限守恒、Dixon-Coles τ、isotonic/温度缩放、赛事专属战绩、VENUE_H2H、BTTS、REST_DAYS、市场权重>0.85、平局权重缩放、λ缩放、非平局优先、爆冷过滤、**联赛基线漂移重估**（11-23 用 3983 场 walk-forward 验证：时间衰减 H=30/60/90/180 天、滚动窗口 W=40/80/160 场，最优 H=30 天 holdout ΔλMAE −0.0025 仅 −0.17%、配对 t=−0.60 不显著；漂移信号 rho=+0.018 且窗口 10~120 场符号翻转，报警主要来自小样本联赛，亚冠精英仅 22 场）、**赔率时序临场漂移**（11-23 用 78 场探测：初盘/发布/临场 argmax 命中完全相同 51.3%、配对差 0.0pp；γ=0.25/0.5 方向零变化、γ=1 仅 2 场翻转一成一败；模型方向与去水市场首选 78/78 全同，CLV +1.25% 与市场方向完全相等、无独立 alpha；Brier 初盘 0.19554 < 临场 0.19583。样本仅 9 天属「未证明有增益」）。⚠️ `score_engine._base()` 联赛统计永久累计无衰减是**刻意保留**，勿因 DRIFT_MONITOR 报警改它。单点/方向已贴天花板。
 - 比分推演过程不进公开页（`match_card()` 不挂 `chain_table()`）。
 
 ## 比分 / 两档 / 三引擎口径
@@ -58,7 +58,8 @@ canonical=官方简称；缺映射补 `RESULT_TEAM_NAME_MAP`。同编号双行�
 - 开赛时间 `_fetch_match_times.py`→match_times.json（网易 `matchList/1?days=` 的 `matchTime`，按 `jcNum`；结构 `times`+`day` 0=当日/1=次日）；卡片 `match-time` 后 `<span class="kickoff">` 再天气；校验 date==TODAY。
 - 赛前情报 `_fetch_intel.py`→intel.json（直播吧公开新闻，按竞彩编号索引，含标题+链接+来源+摘要）；须步骤1 后跑，`_gen_report.py` 按编号注入逐场卡「赛前情报」块。
 - 伤停 `_fetch_injuries.py`→injuries.json（仅德甲+荷甲）；`_fetch_injuries_extra.py`→injuries_extra.json（7M 军情+lineupstoday）。国家队赛事覆盖≈0，属源站缺口。
-- 赔率时序 `_fetch_odds_ticks.py`→odds_ticks.json（`ticks`，键 `日期_主队_客队`，每点 `{t,胜,平,负,让球[]}`）；`_gen_report.py` **不消费**它，只服务 matlas。
+- 赔率时序 `_fetch_odds_ticks.py`→odds_ticks.json（`ticks`，键 `日期_主队_客队`，每点 `{t,胜,平,负,让球[]}`）；`_gen_report.py` **不消费**它，只服务 matlas。⚠️ `KEEP_DAYS=7` 滚动清理，实测仅 87 场/9 天，不足以做稳健检验；要验先改归档保留 ≥60 天。队名匹配需宽松（简称↔全称），宽松后 78/87 可用。
+- ⚠️ `v34_state.clv` 恒 None 是字段名 bug：`track_clv()` 返回 `n_analyzed`，调用处 `_calc_engine.py:2525` 检查 `total_matches`。未修。
 - ⚠️ 红彩 `_fetch_hongcai.py`→hongcai.json 的 matchId 会指向旧场次 → 每次核对 `matches.<编号>.home/away` 与 `scripts/matches_data.json`，错配移入 `missing`（list）。重跑会写回错配。
 - 实测不可用勿再试：Transfermarkt 405、premierinjuries 403、Sports.ru 403、OTempo 超时、premierleague.com JS、百度体育 SPA。
 
