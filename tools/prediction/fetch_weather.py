@@ -174,6 +174,8 @@ TEAM_CITY = {
     '鹿斯巴达': 'Rotterdam', '桑坦德': 'Santander', '萨尔普斯堡': 'Sarpsborg',
     # 2026-11-23 补充：瑞超/法乙/美职缺失映射
     '厄尔格里特': 'Gothenburg', '索肖': 'Montbeliard', '圣路易城': 'St. Louis',
+    # 2026-11-24 补充：亚冠精英/欧冠缺失映射
+    '大田市民': 'Daejeon', '上海海港': 'Shanghai', '布拉迪斯': 'Bratislava',
 }
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
@@ -240,6 +242,7 @@ CITY_ZH = {
     'Degerfors': '代格福什', 'Alverca do Ribatejo': '阿尔韦卡', 'Salt Lake City': '盐湖城',
     'Montbeliard': '蒙贝利亚尔', 'St. Louis': '圣路易斯',
     'Orlando': '奥兰多', 'Seattle': '西雅图',
+    'Daejeon': '大田', 'Shanghai': '上海', 'Bratislava': '布拉迪斯拉发',
     # 2026-11-01 补充
     'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
     'Groningen': '格罗宁根', 'Getafe': '赫塔费', 'Frosinone': '弗洛西诺内',
