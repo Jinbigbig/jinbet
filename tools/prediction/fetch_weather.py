@@ -42,6 +42,8 @@ TEAM_CITY = {
     '黑山': 'Podgorica', '英格兰': 'London', '捷克': 'Prague',
     # 2026-11-11 补充：英锦标赛缺失映射（谢周三=谢菲尔德；巴恩斯利=南约克郡Barnsley）
     '谢周三': 'Sheffield', '巴恩斯利': 'Barnsley',
+    # 2026-11-25 补充：亚冠精英萨巴赫=巴库（阿塞拜疆）；英冠斯托克城=特伦特河畔斯托克
+    '萨巴赫': 'Baku', '斯托克城': 'Stoke-on-Trent',
     # 2026-11-21 补充：日乙磐田喜悦=磐田；英冠米尔沃尔=伦敦东南
     '磐田喜悦': 'Iwata', '米尔沃尔': 'London',
     '岩田喜悦': 'Iwata',
@@ -180,6 +182,7 @@ TEAM_CITY = {
 
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
 CITY_ZH = {
+    'Baku': '巴库', 'Stoke-on-Trent': '斯托克',
     'Tokyo': '东京', 'Kashiwa': '柏市', 'Kawasaki': '川崎', 'Kobe': '神户',
     'Yokohama': '横滨', 'Saitama': '埼玉', 'Kashima': '鹿岛', 'Nagoya': '名古屋',
     'Osaka': '大阪', 'Hiroshima': '广岛', 'Fukuoka': '福冈', 'Toyama': '富山',
