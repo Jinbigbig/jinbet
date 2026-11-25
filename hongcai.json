@@ -1,8 +1,8 @@
 {
- "updated": "2026-11-25 12:07",
+ "updated": "2026-11-25 15:01",
  "date": "2026-11-25",
  "source": "网易红彩",
- "count": 10,
+ "count": 11,
  "matches": {
   "周三001": {
    "hc_id": 5496005,
@@ -71,8 +71,8 @@
    "weather": {
     "name": "晴",
     "temperature": 8,
-    "humidity": 59,
-    "wind": 5,
+    "humidity": 58,
+    "wind": 4,
     "by_home": {
      "n": 6,
      "w": 2,
@@ -945,26 +945,7 @@
     ]
    },
    "injuries": {
-    "home": [
-     {
-      "name": "安西幸辉",
-      "position": "后卫",
-      "status": "out",
-      "state": "膝关节损伤"
-     },
-     {
-      "name": "金太炫",
-      "position": "后卫",
-      "status": "out",
-      "state": "腿部骨折"
-     },
-     {
-      "name": "樋口雄太",
-      "position": "中场",
-      "status": "out",
-      "state": "腿部骨折"
-     }
-    ],
+    "home": [],
     "guest": [
      {
       "name": "朴主英",
@@ -1136,7 +1117,7 @@
    "weather": {
     "name": "阴",
     "temperature": 8,
-    "humidity": 84,
+    "humidity": 83,
     "wind": 18,
     "by_home": {
      "n": 6,
@@ -1756,7 +1737,7 @@
    },
    "weather": {
     "name": "局部有云",
-    "temperature": 0,
+    "temperature": -1,
     "humidity": 82,
     "wind": 10,
     "by_home": {
@@ -2524,23 +2505,23 @@
     }
    },
    "weather": {
-    "name": "局部有云",
+    "name": "晴",
     "temperature": 13,
-    "humidity": 74,
-    "wind": 9,
+    "humidity": 73,
+    "wind": 10,
     "by_home": {
      "n": 6,
-     "w": 6,
+     "w": 4,
      "d": 0,
-     "l": 0,
-     "win_rate": 100
+     "l": 2,
+     "win_rate": 67
     },
     "by_away": {
      "n": 6,
-     "w": 1,
-     "d": 1,
+     "w": 0,
+     "d": 2,
      "l": 4,
-     "win_rate": 17
+     "win_rate": 0
     }
    },
    "dish": {
@@ -3741,8 +3722,8 @@
    "weather": {
     "name": "局部有云",
     "temperature": 2,
-    "humidity": 77,
-    "wind": 21,
+    "humidity": 76,
+    "wind": 20,
     "by_home": {
      "n": 6,
      "w": 5,
@@ -4983,8 +4964,8 @@
    "weather": {
     "name": "阴",
     "temperature": 6,
-    "humidity": 94,
-    "wind": 12,
+    "humidity": 95,
+    "wind": 9,
     "by_home": {
      "n": 6,
      "w": 4,
@@ -5641,23 +5622,23 @@
     }
    },
    "weather": {
-    "name": "局部有云",
+    "name": "阴",
     "temperature": 2,
-    "humidity": 78,
+    "humidity": 77,
     "wind": 16,
     "by_home": {
      "n": 6,
      "w": 2,
-     "d": 4,
-     "l": 0,
+     "d": 0,
+     "l": 4,
      "win_rate": 33
     },
     "by_away": {
      "n": 6,
-     "w": 5,
-     "d": 1,
+     "w": 3,
+     "d": 3,
      "l": 0,
-     "win_rate": 83
+     "win_rate": 50
     }
    },
    "dish": {
@@ -6101,10 +6082,10 @@
  },
  "missing": [
   {
-   "jc_num": "周三011",
-   "reason": "matchId 错配",
-   "got": "利达 vs 第聂伯",
-   "expect": "斯托克城 vs 米尔沃尔"
+   "num": "周三011",
+   "home": "利达",
+   "away": "第聂伯",
+   "reason": "matchId 指向旧场次（应 斯托克城 vs 米尔沃尔）"
   }
  ]
 }
