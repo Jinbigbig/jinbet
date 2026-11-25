@@ -499,3 +499,24 @@
   - build --strict：**1701 文件 / 0 违规 / 22.24s**；六维战力 1026 场出图；队徽按名补齐 512 处；槽位 16（接线 14）。
   - ❌ **publish.sh 拒绝发布（退出码 1）**：`[!] main 工作区有未提交的源码改动…` → ` M matlas/render/pages.py`。该改动**非本次任务产生**（mtime 2026-11-23 19:02，人工未提交）：新增 `_MOOD_CUT` 元组 + 在 `_mood_panel()` 里按首个垃圾标记截断 7M 军情正文（5 行）。按约束未提交、未改动源码，**publish 未执行，产物未推送**。
 - **待人工**：① 提交或还原 `matlas/render/pages.py`（mood 截断改动），提交后重跑 build+publish 即可；② 建议固化 `--apply` 到每日流程。
+
+## 2026-11-25 08:03 自动执行（补录 0/0 跳过 / matlas 全绿，伤停清空第 3 日）
+
+**结果：补录 0/0 跳过（未提交未推送）→ matlas 发布 `973cc7e33b`（main `b13c4f8f96`）**
+
+- **前置核验**：分支 gh-pages；HEAD `e06e957e`；`update_odds_net.py` 3410 行 / `变更判定` 3 处（11-08 修复仍完好）。
+- **对齐**：`[0/3]` 清 2 个挡路未跟踪文件（备份 `_untracked_backup/`）+ 还原 4 个脏跟踪文件 → 快进到远端 `d3f0079b`（补落后 3 提交）。
+- **抓取**：网易 85 场唯一 → 75 场已完赛 → 库内 3971 条。[变更判定] **新增 0 / 更新 0** → 跳过提交与推送，退出码 0。**推送：已跳过**。
+- **去重核验**：归档 3998 条 / 唯一 3998 / 跨日重复 **0**；与库内 3971 差 27（未归档新日期），无丢失。
+- **工作区残留**：596 个脏文件（`results_history/*.json` + `fixtures.json`）为去重归档重写中间态，非数据丢失。
+- **matlas**：
+  - 合并赛果→副本：3971 → **3984**（jinbet 补 13、副本独有保留 13、共有值零差异），备份 `_matlas_tools/_matlas_results_data.bak_20261125.json`。**import_jinbet.py 仍未内置合并**（`RESULTS_DATA_JSON` 直指副本），每日须手工 merge，未固化。
+  - ✅ `_fetch_fixtures.py` 正常：7 天 / **976 场 / 竞彩 10**（未降级，source `jc+full+zq`）；队徽覆盖 876/976（借名 47 处）。
+  - import：**75 交易日 / 1037 场 / 赛果 1031**；history 池 3984 条、历史交锋 462 场。
+  - ⚠️ **伤停清空第 3 日复发**：11-23 injuries **27→0**、11-24 **23→0**。`_restore_extras.py --apply`（dry-run 仍只报 `odds_full:1`，看不到 match 级 injuries）→ 回填 4 文件，复核 11-23 恢复 27、11-24 恢复 23，再 dry-run 0 缺失。
+  - ✅ fetch_squads：26 联赛全抓 / 跳过 0 / **失败 0**；源站 updated_at `2026-11-25 03:36`，快照 `2026-11-25.json`。
+  - enrich：注入正常（部分球队缺评分库，区块自动省略）。
+  - build --strict：**1714 文件 / 0 违规 / 22.34s**；六维战力 1037 场出图；队徽按名补齐 478 处；槽位 16（接线 14）。
+  - publish：产物 `973cc7e33b`（与 origin/gh-pages 一致），main 自动提交 `b13c4f8f96` 已推送，**无残留待推提交**，main 工作区干净。CF 部署 3978 文件（全部已上传）。
+  - **核验注意**：day JSON 的赛果字段是 `result.full_score` / `half_score`（字符串 "1-2"），**不是 home_score/away_score**；`fixtures.json` 顶层是 `days` dict（7 天），`snapshots` 顶层是 `date/generated_at/leagues/players`。按错键名会误判「0 场赛果」。
+- **待人工**：伤停清空已连续 3 日（11-23/24/25），建议把「合并赛果→副本 + `_restore_extras.py --apply`」固化进 import 前/后处理。
