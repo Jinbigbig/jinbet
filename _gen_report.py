@@ -2652,9 +2652,11 @@ def htft_card_row(m):
         txt += f'<span style="color:var(--muted);"> · {half_txt}</span>'
     dc = h['cond'].get('draw')
     if dc:
-        # 半场平是最常见的半场结果（约 4 成），这条分支决定了大半场次的实际走向
-        txt += (f'<span style="color:var(--muted);"> · 半场平 → {esc(dc["ft"])} '
-                f'{dc["p"]:.0f}%</span>')
+        # 必须同时给出「前提成立后的条件概率」与「含前提的赛前概率」，否则会被误读
+        _short = {'主胜': '主', '平局': '平', '客胜': '客'}.get(dc['ft'], '')
+        _joint = (h['cells'] or {}).get(f'平/{_short}', 0.0)
+        txt += (f'<span style="color:var(--muted);"> · 半场若平则全场{esc(dc["ft"])} '
+                f'{dc["p"]:.0f}%（连半场平一起算 {_joint:.1f}%）</span>')
     else:
         if h['ftag']:
             txt += f'<span style="color:var(--muted);"> · 全场 {esc(h["ftag"])}{h["ft_p"]:.0f}%</span>'
@@ -3598,7 +3600,8 @@ for m in MATCHES:
         _dtxt = ''
         if _dc:
             _dft = {'主胜': '主', '平局': '平', '客胜': '客'}.get(_dc['ft'], '')
-            _dtxt = f' · 半场平→平/{_dft} {_dc["p"]:.0f}%'
+            _dj = (_hf['cells'] or {}).get(f'平/{_dft}', 0.0)
+            _dtxt = f' · 半场平则全场{_dft} {_dc["p"]:.0f}%（含前提 {_dj:.1f}%）'
         _sub = (f'<br><span style="color:var(--muted);">{_hf["cover2"]:.0f}% 双档{_warn}'
                 f'{_dtxt}</span>') if _hf['cover2'] else ''
         _ht_cell = (f'<td style="white-space:nowrap;"><b>{esc(_hf["top"][0][0])}</b> '
