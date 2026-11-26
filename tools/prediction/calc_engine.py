@@ -251,7 +251,13 @@ ADAPTIVE_MIX_FLOOR = 0.35  # 衰减下限，保留一部分经验形状修正
 #   market_platt_order.py 样本外（121 场）：
 #     不校准 0.5247 ｜ 用纯模型拟合再应用（旧逻辑）0.5596 ← 反而变差
 #     ｜ 在混合后分布上拟合 0.5231 ｜ 纯市场 0.5221
-MARKET_W = 0.80            # 市场去水概率的混合权重
+MARKET_W = 0.88            # 市场去水概率的混合权重
+# 【2026-11-03 上调 0.80→0.88】611 场带赔率快照实测（_eval_live.py）：
+#   市场权重 0.80 → 准确 57.8%/logL 0.9583；0.90 → 59.1%/0.9470；1.00（纯市场）→ 59.1%/0.9290。
+#   logL 随市场权重单调下降、前后半折一致 —— 模型在 1X2 上没有超过收盘价的增量信息，
+#   多余权重只会把发布概率推离真值。真正有增量的部分是 λ/比分（引擎 B），不在方向。
+WEAK_TOP_P = 0.45          # 最高方向概率低于此值视为「弱场」（约 1★，占三成）
+WEAK_MKT_W = 1.00          # 弱场向市场去水概率收敛的权重（实测 57.8%→59.1%）
 MARKET_BLEND_MODE = "prob"  # "prob"=概率空间混合（当前）；"lambda"=旧 λ 空间（已弃用）
 
 # ---------------------------------------------------------------- 比分矩阵与 1X2 对齐（V3.3）
@@ -404,7 +410,8 @@ def league_market_w(league, default=None):
         return default
     # 50% → 0.80; 每 +2pp → +0.05
     w = default + (acc - 0.50) / 0.02 * 0.05
-    return max(0.65, min(0.95, w))
+    # 下限 0.65→0.78：低准确率联赛曾被压到 65%，等于把方向交给模型，实测反而更差
+    return max(0.78, min(0.95, w))
 
 
 def league_score_freq(league):
@@ -1107,10 +1114,14 @@ def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
 
 # ---------------------------------------------------------------- 半全场（HT/FT）
-# 上半场进球占比：主流联赛长期统计约 43%~46%，取 0.45 常数。
-# 上下半场各自独立泊松（半场 λ = 全场 λ × 0.45），合成九宫格 P(半场i, 全场j)。
+# 上半场进球占比：用本库 2976 场带 halfScore 的赛果实测 = 3249/8615 = 0.3771
+# （此前的 0.45 是外部经验值，偏高 → 半场领先被高估、九格首选过度集中在「主/主」）。
+# 按全场总进球分层后：1 球 0.130 / 2 球 0.347 / 3 球 0.368 / 4+ 球 0.409，
+# 但 λ 随总进球线性调整经 1036 场快照回测反而更差（logloss 1.8410 vs 1.8392），
+# 故保留单常数，不做分层（避免过拟合）。
+# 上下半场各自独立泊松（半场 λ = 全场 λ × 0.377），合成九宫格 P(半场i, 全场j)。
 # 纯模型口径（与 4.3 进球同源），不吃市场 —— 半全场盘口日常缺价，无法去水。
-HALF_SHARE = 0.45
+HALF_SHARE = 0.377
 HTFT_NAMES = ["主/主", "主/平", "主/客", "平/主", "平/平", "平/客", "客/主", "客/平", "客/客"]
 
 
@@ -1144,11 +1155,19 @@ def htft_analysis(lam_h, lam_a, half_share=HALF_SHARE, kmax=7):
                     r2 = 0 if ft > 0 else (1 if ft == 0 else 2)
                     cells[r1 * 3 + r2] += p1 * p2
     order = sorted(range(9), key=lambda i: -cells[i])
+    # 全场三率 = 九格按「全场结果」求和；九格单点天花板约 27%，双档覆盖（top1+top2）
+    # 才是可读的置信度，故一并返回（新增键，不改动 half/cells/top 以兼容下游 matlas）。
+    ft = [0.0, 0.0, 0.0]
+    for i in range(9):
+        ft[i % 3] += cells[i]
     return {
         "half": {"home": round(half[0] * 100, 1), "draw": round(half[1] * 100, 1),
                  "away": round(half[2] * 100, 1)},
+        "ft": {"home": round(ft[0] * 100, 1), "draw": round(ft[1] * 100, 1),
+               "away": round(ft[2] * 100, 1)},
         "cells": {HTFT_NAMES[i]: round(cells[i] * 100, 1) for i in range(9)},
         "top": [(HTFT_NAMES[i], round(cells[i] * 100, 1)) for i in order[:3]],
+        "top2_cover": round((cells[order[0]] + cells[order[1]]) * 100, 1),
     }
 
 def wavg(vals):
@@ -2966,9 +2985,11 @@ def calc_match(m, calib, ctx=None):
     if not _mw:
         _mw = league_market_w(league, default=MARKET_W)
     _oh, _od, _oa = odds.get("胜"), odds.get("平"), odds.get("负")
+    _mkt1x2 = None
     if _oh and _od and _oa:
         try:
             pv = devig_1x2(float(_oh), float(_od), float(_oa))
+            _mkt1x2 = list(pv)
             total_b = lam_h_B + lam_a_B
             pm = pois_1x2(lam_h_B, lam_a_B)
             pb = [(1 - _mw) * pm[i] + _mw * pv[i] for i in range(3)]
@@ -3109,6 +3130,27 @@ def calc_match(m, calib, ctx=None):
         _s = p_home + p_draw + p_away
         if _s > 1e-9:
             p_home, p_draw, p_away = p_home / _s, p_draw / _s, p_away / _s
+
+    # ---------- 第七步C-C 弱场向市场收敛（V3.5）----------
+    # 起因（2026-11-03，用户反馈「最近偏差过大」）。按星级拆 611 场带赔率快照：
+    #   2★–5★ 模型与「按收盘赔率选热门」100% 同向、准确率完全一致（53/55/69/77%），
+    #   即这些场次模型本来就没偏离市场；全部偏差集中在 1★：
+    #     1★ 192 场，模型 43.2% 对市场 47.4% —— 偏离是净亏，也是整体 57.8% vs 市场 59.1% 的唯一来源。
+    # 做法：发布概率的最高一项 < WEAK_TOP_P 时（约等于 1★ 档），方向直接采用市场去水概率。
+    # 实测：准确率 57.77%→59.08%，logL 0.9583→0.9494（0.85/1.0 权重均测过，单调向市场更好）。
+    # 只动方向概率，λ 不动；比分矩阵随后按 SCORE_ALIGN 对齐到新方向。
+    if _mkt1x2 is not None and max(p_home, p_draw, p_away) < WEAK_TOP_P:
+        _k = WEAK_MKT_W
+        _raw = (p_home, p_draw, p_away)
+        p_home = p_home * (1 - _k) + _mkt1x2[0] * _k
+        p_draw = p_draw * (1 - _k) + _mkt1x2[1] * _k
+        p_away = p_away * (1 - _k) + _mkt1x2[2] * _k
+        _st = p_home + p_draw + p_away
+        if _st > 1e-9:
+            p_home, p_draw, p_away = p_home / _st, p_draw / _st, p_away / _st
+            steps.append(("弱场收敛",
+                          f"最高方向概率 {max(_raw)*100:.0f}%<{WEAK_TOP_P*100:.0f}% → "
+                          f"方向采用市场去水概率", lam_h, lam_a))
 
     # ---------- 第七步D：比分矩阵对齐发布的 1X2（SCORE_ALIGN，V3.3）----------
     # 第七步B 混入联赛经验频率、第七步C 做 Platt，都会移动象限质量，但只作用在 1X2 上；

@@ -196,7 +196,7 @@ def tally(rows):
     半全场与总进球各有独立分母（ht_n / tg_n）：老快照没有 λ 时无法复算，
     不能计入分母，否则会比率虚低。
     """
-    out = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
+    out = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht2': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
     for m, sc, hf in rows:
         if not sc:
             continue
@@ -214,8 +214,10 @@ def tally(rows):
         out['band'] += 1 if actual in band else 0
         top = htft_top(m)
         if top and hf:
+            _act_ht = f'{_res_char(*hf)}/{_res_char(*sc)}'
             out['ht_n'] += 1
-            out['ht'] += 1 if f'{_res_char(*hf)}/{_res_char(*sc)}' == top[0] else 0
+            out['ht'] += 1 if _act_ht == top[0] else 0
+            out['ht2'] += 1 if _act_ht in top[:2] else 0
         gm = goals_mode(m)
         if gm is not None:
             out['tg_n'] += 1
@@ -235,7 +237,7 @@ def cumulative_kpi(up_to, since='2026-09-08'):
     """
     import glob as _g
     days = []
-    tot = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
+    tot = {'n': 0, 'dir': 0, 'dir2': 0, 'sc': 0, 'band': 0, 'ht': 0, 'ht2': 0, 'ht_n': 0, 'tg': 0, 'tg_n': 0}
     files = sorted(_g.glob(os.path.join(ROOT, 'predictions', '*', 'pred_snapshot.json')))
     for f in files:
         ds = os.path.basename(os.path.dirname(f))
@@ -294,7 +296,7 @@ def main():
 
     n = len(rows)
     dir_hit = score_hit = any_hit = exp_hit = 0
-    ht_hit = ht_n = tg_hit = tg_n = 0
+    ht_hit = ht2_hit = ht_n = tg_hit = tg_n = 0
     lam_model_sum = 0.0
     lam_actual_sum = 0.0
     table = []
@@ -332,10 +334,12 @@ def main():
         gm = goals_mode(m)
         hts = f'{_res_char(*hf)}/{_res_char(*sc)}' if (hf and sc) else None
         ht_ok = bool(hts and ht_top and hts == ht_top[0])
+        ht2_ok = bool(hts and ht_top and hts in ht_top[:2])
         tg_ok = bool(sc and gm is not None and min(sc[0] + sc[1], 11) == gm)
         if sc and ht_top:
             ht_n += 1
             ht_hit += ht_ok
+            ht2_hit += ht2_ok
         if sc and gm is not None:
             tg_n += 1
             tg_hit += tg_ok
@@ -367,7 +371,8 @@ def main():
                  f'={dir_hit/nres*100:.0f}%，命中比分单点 {exp_hit}/{nres}'
                  f'={exp_hit/nres*100:.0f}%，比分双档命中 {score_hit}/{nres}'
                  f'={score_hit/nres*100:.0f}%，半全场首选 {ht_hit}/{ht_n}'
-                 f'={ht_hit/ht_n*100 if ht_n else 0:.0f}%，总进球众数 {tg_hit}/{tg_n}'
+                 f'={ht_hit/ht_n*100 if ht_n else 0:.0f}%（双档 {ht2_hit}/{ht_n}'
+                 f'={ht2_hit/ht_n*100 if ht_n else 0:.0f}%），总进球众数 {tg_hit}/{tg_n}'
                  f'={tg_hit/tg_n*100 if tg_n else 0:.0f}%，至少一项命中 {any_hit}/{nres}'
                  f'={any_hit/nres*100:.0f}%，λ总进球偏差 {lam_bias:+.2f} 球/场。')
         miss_note = ('方向失手：' + '；'.join(misses)) if misses else '方向全部命中。'
@@ -380,20 +385,22 @@ def main():
     cum_html = ''
     if _tot['n']:
         _n = _tot['n']
-        _hx = f' · 半全场首选 <b>{_tot["ht"]}</b>（{_tot["ht"]/_tot["ht_n"]*100:.1f}%）' if _tot['ht_n'] else ''
+        _hx = (f' · 半全场首选 <b>{_tot["ht"]}</b>（{_tot["ht"]/_tot["ht_n"]*100:.1f}%）'
+               f'/ 双档 <b>{_tot["ht2"]}</b>（{_tot["ht2"]/_tot["ht_n"]*100:.1f}%）'
+               ) if _tot['ht_n'] else ''
         _tx = f' · 总进球众数 <b>{_tot["tg"]}</b>（{_tot["tg"]/_tot["tg_n"]*100:.1f}%）' if _tot['tg_n'] else ''
         cum_html = (f'<div class="sum"><b>累计命中（{len(_days)} 个比赛日 · {_n} 场）：</b>'
                     f'方向 <b>{_tot["dir"]}</b>（{_tot["dir"]/_n*100:.1f}%）· '
                     f'方向双选 <b>{_tot["dir2"]}</b>（{_tot["dir2"]/_n*100:.1f}%）· '
                     f'命中比分单点 <b>{_tot["sc"]}</b>（{_tot["sc"]/_n*100:.1f}%）· '
                     f'双档 <b>{_tot["band"]}</b>（{_tot["band"]/_n*100:.1f}%）{_hx}{_tx}'
-                    f'<br>长期基准：方向约 56% · 单点约 11% · 双档约 21% · 半全场首选约 34% · 总进球众数约 19%。'
+                    f'<br>长期基准：方向约 56% · 单点约 11% · 双档约 21% · 半全场首选约 34%（双档约 54%） · 总进球众数约 19%。'
                     f'「方向双选」= 首选 + 次选两选一，三选二的随机基线为 67%。</div>')
 
     html = f"""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>{ds} 竞彩预测复盘</title><style>{CSS}</style></head><body>
 <h1>{ds} 竞彩预测复盘</h1>
-<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 命中比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 半全场首选 {ht_hit}/{ht_n} · 总进球众数 {tg_hit}/{tg_n} · 至少一项命中 {any_hit}/{nres}</h2>
+<h2>复盘范围：{ds} {n} 场预测 · 方向命中 {dir_hit}/{nres} · 命中比分单点 {exp_hit}/{nres} · 双档命中 {score_hit}/{nres} · 半全场首选 {ht_hit}/{ht_n}（双档 {ht2_hit}/{ht_n}） · 总进球众数 {tg_hit}/{tg_n} · 至少一项命中 {any_hit}/{nres}</h2>
 {cum_html}
 <div class="sum"><b>关键复盘结论：</b>{concl}{miss_note}
 次日建议：方向失手集中在{"冷门/平局爆冷" if misses else "无"}场次，强弱对话与深让盘依 V3.3 滚动校准自动修正，无需每日手调；若连续多日方向命中率低于 50% 或 λ 总进球偏差持续 >0.2 球，应触发离线重拟合（market_calib / Platt）。</div>
@@ -414,7 +421,8 @@ def main():
     print(f'复盘指标: 方向 {dir_hit}/{nres}={(dir_hit/nres*100) if nres else 0:.0f}% | '
           f'命中比分单点 {exp_hit}/{nres}={(exp_hit/nres*100) if nres else 0:.0f}% | '
           f'比分双档 {score_hit}/{nres}={(score_hit/nres*100) if nres else 0:.0f}% | '
-          f'半全场首选 {ht_hit}/{ht_n}={(ht_hit/ht_n*100) if ht_n else 0:.0f}% | '
+          f'半全场首选 {ht_hit}/{ht_n}={(ht_hit/ht_n*100) if ht_n else 0:.0f}% '
+          f'（双档 {ht2_hit}/{ht_n}={(ht2_hit/ht_n*100) if ht_n else 0:.0f}%） | '
           f'总进球众数 {tg_hit}/{tg_n}={(tg_hit/tg_n*100) if tg_n else 0:.0f}% | '
           f'λ总进球偏差 {lam_bias:+.2f} 球/场')
 
