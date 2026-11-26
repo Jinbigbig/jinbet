@@ -2575,40 +2575,83 @@ def score_odd(m, score):
     return m['odds'].get('比分', {}).get(score)
 
 
-# 半全场九宫格的配色阈值：单格期望 11.1%，首选典型 25~50%，
-# 沿用 1X2 的 60/45 会把「九格里最高的那格」全判成弱。
-HTFT_HI, HTFT_MID = 40.0, 26.0
+# 半全场九宫格的配色阈值：单格均匀期望 11.1%；实测首选典型 20~28%（九格联合上限
+# 约 27%，真实最频格「主/主」27.4%），沿用 1X2 的 60/45 会把最高格全判成弱。
+HTFT_HI, HTFT_MID = 26.0, 20.0
+# 双档覆盖低于此值时标注「分散」：1036 场回测里覆盖 <45% 的场次双档命中仅 39~43%，
+# 与「随便猜最频格」差别不大，不该让读者当成有把握的单点。
+HTFT_SCATTER = 45.0
 
 
 def htft_info(m):
-    """半全场：引擎 htft 九宫格 top3 + 半场三率倾向。无数据返回 None。"""
+    """半全场：九格 top3 + 半场三率 + 全场三率 + 双档覆盖。
+
+    九格单点上限低（真实最频格 27%），只看「首选」会误读成高确定；
+    故同时给出半场/全场各自的倾向与双档覆盖，让依据可见。
+    """
     ht = m.get('htft') or {}
     top = ht.get('top') or []
     if not top:
         return None
     half = ht.get('half') or {}
+    ft = ht.get('ft') or {}
     htag, hp = '', 0.0
     for k, lab in (('home', '主'), ('draw', '平'), ('away', '客')):
         if half.get(k, 0) > hp:
             htag, hp = lab, half[k]
-    return {'top': top, 'htag': htag, 'half_p': hp,
-            'cells': ht.get('cells') or {}}
+    ftag, fp = '', 0.0
+    for k, lab in (('home', '主胜'), ('draw', '平局'), ('away', '客胜')):
+        if ft.get(k, 0) > fp:
+            ftag, fp = lab, ft[k]
+    cover2 = ht.get('top2_cover')
+    if cover2 is None and len(top) >= 2:
+        cover2 = round(top[0][1] + top[1][1], 1)
+    return {'top': top, 'htag': htag, 'half_p': hp, 'cells': ht.get('cells') or {},
+            'half': half, 'ft': ft, 'ftag': ftag, 'ft_p': fp, 'cover2': cover2 or 0.0,
+            'p1': top[0][1]}
+
+
+def _htft_half_txt(h):
+    """半场三率一行：最大者加粗。九格首选常是「主/主」，但半场大概率是平——
+    把这个反差摊开，读者才不会把「主/主」当成半场就领先。"""
+    half = h['half']
+    if not half:
+        return ''
+    parts = []
+    for k, lab in (('home', '主'), ('draw', '平'), ('away', '客')):
+        v = half.get(k)
+        if v is None:
+            continue
+        s = f'{lab}{v:.0f}'
+        parts.append(f'<b>{s}</b>' if lab == h['htag'] else s)
+    return '半场 ' + '/'.join(parts) if parts else ''
 
 
 def htft_card_row(m):
-    """逐场卡片「半全场」行（挂在总进球倾向下方）。引擎未产出时整行省略。"""
+    """逐场卡片「半全场」行：首选 + 双档覆盖 + 半场三率 + 全场倾向。"""
     h = htft_info(m)
     if not h:
         return ''
     t = h['top']
-    picks = ' · '.join(f'<b>{esc(s)}</b> {_conf_tag(p, 1, HTFT_HI, HTFT_MID)}' if i == 0
-                       else f'{esc(s)} {_conf_tag(p, 1, HTFT_HI, HTFT_MID)}'
-                       for i, (s, p) in enumerate(t))
-    half_txt = (f'半场倾向 {esc(h["htag"])} {_conf_tag(h["half_p"], 0, HTFT_HI, HTFT_MID)}'
-                if h['htag'] else '')
+    txt = f'<b>{esc(t[0][0])}</b> {_conf_tag(t[0][1], 1, HTFT_HI, HTFT_MID)}'
+    if len(t) > 1:
+        txt += f'<span style="color:var(--muted);"> 次 {esc(t[1][0])} {t[1][1]:.1f}%</span>'
+    if h['cover2']:
+        # 双档覆盖率是唯一可靠的置信刻度（1036 场回测：覆盖 30-40% → 命中 39%，
+        # 70-80% → 命中 82%，单调）。覆盖不足时直接说明「分散」，不给单点错觉。
+        warn = '（分散）' if h['cover2'] < HTFT_SCATTER else ''
+        txt += f'<span style="color:var(--muted);"> · 双档 {h["cover2"]:.1f}%{warn}</span>'
+    half_txt = _htft_half_txt(h)
+    tail = []
+    if half_txt:
+        tail.append(half_txt)
+    if h['ftag']:
+        tail.append(f'全场 {esc(h["ftag"])}{h["ft_p"]:.0f}%')
+    if tail:
+        txt += f'<span style="color:var(--muted);"> · {" · ".join(tail)}</span>'
     return (f'<div class="pred-row">\n'
             f'      <span class="pred-label">半全场:</span>\n'
-            f'      <span class="pred-value">{picks}{(" · " + half_txt) if half_txt else ""}</span>\n'
+            f'      <span class="pred-value">{txt}</span>\n'
             f'    </div>')
 
 
@@ -3538,11 +3581,16 @@ for m in MATCHES:
                   f'<td>{_conf_tag(sp["cover1"], 0)}</td>'
                   f'<td>{_conf_tag(sp["top3"], 0)}</td>'
                   f'<td><span class="tag {_bcc}">{_bct}</span></td></tr>')
-    # 4.3 进球数预测（末列附半全场首选）
-    _ht = (m.get('htft') or {}).get('top') or []
-    _ht_cell = (f'<td style="white-space:nowrap;"><b>{esc(_ht[0][0])}</b> {_conf_tag(_ht[0][1], 1, HTFT_HI, HTFT_MID)}'
-                + (f' <span style="color:var(--muted);">次选 {esc(_ht[1][0])} {_conf_tag(_ht[1][1], 1, HTFT_HI, HTFT_MID)}</span>'
-                   if len(_ht) > 1 else '') + '</td>') if _ht else '<td>—</td>'
+    # 4.3 进球数预测（末列：半全场首选 + 双档覆盖 + 半场倾向）
+    _hf = htft_info(m)
+    if _hf:
+        _warn = '（分散）' if _hf['cover2'] and _hf['cover2'] < HTFT_SCATTER else ''
+        _sub = (f'<br><span style="color:var(--muted);">{_hf["cover2"]:.0f}% 双档{_warn}'
+                f' · 半场{esc(_hf["htag"])}{_hf["half_p"]:.0f}%</span>') if _hf['cover2'] else ''
+        _ht_cell = (f'<td style="white-space:nowrap;"><b>{esc(_hf["top"][0][0])}</b> '
+                    f'{_conf_tag(_hf["p1"], 1, HTFT_HI, HTFT_MID)}{_sub}</td>')
+    else:
+        _ht_cell = '<td>—</td>'
     rowsB += (f'<tr>{num_cell}{pair}'
                f'<td><span class="tag {tg["cls"]}" title="λ总分{tg["lt"]:.2f}">{tg["tag"]}</span></td>'
                f'<td>{_conf_tag(tg["ge3"] * 100, 0)}</td>'
@@ -3579,7 +3627,7 @@ summary4_sec = f'''
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>备选方向</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
 '<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC, fold=True) if rowsC else ''}
-{_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，半场 λ 按全场 45% 折算，列出概率最高的组合与次选。',
+{_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，列出最可能的组合、双档覆盖（首选+次选合计）与半场倾向。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th>', rowsB, fold=True)}
 {market_dev_section(MATCHES)}
 {upset_table()}

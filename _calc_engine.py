@@ -1114,10 +1114,14 @@ def pmf(k, lam):
     return math.exp(-lam) * lam ** k / math.factorial(k)
 
 # ---------------------------------------------------------------- 半全场（HT/FT）
-# 上半场进球占比：主流联赛长期统计约 43%~46%，取 0.45 常数。
-# 上下半场各自独立泊松（半场 λ = 全场 λ × 0.45），合成九宫格 P(半场i, 全场j)。
+# 上半场进球占比：用本库 2976 场带 halfScore 的赛果实测 = 3249/8615 = 0.3771
+# （此前的 0.45 是外部经验值，偏高 → 半场领先被高估、九格首选过度集中在「主/主」）。
+# 按全场总进球分层后：1 球 0.130 / 2 球 0.347 / 3 球 0.368 / 4+ 球 0.409，
+# 但 λ 随总进球线性调整经 1036 场快照回测反而更差（logloss 1.8410 vs 1.8392），
+# 故保留单常数，不做分层（避免过拟合）。
+# 上下半场各自独立泊松（半场 λ = 全场 λ × 0.377），合成九宫格 P(半场i, 全场j)。
 # 纯模型口径（与 4.3 进球同源），不吃市场 —— 半全场盘口日常缺价，无法去水。
-HALF_SHARE = 0.45
+HALF_SHARE = 0.377
 HTFT_NAMES = ["主/主", "主/平", "主/客", "平/主", "平/平", "平/客", "客/主", "客/平", "客/客"]
 
 
@@ -1151,11 +1155,19 @@ def htft_analysis(lam_h, lam_a, half_share=HALF_SHARE, kmax=7):
                     r2 = 0 if ft > 0 else (1 if ft == 0 else 2)
                     cells[r1 * 3 + r2] += p1 * p2
     order = sorted(range(9), key=lambda i: -cells[i])
+    # 全场三率 = 九格按「全场结果」求和；九格单点天花板约 27%，双档覆盖（top1+top2）
+    # 才是可读的置信度，故一并返回（新增键，不改动 half/cells/top 以兼容下游 matlas）。
+    ft = [0.0, 0.0, 0.0]
+    for i in range(9):
+        ft[i % 3] += cells[i]
     return {
         "half": {"home": round(half[0] * 100, 1), "draw": round(half[1] * 100, 1),
                  "away": round(half[2] * 100, 1)},
+        "ft": {"home": round(ft[0] * 100, 1), "draw": round(ft[1] * 100, 1),
+               "away": round(ft[2] * 100, 1)},
         "cells": {HTFT_NAMES[i]: round(cells[i] * 100, 1) for i in range(9)},
         "top": [(HTFT_NAMES[i], round(cells[i] * 100, 1)) for i in order[:3]],
+        "top2_cover": round((cells[order[0]] + cells[order[1]]) * 100, 1),
     }
 
 def wavg(vals):
