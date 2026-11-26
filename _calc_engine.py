@@ -1160,6 +1160,25 @@ def htft_analysis(lam_h, lam_a, half_share=HALF_SHARE, kmax=7):
     ft = [0.0, 0.0, 0.0]
     for i in range(9):
         ft[i % 3] += cells[i]
+    # 条件路径：给定半场结果后的全场分布（行内归一化）。九格首选恒为对角（半场领先且保持
+    # 的联合概率天然最大，市场半全场盘口同样如此），单看点会掩盖「半场平时最常见」这一事实，
+    # 「若半场平 → 全场最可能」才是读者真正需要的那条分支。
+    cond = {}
+    for r1, tag in ((0, 'home'), (1, 'draw'), (2, 'away')):
+        base = half[r1]
+        if base <= 1e-9:
+            continue
+        row = [cells[r1 * 3 + r2] / base for r2 in range(3)]
+        j = max(range(3), key=lambda i: row[i])
+        cond[tag] = {'ft': ('主胜', '平局', '客胜')[j], 'p': round(row[j] * 100, 1),
+                     'dist': [round(x * 100, 1) for x in row]}
+    # 另一条路：与首选「半场结果」不同的最高格（首选是对角时，给出上半场没领先时的走向）
+    r1_top = order[0] // 3
+    alt = None
+    for i in order[1:]:
+        if i // 3 != r1_top:
+            alt = [HTFT_NAMES[i], round(cells[i] * 100, 1)]
+            break
     return {
         "half": {"home": round(half[0] * 100, 1), "draw": round(half[1] * 100, 1),
                  "away": round(half[2] * 100, 1)},
@@ -1168,6 +1187,8 @@ def htft_analysis(lam_h, lam_a, half_share=HALF_SHARE, kmax=7):
         "cells": {HTFT_NAMES[i]: round(cells[i] * 100, 1) for i in range(9)},
         "top": [(HTFT_NAMES[i], round(cells[i] * 100, 1)) for i in order[:3]],
         "top2_cover": round((cells[order[0]] + cells[order[1]]) * 100, 1),
+        "alt": alt,
+        "cond": cond,
     }
 
 def wavg(vals):

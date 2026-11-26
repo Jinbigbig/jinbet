@@ -2608,7 +2608,7 @@ def htft_info(m):
         cover2 = round(top[0][1] + top[1][1], 1)
     return {'top': top, 'htag': htag, 'half_p': hp, 'cells': ht.get('cells') or {},
             'half': half, 'ft': ft, 'ftag': ftag, 'ft_p': fp, 'cover2': cover2 or 0.0,
-            'p1': top[0][1]}
+            'p1': top[0][1], 'alt': ht.get('alt'), 'cond': ht.get('cond') or {}}
 
 
 def _htft_half_txt(h):
@@ -2628,27 +2628,36 @@ def _htft_half_txt(h):
 
 
 def htft_card_row(m):
-    """逐场卡片「半全场」行：首选 + 双档覆盖 + 半场三率 + 全场倾向。"""
+    """逐场卡片「半全场」行：首选 + 另一条路 + 双档覆盖 + 半场三率 + 半场平后的走向。
+
+    九格首选在数学与盘口上都恒落在对角（半场领先且保持），单看点会让人误读成「只会猜
+    主主/客客」；这里同时给「半场没领先时最可能是什么」，把最常见的另一条分支摊开。
+    """
     h = htft_info(m)
     if not h:
         return ''
     t = h['top']
     txt = f'<b>{esc(t[0][0])}</b> {_conf_tag(t[0][1], 1, HTFT_HI, HTFT_MID)}'
-    if len(t) > 1:
-        txt += f'<span style="color:var(--muted);"> 次 {esc(t[1][0])} {t[1][1]:.1f}%</span>'
+    if h['alt']:
+        # 跨象限的另一条路（与首选半场结果不同），比同象限次选更有信息量
+        txt += (f'<span style="color:var(--muted);"> ｜ 另路 {esc(h["alt"][0])} '
+                f'{h["alt"][1]:.1f}%</span>')
     if h['cover2']:
         # 双档覆盖率是唯一可靠的置信刻度（1036 场回测：覆盖 30-40% → 命中 39%，
         # 70-80% → 命中 82%，单调）。覆盖不足时直接说明「分散」，不给单点错觉。
         warn = '（分散）' if h['cover2'] < HTFT_SCATTER else ''
         txt += f'<span style="color:var(--muted);"> · 双档 {h["cover2"]:.1f}%{warn}</span>'
     half_txt = _htft_half_txt(h)
-    tail = []
     if half_txt:
-        tail.append(half_txt)
-    if h['ftag']:
-        tail.append(f'全场 {esc(h["ftag"])}{h["ft_p"]:.0f}%')
-    if tail:
-        txt += f'<span style="color:var(--muted);"> · {" · ".join(tail)}</span>'
+        txt += f'<span style="color:var(--muted);"> · {half_txt}</span>'
+    dc = h['cond'].get('draw')
+    if dc:
+        # 半场平是最常见的半场结果（约 4 成），这条分支决定了大半场次的实际走向
+        txt += (f'<span style="color:var(--muted);"> · 半场平 → {esc(dc["ft"])} '
+                f'{dc["p"]:.0f}%</span>')
+    else:
+        if h['ftag']:
+            txt += f'<span style="color:var(--muted);"> · 全场 {esc(h["ftag"])}{h["ft_p"]:.0f}%</span>'
     return (f'<div class="pred-row">\n'
             f'      <span class="pred-label">半全场:</span>\n'
             f'      <span class="pred-value">{txt}</span>\n'
@@ -3585,8 +3594,13 @@ for m in MATCHES:
     _hf = htft_info(m)
     if _hf:
         _warn = '（分散）' if _hf['cover2'] and _hf['cover2'] < HTFT_SCATTER else ''
+        _dc = _hf['cond'].get('draw')
+        _dtxt = ''
+        if _dc:
+            _dft = {'主胜': '主', '平局': '平', '客胜': '客'}.get(_dc['ft'], '')
+            _dtxt = f' · 半场平→平/{_dft} {_dc["p"]:.0f}%'
         _sub = (f'<br><span style="color:var(--muted);">{_hf["cover2"]:.0f}% 双档{_warn}'
-                f' · 半场{esc(_hf["htag"])}{_hf["half_p"]:.0f}%</span>') if _hf['cover2'] else ''
+                f'{_dtxt}</span>') if _hf['cover2'] else ''
         _ht_cell = (f'<td style="white-space:nowrap;"><b>{esc(_hf["top"][0][0])}</b> '
                     f'{_conf_tag(_hf["p1"], 1, HTFT_HI, HTFT_MID)}{_sub}</td>')
     else:
@@ -3627,7 +3641,7 @@ summary4_sec = f'''
 '<th>编号</th><th>主队</th><th>客队</th><th>倾向</th><th>方向可信度</th><th>备选方向</th><th>让球盘</th><th>让球可信度</th><th>冷门</th>', rowsA)}
 {_sub_table('4.2 比分预测', '按<b>双方进球数的联合分布</b>给出：<b>预期进球</b> = 两队各自的期望进球（左主右客）；<b>比分预测</b> = 首选比分（综合双方进球分布与比分盘定价选出的最优单格，同一比分每天最多出现 4 次以保证覆盖面，与逐场卡片一致，小字为该比分的概率）；<b>比分双档</b> = 除首选外概率最高的两个比分（小字为各自概率）。<b>可信度</b> = 这段比分能不能照抄单点：<b>可用 / 慎用 / 别跟</b>。单点长期约 <b>15%</b>，两格合计约 <b>20%</b>，<b>±1球覆盖</b>（实际比分落在可能比分1 上下各 1 球内）约 <b>67%</b> —— 跟比分先看这个。',
 '<th>编号</th><th>主队</th><th>客队</th><th>预期进球(主/客)</th><th>比分预测</th><th>比分双档</th><th>±1球覆盖</th><th>Top3覆盖</th><th>可信度</th>', rowsC, fold=True) if rowsC else ''}
-{_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，列出最可能的组合、双档覆盖（首选+次选合计）与半场倾向。',
+{_sub_table('4.3 进球数预测', 'λ主/客独立泊松相加。大球: P(≥3)≥58% · 小球: ≤42% · 其余均势；"最可能"为总进球众数。<b>半全场</b> = 半场/全场结果组合，给出最可能的组合、双档覆盖（首选+次选合计），以及「半场平」这个最常见分支之后的走向（半场平约占四成）。',
             '<th>编号</th><th>主队</th><th>客队</th><th>总进球倾向</th><th>P(≥3球)</th><th>P(≥4球)</th><th>最可能总进球</th><th>λ总分</th><th>半全场</th>', rowsB, fold=True)}
 {market_dev_section(MATCHES)}
 {upset_table()}
@@ -4703,8 +4717,9 @@ def _recap_htft():
         y, '半全场预测',
         '<th>编号 · 联赛</th><th>对阵</th><th>首选</th><th>概率</th><th>次选 · 三选</th>'
         '<th>实际（半场 → 全场）</th><th>判定</th>',
-        rows, summ, '半全场 = 半场结果/全场结果九宫格，按半场 λ 为全场 45% 分段独立推算；'
-                    '首选/前二/前三即该分布概率最高的 1/2/3 个组合，命中按所含档位计。')
+        rows, summ, '半全场 = 半场结果/全场结果九宫格，半场 λ 取全场的 0.377（本库 6854 场'
+                    '带半场比分赛事实测进球占比）；首选/前二/前三即该分布概率最高的 1/2/3 个'
+                    '组合，命中按所含档位计。')
 
 
 def _recap_rq():
