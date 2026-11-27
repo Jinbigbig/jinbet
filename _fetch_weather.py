@@ -178,6 +178,8 @@ TEAM_CITY = {
     '厄尔格里特': 'Gothenburg', '索肖': 'Montbeliard', '圣路易城': 'St. Louis',
     # 2026-11-24 补充：亚冠精英/欧冠缺失映射
     '大田市民': 'Daejeon', '上海海港': 'Shanghai', '布拉迪斯': 'Bratislava',
+    # 2026-11-27 补充：荷乙/美职缺失映射（芬洛=De Koel；哥伦布=Lower.com Field）
+    '芬洛': 'Venlo', '哥伦布': 'Columbus',
     # 2026-11-26 补充：亚冠乙/欧罗巴缺失映射（淡宾尼士主场在新加坡；奥林匹亚=卢布尔雅那；比尔森=比尔森）
     '淡宾尼士': 'Singapore', '奥林匹亚': 'Ljubljana', '比尔森': 'Plzen',
 }
@@ -247,6 +249,7 @@ CITY_ZH = {
     'Degerfors': '代格福什', 'Alverca do Ribatejo': '阿尔韦卡', 'Salt Lake City': '盐湖城',
     'Montbeliard': '蒙贝利亚尔', 'St. Louis': '圣路易斯',
     'Orlando': '奥兰多', 'Seattle': '西雅图',
+    'Venlo': '芬洛', 'Columbus': '哥伦布',
     'Daejeon': '大田', 'Shanghai': '上海', 'Bratislava': '布拉迪斯拉发',
     # 2026-11-01 补充
     'Nagasaki': '长崎', 'Ulsan': '蔚山', 'Seoul': '首尔', 'Zwolle': '兹沃勒',
