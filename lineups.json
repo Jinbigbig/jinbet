@@ -1,49 +1,133 @@
 {
- "updated": "2026-11-27 12:05",
- "date": "2026-11-27",
+ "updated": "2026-11-28 12:06",
+ "date": "2026-11-28",
  "matches": {},
  "skipped": [
   {
-   "matchNumStr": "周五003",
+   "matchNumStr": "周六004",
    "reason": "http",
-   "url": "https://lineupstoday.com/eredivisie/fc-groningen-willem-ii-27-11-2026/",
+   "url": "https://lineupstoday.com/championship/blackburn-rovers-charlton-athletic-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五005",
+   "matchNumStr": "周六005",
    "reason": "http",
-   "url": "https://lineupstoday.com/bundesliga/werder-bremen-borussia-monchengladbach-27-11-2026/",
+   "url": "https://lineupstoday.com/laliga/real-betis-rayo-vallecano-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五006",
+   "matchNumStr": "周六006",
+   "reason": "unmapped",
+   "league": "意甲",
+   "home": "弗洛西诺",
+   "away": "帕尔马",
+   "miss": [
+    "serie-a",
+    null,
+    "parma"
+   ]
+  },
+  {
+   "matchNumStr": "周六007",
    "reason": "http",
-   "url": "https://lineupstoday.com/serie-a/venezia-bologna-27-11-2026/",
+   "url": "https://lineupstoday.com/bundesliga/sc-paderborn-schalke-04-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五007",
+   "matchNumStr": "周六008",
+   "reason": "unmapped",
+   "league": "德甲",
+   "home": "科隆",
+   "away": "埃沃斯堡",
+   "miss": [
+    "bundesliga",
+    "fc-koln",
+    null
+   ]
+  },
+  {
+   "matchNumStr": "周六009",
    "reason": "http",
-   "url": "https://lineupstoday.com/ligue-1/brest-paris-fc-27-11-2026/",
+   "url": "https://lineupstoday.com/bundesliga/hamburger-sv-bayern-munchen-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五008",
+   "matchNumStr": "周六010",
    "reason": "http",
-   "url": "https://lineupstoday.com/premier-league/nottingham-forest-chelsea-27-11-2026/",
+   "url": "https://lineupstoday.com/bundesliga/mainz-05-union-berlin-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五009",
+   "matchNumStr": "周六011",
    "reason": "http",
-   "url": "https://lineupstoday.com/championship/southampton-middlesbrough-27-11-2026/",
+   "url": "https://lineupstoday.com/premier-league/manchester-united-brentford-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
   },
   {
-   "matchNumStr": "周五010",
+   "matchNumStr": "周六012",
    "reason": "http",
-   "url": "https://lineupstoday.com/laliga/levante-racing-santander-27-11-2026/",
+   "url": "https://lineupstoday.com/premier-league/leeds-united-coventry-city-28-11-2026/",
    "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六013",
+   "reason": "unmapped",
+   "league": "英冠",
+   "home": "女王巡游",
+   "away": "谢菲联",
+   "miss": [
+    "championship",
+    null,
+    "sheffield-united"
+   ]
+  },
+  {
+   "matchNumStr": "周六015",
+   "reason": "http",
+   "url": "https://lineupstoday.com/serie-a/torino-lazio-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六017",
+   "reason": "http",
+   "url": "https://lineupstoday.com/premier-league/ipswich-town-aston-villa-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六018",
+   "reason": "http",
+   "url": "https://lineupstoday.com/bundesliga/vfb-stuttgart-eintracht-frankfurt-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六019",
+   "reason": "http",
+   "url": "https://lineupstoday.com/laliga/elche-atletico-madrid-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六020",
+   "reason": "http",
+   "url": "https://lineupstoday.com/serie-a/inter-genoa-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六021",
+   "reason": "http",
+   "url": "https://lineupstoday.com/ligue-1/le-mans-lille-28-11-2026/",
+   "err": "HTTP Error 403: Forbidden"
+  },
+  {
+   "matchNumStr": "周六022",
+   "reason": "unmapped",
+   "league": "荷甲",
+   "home": "坎布尔",
+   "away": "鹿斯巴达",
+   "miss": [
+    "eredivisie",
+    "sc-cambuur",
+    null
+   ]
   }
  ]
 }

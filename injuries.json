@@ -1,102 +1,39 @@
 {
- "updated": "2026-11-27 15:01",
+ "updated": "2026-11-28 12:03",
  "teams": {
-  "云达不来梅": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Grüll",
-     "reason": "小腿"
-    },
-    {
-     "name": "Musah",
-     "reason": "腿筋"
-    },
-    {
-     "name": "Ndiaye",
-     "reason": "腹股沟"
-    },
-    {
-     "name": "Stage",
-     "reason": "大腿"
-    },
-    {
-     "name": "Topp",
-     "reason": "膝"
-    }
-   ],
-   "doubtful": [
-    {
-     "name": "Agu",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Alvero",
-     "reason": "小腿"
-    },
-    {
-     "name": "Njinmah",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Weiser",
-     "reason": "腿筋"
-    }
-   ]
-  },
-  "门兴": {
-   "league": "德甲",
-   "out": [
-    {
-     "name": "Kleindienst",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Leopold",
-     "reason": "膝"
-    },
-    {
-     "name": "Leszczyński",
-     "reason": "膝"
-    },
-    {
-     "name": "Ullrich",
-     "reason": "collarbone"
-    }
-   ],
-   "doubtful": [
-    {
-     "name": "Bolin",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Hack",
-     "reason": "肌肉"
-    },
-    {
-     "name": "Hashioka",
-     "reason": "肌肉"
-    }
-   ]
-  },
   "美因茨": {
    "league": "德甲",
    "out": [
     {
      "name": "Kohr",
      "reason": "脚踝"
-    }
-   ],
-   "doubtful": [
+    },
     {
      "name": "Silas",
      "reason": "体能"
+    },
+    {
+     "name": "Mwene",
+     "reason": "unspecified"
     }
-   ]
+   ],
+   "doubtful": []
   },
   "柏林联合": {
    "league": "德甲",
    "out": [
+    {
+     "name": "Burcu",
+     "reason": "背"
+    },
+    {
+     "name": "Juranović",
+     "reason": "疾病"
+    },
+    {
+     "name": "Khedira",
+     "reason": "unspecified"
+    },
     {
      "name": "Markgraf",
      "reason": "膝"
@@ -107,19 +44,18 @@
     },
     {
      "name": "Skov",
-     "reason": "unconfirmed"
+     "reason": "unspecified"
+    },
+    {
+     "name": "Uduokhai",
+     "reason": "腿筋"
     },
     {
      "name": "Bosch",
      "reason": "suspended"
     }
    ],
-   "doubtful": [
-    {
-     "name": "Juranović",
-     "reason": "疾病"
-    }
-   ]
+   "doubtful": []
   },
   "汉堡": {
    "league": "德甲",
@@ -139,32 +75,31 @@
     {
      "name": "Remberg",
      "reason": "膝"
-    }
-   ],
-   "doubtful": [
+    },
     {
      "name": "Sambi Lokonga",
      "reason": "小腿"
     }
-   ]
+   ],
+   "doubtful": []
   },
   "拜仁": {
    "league": "德甲",
    "out": [
     {
-     "name": "Davies",
-     "reason": "腿筋"
-    },
-    {
-     "name": "Gnabry",
-     "reason": "腿筋"
-    },
-    {
      "name": "Kane",
      "reason": "脚踝"
     },
     {
+     "name": "Musiala",
+     "reason": "肌肉"
+    },
+    {
      "name": "Neuer",
+     "reason": "足"
+    },
+    {
+     "name": "Olise",
      "reason": "足"
     },
     {
@@ -174,8 +109,12 @@
    ],
    "doubtful": [
     {
-     "name": "Olise",
-     "reason": "足"
+     "name": "Davies",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Gnabry",
+     "reason": "腿筋"
     }
    ]
   },
@@ -207,12 +146,7 @@
      "reason": "肌肉"
     }
    ],
-   "doubtful": [
-    {
-     "name": "Lochoshvili",
-     "reason": "头部"
-    }
-   ]
+   "doubtful": []
   },
   "埃弗斯堡": {
    "league": "德甲",
@@ -220,16 +154,20 @@
     {
      "name": "Mickelson",
      "reason": "膝"
-    },
-    {
-     "name": "Seifert",
-     "reason": "脚踝"
     }
    ],
    "doubtful": [
     {
      "name": "Darvich",
      "reason": "肌肉"
+    },
+    {
+     "name": "Günther",
+     "reason": "疾病"
+    },
+    {
+     "name": "Kristof",
+     "reason": "疾病"
     }
    ]
   },
@@ -239,14 +177,6 @@
     {
      "name": "Diehl",
      "reason": "大腿"
-    },
-    {
-     "name": "Jaquez",
-     "reason": "肋骨"
-    },
-    {
-     "name": "Malanga",
-     "reason": "腹肌"
     }
    ],
    "doubtful": []
@@ -259,7 +189,12 @@
      "reason": "adductor"
     }
    ],
-   "doubtful": []
+   "doubtful": [
+    {
+     "name": "Uzun",
+     "reason": "疾病"
+    }
+   ]
   },
   "弗莱堡": {
    "league": "德甲",
@@ -275,28 +210,27 @@
    "league": "德甲",
    "out": [
     {
-     "name": "Gebel",
-     "reason": "膝"
-    },
-    {
      "name": "Guiu",
      "reason": "腿筋"
+    },
+    {
+     "name": "Lukeba",
+     "reason": "膝"
     },
     {
      "name": "Ouédraogo",
      "reason": "肩"
     }
    ],
-   "doubtful": [
-    {
-     "name": "Lukeba",
-     "reason": "膝"
-    }
-   ]
+   "doubtful": []
   },
   "霍芬海姆": {
    "league": "德甲",
    "out": [
+    {
+     "name": "Burger",
+     "reason": "肋骨"
+    },
     {
      "name": "De Cat",
      "reason": "膝"
@@ -328,20 +262,23 @@
      "reason": "膝"
     },
     {
-     "name": "Matsima",
-     "reason": "腿筋"
-    }
-   ],
-   "doubtful": [
-    {
      "name": "Gouweleeuw",
      "reason": "肌肉"
     },
     {
      "name": "Massengo",
      "reason": "碰撞伤"
+    },
+    {
+     "name": "Matsima",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Mounié",
+     "reason": "体能"
     }
-   ]
+   ],
+   "doubtful": []
   },
   "多特": {
    "league": "德甲",
@@ -375,6 +312,74 @@
     {
      "name": "Terrier",
      "reason": "肌肉"
+    }
+   ],
+   "doubtful": []
+  },
+  "云达不来梅": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Agu",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Alvero",
+     "reason": "小腿"
+    },
+    {
+     "name": "Grüll",
+     "reason": "小腿"
+    },
+    {
+     "name": "Musah",
+     "reason": "腿筋"
+    },
+    {
+     "name": "Ndiaye",
+     "reason": "腹股沟"
+    },
+    {
+     "name": "Njinmah",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Stage",
+     "reason": "大腿"
+    },
+    {
+     "name": "Topp",
+     "reason": "膝"
+    }
+   ],
+   "doubtful": []
+  },
+  "门兴": {
+   "league": "德甲",
+   "out": [
+    {
+     "name": "Bolin",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Hack",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Hashioka",
+     "reason": "肌肉"
+    },
+    {
+     "name": "Leopold",
+     "reason": "膝"
+    },
+    {
+     "name": "Leszczyński",
+     "reason": "膝"
+    },
+    {
+     "name": "Ullrich",
+     "reason": "collarbone"
     }
    ],
    "doubtful": []
