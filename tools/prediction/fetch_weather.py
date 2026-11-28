@@ -27,6 +27,10 @@ OUT = 'weather.json'
 
 # 球队中文简称（竞彩官方简称）→ 主场所在城市（英文，供 Geocoding 使用）
 TEAM_CITY = {
+    # 2026-11-28 补充：日职/澳超/英冠/葡超/荷甲缺失映射（中央海岸=戈斯福德；布莱克本；
+    # 女王巡游=伦敦；摩雷伦斯=吉马良斯近郊；坎布尔=吕伐登）
+    '中央海岸': 'Gosford', '布莱克本': 'Blackburn',
+    '女王巡游': 'London', '摩雷伦斯': 'Guimaraes', '坎布尔': 'Leeuwarden',
     # 2026-11-13 补充：欧国联/国际赛国家队主场（苏格兰=格拉斯哥汉普顿；塞尔维亚=贝尔格莱德；哥伦比亚=巴兰基亚大都会）
     '新加坡': 'Singapore', '摩尔多瓦': 'Chisinau', '保加利亚': 'Sofia',
     '苏格兰': 'Glasgow', '塞尔维亚': 'Belgrade', '卢森堡': 'Luxembourg',
@@ -187,6 +191,7 @@ TEAM_CITY = {
 # 英文城市 → 中文（缺失则保留英文，不影响出报告）
 CITY_ZH = {
     'Baku': '巴库', 'Stoke-on-Trent': '斯托克',
+    'Gosford': '戈斯福德', 'Blackburn': '布莱克本', 'Leeuwarden': '吕伐登',
     'Tokyo': '东京', 'Kashiwa': '柏市', 'Kawasaki': '川崎', 'Kobe': '神户',
     'Yokohama': '横滨', 'Saitama': '埼玉', 'Kashima': '鹿岛', 'Nagoya': '名古屋',
     'Osaka': '大阪', 'Hiroshima': '广岛', 'Fukuoka': '福冈', 'Toyama': '富山',
